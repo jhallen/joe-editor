@@ -1,0 +1,53 @@
+1. Introduction
+---------------
+This file describes particular issues on AmigaOS port of JOE.
+
+2. Requirements
+---------------
+To compile JOE you need ncurses and termcap libraries installed.
+
+3. Installation
+---------------
+- Extract the archive into your GeekGadgets tree
+- Go to AmigaOS shell and execute "setenv TERM amiga"
+- Copy file ENV:TERM to your ENVARC: directory.
+
+4. Usage
+--------
+Unfortunately ixemul.library does not implement pseudo-terminals (ptys), so
+inserting shell command output (CTRL-K !) does not work. All other functions
+are fully implemented and work exactly in the same way as in UNIX version.
+
+5. Compiling
+------------
+To recompile JOE just cd to the directory with sources and type (if you use
+standard Amiga shell):
+
+	sh configure --prefix=/gg
+
+From UNIX shell (like ksh) you may just type:
+
+	./configure --prefix=/gg
+
+When the configuration process finishes, type:
+
+	make
+
+After compiling you may install the program by using:
+
+	make install
+
+To clean up the distribution (erase all binary and #?.o files) you can use:
+
+	make clean
+
+6. Known bugs
+-------------
+AmigaOS port of JOE currently has no specific bugs
+
+7. Port author
+---------
+My name is Pavel Fedin, i live in Russia, and you can always reach me by
+E-Mail:
+
+	sonic_amiga@rambler.ru

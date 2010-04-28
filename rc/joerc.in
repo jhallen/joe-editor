@@ -1,0 +1,1145 @@
+                         Initialization file for JOE
+                                Standard Joe
+
+ JOE looks for this file in:
+	1 - $HOME/.joerc
+	2 - @JOERC@/joerc
+
+ This file can include other files by placing the following include command
+ in the first column:
+
+ :include filename
+
+ FIRST SECTION: Default global options (these options can also be specified
+ on the command line.  Also the NOXON, LINES, COLUMNS, DOPADDING and BAUD
+ options can be specified in environment variables):
+
+ Override colors of lexical classes specified in syntax files:
+ Put each color override you want in the first column.
+
+ Valid colors:
+   bold inverse blink dim underline
+   white cyan magenta blue yellow green red black
+   bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
+
+ Other colors are available: see syntax/c.jsf for documentation.
+
+ Override all instances of class Idle:
+   =Idle red
+
+ Override Idle only for c syntax file:
+   =c.Idle red
+
+ The following list is from c.jsf.  Look at other syntax files for more classes.
+
+ =Idle
+ =Bad        bold red
+ =Preproc    blue
+ =Define     bold blue
+ =IncLocal   cyan
+ =IncSystem  bold cyan
+ =Constant   cyan
+ =Escape     bold cyan
+ =Type       bold
+ =Keyword    bold
+ =CppKeyword bold
+ =Brace      magenta
+ =Control
+
+ Put each option you want set in the first column:
+
+ -option	Sets the option
+ --option	Clears the option
+
+ -help_is_utf8	Set if help text is in UTF-8 format.  Leave clear if it's a raw 8-bit format.
+
+ -mid		Cursor is recentered when scrolling is necessary
+
+ -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
+
+ -asis		Characters 128 - 255 shown as-is
+
+ -force		Force final newline when files are saved
+
+ -nolocks	If you don't want file locks to be used
+
+ -nomodcheck	Disable periodic checking of disk file newer than buffer
+		(this checking happens on save even with this option).
+
+ -nocurdir	Do not prompt with current directory
+
+ -nobackups	If you don't want backup files to be created
+
+ -break_hardlinks
+		Delete file before writing, to break hard links
+		(but don't break symbolic links).
+
+ -break_links
+		Delete file before writing, to break hard links
+		and symbolic links.
+
+
+ -lightoff	Turn off highlighting after block copy or move
+
+ -exask		^KX always confirms file name
+
+ -beep		Beep on errors and when cursor goes past extremes
+
+ -nosta		Disable top-most status line
+
+ -keepup	%k and %c status line escape sequences updated frequently
+
+ -pg nnn	No. lines to keep for PgUp/PgDn
+
+ -undo_keep nnn	Number of undo records to keep.  0 for infinite.
+
+ -csmode	^KF after a pervious search does a ^L instead
+
+ -backpath path
+		Directory to store backup files (one space between
+		'backpath' and the 'path', no trailing spaces or comments
+		after the path).
+
+ -floatmouse	Clicking past end of line moves the cursor past the end
+ 
+ -rtbutton	Use the right mouse button for action, instead of the left
+
+ -nonotice	Disable copyright notice
+
+ -noxon		Attempt to turn off ^S/^Q processing
+
+ -orphan	Put extra files given on command line in orphaned buffers
+		instead of in windows
+
+ -dopadding	Output pad characters (for when there is no tty handshaking)
+
+ -lines nnn	Set no. screen lines
+
+ -baud nnn	Set baud rate for terminal optimizations
+
+ -columns nnn	Set no. screen columns
+
+ -help		Start with help on
+
+ -skiptop nnn	Don't use top nnn lines of the screen
+
+-notite         Don't send terminal initialization and termination strings:
+                prevents restoration of screen on exit.
+
+ -usetabs       Use tabs to help optimize screen update.
+
+-assume_color	Assume terminal has ANSI color support even if termcap/terminfo entry
+		says that it doesn't.  This only applies if the terminal otherwise
+		looks like an ANSI terminal (support bold and capability starts with
+		ESC [).
+
+-assume_256color
+		Assume terminal has xterm 256 color support (ESC [ 38 ; 5 ; NNN m and
+                ESC [ 48 ; 5 ; NNN m).
+
+-guess_non_utf8	Allow guess of non-UTF-8 file encoding in a UTF-8 locale.
+
+ -guess_utf8	Allow guess of UTF-8 file encoding in non-UTF-8 locale.
+
+-guess_crlf     Automatically detect MS-DOS files and set -crlf appropriately
+
+-guess_indent	Guess indent character (tab or space).
+
+-menu_above	Position menu/list above prompt when enabled.  Otherwise position
+		below prompt.
+
+-transpose	Transpose rows with columns in all menus.
+
+ -menu_explorer	Stay in menu system when a directory is selected (otherwise
+                directory is added to path and menu is closed).
+
+ -menu_jump	Jump into file selection menu when tab is hit (otherwise, menu
+		comes up, but cursor stays in file name prompt).
+
+ -icase         Search is case insensitive by default.
+
+ -wrap          Search wraps
+
+ -autoswap	Swap markb with markk when necessary
+
+-joe_state     Use ~/.joe_state file
+
+ -mouse		Enable xterm mouse support.  When enabled, left-click will
+		position the cursor and left-click-drag will select blocks
+		For normal xterm cut and paste, hold the shift key down.
+
+ -joexterm	If you are using XTerm version 212 or higher, and if it was
+		configured with --enable-paste64, set this flag: it allows
+		mouse cut & paste to work properly (text selected with the
+		mouse can be pasted into other application, and middle
+		button clicks paste into JOE).
+
+ -square	Rectangular block mode
+
+ -text_color color
+		Set color for text.
+ -status_color color
+		Set color for status bar.
+ -help_color color
+		Set color for help.
+ -menu_color color
+		Set color for menus.
+ -prompt_color color
+		Set color for prompts.
+ -msg_color color
+		Set color for messages.
+
+		For example: -text_color bg_blue+white
+		Sets the background color to blue and foreground color to white.
+
+-restore	Restore previous cursor position when files are opened
+
+-search_prompting
+		Search prompts with previous search request.
+
+ Status line definition strings.  -lmsg defines the left-justified string and
+ -rmsg defines the right-justified string.  The first character of -rmsg is
+ the background fill character.  The following escape sequences can be used
+ in these strings:
+
+  %t  12 hour time
+  %u  24 hour time
+  %T  O for overtype mode, I for insert mode
+  %W  W if wordwrap is enabled
+  %I  A if autoindent is enabled
+  %X  Rectangle mode indicator
+  %n  File name
+  %m  '(Modified)' if file has been changed
+  %*  '*' if file has been changed
+  %R  Read-only indicator
+  %r  Row (line) number
+  %c  Column number
+  %o  Byte offset into file
+  %O  Byte offset into file in hex
+  %a  Ascii value of character under cursor
+  %A  Ascii value of character under cursor in hex
+  %p  Percent of file cursor is at
+  %l  No. lines in file
+  %k  Entered prefix keys
+  %S  '*SHELL*' if there is a shell running in window
+  %M  Macro recording message
+  %y  Syntax
+  %x  Context (first non-indented line going backwards)
+  %dd day
+  %dm month
+  %dY year
+  %Ename%  value of environment variable
+  %Tname%  value of option (ON or OFF for boolean options)
+
+ These formatting escape sequences may also be given:
+ 
+  \i  Inverse
+  \u  Underline
+  \b  Bold
+  \d  Dim
+  \f  Blink
+
+-lmsg \i%k%T%W%I%X %n %m%y%R %M %x
+-rmsg  %S Row %r Col %c %t  Ctrl-K H for help
+
+ SECOND SECTION: File name dependant local option settings:
+
+ Each line with '*' in the first column indicates the modes which should be
+ set for files whose name matches the regular expression.  If more than one
+ regular expression matches the file name, then the last matching one is
+ chosen.
+
+ A file contents regular expression may also be specified on a separate line
+ with '+regex'.  If this regular expresssion is given, then both the file name
+ regex and the file contents regex must match for the options to apply.
+
+ Here are the modes which can be set:
+
+	-cpara >#!;*/%
+				Characters which can indent paragraphs.
+
+	-encoding name
+				Set file coding (for example: utf-8, iso-8859-15)
+
+	-syntax name
+				Specify syntax (syntax file called
+				'name.jsf' will be loaded)
+
+	-hex			Hex editor mode
+
+	-highlight		Enable highlighting
+
+	-smarthome		Home key first moves cursor to beginning of line,
+				then if hit again, to first non-blank character.
+
+	-indentfirst		Smart home goes to first non-blank character first,
+				instead of going the beginning of line first.
+
+	-smartbacks		Backspace key deletes 'istep' number of
+				'indentc's if cursor is at first non-space
+				character.
+
+	-tab nnn		Tab width
+
+	-indentc nnn		Indentation character (32 for space, 9 for tab)
+
+	-istep nnn		Number of indentation columns
+
+	-spaces			TAB inserts spaces instead of tabs.
+
+	-purify			Fix indentation if necessary for rindent, lindent and backs
+				(for example if indentation uses a mix of tabs and spaces,
+				and indentc is space, indentation will be converted to all
+				spaces).
+
+	-crlf			File uses CR-LF at ends of lines
+
+	-wordwrap		Wordwrap
+
+	-nobackup		If you don't want backup file to be created
+
+	-autoindent		Auto indent
+
+	-overwrite		Overtype mode
+
+        -picture                Picture mode (right arrow can go past end of lines)
+
+	-lmargin nnn		Left margin
+
+	-rmargin nnn		Right margin
+
+	-flowed			Put one space after intermediate paragraph lines
+				for support of flowed text.
+
+
+	-french			One space after '.', '?' and '!' for wordwrap
+				and paragraph reformat instead of two.  Joe
+				does not change the spacing you give, but
+				sometimes it must put spacing in itself.  This
+				selects how much is inserted.
+
+	-linums			Enable line numbers on each line
+
+	-rdonly			File is read-only
+
+	-keymap name
+				Keymap to use if not 'main'
+
+	-lmsg			Status line definition strings-
+	-rmsg			see previous section for more info.
+
+	-mfirst macro
+				Macro to execute on first modification
+	-mnew macro
+				Macro to execute when new files are loaded
+	-mold macro
+				Macro to execute when existing files are loaded
+	-msnew macro
+				Macro to execute when new files are saved
+	-msold macro
+				Macro to execute when existing files are saved
+
+	Macros for the above options are in the same format as in the key
+	binding section below- but without the key name strings.
+
+	These define the language syntax for ^G (goto matching delimiter):
+
+	-single_quoted		Text between '  ' should be ignored (this is
+				not good for regular text since ' is
+				normally used alone as an apostrophe)
+
+	-no_double_quoted	Text between " " should not be ignored (useful
+				for TeX).
+
+	-c_comment		Text between /* */ should be ignored
+
+	-cpp_comment		Text after // should be ignored
+
+	-pound_comment		Text after # should be ignored
+
+	-vhdl_comment		Text after -- should be ignored
+
+	-semi_comment		Text after ; should be ignored
+
+	-text_delimiters begin=end:if=elif=else=endif
+
+				Define word delimiters
+
+ Default local options
+-highlight
+-istep 2
+
+ Perforce macro: use this macro (put in first column) to have joe "p4 edit"
+ a file you're about to change.
+
+ -mfirst if,"rdonly && joe(sys,\"p4 edit \",name,rtn)",then,mode,"o",msg,"executed \"p4 edit ",name,"\"",rtn,endif
+
+ -mfirst if,"rdonly && joe(sys,\"p4 edit \",name,rtn)",then,reload,msg,"executed \"p4 edit ",name,"\"",rtn,endif
+
+ File type table is now in a separate file.  You can copy this file to ~/.joe and customize it.
+
+:include ftyperc
+
+ SECOND and 1/2 SECTION: Option menu layout
+
+	:defmenu name	Defines a menu.
+
+	macro string comment
+			A menu entry.  Macro is any JOE macro- see "Macros:"
+			below. String is the label to be used for the macro
+			in the menu.  It is in the same format as the -lmsg
+			and -rmsg options above.
+
+			Two whitespace characters in a row begins a comment.
+			Use '% ' for a leading space in the string.
+
+:defmenu root
+mode,"overwrite",rtn	T Overtype %Zoverwrite%
+mode,"hex",rtn	% % Hex edit mode
+mode,"autoindent",rtn	I Autoindent %Zautoindent%
+mode,"wordwrap",rtn	W Word wrap %Zwordwrap%
+mode,"tab",rtn	D Tab width %Ztab%
+mode,"lmargin",rtn	L Left margin %Zlmargin%
+mode,"rmargin",rtn	R Right margin %Zrmargin%
+mode,"square",rtn	X Rectangle mode %Zsquare%
+mode,"indentc",rtn	% % Indent char %Zindentc%
+mode,"istep",rtn	% % Indent step %Zistep%
+mode,"highlight",rtn	H Highlighting %Zhighlight%
+mode,"crlf",rtn	Z CR-LF (MS-DOS) %Zcrlf%
+mode,"linums",rtn	N Line numbers %Zlinums%
+mode,"beep",rtn	B Beep %Zbeep%
+mode,"rdonly",rtn	O Read only %Zrdonly%
+mode,"syntax",rtn	Y Syntax
+mode,"encoding",rtn	E Encoding
+mode,"asis",rtn	% % Meta chars as-is
+mode,"language",rtn	V Language
+mode,"picture",rtn	P picture %Zpicture%
+menu,"more-options",rtn	  % % More options...
+
+:defmenu more-options
+menu,"^G",rtn	% % ^G options
+menu,"search",rtn	% % search options
+menu,"paragraph",rtn	% % paragraph options
+menu,"file",rtn	% % file options
+menu,"menu",rtn	% % menu options
+menu,"global",rtn	% % global options
+menu,"cursor",rtn	% % cursor options
+menu,"marking",rtn	% % marking options
+menu,"tab",rtn	% % tab/indent options
+
+:defmenu menu
+mode,"menu_explorer",rtn	% % Menu explorer %Zmenu_explorer%
+mode,"menu_above",rtn	% % Menu position %Zmenu_above%
+mode,"menu_jump",rtn	% % Jump into menu %Zmenu_jump%
+mode,"transpose",rtn	% % Transpose menus %Ztranspose%
+
+:defmenu ^G
+mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
+mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
+mode,"c_comment",rtn	% % ^G ignores /*...*/ %Zc_comment%
+mode,"cpp_comment",rtn	% % ^G ignores //... %Zcpp_comment%
+mode,"pound_comment",rtn	% % ^G ignores #... %Zpound_comment%
+mode,"vhdl_comment",rtn	% % ^G ignores --... %Zvhdl_comment%
+mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
+mode,"tex_comment",rtn % % ^G ignores %... %Ztex_comment%
+mode,"text_delimiters",rtn % % Text delimiters %Ztext_delimiters%
+
+:defmenu search
+mode,"icase",rtn	% % Case insensitivity %Zicase%
+mode,"wrap",rtn	% % Search wraps %Zwrap%
+mode,"search_prompting",rtn	% % Search prompting %Zsearch_prompting%
+mode,"csmode",rtn	% % Continued search %Zcsmode%
+
+:defmenu paragraph
+mode,"french",rtn	% % French spacing %Zfrench%
+mode,"flowed",rtn	% % Flowed text %Zflowed%
+mode,"cpara",rtn	% % Paragraph indent chars %Zcpara%
+
+:defmenu file
+mode,"restore",rtn	% % Restore cursor %Zrestore%
+mode,"guess_crlf",rtn	% % Auto detect CR-LF %Zguess_crlf%
+mode,"guess_indent",rtn	% % Guess indent %Zguess_indent%
+mode,"guess_non_utf8",rtn	% % Guess non-UTF-8 %Zguess_non_utf8%
+mode,"guess_utf8",rtn	% % Guess UTF-8 %Zguess_utf8%
+mode,"force",rtn	% % Force last NL %Zforce%
+mode,"nobackup",rtn	% % No backup %Znobackup%
+
+:defmenu global
+mode,"nolocks",rtn	% % Disable locks %Znolocks%
+mode,"nobackups",rtn	% % Disable backups %Znobackups%
+mode,"nomodcheck",rtn	% % Disable mtime check %Znomodcheck%
+mode,"nocurdir",rtn	% % Disable current dir %Znocurdir%
+mode,"exask",rtn	% % Exit ask %Zexask%
+mode,"nosta",rtn	% % Disable status line %Znosta%
+mode,"keepup",rtn	% % Fast status line %Zkeepup%
+mode,"break_hardlinks",rtn	% % Break hard links %Zbreak_hardlinks%
+mode,"break_links",rtn	% % Break links %Zbreak_links%
+mode,"joe_state",rtn	% % Joe_state file %Zjoe_state%
+mode,"undo_keep",rtn	% % No. undo records %Zundo_keep%
+mode,"backpath",rtn	% % Path to backup files %Zbackpath%
+
+:defmenu cursor
+mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
+mode,"mid",rtn	C Center on scroll %Zmid%
+mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
+mode,"rtbutton",rtn	% % Right button %Zrtbutton%
+
+:defmenu marking
+mode,"autoswap",rtn	% % Autoswap mode %Zautoswap%
+mode,"marking",rtn	% % Marking %Zmarking%
+mode,"lightoff",rtn	% % Auto unmask %Zlightoff%
+
+:defmenu tab
+mode,"smarthome",rtn	% % Smart home key %Zsmarthome%
+mode,"smartbacks",rtn	% % Smart backspace %Zsmartbacks%
+mode,"indentfirst",rtn	% % To indent first %Zindentfirst%
+mode,"purify",rtn	% % Clean up indents %Zpurify%
+mode,"spaces",rtn	% % No tabs %Zspaces%
+
+ THIRD SECTION: Named help screens:
+
+ Use \i to turn on/off inverse video
+ Use \u to turn on/off underline
+ Use \b to turn on/off bold
+ Use \d to turn on/off dim
+ Use \f to turn on/off flash
+
+ Use \| to insert a spring: all springs in a given line are set to the same
+ width such that the entire line exactly fits in the width of the screen (if
+ it's not an exact multiple so that there are N spaces remaining, the
+ rightmost N springs each get one extra space).  Hint: if you want vertical
+ alignment, each line should have the same number of springs.
+
+ Use the '-help_is_utf8' global option to allow UTF-8 sequences in the help
+ text.  Otherwise, the locale 8-bit character set is assumed.
+
+{Basic
+\i   Help Screen    \|turn off with ^KH    more help with ESC . (^[.)              \i
+\i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u      \|\uDELETE\u   \|\uMISC\u         \|\uEXIT\u      \|\i \i
+\i \i\|^B left ^F right \|^U  prev. screen \|^KB begin  \|^D char. \|^KJ reformat \|^KX save  \|\i \i
+\i \i\|^P up   ^N down  \|^V  next screen  \|^KK end    \|^Y line  \|^KA center   \|^C  abort \|\i \i
+\i \i\|^Z previous word \|^A  beg. of line \|^KM move   \|^W >word \|^T  options  \|^KZ shell \|\i \i
+\i \i\|^X next word     \|^E  end of line  \|^KC copy   \|^O word< \|^R  refresh  \|\uFILE\u      \|\i \i
+\i \i\|\uSEARCH\u           \|^KU top of file  \|^KW file   \|^J >line \|\uSPELL\u        \|^KE edit  \|\i \i
+\i \i\|^KF find text    \|^KV end of file  \|^KY delete \|^_ undo  \|^[N word     \|^KR insert\|\i \i
+\i \i\|^L  find next    \|^KL to line No.  \|^K/ filter \|^^ redo  \|^[L file     \|^KD save  \|\i \i
+}
+
+{Windows
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i\|^KO Split the window in half           \|^KE Load file into window             \|\i \i
+\i \i\|^KG Make current window bigger         \|^KT Make current window smaller       \|\i \i
+\i \i\|^KN Go to the window below             \|^KP Go to the window above            \|\i \i
+\i \i\|^[V Switch to next buffer              \|^[U Switch to previous buffer         \|\i \i
+\i \i\|^C  Eliminate the current window       \|^KI Show all windows / Show one window\|\i \i
+}
+
+{Advanced
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i\|\uMACROS\u         \|\uMISC\u            \|\uSCROLL\u    \|\uSHELL\u       \|\uGOTO\u       \|\uI-SEARCH\u     \|\i \i
+\i \i\|^K[ 0-9 Record \|^K SPACE status \|^[W Up    \|^K' Window  \|^[B To ^KB \|^[R Backwards\|\i \i
+\i \i\|^K]     Stop   \|^K\\ Repeat      \|^[Z Down  \|^[! Command \|^[K To ^KK \|^[S Forwards \|\i \i
+\i \i\|^K 0-9  Play   \|\uINSERT\u          \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
+\i \i\|^K?     Query  \|^] split line   \|^K> Right \|^[' Ctrl-   \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
+\i \i\|^[D     Dump   \|^SPACE ins space\|          \|^\\ Meta-    \|^[O line<  \|^[^[   Set   \|\i \i
+}
+
+{Programs
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i\|\uGOTO\u                 \|\uINDENT\u   \|\uCOMPILING\u          \uQUICK\u                       \|\i \i
+\i \i\|^G  Matching ( [ {   \|^K, less \|^[C Compile & parse ^G  find word under cursor \|\i \i
+\i \i\|^K- Previous place   \|^K. more \|^[G Grep & parse    ^[ENTER complete word      \|\i \i
+\i \i\|^K= Next place       \|\uFILE\u     \|^[= To next error   ^[Y paste deleted text     \|\i \i
+\i \i\|^K; Tags file search \|^K `     \|^[- To prev. error  ^[^Y cycle through deleted \|\i \i
+\i \i\|                     \| revert  \|^[ SP Jump to error                            \|\i \i
+}
+
+{Search
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iSpecial search sequences:                                                    \|\i \i
+\i \i    \\^  \\$  matches beg./end of line      \\?     match any single char       \|\i \i
+\i \i    \\<  \\>  matches beg./end of word      \\*     match 0 or more chars       \|\i \i
+\i \i    \\c      matches balanced C expression \\\\     matches a \\                 \|\i \i
+\i \i    \\[..]   matches one of a set          \\n     matches a newline           \|\i \i
+\i \i    \\+      matches 0 or more of the character which follows the \\+          \|\i \i
+\i \iSpecial replace sequences:                                                   \|\i \i
+\i \i    \\&      replaced with text which matched search string                   \|\i \i
+\i \i    \\0 - 9  replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]    \|\i \i
+\i \i    \\\\      replaced with \\               \\n     replaced with newline       \|\i \i
+}
+
+{SearchOptions
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iSearch options:                                                              \|\i \i
+\i \i   r Replace                                                                 \|\i \i
+\i \i   k Restrict search to highlighted block, which can be rectangular          \|\i \i
+\i \i   b Search backward instead of forward                                      \|\i \i
+\i \i   i Ignore case                                                             \|\i \i
+\i \i   a Search across all loaded files                                          \|\i \i
+\i \i   e Search across all files in Grep or Compile error list                   \|\i \i
+\i \i   w Wrap to beginning of file for this search                               \|\i \i
+\i \i   n Do not wrap to beginning of file for this search                        \|\i \i
+\i \i   nnn Perform exaclty nnn replacements                                      \|\i \i
+}
+
+{Math
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i \uCOMMANDS\u (hit ESC m for math)  \uFUNCTIONS\u                                    \|\i \i
+\i \i     hex hex display mode       sin cos tab asin acos atan                   \|\i \i
+\i \i     dec decimal mode           sinh cosh tanh asinh acosh atanh             \|\i \i
+\i \i     ins type result into file  sqrt cbrt exp ln log                         \|\i \i
+\i \i    eval evaluate block         int floor ceil abs erg ergc                  \|\i \i
+\i \i    0xff enter number in hex    joe(..macro..) - runs an editor macro        \|\i \i
+\i \i    3e-4 floating point decimal \uBLOCK\u                                        \|\i \i
+\i \i    a=10 assign a variable      sum cnt  Sum, count                          \|\i \i
+\i \i 2+3:ins multiple commands      avg dev  Average, std. deviation             \|\i \i
+\i \i    e pi constants              \uOPERATORS\u                                    \|\i \i
+\i \i     ans previous result        ! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\|\i \i
+}
+
+{Names
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i Hit TAB at file name prompts to generate menu of file names                 \|\i \i
+\i \i Or use up/down keys to access history of previously entered names           \|\i \i
+\i \i Special file names:                                                         \|\i \i
+\i \i      !command                 Pipe in/out of a shell command                \|\i \i
+\i \i      >>filename               Append to a file                              \|\i \i
+\i \i      -                        Read/Write to/from standard I/O               \|\i \i
+\i \i      filename,START,SIZE      Read/Write a part of a file/device            \|\i \i
+\i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \|\i \i
+}
+
+{Joe
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
+\i \i \|\i \i
+\i \i  default joerc file is here @JOERC@/joerc \|\i \i
+\i \i  default syntax and i18n files are here @JOEDATA@ \|\i \i
+\i \i  additional documentation can be found here @JOEDOC@ \|\i \i
+}
+
+{CharTable
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
+\i \i\| Dec  \u 0123 4567  8901 2345    0123 4567  8901 2345 \u  Dec \|\i \i
+\i \i\|     |                                              |     \|\i \i
+\i \i\|   0 | \u@ABC\u \uDEFG\u  \uHIJK\u \uLMNO\u    \i\u@ABC\u\i \i\uDEFG\u\i  \i\uHIJK\u\i \i\uLMNO\u\i | 128 \|\i \i
+\i \i\|  16 | \uPQRS\u \uTUVW\u  \uXYZ[\u \u\\]^_\u    \i\uPQRS\u\i \i\uTUVW\u\i  \i\uXYZ[\u\i \i\u\\]^_\u\i | 144 \|\i \i
+\i \i\|  32 |  !"# $%&'  ()*+ ,-./     ¡¢£ ¤¥¦§  ¨©ª« ¬­®¯ | 160 \|\i \i
+\i \i\|  48 | 0123 4567  89:; <=>?    °±²³ ´µ¶·  ¸¹º» ¼½¾¿ | 176 \|\i \i
+\i \i\|  64 | @ABC DEFG  HIJK LMNO    ÀÁÂÃ ÄÅÆÇ  ÈÉÊË ÌÍÎÏ | 192 \|\i \i
+\i \i\|  80 | PQRS TUVW  XYZ[ \\]^_    ÐÑÒÓ ÔÕÖ×  ØÙÚÛ ÜÝÞß | 208 \|\i \i
+\i \i\|  96 | `abc defg  hijk lmno    àáâã äåæç  èéêë ìíîï | 224 \|\i \i
+\i \i\| 112 | pqrs tuvw  xyz{ |}~    ðñòó ôõö÷  øùúû üýþÿ | 240 \|\i \i
+}
+
+ FOURTH SECTION: Key bindings:
+
+ Section names you must provide:
+
+	:main		For editing window
+	:prompt		For prompt lines
+	:query		For single-character query lines
+	:querya		Singe-character query for quote
+	:querysr	Search & Replace single-character query
+
+ Other sections may be given as well for organization purposes or for
+ use with the '-keymap' option.
+
+ Use:
+ :inherit name		To copy the named section into the current one
+ :delete key		To delete a key sequence from the current section
+
+ Keys:
+
+ Use ^@ through ^_ and ^? for Ctrl chars
+ Use SP for space
+ Use a TO b to generate a range of characters
+ Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
+ Use MWDOWN, MWUP for wheel mouse motion
+ Use ^# for 0x9B (for Amiga).  But warning: this breaks UTF-8 keyboards.
+
+ You can also use termcap string capability names.  For example:
+
+	.ku		Up
+	.kd		Down
+	.kl		Left
+	.kr		Right
+	.kh		Home
+	.kH		End
+	.kI		Insert
+	.kD		Delete
+	.kP		PgUp
+	.kN		PgDn
+	.k1 - .k9	F1 - F9
+	.k0		F0 or F10
+	.k;		F10
+
+ Macros:
+
+ Simple macros can be made by comma seperating 2 or more command names.  For
+ example:
+
+ eof,bol	^T Z		Goto beginning of last line
+
+ Also quoted matter is typed in literally:
+
+ bol,">",dnarw	.k1		Quote news article line
+
+ Macros may cross lines if they end with ,
+
+ Commands or named macros may be created with :def.  For example, you can
+ use:
+
+ :def foo eof,bol
+
+ To define a command foo which will goto the beginning of the last line.
+
+:windows		Bindings common to all windows
+type		^@ TO ÿ		Type a character
+abort		^C		Abort window
+abort		^K Q
+abort		^K ^Q
+abort		^K q
+arg		^K \		Repeat next command
+explode		^K I		Show all windows or show only one window
+explode		^K ^I
+explode		^K i
+help		^K H		Help menu
+help		^K ^H
+help		^K h
+hnext		^[ .		Next help window
+hprev		^[ ,		Previous help window
+math		^[ m		Calculator
+math		^[ M		Calculator
+ math		^[ ^M		Calculator
+msg		^[ h		Display a message
+msg		^[ H		Display a message
+msg		^[ ^H		Display a message
+nextw		^K N		Goto next window
+nextw		^K ^N
+nextw		^K n
+pgdn		.kN		Screen down
+pgdn		^V
+pgdn		^[ [ 6 ~
+ pgdn      ^# S
+pgup		.kP		Screen up
+pgup		^U
+pgup		^[ [ 5 ~
+ pgup      ^# T
+play		^K 0 TO 9	Execute macro
+prevw		^K P		Goto previous window
+prevw		^K ^P
+prevw		^K p
+query		^K ?		Macro query insert
+record		^K [		Record a macro
+retype		^R		Refresh screen
+rtn		^M		Return
+shell		^K Z		Shell escape
+shell		^K ^Z
+shell		^K z
+stop		^K ]		Stop recording
+ Mouse handling
+defmdown	MDOWN		Move the cursor to the mouse location
+defmup		MUP
+defmdrag	MDRAG		Select a region of characters
+defm2down	M2DOWN		Select the word at the mouse location
+defm2up		M2UP
+defm2drag	M2DRAG		Select a region of words
+defm3down	M3DOWN		Select the line at the mouse location
+defm3up		M3UP
+defm3drag	M3DRAG		Select a region of lines
+
+xtmouse		^[ [ M		Introduces an xterm mouse event
+
+if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
+
+:main			Text editing window
+:inherit windows
+
+ Spell-check macros
+
+ Ispell
+:def ispellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
+:def ispellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
+
+ Aspell
+:def aspellfile filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell --lang=",language,".",charset," -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
+:def aspellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell --lang=",language,".",charset," -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword
+
+
+aspellfile	^[ l
+aspellword	^[ n
+
+ Compile
+
+:def compile mwind!,mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
+
+ Grep
+
+:def grep_find mwind!,mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
+
+ Man page
+
+:def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
+
+ Here we guess some common key sequences which either do not have termcap
+ sequences or which are frequently wrong.  Note that if the termcap entry is
+ correct, it will override these later on.
+
+paste			^[ ] 5 2 ;		Bracketed paste
+
+insc			^[ [ 2 ~
+insc			^[ [ L			SCO
+
+delch			^[ [ 3 ~
+
+pgup			^[ [ I		SCO
+
+pgdn			^[ [ G		SCO
+
+home			^[ [ 1 ~		Putty, Linux, Cygwin
+home			^[ [ H			Xterm, Konsole, SCO
+home			^[ O H			gnome-terminal
+home			^[ [ 7 ~		RxVT
+ home			^# SP A		Amiga
+
+eol			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
+eol			^[ [ F			Xterm, Konsole, SCO
+eol			^[ O F			gnome-terminal
+eol			^[ [ 8 ~		RxVT
+ eol			^# SP @		Amiga
+
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right Gnome-terminal
+ (Almost all termcap entries have ^[ O C as an arrow key).
+ rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c		Mark right RxVT Ctrl-rtarw
+
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Mark left
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D        Mark left
+ ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O D		Mark left Putty Ctrl-ltarw
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d		Mark left RxVT Ctrl-ltarw
+
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Mark up
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Mark up
+ uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O A		Mark up Putty Ctrl-uparw
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Mark up RxVT Ctrl-uparw
+
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Mark down
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
+ dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O B		Mark down Putty Ctrl-dnarw
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b		Mark down RxVT Ctrl-dnarw
+
+blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
+blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del
+
+yank		^[ [ 2 ; 5 -	Gnome-terminal Ctrl-Ins
+yank		^[ [ 2 ; 5 ~    Xterm Ctrl-Ins
+
+ Extra functions not really part of JOE user interface:
+
+delbol		^[ o		Delete to beginning of line
+delbol		^[ ^O		Delete to beginning of line
+dnslide		^[ z		Scroll down one line
+dnslide		^[ Z		Scroll down one line
+dnslide		^[ ^Z		Scroll down one line
+dnslide,dnslide,dnslide,dnslide		MWDOWN
+compile		^[ c		Compile
+compile		^[ C
+compile		^[ ^C		Compile
+grep_find	^[ g		Grep
+grep_find	^[ G		Grep
+grep_find	^[ ^G		Grep
+execmd		^[ x		Prompt for command to execute
+execmd		^[ X		Prompt for command to execute
+execmd		^[ ^X		Prompt for command to execute
+finish		^[ ^I		Complete word in document
+finish		^[ ^M		Complete word: used to be math
+mwind,mfit,jump,bol		^[ SP
+isrch		^[ s		Forward incremental search
+isrch		^[ S		Forward incremental search
+isrch		^[ ^S		Forward incremental search
+notmod		^[ ~		Not modified
+mwind,mfit,prevw,nxterr		^[ =		To next error
+parserr		^[ e		Parse errors in current buffer
+parserr		^[ E		Parse errors in current buffer
+parserr		^[ ^E		Parse errors in current buffer
+mwind,mfit,prevw,prverr		^[ -		To previous error
+rsrch		^[ r		Backward incremental search
+rsrch		^[ R		Backward incremental search
+rsrch		^[ ^R		Backward incremental search
+run		^[ !		Run a program in a window
+tomarkb		^[ b		Go to beginning of marked block
+tomarkb		^[ ^B		Go to beginning of marked block
+tomarkk		^[ k		Go to end of marked block
+tomarkk		^[ ^K		Go to end of marked block
+tomarkk		^[ K		Go to end of marked block
+txt		^[ i		Prompt for text and insert it
+txt		^[ I		Prompt for text and insert it
+upslide		^[ w		Scroll up one line
+upslide		^[ ^W		Scroll up one line
+upslide		^[ W		Scroll up one line
+upslide,upslide,upslide,upslide		MWUP
+yank		^[ y		Undelete text
+yankpop		^[ ^Y		Undelete text
+yank		^[ Y		Undelete text
+
+ toggle_marking	^@		Ctrl-space block selection method
+insc		^@		Ctrl-space used to insert a space
+
+ bufed		^[ d		Menu of buffers
+nbuf		^[ v		Next buffer
+nbuf		^[ V		Next buffer
+nbuf		^[ ^V		Next buffer
+pbuf		^[ u		Prev buffer
+pbuf		^[ U		Prev buffer
+pbuf		^[ ^U		Prev buffer
+ query		^[ q		Quoted insert
+ byte		^[ n		Goto byte
+ col		^[ c		Goto column
+ abortbuf	^[ k		Kill current buffer- don't mess with windows
+ ask		^[ a		Ask to save current buffer
+ bop		^[ p		Backwards paragraph
+ bos		^[ x		Bottom of screen
+ copy		^[ ^W		Copy block into yank
+ dupw		^[ \		Split window
+ eop		^[ n		Forwards paragraph
+ format		^[ j		Format paragraph ignore block
+ markl		^[ l		Mark line
+ nmark		^[ @		Turn off ^KB ^KK
+ pop		^[ >		Pop ^KB ^KK
+ psh		^[ <		Push ^KB ^KK
+ swap		^[ x		Swap ^KB and cursor
+ tomarkbk	^[ g		Switch between beginning and end of marked
+ tos		^[ e		Top of screen
+ tw0		^[ 0		Kill current window (orphans buffer)
+ tw1		^[ 1		Kill all other windows (orphans buffers)
+ uarg		^[ u		Universal argument
+ yank		^[ ^Y		Undelete previous text
+ yapp		^[ w		Append next delete to previous yank
+
+ Standard JOE user interface
+
+quote8		^\		Enter Meta chars
+ quote		`		Enter Ctrl chars
+quote		^[ '		Enter Ctrl chars
+quote		^Q
+
+backs		^?		Backspace
+backs		^H
+backw		^O		Backspace word
+bknd		^K '		Shell window
+blkcpy		^K C		Copy marked block
+blkcpy		^K ^C
+blkcpy		^K c
+blkdel		^K Y		Delete marked block
+blkdel		^K ^Y
+blkdel		^K y
+blkmove		^K M		Move marked block
+blkmove		^K ^M
+blkmove		^K m
+blksave		^K W		Save marked block
+blksave		^K ^W
+blksave		^K w
+bof		^K U		Goto beginning of file
+bof		^K ^U
+bof		^K u
+ bol		.kh		Goto beginning of line
+ bol		^A
+ bol      ^# SP A
+home		.kh
+home		^A
+center		^K A		Center line
+center		^K ^A
+center		^K a
+crawll		^K <		Pan left
+crawlr		^K >		Pan right
+delch		.kD		Delete character
+delch		^D
+deleol		^J		Delete to end of line
+dellin		^Y		Delete entire line
+delw		^W		Delete word to right
+dnarw		.kd		Go down
+dnarw		^N
+dnarw		^[ O B
+dnarw		^[ [ B
+ dnarw		^# B
+edit		^K E		Edit a file
+edit		^K ^E
+edit		^K e
+eof		^K V		Go to end of file
+eof		^K ^V
+eof		^K v
+eol		.kH		Go to end of line
+eol		.@7
+eol		^E
+exsave		^K X		Save and exit
+exsave		^K ^X
+exsave		^K x
+ffirst		^K F		Find first
+ffirst		^K ^F
+ffirst		^K f
+filt		^K /		Filter block
+ finish		^K ^M		Complete text under cursor
+fnext		^L		Find next
+fmtblk		^K J		Format paragraphs in block
+fmtblk		^K ^J
+fmtblk		^K j
+gomark		^[ 0 TO 9	Goto bookmark
+groww		^K G		Grow window
+groww		^K ^G
+groww		^K g
+insc		.kI		Insert a space
+ insc		^@
+insf		^K R		Insert a file
+insf		^K ^R
+insf		^K r
+lindent		^K ,		Indent to left
+line		^K L		Goto line no.
+line		^K ^L
+line		^K l
+ltarw		.kl		Go left
+ltarw		^B
+ltarw		^[ O D
+ltarw		^[ [ D
+ ltarw          ^# D
+macros		^[ d		Dump keyboard macros
+macros		^[ ^D
+markb		^K B		Set beginning of marked block
+markb		^K ^B
+markb		^K b
+markk		^K K		Set end of marked block
+markk		^K ^K
+markk		^K k
+ mode		^T		Options menu
+menu,"root",rtn	^T
+nextpos		^K =		Goto next position in position history
+nextword	^X		Goto next word
+open		^]		Split line
+prevpos		^K -		Previous position in history
+prevword	^Z		Previous word
+reload		^K `		Revert file
+redo		^^		Redo changes
+rindent		^K .		Indent to right
+rtarw		.kr		Go right
+rtarw		^F
+rtarw		^[ O C
+rtarw		^[ [ C
+ rtarw          ^# C
+run		^K !		Run a shell command
+save		^K D		Save file
+save		^K S
+save		^K ^D
+save		^K ^S
+save		^K d
+save		^K s
+setmark		^[ ^[		Set bookmark
+shrinkw		^K T		Shrink window
+shrinkw		^K ^T
+shrinkw		^K t
+splitw		^K O		Split window
+splitw		^K ^O
+splitw		^K o
+stat		^K SP		Show status
+tag		^K ;		Tags file search
+tomatch		^G		Goto matching parenthasis
+undo		^_		Undo changes
+uparw		.ku		Go up
+ uparw		^# A
+uparw		^P
+uparw		^[ O A
+uparw		^[ [ A
+
+:prompt			Prompt windows
+:inherit main
+if,"byte>size",then,complete,complete,else,delch,endif	^D
+complete	^I
+dnarw,eol	.kd		Go down
+dnarw,eol	^N
+dnarw,eol	^[ O B
+dnarw,eol	^[ [ B
+ dnarw,eol	^# B
+uparw,eol	.ku		Go up
+ uparw,eol	^# A
+uparw,eol	^P
+uparw,eol	^[ O A
+uparw,eol	^[ [ A
+
+:menu			Selection menus
+:inherit windows
+
+pgupmenu			^[ [ I
+
+pgdnmenu			^[ [ G
+
+bolmenu			^[ [ 1 ~		Putty, Linux, Cygwin
+bolmenu			^[ [ H			Xterm, Konsole
+bolmenu			^[ O H			gnome-terminal
+bolmenu			^[ [ 7 ~		RxVT
+ bolmenu			^# SP A		Amiga
+
+eolmenu			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
+eolmenu			^[ [ F			Xterm, Konsole
+eolmenu			^[ O F			gnome-terminal
+eolmenu			^[ [ 8 ~		RxVT
+ eolmenu			^# SP @		Amiga
+
+abort		^[ ^[	Why?
+backsmenu	^?
+backsmenu	^H
+bofmenu		^K U
+bofmenu		^K ^U
+bofmenu		^K u
+bolmenu		.kh
+bolmenu		^A
+dnarwmenu	.kd
+dnarwmenu	^N
+dnarwmenu	^[ [ B
+dnarwmenu	^[ O B
+ dnarwmenu ^# B
+dnarwmenu	MWDOWN
+eofmenu		^K V
+eofmenu		^K ^V
+eofmenu		^K v
+eolmenu		.kH
+eolmenu		^E
+ltarwmenu	.kl
+ltarwmenu	^B
+ltarwmenu	^[ [ D
+ltarwmenu	^[ O D
+ ltarwmenu ^# D
+pgdnmenu	.kN		Screen down
+pgdnmenu	^V
+pgdnmenu	^[ [ 6 ~
+ pgdnmenu  ^# S
+pgupmenu	.kP		Screen up
+pgupmenu	^U
+pgupmenu	^[ [ 5 ~
+ pgupmenu  ^# T
+rtarwmenu	.kr
+rtarwmenu	^F
+rtarwmenu	^[ [ C
+ rtarwmenu ^# C
+rtarwmenu	^[ O C
+rtn		SP
+rtn		^I
+rtn		^K H
+rtn		^K h
+rtn		^K ^H
+tabmenu		^I
+uparwmenu	.ku
+uparwmenu	^P
+uparwmenu	^[ [ A
+uparwmenu	^[ O A
+ uparwmenu ^# A
+uparwmenu	MWUP
+defm2down	M2DOWN		Hits return key
+
+:query			Single-key query window
+:inherit windows
+
+:querya			Single-key query window for quoting
+type		^@ TO ÿ
+
+:querysr		Search & replace query window
+type		^@ TO ÿ

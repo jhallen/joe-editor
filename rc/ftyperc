@@ -1,0 +1,755 @@
+ File Type table.  This is :included by the joerc file.
+
+ No '.' in file name?  Assume it's a text file and we want wordwrap on.
+*
+-wordwrap
+
+ File name with '.'?  It's probably not a text file.
+*.*
+
+ Diff
+*
++--- 
+-syntax diff
+
+*
++*** 
+-syntax diff
+
+*
++\[1-9]\+\[0-9]\[cda]
+-syntax diff
+
+*.diff
+-syntax diff
+
+*.patch
+-syntax diff
+
+*
++Only in
+-syntax diff
+
+*
++Nur in
+-syntax diff
+
+*
++Index: \[A-Za-z]
+-syntax diff
+
+*
++? \[A-Za-z]
+-syntax diff
+
+ Troff
+*.1
+-wordwrap
+-syntax troff
+
+*.1.in
+-wordwrap
+-syntax troff
+
+ TeX
+*.tex
+-wordwrap
+-syntax tex
+-tex_comment
+-no_double_quoted
+
+*.sty
+-wordwrap
+-syntax tex
+-tex_comment
+-no_double_quoted
+
+ Text file.
+*.txt
+-wordwrap
+
+ News/mail files.
+*.article*
+-wordwrap
+-syntax mail
+
+*.followup
+-wordwrap
+-syntax mail
+
+*.letter
+-wordwrap
+-syntax mail
+
+ NN newsreader
+*tmp/nn.*
+-wordwrap
+-syntax mail
+
+ mail
+*tmp/Re*
+-wordwrap
+-syntax mail
+
+ elm
+*tmp/snd.*
+-wordwrap
+-syntax mail
+
+ dmail
+*tmp/dmt*
+-wordwrap
+-syntax mail
+
+ pine
+*tmp/pico.*
+-wordwrap
+-syntax mail
+
+ Assembly language
+*.asm
+-wordwrap
+-syntax asm
+
+*.s
+-wordwrap
+-syntax asm
+
+*.S
+-wordwrap
+-syntax asm
+
+ Mason
+*.mas
+-autoindent
+-syntax mason
+-smarthome
+-smartbacks
+
+ SML
+*.sml
+-autoindent
+-syntax sml
+-smarthome
+-smartbacks
+-istep 2
+
+ OCaml lanaguage file
+*.ml
+-autoindent
+-syntax ocaml
+-smarthome
+-smartbacks
+-istep 2
+
+ OCaml language interface
+*.mli
+-autoindent
+-syntax ocaml
+-smarthome
+-smartbacks
+-istep 2
+
+ Ruby
+*.rb
+-autoindent
+-syntax ruby
+
+ Perl
+*
++#!\+\[ 	]\+\[a-z/]/perl\>
+-autoindent
+-syntax perl
+-smarthome
+-smartbacks
+-pound_comment
+-single_quoted
+
+*.pl
+-autoindent
+-syntax perl
+-smarthome
+-smartbacks
+-pound_comment
+-single_quoted
+
+*.pm
+-autoindent
+-syntax perl
+-smarthome
+-smartbacks
+-pound_comment
+-single_quoted
+
+ SQL file
+*.sql
+-autoindent
+-syntax sql
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-vhdl_comment
+-cpp_comment
+-text_delimiters BEGIN|Begin|begin=END|End|end
+-cpara >#!;*/%
+
+ AWK language file
+*.awk
+-autoindent
+-syntax awk
+-smarthome
+-smartbacks
+-purify
+-pound_comment
+
+ YACC
+*.y
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+ LEX
+*.l
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+*.lex
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+ ADA
+*.adb
+-syntax ada
+-autoindent
+-istep 2
+-smarthome
+-smartbacks
+-purify
+-vhdl_comment
+-text_delimiters declare|Declare|DECLARE|exception|Exception|EXCEPTION|if|If|IF|loop|Loop|LOOP|case|Case|CASE|package|Package|PACKAGE|procedure|Procedure|PROCEDURE|record|Record|RECORD|function|Function|FUNCTION=end|End|END
+
+*.ads
+-syntax ada
+-autoindent
+-istep 2
+-smarthome
+-smartbacks
+-purify
+-vhdl_comment
+-text_delimiters declare|Declare|DECLARE|exception|Exception|EXCEPTION|if|If|IF|loop|Loop|LOOP|case|Case|CASE|package|Package|PACKAGE|procedure|Procedure|PROCEDURE|record|Record|RECORD|function|Function|FUNCTION=end|End|END
+
+ COBOL
+*.cbl
+-syntax cobol
+
+*.cob
+-syntax cobol
+
+ REXX
+*.rex
+-syntax rexx
+-autoindent
+
+*.REX
+-syntax rexx
+-autoindent
+
+*
++#!\+\[ 	]\+\[a-z/]/rxx\>
+-syntax rexx
+-autoindent
+
+ sed
+*.sed
+-syntax sed
+
+ Postscript
+*.ps
+-syntax ps
+
+*.eps
+-syntax ps
+
+ C language file
+*.c
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+*.cpp
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+*.cc
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+*.c++
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+ C language header file
+*.h
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+*.h.in
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+*.hpp
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+*.h++
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+ Verilog file
+*.v
+-autoindent
+-syntax verilog
+-istep 2
+-smarthome
+-smartbacks
+-purify
+-c_comment
+-cpp_comment
+-text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+-cpara >#!;*/%
+
+ Verilog header file
+*.vh
+-autoindent
+-syntax verilog
+-istep 2
+-smarthome
+-smartbacks
+-purify
+-c_comment
+-cpp_comment
+-text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+-cpara >#!;*/%
+
+ VHDL file
+*.vhd
+-autoindent
+-syntax vhdl
+-istep 2
+-smarthome
+-smartbacks
+-purify
+-vhdl_comment
+-text_delimiters entity|ENTITY|if|IF|component|COMPONENT|loop|LOOP|configuration|CONFIGURATION|units|UNITS|record|RECORD|case|CASE|function|FUNCTION|package|PACKAGE|architecture|ARCHITECTURE|block|BLOCK|process|PROCESS|generate|GENERATE=end|END
+-cpara >#!;*-/%
+
+ XML
+*.xml
+-wordwrap
+-autoindent
+-syntax xml
+
+ XML
+*.xsd
+-wordwrap
+-autoindent
+-syntax xml
+
+ HTML
+*.htm
+-wordwrap
+-autoindent
+-syntax html
+
+*.html
+-wordwrap
+-autoindent
+-syntax html
+
+ JAVA
+*.java
+-autoindent
+-syntax java
+-smarthome
+-smartbacks
+-purify
+-cpara >#!;*/%
+
+ Javascript
+*.js
+-autoindent
+-syntax java
+-smarthome
+-smartbacks
+-purify
+-cpara >#!;*/%
+
+ Hypertext preprocessor file
+*.php
+-autoindent
+-syntax php
+-smarthome
+-smartbacks
+-purify
+
+ Python
+*
++#!\+\[ 	]\+\[a-z/]\+\[ 	]python\>
+-autoindent
+-syntax python
+-smarthome
+-smartbacks
+-purify
+
+*.py
+-autoindent
+-syntax python
+-smarthome
+-smartbacks
+-purify
+
+ CSH
+*
++#!\+\[ 	]\+\[a-z/]/csh\>
+-autoindent
+-syntax csh
+-pound_comment
+
+*.csh
+-autoindent
+-syntax csh
+-pound_comment
+
+*.login
+-autoindent
+-syntax csh
+-pound_comment
+
+*.logout
+-autoindent
+-syntax csh
+-pound_comment
+
+ TCSH
+*
++#!\+\[ 	]\+\[a-z/]/tcsh\>
+-autoindent
+-syntax csh
+-pound_comment
+
+*.tcsh
+-autoindent
+-syntax csh
+-pound_comment
+
+*.tcshrc
+-autoindent
+-syntax csh
+-pound_comment
+
+ Shell
+*
++#!\+\[ 	]\+\[a-z/]/sh\>
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+*.sh
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+*profile
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+ BASH Shell
+*
++#!\+\[ 	]\+\[a-z/]/bash\>
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+*.bash
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+*.bash_login
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+*.bash_logout
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+ LISP
+*.lisp
+-autoindent
+-syntax lisp
+-semi_comment
+
+*.lsp
+-autoindent
+-syntax lisp
+-semi_comment
+
+*.el
+-autoindent
+-syntax lisp
+-semi_comment
+
+ KSH
+*
++#!\+\[ 	]\+\[a-z/]/ksh\>
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+*.ksh
+-autoindent
+-syntax sh
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+ Makefile
+*akefile
+-autoindent
+-syntax conf
+-pound_comment
+
+*akefile.in
+-autoindent
+-syntax conf
+-pound_comment
+
+*AKEFILE
+-autoindent
+-syntax conf
+-pound_comment
+
+ Pascal
+*.p
+-autoindent
+-syntax pascal
+-smarthome
+-smartbacks
+-purify
+-text_delimiters begin|BEGIN|record|RECORD|case|CASE=end|END:repeat|REPEAT=until|UNTIL
+
+*.pas
+-autoindent
+-syntax pascal
+-smarthome
+-smartbacks
+-purify
+-text_delimiters begin|BEGIN|record|RECORD|case|CASE=end|END:repeat|REPEAT=until|UNTIL
+
+ Fortran
+*.f
+-autoindent
+-syntax fortran
+
+*.for
+-autoindent
+-syntax fortran
+
+*.FOR
+-autoindent
+-syntax fortran
+
+ Cadence SKILL
+*.il
+-semi_comment
+-syntax skill
+-autoindent
+-istep 3
+-indentc 32
+-smartbacks
+-smarthome
+-indentfirst
+
+ LUA
+*.lua
+-autoindent
+-syntax lua
+
+ TCL
+*.tcl
+-autoindent
+-syntax tcl
+
+ Joe Syntax File
+*.jsf
+-autoindent
+-syntax jsf
+-smarthome
+
+
+*.jsf.in
+-autoindent
+-syntax jsf
+-smarthome
+
+ Autoconfig file
+*.ac
+-autoindent
+-syntax m4
+
+ M4 file
+*.m4
+-autoindent
+-syntax m4
+
+ Matlab file
+*.m
+-wordwrap
+-syntax matlab
+
+ Automake file
+*.am
+-autoindent
+-syntax conf
+
+ Mail file
+*tmp/mutt-*
+-wordwrap
+-syntax mail
+
+ System RC file
+*rc
+-syntax conf
+
+ JOERC file
+*ftyperc
+-syntax joerc
+
+*joerc
+-syntax joerc
+
+*jmacsrc
+-syntax joerc
+
+*jstarrc
+-syntax joerc
+
+*rjoerc
+-syntax joerc
+
+*jpicorc
+-syntax joerc
+
+*joerc.in
+-syntax joerc
+
+*jmacsrc.in
+-syntax joerc
+
+*jstarrc.in
+-syntax joerc
+
+*rjoerc.in
+-syntax joerc
+
+*jpicorc.in
+-syntax joerc
+

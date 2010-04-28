@@ -1,0 +1,815 @@
+For JOE-3.6
+
+	auto reload of modified files?  a mode for this?
+
+	tab completion should escape file names for joe
+
+          mode where wordwrap wraps rest of paragraph?
+
+          mode where all editing wraps rest of paragraph?
+
+	handling of bullets could be better, but conflicts with C comments
+
+	a common operation is search&replace within a selected block. 
+	possibly cursor should go to start of block after each operation.
+
+	a common operation is macro execution to end of selected block.	
+	abort macro when it reaches ^K K? EMACS has "narrow to region"
+	concept to deal with this.
+
+	a common operation is clearing a shell buffer: make a key for this?
+
+	document ` in 'txt' (format test as status line)
+	additional formatting things in status line
+		`%n		filename
+		`%dd		day
+		`%dm		month
+		`%dY		year
+		`%Ename%	environment variable
+
+Immediate:
+
+ full path needs to go in line number restore code?
+
+ ^C breaks in Cygwin when piping into joe
+
+ empty syntax file crashes?
+
+startup log should pop up whenever syntax files are loaded.
+
+joerc file messages are funny because of the :include
+
+autodetect xterm?  it doesn't give enough information.
+
+did shell window in joe-3.2 3.2 create a new window?
+
+  bugs?
+
+    grep ... | joe     missing lots sometime
+
+    pipe into joe is broken.   If it's a regular file, we should just load it.
+
+  Make joerc merge program and run it on joerc.ru
+
+=-=-=-=-=
+
+should force -Wall if compiler is gcc
+
+=-=-=-=-=
+
+- rc file format needs revamping:  You can not put comments on lines with string
+  arguments.
+
+=-=-=-=-=
+
+option for compile window size (or make mfit prompt for the size)
+
+multi-file search & replace: check for deleted 'B *'.
+
+
+=-=-=-=-=
+
+- We need regexp for error parsing.
+
+=-=-=-=-=
+
+- better grep-find (trigger in ^KE)
+
+- need current directory for grep-find.
+
+Compiling:
+----------
+
+Key to bring up help on word under cursor:
+  like pop up window with man page, or google search
+  for the function.
+
+    man -P cat -S 2:3 printf
+
+work with cscope?  hit F1 to look up man entry for function?
+
+Tags file search should auto-run ctags if there is no tags file.
+It should update it if any files have changed...
+
+gdb inteface?
+  run  (when segfault, jump to given source location)
+  run-to
+  step-over
+  step-into
+  eval  (to look at variables)
+  peek up stack frame
+
+allow options after string and istring? -just note it for now.
+
+Makefile.in and Makefile.am need to be the same as Makefile.
+
+622978   use last column
+
+1218708  ? for unknown characters is not informative (at least highlight the ?)
+
+1218701  report character offset in ^K-<space> (not just byte offset).
+
+1304794  X at end of line is changed to space when character above 128 in utf-8
+
+1323285  joe does not repeatedly wrap searches (add an option for this?)
+
+1218686  syntax hightlight in hex mode (sheesh!)
+
+1211243  long $HOME causes joe to crash
+
+531899   joe +23 is weird: cursor on startup line
+
+1413863  sigwinch breaks tcsetsw which messes up keyboard?  I haven't seen this
+
+Garbage collect line attribute databases.
+
+Parse xterm version number.
+
+we should store location of menu. menu_above could change while menu is
+open (but menu could be deleted, so this raises other problems).
+
+performace:
+ getcontext causes huge cpu usage for very large functions (xp_useq.v for
+ example).
+
+
+Short (infinite) list for 3.4:
+
+-smart bs/tab is driving me up the wall:
+
+       if (sdfjklhsdfkjhsdfjkh
+           sdflks dfkjshdf sd
+           sdfkjhsdkjfhsdkhsd)
+           . <- thinks this is indentation point.
+
+-tab should default to tab?
+
+- improve mnew/mold etc so we can gzip/gunzip files being
+  edited (maybe recursive call to file recognizer with .gz removed).
+
+- when lock is stolen under us, we don't tell anyone.
+
+- reformat/reindent function on ^KJ
+- insert last word (last word typed/copied/etc.).
+- orthogonal jump
+- safer hex edit mode
+- win32? DOS?
+- man page
+
+- cygwin- make sure we put files in the right place.
+- dynamic spell checking with highlighter- there should be a way
+- smart-end key
+
+
+Mouse issues:
+
+- autoscroll: keep track of selection type (double-click or triple-click)
+- just scroll window with right button down?
+
+  help screen mouse commands?
+  double-click at prompts hits enter?
+  double-click empty prompt, hits tab?
+  right-click pops directory?
+  right-click is cancel?
+  double-click is yes?
+
+- i18n issues:
+
+   hex is screwed up.  utf-8 file encoding needs to be off for hex mode.
+   also crlf mode.
+
+- - - -
+
+Dangerous situations:
+  assume maint->curwin->object is a BW *
+  call interactive functions (like doedit) and expect them
+  to leave maint a buffer window (it could start a prompt).
+
+  should check plain file checking.
+
+  vs, zstring, cstring, there are too many, each with its own
+  memory management.
+
+- - - - - - - -
+
+- backspace in picture mode
+  (it jumps to end of line - should it be like left-arrow?)
+
+- - - - - - - -
+
+- name keyboard macro and append it to .joerc file
+
+- - - - - - - -
+
+- update man page
+
+- - - - - - - -
+
+- hex edit mode
+    - force switch to overtype mode?
+
+- - - - - - - -
+
+- security hole with spell checker: abs path to checker needed.
+
+- - - - - - - -
+
+- commands should be as deterministic as possible for
+  easier macro writing.
+     (some prompts give defaults sometime... this is bad)
+     (psh should save all possible state information)
+
+- merge math with macro language
+- tab at math prompt should go through variables, functions.
+- eliminate need for : separator
+- add loops, user defined functions with local variables
+- add comments
+- user should be able to bring up a program and hit 'eval'.
+- use ivy?
+
+- - - - - - - -
+
+- better editing in shell windows: use for calculator mode too?
+
+- - - - - - - -
+
+- highlight all words which match during search?
+
+- - - - - - - -
+
+    (a user asked: can it periodically reload log file like tail -f)?
+    (just run tail -f in shell window)
+
+- - - - - - - -
+
+Make joerc file so we load system and local customizations.
+
+- - - - - - - -
+
+can we highlight backup files? files ending in .in?
+
+- - - - - - - -
+
+  define characters which make up words
+    There are some A-Zs in tomatch (should use i18n).
+
+- - - - - - - -
+
+- - - - - - - -
+  exemac for first change: it should be run with cursor in window.
+
+  -orphan will break -mnew, -mold macros (because macros are run without a
+window on the screen).
+
+- - - - - - - -
+
+- .joe_state file:
+ - try for previous screen configuration?
+ - multiple joes: the last one who exits wins: merge them
+
+- - - - - - - -
+
+Completion list build could take a long time
+in general we should be able to abort long operations...
+
+- - - - - - - -
+
+Others:
+
+- completion list of internal commands brings up documentation
+
+- rectangular blocks: make this a local file option?
+
+- shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
+  shell window.
+
+- do not use ^[^[ for anything.  it prevents Alt-arrow
+  from being useful.  It's usually bound to options, so at least
+  make options pass unknown characters back to keysequence parser.
+
+- save all files without asking thing for quick compile
+
+options are screwed up: we copy window to buffer (to get buffer options
+to the buffer).  But if we have multiple windows, buffer options will have
+stale data.
+
+we are missing many query and prompt window abort handlers, which cause
+small memory leaks.
+
+regex: character classes? a-z matches any letter?
+
+can't load terminfo- should switch to termcap or provide compiled
+ANSI terminfo built in.
+
+Perl compatible regex search.
+
+Improvements for programming
+----------------------------
+Jump to definition (tags does this)
+
+Show list of references
+
+Diff mode (need vertical window)
+
+Tie in with CVS
+
+Refactoring
+
+Support for more languages:
+
+ Reformat paragraph should reformat C function if we're editing C.
+
+File loading/storing:
+
+ Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
+
+Jmacs:
+
+ search and replace 'fred' to 'foo':
+    find 'Fred', gets 'Foo'.
+
+ Rectangle mode for emacs yank system
+
+ Overtype mode works for yank
+
+ exiting options and i-search with ESC is not pretty
+ (it isn't in emacs either)
+
+jmacs glitches:
+    history for incremental search
+    ^S return supposed to be normal search
+    ^[ 0 ^K  delete line bkwd (arg set)
+    ^[ @   set mark arg words away
+    ^X ^P  mark page
+
+    ^X .  set left margin (fill prefix)
+           (better off not setting this: JOE automatically sets
+	    the fill prefix).
+   
+
+Shell windows:
+
+ Better environment settings for shell windows.
+
+Documentation:
+
+ Include documentation for joe hackers.  I wrote a lot of this
+ some time, I need to find it.
+
+ joe should open tty earlier in startup sequence because ^Y
+ is suspend character on sun.
+
+UTF-8/Internationalization
+--------------------------
+
+byte to byte conversions?
+UTF-8 decoder right at input instead of in qw and utype?
+
+UTF-8 syntax files?
+
+- right-left mode for Hebrew/Arabic?
+
+  There is no good way to do this.  For all rtol, you could use a reversed
+xterm.  For mixed, you need tags to indicate direction.
+
+
+
+Use memory mapped files to fast load large files.  Have to not
+count no. lines in each buffer on startup.
+
+Emulate other editors?  Brief, EDT?  CUA?
+
+
+Prompts:
+
+ HTML-style thing for option selection?
+
+Terminal handling:
+
+ Emit ESC c to reset terminal on startup?
+
+ Look into clearing right-most column.
+
+Major new display modes:
+
+ Fixed record length mode
+
+
+Major code improvements:
+
+ Vertical windows (optionally lock-stepped).
+
+
+Major new features:
+
+ Folding
+
+
+Options
+
+ Fix it so all options appear in ^T.  Maybe make hook function
+ to handle major changes.
+
+Other requests:
+
+ -cleanup (delete extra lines and extra spaces at ends of lines).
+
+
+Do something with these keys:
+
+-------
+ssh 3.2
+-------
+Arrow: [C [D [A [B
+Home: [2~ (uhg!)
+End: [4~
+Pgup: [5~
+Pgdn: [6~
+Ins: [2~
+Del: 
+F1: [11~
+F2: [12~
+F3: [13~
+F4: [14~
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: -
+Alt-arrow: - (can set Alt=ESC mode, but doesn't work with arrow keys)
+Shift-arrow: -
+
+-----
+PuTTY
+-----
+
+Arrow: [C [D [A [B
+Home: [1~
+End: [4~
+Pgup: [5~
+Pgdn: [6~
+Ins: [2~
+Del: [3~
+F1: [11~
+F2: [12~
+F3: [13~
+F4: [14~
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: OC OD OA OB
+Ctrl-home: -
+Ctrl-end: -
+Ctrl-pgup: putty scroll back
+Ctrl-pgdn: putty scroll fwrd
+Ctrl-ins: -
+Ctrl-del: -
+
+Alt-arrow: [C [D [A [B
+Alt-pgup: [5~
+Alt-pgdn: [6~
+Alt-home: [1~
+Alt-end: [4~
+Alt-ins: [2~
+Alt-del: [3~
+
+Shift-arrow: [C [D [A [B
+Shift-home: [1~
+Shift-end: [4~
+Shift-pgup: putty scroll back
+Shift-pgdn: putty scroll fwrd
+Shift-ins: 
+Shift-del: [3~
+
+-----
+XTerm
+-----
+
+Arrow: [C [D [A [B
+Home: [H
+End: [F
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: OP
+F2: OQ
+F3: OR
+F4: OS
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: [1;5C [1;5D [1;5A [1;5B
+Ctrl-home: [1;5H
+Ctrl-end: [1;5F
+Ctrl-pgup: [5;5~
+Ctrl-pgdn: [6;5~
+Ctrl-ins: [2;5~
+Ctrl-del: [3;5~
+
+Shift-arrow: [1;2C [1;2D [1;2A [1;2B
+Shift-home: [1;2H
+Shift-end: [1;2F
+Shift-pgup: -
+Shift-pgdn: -
+Shift-ins: ttp://www.gush-shalom.org/archives/kurdi_eng.html
+Shift-del: [3;2~
+
+Shift-ctrl-arrow: [1;6C [1;6D [1;6A [1;6B
+
+Alt-ctrl-arrow: [1;7C [1;7D [1;7A [1;7B
+
+Alt-shift-arrow: [1;4C [1;4D [1;4A [1;4B
+
+Alt-shift-ctrl-arrow: [1;8C [1;8D [1;8A [1;8B
+
+Alt-arrow: [1;3C [1;3D [1;3A [1;3B
+Alt-home: [1;3H
+Alt-end: [1;3F
+Alt-pgup: [5;3~
+Alt-pgdn: [6;3~
+Alt-ins: [2;3~
+Alt-del: [3;3~
+
+----
+rxvt
+----
+Arrow: [C [D [A [B
+Home: [7~
+End: [8~
+Pgup: [5~
+Pgdn: [6~
+Ins: [2~
+Del: [3~
+
+F1: [11~
+F2: [12~
+F3: [13~
+F4: [14~
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: Oc Od Oa Ob
+Ctrl-home: [7^
+Ctrl-end: [8^
+Ctrl-pgup: [5^
+Ctrl-pgdn: [6^
+Ctrl-ins: [2^
+Ctrl-del: [3^
+
+Shift-arrow: [c [d [a [b
+
+Shift-ctrl-arrow: [c [b [a [b
+
+Alt-ctrl-arrow: Oc Od Oa Ob
+
+Alt-shift-arrow: [c [d [a [b
+
+Alt-arrow: [C [D [A [B
+
+--------------
+gnome-terminal
+--------------
+
+Arrows: [C [D [A [B
+Home: OH
+End: OF
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: -
+F2: OQ
+F3: OR
+F4: OS
+F5: [15~~
+F6: [17~~
+F7: [18~~
+F8: [19~
+F9: [20~
+F10: -
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: [5C [5D [5A [5B
+Ctrl-home: OH
+Ctrl-end: OF
+Ctrl-pgup: -
+Ctrl-pgdn: -
+Ctrl-ins: [2;5~
+Ctrl-del: [3;5~
+
+Shift-arrows: [2C [2D [2A [2B
+Shift-home: -
+Shift-end: -
+Shift-pgup: -
+Shift-pgdn: -
+Shift-ins: -
+Shift-del: [3;2~
+
+Alt-arrows: [3C [3D [3A [3B
+Alt-home: OH
+Alt-end: OF
+Alt-PgUp: [5;3~
+Alt-PgDn: [6;3~
+Alt-Insert: [2;3~
+Alt-Delete: [3;3~
+
+Ctrl-Alt-arrows: - (window manager takes)
+Ctrl-Shift-arrows: [6C [6D [6A [6B
+Ctrl-Shift-Alt-arrows: [8C [8D [8A [8B
+ 
+-------
+konsole
+-------
+Arrows: [C [D [A [B
+Home: [H
+End: [F
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: OP
+F2: OQ
+F3: OR
+F4: OS
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrows: [C [D [A [B
+Ctrl-home: [H
+Ctrl-end: [F
+Ctrl-PgUp: [5~
+Ctrl-PgDn: [6~
+Ctrl-ins: [2~
+Ctrl-del: [3~
+
+Shift-arrows: -
+Shift-home: [2H
+Shift-end: [2F
+Shift-PgUp: -
+Shift-PgDn: -
+Shift-Ins: -
+Shift-Del: [3;2~
+
+Alt-arrows: [C [D [A  [B
+Alt-home: [H
+Alt-end: [F
+Alt-PgUp: [5~
+Alt-PgDn: [6~
+Alt-Ins: [2~
+Alt-Del: [3~
+
+-------------
+linux console
+-------------
+Arrows: [C [D [A [B
+Home: [1~
+End: [4~
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: [[A
+F2: [[B
+F3: [[C
+F4: [[D
+F5: [[E
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrows: [C [D [A [B
+Ctrl-home: [1~
+Ctrl-end: [4~
+Ctrl-pgup: [5~
+Ctrl-pgdn: [6~
+Ctrl-ins: [2~
+Ctrl-del: [3~
+
+Shift-arrows: [C
+Shift-home: [1~
+
+Alt-arrows: - (switches console)
+Alt-home: [1~
+
+--------------
+cygwin console
+--------------
+Arrows: [C [D [A [B
+Home: [1~
+End: [4~
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: [[A
+F2: [[B
+F3: [[C
+F4: [[D
+F5: [[E
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrows: -
+Shift-arrows: -
+
+Alt-enything: prefixed with ESC
+
+-----------------------
+jstar missing sequences
+-----------------------
+^O options (supposed to be set tab width)
+^P print
+^U undo (supossed to be unerase)
+^^ autoindent on/off
+^\ meta (supposed to be refresh screen)
+ESC =  insert math result
+ESC $  insert math result money formatted
+ESC #  insert math equation
+ESC m  Memorandum
+ESC s  isearch fwrd (supposed to be Sincerely)
+ESC c  compile (supposed to be center line)
+^Q U   align paragraph (don't know what this does)
+^Q ^Q  repeat next command once every second
+^Q O   spell check entered word
+^Q W   scroll up- repeat once every second
+^Q Z   scroll down- repeat once every second
+^Q Ins  it does something...
+^Q Home  scroll up repeating
+^Q End   scroll down repeating
+^K M     math
+^K F     run dos comment
+^K N     column mode on
+^K I     column replace mode on
+^K O     copy file
+^K E     rename file
+^K J     erase file
+^K L     change drive
+^K uparw  rename file
+^K dnarw  save and exit
+^K ltarw  save
+^K rtarw  ^K D save
+^K Ins    move
+^K Home   quit
+^K End    quit
+^K '      to markk
+-----------------------
+
+-----------------
+notepad/cua mode?
+-----------------
+- ^A	select all
+- ^F	find
+- ^G	goto line
+X ^H	replace
+X ^J	return
+- ^N	new blank file
+- ^O	edit file (asks to save current)
+^P	print
+- ^S	save
+- ^V	paste
+- ^Z	undo
+- ^X	cut
+- ^C	copy
+- F3	find next
+- F5	date/time
+

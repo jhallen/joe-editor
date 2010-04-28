@@ -1,0 +1,361 @@
+Joe commands grouped by function
+
+Background programs
+-------------------
+bknd		Run a shell in a window
+killproc	Kill program in current window
+run		Run a UNIX command in a window
+sys		Run a UNIX command and return to editor when done (I/O does
+		not go through editor, be we get the command's return status).
+
+Blocks
+------
+blkcpy		Copy marked block to cursor
+blkdel		Delete marked block
+blkmove		Move marked block to cursor
+blksave		Save marked block into a file
+copy		Copy block to kill-ring
+drop		Set markb.  If it was already set, eliminate it.
+dropon          Set markb.  If it was already set, eliminate it.  Turn on marking mode.
+
+toggle_marking	If we're in a block: clear markb and markk.
+		If marking is off: set markb and turn on marking.
+		If marking is on: set markk (swap if necessary with markb)
+		and turn marking off.
+
+begin_marking	If we're on an edge of a block: set markb to other edge and
+		turn on marking mode.  Otherwise set markb to cursor and
+		turn on marking mode.
+
+select          Set markb.  If it was already set, do nothing.
+filt		Filter block or file through a unix command
+markb		Set beginning of block mark
+markk		Set end of block mark
+markl		Mark current line
+nmark		Eliminate markb and markk
+picokill	Delete line or block
+pop		Restore markb and markk values from stack
+psh		Push markb and markk values onto a stack
+swap		Switch cursor with markb
+tomarkb		Move cursor to markb
+tomarkbk	Move cursor to markb or markk
+tomarkk		Move cursor to markk
+yank		Insert top of kill ring
+yankpop		Scroll through kill ring
+yapp		Append next kill to top of kill ring
+upper		Convert everything in block to uppercase
+lower		Convert everything in block to lowercase
+
+Buffers
+-------
+bufed		Buffer menu
+edit		Load file into window: asks to reload if buffer exists
+switch		Load file into window: always uses buffer if it exists
+scratch		Load a scratch buffer into current window
+nbuf		Load next buffer into current window
+pbuf		Load previous buffer into current window
+
+Cursor Motion
+-------------
+bof		Move cursor to beginning of file
+bol		Move cursor to beginning of line (always)
+bop		Move to beginning of a paragraph
+bos		Move to beginning of screen
+bkwdc		Search backwards for a character
+byte		Move cursor to specific byte offset into the file.
+col		Move cursor to specific column number.
+dnarw		Move cursor down one line
+eof		Move cursor to end of file
+eol		Move cursor to end of line
+eop		Move cursor to end of paragraph
+fwrdc		Search forward for matching character
+gomark		Move cursor to a bookmark
+home		Move cursor to beginning of line
+line		Move cursor to specified line
+ltarw		Move cursor left
+nedge		Move cursor to next edge
+nextpos		Move cursor to next position in cursor position history
+nextword	Move cursor to end of next word
+pedge		Move cursor to previous edge
+prevpos		Move cursor to previous position in cursor position history
+prevword	Move cursor to beginning of previous word
+rtarw		Move cursor right
+setmark		Set a bookmark
+tomatch		Move cursor to matching delimiter
+tos		Move cursor to top of screen
+uparw		Move cursor up
+
+Deletion
+--------
+backs		Backspace
+backw		Backspace a word
+delbol		Delete to beginning of line
+delch		Delete character under cursor
+deleol		Delete to end of line
+dellin		Delete entire line
+delw		Delete word to right
+
+Error parsing
+-------------
+nxterr		Goto next parsed error
+parserr		Parse errors in current file
+prverr		Go to previous parsed error
+showerr		Show current message
+
+Exit
+----
+cancel		Like abort, but doesn't return failure: useful in macros
+		to escape out of a prompt.
+
+abort		Abort current buffer/window.  Prompt if it is changed.
+
+abortbuf	Like above, but just fail if it would have to prompt because
+		it's the last window on a modified buffer.
+
+ask		Prompt to save current file: user says yes return, user says
+		no: run 'abort'.  Use in a macro: "ask,query,exsave"
+
+exsave		Save file and exit
+
+lose		emacs kill buffer.  The buffer is deleted- any windows with
+		it get a replacement scratch buffer.
+
+querysave	Prompt to save each modified buffer
+		Use in a macro: "querysave,query,killjoe"
+
+killjoe		Exit joe immediately without checking for modified buffers
+
+Files
+-----
+save		Save file
+savenow		Save immediately, unless file name is not known
+insf		Insert a file
+reload		Reload current file
+reloadall	Reload all unmodified files
+
+Formatting
+----------
+center		Center line
+fmtblk		Format all paragraphs in a block
+format		Format current paragraph
+lindent		Indent to the left
+rindent		Indent to the right
+
+Help
+----
+help		Turn help on or off
+hnext		Switch to next help screen
+hprev		Switch to previous help screen
+
+Inserting
+---------
+ctrl		Type next key
+finish		Complete word in text window
+insc		Insert a space 
+open		Insert newline
+quote		Insert a control character
+quote8		Insert a meta character
+rtn		Return key
+type		Insert typed character
+
+Macros
+------
+macros		Insert keyboard macros into current file
+play		Execute a macro
+query		Macro query
+record		Record a macro
+stop		Stop recording macro
+
+Menu
+----
+backsmenu	Undo in file completion menu
+bofmenu		Move to beginning of menu
+bolmenu		Move to beginning of line in a menu
+dnarwmenu	Move down one line in a menu
+eolmenu		Move cursor to end of line in a menu
+eofmenu		Move cursor to end of menu
+ltarwmenu	Move cursor left in a menu
+rtarwmenu	Move cursor right in menu
+uparwmenu	Move cursor up in menu
+dnslidemenu	Scroll menu down one line
+upslidemenu	Scroll menu up one line
+pgupmenu	Scroll menu up
+pgdnmenu	Scroll menu down
+
+Misc
+----
+beep		Beep
+execmd		Execute a joe command
+math		Calculator
+mode		Mode prompt
+menu		Menu prompt
+msg		Display a message
+notmod		Clear the modified flag
+retype		Refresh screen
+shell		Suspend process or execute a sub-shell
+stat		Display cursor position
+tag		Tags file search
+txt		Insert text.  If first character of entered text, then the rest
+		of the text is treated as if it were a status line
+		definition string, like -lmsg and -rmsg.
+name		Insert current file name
+language	Insert current language
+charset		Insert current character set
+keymap		Switch to another keymap
+
+Prompts
+-------
+complete	Complete a file-name in a prompt
+if		Only run following cmds if expr is true (non-zero)
+then		Same as rtn but only works in prompt windows
+elsif		Try a new condition
+else		Toggle truth flag
+endif		Start running cmds again
+
+Here is an example 'if' macro:
+
+if,"char==65",then,"it's an A",else,"it's not an A",endif	^[ q
+
+When you hit ^[ q, if the character under the cursor is an 'A': "it's a A"
+is inserted into the buffer, otherwise "it's not an A" is inserted.
+
+"if" creates a math prompt (like ESC m).  "then" is like "rtn"- it hits the
+return key for this prompt.
+
+Within the math prompt, the following variables are available:
+	char	ASCII value of character under cursor
+	width	Width of screen
+	height	Height of screen
+	byte	byte number
+	col	column number
+	line	line number
+	lines	no. lines in file
+	top	line number of top line of window
+
+Repeat
+------
+arg		Prompt for repeat argument
+uarg		Universal argument
+
+Scrolling
+---------
+crawll		Pan screen left
+crawlr		Pan screen right
+dnslide		Scroll screen down 1 line
+pgdn		Scroll screen down
+pgup		Scroll screen up
+upslide		Scroll up one line
+
+Search and replace
+------------------
+ffirst		Find text
+fnext		Repeat previous search
+isrch		Incremental search forward
+qrepl		Search and replace
+rfirst		Search backwards for text
+rsrch		Reverse incremental search
+
+Windows
+-------
+explode		Display one window or display all windows
+dupw		Duplicate current window
+groww		Increase size of window
+nextw		Move cursor to next window
+prevw		Go to previous window
+shrinkw		Shrink window
+splitw		Split window into two
+tw0		Eliminate this window
+tw1		Show only one window
+mwind		Get error messages window on the screen and put cursor in it.
+mfit		Fit two windows on the screen: make current window 6 lines,
+		and give rest of space to window above.  The window above is
+		either the existing previous window, a newly created one if
+		there wasn't one.
+
+Undo
+----
+redo		Re-execute the latest undone change
+undo		Undo last change
+
+Mouse
+-----
+tomouse		Move the cursor to where the mouse was clicked/dragged
+defmdown	Default single-click handlers
+defmdrag	(click to move cursor, drag to select characters)
+defmup
+defm2down	Default double-click handlers
+defm2drag	(drag to select words)
+defm2up
+defm3down	Default triple-click handlers
+defm3drag	(drag to select lines)
+defm3up
+paste		Insert text until magic sequence ^[ [ 2 0 1 ~ is received.
+		(for XTerm bracketed paste).
+
+Math
+----
+Math functions:
+	sin, cos, tan, exp, sqrt, cbrt, ln, log,
+	asin, acos, atan, sinh, cosh, tanh, asinh, acosh,
+	atanh, int, floor, ceil, abs, erf, erfc, j0,
+	j1, y0, y1
+
+Variables:
+	e	Set to 'e'
+	pi	Set to 'pi'
+	top	Set to line number of top window line
+	lines	Set to number of lines in file
+	line	Set to current line number
+	col	Set to current column number
+	byte	Set to current byte number
+	size	Set to buffer size
+	height	Set to window height
+	width	Set to window width
+	char	Set to ASCII val of character under cursor	
+	markv	True if there is a valid block set (^KB ... ^KK)
+	rdonly	True if file is read-only
+	arg	Current repeat argument
+	argset	True if a repeat argument was given
+	no_windows No. buffer windows on the screen
+	ans	Result of previous expression
+
+Commands:
+	hex	Hex display mode
+	dec	Decimal display mode
+	ins	Insert 'ans' into buffer
+	sum	Sum of numbers in block
+	cnt	Count numbers in block
+	avg	Average value of numbers in block
+	dev	Standard deviation of numbers in block
+	eval	Evaluate math expressions in block (or whole file
+		if no block set).
+	joe(..)	Execute a JOE macro (argument in same format
+		as joerc file macros).  Return value of
+		JOE macro is returned (for macro success,
+		return true (non-zero)).
+
+		For example:
+
+			joe(sys,"[ 1 == 1 ]",rtn)
+
+		([ 1 == 1 ]) is a shell command.  "[" is a synonym for
+		the "test" UNIX command.
+
+		Returns true.
+
+		Remember: argument for JOE macro command
+		"if" is a math expression.  So for example, the
+		macro:
+
+		if,"joe(sys,\"[ 1 == 1 ]\",rtn)",then,"TRUE",endif
+
+		Types TRUE into the buffer.
+
+Operators:
+	
+	^  * / %  + -  < <= > >= == !=  &&  ||  ? :  =  :
+
+	&&, || and ? : work as in C and sh as far as side effects: if the
+	left side of && is false, the right side is not evaluated.
+
+	: is expression separator

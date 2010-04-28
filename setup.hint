@@ -1,0 +1,6 @@
+category: Editors
+requires: cygwin
+sdesc: "An easy to use, modeless text editor."
+ldesc: "JOE is a powerful, easy to use, modeless text editor.
+It uses the same WordStar keybindings used in Borland's development
+environment."

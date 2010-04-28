@@ -1,0 +1,78 @@
+<html>
+	<head>
+		<title> JOE 2.9.7pre3 -> Help system </title>
+	</head>
+	<body bgcolor="#83CCF4">
+		<center><h2> JOE:: Help system </h2></center>
+		<table>
+			<tr>
+				<td> Name: </td>
+				<td> Help system </td>
+			</tr>
+			<tr>
+				<td> Files: </td>
+				<td> help.c, help.h </td>
+			</tr>
+			<tr>
+				<td> Since: </td>
+				<td> 2.9.7pre1 </td>
+			</tr>
+			<tr>
+				<td> Main authors: </td>
+				<td> Joseph Allen <br> Marek 'marx' Grac <a href="mailto:xgrac@fi.muni.cz">&lt;xgrac@fi.muni.cz&gt;</a> </td>
+			</tr>
+		</table>
+		<p>
+			Differences between this and previous version should be hidden
+			to users. Main changes were done in design of source code. I
+			will try to explain <i>what it is</i> and <i>why it is done this
+			way</i>? Main goal was to clean and minimalize source code,
+			remove several global variables, move everything concerned with
+			help to these files.
+		</p>
+		<p>
+			The help system is based on bi-directional list of help screens. 
+			Each help screen has defined two variables, help text (<i>char
+			*hlptxt</i>) and number of lines of help text (<i>int
+			hlplns</i>).  Since this version the help file can/should be
+			separated from *rc files. Advantage of this model is that you
+			can set help to other languages. Usage of standard method
+			(gettext) will be very difficult here, because help has constant
+			width which can't be overcrossed. This method has also no
+			problem with having several help files in each language (for
+			joe, jmacs, ...). Problematics of setting proper help file will
+			be solved in <i>main.c</i> not here.
+		</p>
+		<h3> How to create a help file </h3>
+		<p>
+			Help file consist of prologue, body and epilogue for each of the
+			screens. Each help screen must begin with <i>{%name</i> where
+			<i>%name</i> is only symbolic name of this screen and is not
+			used in program. The body of help screen contains text which
+			will be showed on the user screen and tags which takes care of
+			special information (bold, flash, ...). There is list of the
+			tags with theirs functions:
+			<ul>
+				<li> <b>\i</b> to turn on/off inverse video </li>
+				<li> <b>\u</b> to turn on/off underline </li>
+				<li> <b>\b</b> to turn on/off bold </li>
+				<li> <b>\d</b> to turn on/off dim </li>
+				<li> <b>\f</b> to turn on/off flash </li>
+			</ul>
+			These tags are inserted into help screen text, but they are not
+			visible in the help screen (visible are only their effects, but this
+			is their purpose <b>:)</b>)
+		</p>
+		<p>
+			Some hints how to write a new help screen. Standard help screens have
+			80 characters per line (including borders) so they are visible on text
+			console. Sequences of keys are usually written as <i>^KD</i> where
+			<i>^</i> means CTRL + next character <i>K</i> and then key named <i>D</i>
+			should be pressed.
+		</p>
+		<hr>
+		<p>
+			Any comments, ideas, questions send to me at <a href="mailto:xgrac@fi.muni.cz">xgrac@fi.muni.cz</a>
+		</p>
+	</body>
+</html>
