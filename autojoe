@@ -4,7 +4,7 @@
 
 aclocal
 
-autoheader
+autoheader -I joe
 
 automake -a -c
 
