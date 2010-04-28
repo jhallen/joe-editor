@@ -129,9 +129,6 @@ struct buffer {
 	void (*parseone)(struct charmap *map,unsigned char *s,unsigned char **rtn_name,
 	                 long *rtn_line);
 	                        /* Error parser for this buffer */
-
-	B *hist;		/* History buffer for this log buffer */
-	P *hist_p;		/* Current history position in log buffer */
 };
 
 extern B bufs;

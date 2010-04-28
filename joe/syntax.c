@@ -42,7 +42,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	buf[0]=0;	/* Forgot this originally... took 5 months to fix! */
 
 	/* Get next character */
-	while((c=pgetb(line))!=NO_MORE_DATA) {
+	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd, *kw_cmd;
 		int x;
 
