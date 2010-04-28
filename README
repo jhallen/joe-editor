@@ -1,1 +1,5 @@
 Try hg...
+
+Use this to clone the repository into your current directory:
+
+	hg clone ssh://jhallen@joe-editor.hg.sourceforge.net/hgroot/joe-editor/joe-editor
