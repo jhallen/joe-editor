@@ -20,24 +20,144 @@ int attr_size = 0;
 
 int stack_count = 0;
 
+struct high_syntax ansi_syntax[1] = { NULL, "ansi" };
+
+/* ANSI highlighter */
+
+#define IDLE 0
+#define AFTER_ESC 1
+#define AFTER_BRACK 2
+#define IN_NUMBER 3
+
+HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
+{
+	int *attr = attr_buf;
+	int *attr_end = attr_buf + attr_size;
+	int c;
+
+	int state = h_state.saved_s[0];
+	int accu = h_state.saved_s[1];
+	int current_attr = h_state.state;
+	int new_attr = *(int *)(h_state.saved_s + 8);
+
+	while ((c = pgetb(line)) != NO_MORE_DATA) {
+		if (c < 0 || c > 255)
+			c = 0x1F;
+		if (attr == attr_end) {
+			if (!attr_buf) {
+				attr_size = 1024;
+				attr_buf = joe_malloc(sizeof(int) * attr_size);
+				attr = attr_buf;
+			} else {
+				attr_buf = joe_realloc(attr_buf, sizeof(int) * (attr_size * 2));
+				attr = attr_buf + attr_size;
+				attr_size *= 2;
+			}
+			attr_end = attr_buf + attr_size;
+		}
+		*attr++ = current_attr;
+		switch (state) {
+			case IDLE: {
+				if (c == 27) {
+					state = AFTER_ESC;
+				}
+				break;
+			} case AFTER_ESC: {
+				if (c == '[') {
+					state = AFTER_BRACK;
+					new_attr = (current_attr & (FG_MASK | BG_MASK));
+				} else {
+					state = IDLE;
+				}
+				break;
+			} case AFTER_BRACK: {
+				if (c == ';') {
+					/* RESET */
+					new_attr = 0;
+					/* but stay in this state */
+				} else if (c >= '0' && c <= '9') {
+					accu = c - '0';
+					state = IN_NUMBER;
+				} else if (c == 'm') {
+					/* APPLY NEW ATTRIBUTES */
+					current_attr = 0;
+					state = IDLE;
+				} else {
+					state = IDLE;
+				}
+				break;
+			} case IN_NUMBER: {
+				if (c == ';' || c == 'm') {
+					if (accu == 0) {
+						new_attr = 0;
+					} else if (accu == 1) {
+						new_attr |= BOLD;
+					} else if (accu == 4) {
+						new_attr |= UNDERLINE;
+					} else if (accu == 5) {
+						new_attr |= BLINK;
+					} else if (accu == 7) {
+						new_attr |= INVERSE;
+					} else if (accu >= 30 && accu <= 37) {
+						new_attr = ((new_attr & ~FG_MASK) | ((accu - 30) << FG_SHIFT));
+					} else if (accu >= 40 && accu <= 47) {
+						new_attr = ((new_attr & ~BG_MASK) | ((accu - 40) << BG_SHIFT));
+					}
+					if (c == ';') {
+						state = AFTER_BRACK;
+					} else if (c == 'm') {
+						current_attr = new_attr;
+						state = IDLE;
+					}
+				} else if (c >= '0' && c <= '9') {
+					accu = accu * 10 + c - '0';
+				} else {
+					state = IDLE;
+				}
+			}
+		}
+		if (c == '\n')
+			break;
+	}
+	h_state.saved_s[0] = state;
+	h_state.saved_s[1] = accu;
+	h_state.state = current_attr;
+	*(int *)(h_state.saved_s + 8) = new_attr;
+	return h_state;
+}
+
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state)
 {
-	struct high_frame *stack = h_state.stack;
-	struct high_state *h = (stack ? stack->syntax : syntax)->states[h_state.state];
+	struct high_frame *stack;
+	struct high_state *h;
 			/* Current state */
 	unsigned char buf[24];		/* Name buffer (trunc after 23 characters) */
 	unsigned char lbuf[24];		/* Lower case version of name buffer */
 	unsigned char lsaved_s[24];	/* Lower case version of delimiter match buffer */
-	int buf_idx=0;	/* Index into buffer */
+	int buf_idx;	/* Index into buffer */
 	int c;		/* Current character */
-	int *attr = attr_buf;
-	int *attr_end = attr_buf+attr_size;
-	int buf_en = 0;	/* Set for name buffering */
-	int ofst = 0;	/* record offset after we've stopped buffering */
-	int mark1 = 0;  /* offset to mark start from current pos */
-	int mark2 = 0;  /* offset to mark end from current pos */
-	int mark_en = 0;/* set if marking */
+	int *attr;
+	int *attr_end;
+	int buf_en;	/* Set for name buffering */
+	int ofst;	/* record offset after we've stopped buffering */
+	int mark1;	/* offset to mark start from current pos */
+	int mark2;	/* offset to mark end from current pos */
+	int mark_en;	/* set if marking */
 	int recolor_delimiter_or_keyword;
+
+	if (syntax == ansi_syntax)
+		return ansi_parse(line, h_state);
+
+	stack = h_state.stack;
+	h = (stack ? stack->syntax : syntax)->states[h_state.state];
+	buf_idx = 0;
+	attr = attr_buf;
+	attr_end = attr_buf + attr_size;
+	buf_en = 0;
+	ofst = 0;
+	mark1 = 0;
+	mark2 = 0;
+	mark_en = 0;
 
 	buf[0]=0;	/* Forgot this originally... took 5 months to fix! */
 
@@ -812,6 +932,9 @@ struct high_syntax *load_syntax(unsigned char *name)
 {
 	if (!name)
 		return 0;
+
+	if (!zcmp(name, USTR "ansi"))
+		return ansi_syntax;
 
 	return load_syntax_subr(name,0,0);
 }

@@ -348,6 +348,29 @@ void bwdel(BW *w, long int l, long int n, int flg)
 	}
 }
 
+struct ansi_sm
+{
+	int state;
+};
+
+int ansi_decode(struct ansi_sm *sm, int bc)
+{
+	if (sm->state) {
+		if (bc >= 'a' && bc <= 'z' || bc >= 'A' && bc <= 'Z')
+			sm->state = 0;
+		return -1;
+	} else if (bc == '\033') {
+		sm->state = 1;
+		return -1;
+	} else
+		return bc;
+}
+
+void ansi_init(struct ansi_sm *sm)
+{
+	sm->state = 0;
+}
+
 /* Update a single line */
 
 static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long int scr, long int from, long int to,HIGHLIGHT_STATE st,BW *bw)
@@ -371,6 +394,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	int ungetit = -1;
 
 	struct utf8_sm utf8_sm;
+	struct ansi_sm ansi_sm;
 
         int *syn = 0;
         P *tmp;
@@ -378,6 +402,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
         int atr = BG_COLOR(bg_text); 
 
 	utf8_init(&utf8_sm);
+	ansi_init(&ansi_sm);
 
 	if(st.state!=-1) {
 		tmp=pdup(p, USTR "lgen");
@@ -487,7 +512,13 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					else if(c== -3) /* Control character 128-191, 254, 255 */
 						wid = 1;
 				} else {
-					wid = 1;
+					c = ansi_decode(&ansi_sm, bc);
+					if (c>=0) /* Not ansi */
+						wid = 1;
+					else {
+						wid = 0;
+						++idx;
+					}
 				}
 
 				if(wid>0) {
@@ -611,8 +642,13 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 						utf8_char = 'X';
 					}
 				} else { /* Regular */
-					utf8_char = bc;
-					wid = 1;
+					utf8_char = ansi_decode(&ansi_sm, bc);
+					if (utf8_char >= 0) /* Not ansi */
+						wid = 1;
+					else {
+						wid = -1;
+						++idx;
+					}
 				}
 
 				if(wid>=0) {
