@@ -1,3 +1,5 @@
+- Fix bug where undo was acting strangly in shell windows.
+
 - Fix crash when hitting -----------.. wordwrap bug.
 
 - Check for math functions
