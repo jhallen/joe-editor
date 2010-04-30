@@ -1,0 +1,12 @@
+Look in main/TODO
+
+Coroutine specific:
+
+^C allowed for uask?
+
+check fake_key in mouse
+
+usearch: in a search & replace, the entire dialog ends up being recursive.
+also this is why highlighting is not happening in search & replace.
+
+longjump version not working? only ucontext.
