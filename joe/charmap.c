@@ -1160,8 +1160,8 @@ static void load_builtins(void)
 
 struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 {
-	unsigned char buf[1024];
-	unsigned char bf1[1024];
+	unsigned char *buf = 0;
+	unsigned char *bf1 = 0;
 	unsigned comment_char = '#';
 	int in_map = 0;
 	int x;
@@ -1179,17 +1179,17 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 		b->to_uni[x]= -1;
 
 	/* This is a _really_bad_ parser.  The file has to be perfect. */
-	while (fgets((char *)buf,1023,f)) {
+	while (vsgets(&buf,f)) {
 		unsigned char *p = buf;
 		parse_ws(&p, comment_char);
-		parse_tows(&p, bf1);
+		parse_tows(&p, &bf1);
 		if (!zcmp(bf1,USTR "<comment_char>")) {
 			parse_ws(&p, comment_char);
-			parse_tows(&p, bf1);
+			parse_tows(&p, &bf1);
 			comment_char = bf1[0];
 		} else if (!zcmp(bf1,USTR "<escape_char>")) {
 			parse_ws(&p, comment_char);
-			parse_tows(&p, bf1);
+			parse_tows(&p, &bf1);
 		} else if (!zcmp(bf1,USTR "CHARMAP")) {
 			in_map = 1;
 		} else if (!zcmp(bf1,USTR "END")) {
@@ -1199,7 +1199,7 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 			int byt;
 			sscanf((char *)bf1+2,"%x",(unsigned *)&uni);
 			parse_ws(&p, comment_char);
-			parse_tows(&p, bf1);
+			parse_tows(&p, &bf1);
 			sscanf((char *)bf1+2,"%x",(unsigned *)&byt);
 			b->to_uni[byt]=uni;
 		}
@@ -1256,7 +1256,7 @@ int map_name_cmp(unsigned char *a,unsigned char *b)
 
 struct charmap *find_charmap(unsigned char *name)
 {
-	unsigned char buf[1024];
+	unsigned char *buf = 0;
 	unsigned char *p;
 	struct charmap *m;
 	struct builtin_charmap *b;
@@ -1286,13 +1286,13 @@ struct charmap *find_charmap(unsigned char *name)
 	p = (unsigned char *)getenv("HOME");
 	f = 0;
 	if (p) {
-		joe_snprintf_2(buf,sizeof(buf),"%s/.joe/charmaps/%s",p,name);
+		buf = vsfmt(buf, 0, USTR "%s/.joe/charmaps/%s",p,name);
 		f = fopen((char *)buf,"r");
 	}
 
 	/* Check JOERCcharmaps */
 	if (!f) {
-		joe_snprintf_2(buf,sizeof(buf),"%scharmaps/%s",JOEDATA,name);
+		buf = vsfmt(buf, 0, USTR "%scharmaps/%s",JOEDATA,name);
 		f = fopen((char *)buf,"r");
 	}
 
@@ -1334,12 +1334,13 @@ unsigned char **get_encodings()
 	unsigned char *r;
 	unsigned char *oldpwd = pwd();
 	unsigned char *p;
-	unsigned char buf[1024];
+	unsigned char *buf = 0;
 
 	/* Builtin maps */
 
 	r = vsncpy(NULL,0,sc("utf-8"));	
 	encodings = vaadd(encodings, r);
+	vaperm(encodings);
 
 	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y) {
 		r = vsncpy(NULL,0,sz(builtin_charmaps[y].name));
@@ -1357,34 +1358,32 @@ unsigned char **get_encodings()
 
 	p = (unsigned char *)getenv("HOME");
 	if (p) {
-		joe_snprintf_1(buf,sizeof(buf),"%s/.joe/charmaps",p);
+		buf = vsfmt(buf, 0, USTR "%s/.joe/charmaps",p);
 		if (!chpwd(buf) && (t = rexpnd(USTR "*"))) {
-			for (x = 0; x != aLEN(t); ++x)
+			for (x = 0; x != valen(t); ++x)
 				if (zcmp(t[x],USTR "..")) {
-					for (y = 0; y != aLEN(encodings); ++y)
+					for (y = 0; y != valen(encodings); ++y)
 						if (!zcmp(t[x],encodings[y]))
 							break;
-					if (y == aLEN(encodings)) {
+					if (y == valen(encodings)) {
 						r = vsncpy(NULL,0,sv(t[x]));
 						encodings = vaadd(encodings,r);
 					}
 				}
-			varm(t);
 		}
 	}
 
 	if (!chpwd(USTR (JOEDATA "charmaps")) && (t = rexpnd(USTR "*"))) {
-		for (x = 0; x != aLEN(t); ++x)
+		for (x = 0; x != valen(t); ++x)
 			if (zcmp(t[x],USTR "..")) {
-				for (y = 0; y != aLEN(encodings); ++y)
+				for (y = 0; y != valen(encodings); ++y)
 					if (!zcmp(t[x],encodings[y]))
 						break;
-				if (y == aLEN(encodings)) {
+				if (y == valen(encodings)) {
 					r = vsncpy(NULL,0,sv(t[x]));
 					encodings = vaadd(encodings,r);
 				}
 			}
-		varm(t);
 	}
 
 	chpwd(oldpwd);

@@ -30,37 +30,23 @@ struct help *help_ptr = NULL;		/* build pointer */
 
 int help_init(JFILE *fd,unsigned char *bf,int line)
 {
-	unsigned char buf[1024];			/* input buffer */
+	unsigned char *buf = vsmk(128);		/* input buffer */
 
 	struct help *tmp;
-	unsigned int bfl;				/* buffer length */
-	unsigned int hlpsiz, hlpbsz;			/* number of used/allocated bytes for tmp->text */
-	unsigned char *tempbuf;
 
 	if (bf[0] == '{') {			/* start of help screen */
 		tmp = (struct help *) joe_malloc(sizeof(struct help));
 
-		tmp->text = NULL;
+		tmp->text = vsmk(128);
+		obj_perm(tmp->text);
 		tmp->lines = 0;
-		hlpsiz = 0;
-		hlpbsz = 0;
-		tmp->name = vsncpy(NULL, 0, sz(bf + 1) - 1); /* -1 kill the \n */
+		tmp->name = vsncpy(NULL, 0, sz(bf + 1));
+		obj_perm(tmp->name);
 
-		while ((jfgets(buf, sizeof(buf), fd)) && (buf[0] != '}')) {
+		while ((jfgets(&buf, fd)) && (buf[0] != '}')) {
 			++line;
-			bfl = zlen(buf);
-			if (hlpsiz + bfl > hlpbsz) {
-				if (tmp->text) {
-					tempbuf = (unsigned char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
-					tmp->text = tempbuf;
-				} else {
-					tmp->text = (unsigned char *) joe_malloc(bfl + 1024);
-					tmp->text[0] = 0;
-				}
-				hlpbsz += bfl + 1024;
-			}
-			zcpy(tmp->text + hlpsiz, buf);
-			hlpsiz += bfl;
+			tmp->text = vscat(tmp->text, sv(buf));
+			tmp->text = vsadd(tmp->text, '\n');
 			++tmp->lines;
 		}
 		tmp->prev = help_ptr;

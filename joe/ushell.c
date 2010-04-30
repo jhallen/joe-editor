@@ -77,21 +77,15 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	undomark();
 }
 
-int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only)
+int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build, int out_only)
 {
 #ifdef __MSDOS__
-	if (notify) {
-		*notify = 1;
-	}
 	varm(s);
 	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
 #else
 	MPX *m;
 
-	if (notify) {
-		*notify = 1;
-	}
 	if (bw->b->pid) {
 		msgnw(bw->parent, joe_gettext(_("Program already running in this window")));
 		varm(s);
@@ -131,75 +125,68 @@ int ubknd(BW *bw)
 
         ok:
 	a = vamk(3);
+	vaperm(a);
 	s = vsncpy(NULL, 0, sz(sh));
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL, 0, 0);
+	return cstart(bw, sh, a, NULL, 0, 0);
 }
 
 /* Run a program in a window */
-
-static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	unsigned char **a;
-	unsigned char *cmd;
-
-        if (!modify_logic(bw,bw->b))
-        	return -1;
-
-	a = vamk(10);
-	cmd = vsncpy(NULL, 0, sc("/bin/sh"));
-
-	a = vaadd(a, cmd);
-	cmd = vsncpy(NULL, 0, sc("-c"));
-	a = vaadd(a, cmd);
-	a = vaadd(a, s);
-	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 0, 0);
-}
 
 B *runhist = NULL;
 
 int urun(BW *bw)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Program to run: ")), &runhist, dorun, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
-		return 0;
+	unsigned char *s = ask(bw->parent, joe_gettext(_("Program to run: ")), &runhist, USTR "Run",
+	                       utypebw, locale_map, 0, 0, NULL);
+
+	if (s) {
+		unsigned char **a;
+		unsigned char *cmd;
+
+		if (!modify_logic(bw,bw->b))
+			return -1;
+
+		a = vamk(10);
+		cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+
+		a = vaadd(a, cmd);
+		cmd = vsncpy(NULL, 0, sc("-c"));
+		a = vaadd(a, cmd);
+		a = vaadd(a, s);
+		return cstart(bw, USTR "/bin/sh", a, NULL, 0, 0);
 	} else {
 		return -1;
 	}
-}
-
-static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	unsigned char **a = vamk(10);
-	unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
-
-	a = vaadd(a, cmd);
-	cmd = vsncpy(NULL, 0, sc("-c"));
-	a = vaadd(a, cmd);
-	a = vaadd(a, s);
-	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 1, 0);
 }
 
 B *buildhist = NULL;
 
 int ubuild(BW *bw)
 {
+	unsigned char *s;
+	int prev = 0;
 	if (buildhist) {
-		if ((bw=wmkpw(bw->parent, joe_gettext(_("Build command: ")), &buildhist, dobuild, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
-			uuparw(bw);
-			u_goto_eol(bw);
-			bw->cursor->xcol = piscol(bw->cursor);
-			return 0;
-		} else {
-		return -1;
-		}
+		s = joe_gettext(_("Build command: "));
+		prev = 1;
 	} else {
-		if (wmkpw(bw->parent, joe_gettext(_("Enter build command (for example, 'make'): ")), &buildhist, dobuild, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
-			return 0;
-		} else {
+		s = joe_gettext(_("Enter build command (for example, 'make'): "));
+	}
+	/* "file prompt" was set for this... */
+	s = ask(bw->parent, s, &buildhist, USTR "Run", utypebw, locale_map, 0, prev, NULL);
+	if (s) {
+		unsigned char **a = vamk(10);
+		unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+
+		a = vaadd(a, cmd);
+		cmd = vsncpy(NULL, 0, sc("-c"));
+		a = vaadd(a, cmd);
+		a = vaadd(a, s);
+		return cstart(bw, USTR "/bin/sh", a, NULL, 1, 0);
+	} else {
 		return -1;
-		}
 	}
 }
 
@@ -207,52 +194,39 @@ B *grephist = NULL;
 
 int ugrep(BW *bw)
 {
-	/* Set parser to grep */
-	bw->b->parseone = parseone_grep;
+	unsigned char *s;
+	int prev = 0;
 	if (grephist) {
-		if ((bw=wmkpw(bw->parent, joe_gettext(_("Grep command: ")), &grephist, dobuild, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
-			uuparw(bw);
-			u_goto_eol(bw);
-			bw->cursor->xcol = piscol(bw->cursor);
-			return 0;
-		} else {
-		return -1;
-		}
+		s = joe_gettext(_("Grep command: "));
+		prev = 1;
 	} else {
-		if (wmkpw(bw->parent, joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): ")), &grephist, dobuild, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
-			return 0;
-		} else {
+		s = joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): "));
+	}
+	/* "file prompt" was set for this... */
+	s = ask(bw->parent, s, &grephist, USTR "Run", utypebw, locale_map, 0, prev, NULL);
+	if (s) {
+		unsigned char **a = vamk(10);
+		unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+
+		a = vaadd(a, cmd);
+		cmd = vsncpy(NULL, 0, sc("-c"));
+		a = vaadd(a, cmd);
+		a = vaadd(a, s);
+		return cstart(bw, USTR "/bin/sh", a, NULL, 1, 0);
+	} else {
 		return -1;
-		}
 	}
 }
 
 /* Kill program */
 
-static int pidabort(BW *bw, int c, void *object, int *notify)
-{
-	if (notify) {
-		*notify = 1;
-	}
-	if (c != YES_CODE && !yncheck(yes_key, c)) {
-		return -1;
-	}
-	if (bw->b->pid) {
-		kill(bw->b->pid, 1);
-		return -1;
-	} else {
-		return -1;
-	}
-}
-
 int ukillpid(BW *bw)
 {
 	if (bw->b->pid) {
-		if (mkqw(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), pidabort, NULL, NULL, NULL)) {
-			return 0;
-		} else {
-			return -1;
-		}
+		int c = query(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), 0);
+		if (bw->b->pid && (c == YES_CODE || yncheck(yes_key, c)))
+			kill(bw->b->pid, 1);
+		return -1;
 	} else {
 		return 0;
 	}

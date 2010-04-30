@@ -7,13 +7,11 @@
  */
 #include "types.h"
 
-/* Needed for TIOCGWINSZ detection below */
 #ifdef GWINSZ_IN_SYS_IOCTL
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
 #endif
-
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
@@ -22,15 +20,12 @@
 #endif
 
 #ifdef HAVE_OPENPTY
-
 #ifdef HAVE_PTY_H
 #include <pty.h>
 #endif
-
 #ifdef HAVE_LIBUTIL_H
 #include <libutil.h>
 #endif
-
 #endif
 
 #ifdef HAVE_LOGIN_TTY

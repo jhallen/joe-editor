@@ -31,6 +31,7 @@ int uabort PARAMS((BW *bw, int k));
 int uabort1 PARAMS((BW *bw, int k));
 void setline PARAMS((B *b, long int line));
 int abortit PARAMS((BW *bw));
+unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, int fill);
 extern int staen;
 extern int staupd;
 extern int keepup;

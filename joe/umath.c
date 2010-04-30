@@ -184,9 +184,22 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 		*ptr = c;
 	} else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
-		char *eptr;
-		x = strtod((char *)ptr,&eptr);
-		ptr = (unsigned char *)eptr;
+		if (ptr[0] == '0' && ptr[1] == 'x') {
+			x = 0.0;
+			ptr += 2;
+			while ((*ptr >= '0' && *ptr <= '9') || (*ptr >= 'a' && *ptr <='f') ||
+			       (*ptr >= 'A' && *ptr <= 'F'))
+				if (*ptr >= '0' && *ptr <= '9')
+					x = x * 16.0 + *ptr++ - '0';
+				else if (*ptr >= 'a' && *ptr <= 'f')
+					x = x * 16.0 + *ptr++ - 'a' + 10;
+				else
+					x = x * 16.0 + *ptr++ - 'A' + 10;
+		} else {
+			char *eptr;
+			x = strtod((char *)ptr,&eptr);
+			ptr = (unsigned char *)eptr;
+		}
 	} else if (*ptr == '(') {
 		++ptr;
 		x = expr(0, en, &v);
@@ -586,6 +599,7 @@ double m_y1(double n) { return y1(n); }
 
 double m_int(double n) { return (int)(n); }
 
+
 double calc(BW *bw, unsigned char *s)
 {
 	/* BW *tbw = bw->parent->main->object; */
@@ -840,41 +854,38 @@ double calc(BW *bw, unsigned char *s)
 }
 
 /* Main user interface */
-static int domath(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	double result = calc(bw, s);
-
-	if (notify) {
-		*notify = 1;
-	}
-	if (merr) {
-		msgnw(bw->parent, merr);
-		return -1;
-	}
-	vsrm(s);
-	if (mode_hex)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%lX", (long)result);
-	else if (mode_eng)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
-	else
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
-	if (bw->parent->watom->what != TYPETW || mode_ins) {
-		binsm(bw->cursor, sz(msgbuf));
-		pfwrd(bw->cursor, zlen(msgbuf));
-		bw->cursor->xcol = piscol(bw->cursor);
-	} else {
-		msgnw(bw->parent, msgbuf);
-	}
-	mode_ins = 0;
-	return 0;
-}
 
 B *mathhist = NULL;
 
 int umath(BW *bw)
 {
+	unsigned char *s;
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, USTR "=", &mathhist, domath, USTR "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
+	again:
+	s = ask(bw->parent, USTR "=", &mathhist, USTR "Math", utypebw, locale_map, 0, 0, NULL);
+	if (s) {
+		unsigned char buf[128];
+		double result = calc(bw, s);
+
+		if (merr) {
+			msgnw(bw->parent, merr);
+			return -1;
+		}
+		if (mode_hex)
+			joe_snprintf_1(buf, sizeof(buf), "0x%lX", (long)result);
+		else if (mode_eng)
+			joe_snprintf_1(buf, sizeof(buf), "%.16G", result);
+		else
+			joe_snprintf_1(buf, sizeof(buf), "%.16G", result);
+		if (bw->parent->watom->what != TYPETW || mode_ins) {
+			binsm(bw->cursor, sz(buf));
+			pfwrd(bw->cursor, zlen(buf));
+			bw->cursor->xcol = piscol(bw->cursor);
+		} else {
+			msgnw(bw->parent, buf);
+		}
+		mode_ins = 0;
+		goto again;
 		return 0;
 	} else {
 		return -1;

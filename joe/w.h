@@ -82,7 +82,7 @@ struct window {
 	unsigned char	*msgt;		/* Message at top of window */
 	unsigned char	*msgb;		/* Message at bottom of window */
 	unsigned char	*huh;		/* Name of window for context sensitive hlp */
-	int	*notify;	/* Address of kill notification flag */
+	Coroutine *coro;	/* Coroutine which is resumed when this prompt window is finished */
 };
 
 /* Anything which goes in window.object must start like this: */
@@ -171,7 +171,7 @@ void sresize PARAMS((Screen *t));
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate PARAMS((Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify));
+W *wcreate PARAMS((Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh));
 
 /* int wabort(W *w);
  *
@@ -237,9 +237,6 @@ void updall PARAMS((void));
  */
 void msgnw PARAMS((W *w, unsigned char *s));
 void msgnwt PARAMS((W *w, unsigned char *s));
-
-#define JOE_MSGBUFSIZE 300
-extern unsigned char msgbuf[JOE_MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
 
 void msgout PARAMS((W *w));			/* Output msgnw/msgnwt messages */
 

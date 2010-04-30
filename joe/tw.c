@@ -69,44 +69,44 @@ static void resizetw(BW *bw, int wi, int he)
 unsigned char *get_context(BW *bw)
 {
 	P *p = pdup(bw->cursor, USTR "get_context");
-	static unsigned char buf1[stdsiz];
-	int i, j, spc;
+	unsigned char *buf = 0;
+	unsigned char *buf1;
+	int i, spc;
 
 
-	buf1[0] = 0;
+	buf1 = vsmk(128);
 	/* Find first line with 0 indentation which is not a comment line */
 	do {
 		p_goto_bol(p);
 		if (!pisindent(p) && !pisblank(p)) {
 			/* next: */
-			brzs(p,stdbuf,stdsiz/8); /* To avoid buffer overruns with my_iconv */
+			buf = brlinevs(buf, p);
 			/* Ignore comment and block structuring lines */
-			if (!(stdbuf[0]=='{' ||
-			    (stdbuf[0]=='/' && stdbuf[1]=='*') ||
-			    stdbuf[0]=='\f' ||
-			    (stdbuf[0]=='/' && stdbuf[1]=='/') ||
-			    stdbuf[0]=='#' ||
-			    (stdbuf[0]=='b' && stdbuf[1]=='e' && stdbuf[2]=='g' && stdbuf[3]=='i' && stdbuf[4]=='n') ||
-			    (stdbuf[0]=='B' && stdbuf[1]=='E' && stdbuf[2]=='G' && stdbuf[3]=='I' && stdbuf[4]=='N') ||
-			    (stdbuf[0]=='-' && stdbuf[1]=='-') ||
-			    stdbuf[0]==';')) {
-			    	/* zcpy(buf1,stdbuf); */
+			if (!(buf[0]=='{' ||
+			    (buf[0]=='/' && buf[1]=='*') ||
+			    buf[0]=='\f' ||
+			    (buf[0]=='/' && buf[1]=='/') ||
+			    buf[0]=='#' ||
+			    (buf[0]=='b' && buf[1]=='e' && buf[2]=='g' && buf[3]=='i' && buf[4]=='n') ||
+			    (buf[0]=='B' && buf[1]=='E' && buf[2]=='G' && buf[3]=='I' && buf[4]=='N') ||
+			    (buf[0]=='-' && buf[1]=='-') ||
+			    buf[0]==';')) {
  				/* replace tabs to spaces and remove adjoining spaces */
- 				for (i=0,j=0,spc=0; stdbuf[i]; i++) {
- 					if (stdbuf[i]=='\t' || stdbuf[i]==' ') {
+ 				buf1 = vstrunc(buf1, 0);
+ 				for (i=0,spc=0; buf[i]; i++) {
+ 					if (buf[i]=='\t' || buf[i]==' ') {
  						if (spc) continue;
  						spc = 1;
  					}
  					else spc = 0;
- 					if (stdbuf[i]=='\t')
- 						buf1[j++] = ' ';
-					else if (stdbuf[i]=='\\') {
-						buf1[j++] = '\\';
-						buf1[j++] = '\\';
+ 					if (buf[i]=='\t')
+ 						buf1 = vsadd(buf1, ' ');
+					else if (buf[i]=='\\') {
+						buf1 = vsadd(buf1, '\\');
+						buf1 = vsadd(buf1, '\\');
 					} else
-						buf1[j++] = stdbuf[i];
+						buf1 = vsadd(buf1, buf[i]);
  				}
- 				buf1[j]= '\0';
 				/* Uncomment to get the last line instead of the first line (see above)
 			    	if (pprevl(p)) {
 			    		p_goto_bol(p);
@@ -151,6 +151,7 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 	cas=localtime(&n);
 
 	stalin = vstrunc(stalin, 0);
+	obj_perm(stalin);
 	while (*s) {
 		if (*s == '%' && s[1]) {
 			switch (*++s) {
@@ -158,10 +159,8 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				{
 					if ( bw->o.autoindent) {
 						unsigned char *s = get_context(bw);
-						/* We need to translate between file's character set to
-						   locale */
-						my_iconv(stdbuf,locale_map,s,bw->o.charmap);
-						stalin = vsncpy(sv(stalin), sz(stdbuf));
+						unsigned char *t = my_iconv(NULL,locale_map,s,bw->o.charmap);
+						stalin = vscat(stalin, sv(t));
 					}
 				}
 				break;
@@ -190,42 +189,41 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 					stalin = vsncpy(sv(stalin), d + 13, 3);
 				}
 				break;
-			case 'd':
+			    case 'd':
 				{
-					if (s[1]) switch (*++s) {
-						case 'd' : joe_snprintf_1(buf, sizeof(buf), "%02d",cas->tm_mday); break;
-						case 'm' : joe_snprintf_1(buf, sizeof(buf), "%02d",cas->tm_mon + 1); break;
-						case 'y' : joe_snprintf_1(buf, sizeof(buf), "%02d",cas->tm_year % 100); break;
-						case 'Y' : joe_snprintf_1(buf, sizeof(buf), "%04d",cas->tm_year + 1900); break;
-						case 'w' : joe_snprintf_1(buf, sizeof(buf), "%d",cas->tm_wday); break;
-						case 'D' : joe_snprintf_1(buf, sizeof(buf), "%03d",cas->tm_yday); break;
-						default : buf[0]='d'; buf[1]=*s; buf[2]=0;
-					} else {
-						buf[0]='d'; buf[1]=0;
+				if (s[1]) switch (*++s) {
+					case 'd' : joe_snprintf_1(buf,sizeof(buf),"%02d",cas->tm_mday); break;
+					case 'm' : joe_snprintf_1(buf,sizeof(buf),"%02d",cas->tm_mon + 1); break;
+					case 'y' : joe_snprintf_1(buf,sizeof(buf),"%02d",cas->tm_year % 100); break;
+					case 'Y' : joe_snprintf_1(buf,sizeof(buf),"%04d",cas->tm_year + 1900); break;
+					case 'w' : joe_snprintf_1(buf,sizeof(buf),"%d",cas->tm_wday); break;
+					case 'D' : joe_snprintf_1(buf,sizeof(buf),"%03d",cas->tm_yday); break;
+					default : buf[0]='d'; buf[1]=*s; buf[2]=0;
 					}
-					stalin=vsncpy(sv(stalin),sz(buf));
+				else { buf[0]='d'; buf[1]=0;}
+				stalin=vsncpy(sv(stalin),sz(buf));
 				}
 				break;
 
-			case 'E':
+				case 'E':
 				{
-					unsigned char *ch;
-					int l;
-					buf[0]=0;
-					for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
-					if (s[l+1]=='%' && buf[0]) {
-						buf[l]=0;
-						s+=l+1;
-						ch=(unsigned char *)getenv((char *)buf);
-						if (ch) stalin=vsncpy(sv(stalin),sz(ch));
+				int l;
+				unsigned char *ch;
+				buf[0]=0;
+				for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
+				if (s[l+1]=='%' && buf[0]) {
+					buf[l]=0;
+					s+=l+1;
+					ch=(unsigned char *)getenv((char *)buf);
+					if (ch) stalin=vsncpy(sv(stalin),sz(ch));
 					} 
 				}
 				break;
 
 			case 'Z':
 				{
-					unsigned char *ch;
 					int l;
+					unsigned char *ch;
 					buf[0]=0;
 					for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
 					if (s[l+1]=='%' && buf[0]) {
@@ -274,9 +272,7 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				if (bw->b->name) {
 					unsigned char *tmp = simplify_prefix(bw->b->name);
 					unsigned char *tmp1 = duplicate_backslashes(sv(tmp));
-					vsrm(tmp);
 					stalin = vsncpy(sv(stalin), sv(tmp1));
-					vsrm(tmp1);
 				} else {
 					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("Unnamed"))));
 				}
@@ -447,8 +443,8 @@ static void disptw(BW *bw, int flg)
 		if (fmtlen(tw->staright) < w->w) {
 			int x = fmtpos(tw->stalin, w->w - fmtlen(tw->staright));
 
-			if (x > sLEN(tw->stalin))
-				tw->stalin = vsfill(sv(tw->stalin), fill, x - sLEN(tw->stalin));
+			if (x > vslen(tw->stalin))
+				tw->stalin = vsfill(sv(tw->stalin), fill, x - vslen(tw->stalin));
 			tw->stalin = vsncpy(tw->stalin, fmtpos(tw->stalin, w->w - fmtlen(tw->staright)), sv(tw->staright));
 		}
 		tw->stalin = vstrunc(tw->stalin, fmtpos(tw->stalin, w->w));
@@ -487,11 +483,11 @@ int usplitw(BW *bw)
 	dostaupd = 1;
 	if (newh / 2 < FITHEIGHT)
 		return -1;
-	new = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL, NULL);
+	new = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL);
 	if (!new)
 		return -1;
 	wfit(new->t);
-	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
+	new->object = (void *) (newbw = bwmk(new, bw->b, 0, NULL));
 	++bw->b->count;
 	newbw->offset = bw->offset;
 	newbw->object = (void *) (newtw = (TW *) joe_malloc(sizeof(TW)));
@@ -512,12 +508,12 @@ int uduptw(BW *bw)
 	BW *newbw;
 
 	dostaupd = 1;
-	new = wcreate(w->t, w->watom, findbotw(w), NULL, NULL, newh, NULL, NULL);
+	new = wcreate(w->t, w->watom, findbotw(w), NULL, NULL, newh, NULL);
 	if (!new)
 		return -1;
 	if (demotegroup(w))
 		new->t->topwin = new;
-	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
+	new->object = (void *) (newbw = bwmk(new, bw->b, 0, NULL));
 	++bw->b->count;
 	newbw->offset = bw->offset;
 	newbw->object = (void *) (newtw = (TW *) joe_malloc(sizeof(TW)));
@@ -576,41 +572,17 @@ int abortit(BW *bw)
 			   any prompt windows? */
 
 			bwrm(bw);
-			w->object = (void *) (bw = bwmk(w, b, 0));
+			w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 			wredraw(bw->parent);
 			bw->object = object;
 			return 0;
 		}
 	bwrm(bw);
-	vsrm(tw->stalin);
+	obj_free(tw->stalin);
 	joe_free(tw);
 	w->object = NULL;
 	wabort(w);	/* Eliminate this window and it's children */
 	return 0;
-}
-
-/* User routine for aborting a text window */
-
-static int naborttw(BW *bw, int k, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	if (k != YES_CODE && !yncheck(yes_key, k))
-		return -1;
-
-	genexmsg(bw, 0, NULL);
-	return abortit(bw);
-}
-
-static int naborttw1(BW *bw, int k, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	if (k != YES_CODE && !yncheck(yes_key, k))
-		return -1;
-
-	if (!exmsg) genexmsg(bw, 0, NULL);
-	return abortit(bw);
 }
 
 /* k is last character types which lead to uabort.  If k is -1, it means uabort
@@ -622,13 +594,13 @@ int uabort(BW *bw, int k)
 		return wabort(bw->parent);
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
-	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw, NULL, NULL, NULL))
-			return 0;
-		else
+	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
+		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		if (!yncheck(yes_key, c))
 			return -1;
-	else
-		return naborttw(bw, YES_CODE, NULL, NULL);
+	}
+	genexmsg(bw, 0, NULL);
+	return abortit(bw);
 }
 
 int ucancel(BW *bw, int k)
@@ -648,13 +620,13 @@ int uabort1(BW *bw, int k)
 		return wabort(bw->parent);
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
-	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw1, NULL, NULL, NULL))
-			return 0;
-		else
+	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
+		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		if (!yncheck(yes_key, c))
 			return -1;
-	else
-		return naborttw1(bw, YES_CODE, NULL, NULL);
+	}
+	if (!exmsg) genexmsg(bw, 0, NULL);
+	return abortit(bw);
 }
 
 /* Abort buffer without prompting: just fail if this is last window on buffer */
@@ -674,13 +646,14 @@ int uabortbuf(BW *bw)
 		void *object = bw->object;
 
 		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0));
+		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 		wredraw(bw->parent);
 		bw->object = object;
 		return 0;
 	}
 
-	return naborttw(bw, YES_CODE, NULL, NULL);
+	genexmsg(bw, 0, NULL);
+	return abortit(bw);
 }
 
 /* Kill current window (orphans buffer) */
@@ -756,9 +729,9 @@ BW *wmktw(Screen *t, B *b)
 	BW *bw;
 	TW *tw;
 
-	w = wcreate(t, &watomtw, NULL, NULL, NULL, t->h, NULL, NULL);
+	w = wcreate(t, &watomtw, NULL, NULL, NULL, t->h, NULL);
 	wfit(w->t);
-	w->object = (void *) (bw = bwmk(w, b, 0));
+	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 	bw->object = (void *) (tw = (TW *) joe_malloc(sizeof(TW)));
 	iztw(tw, w->y);
 	return bw;

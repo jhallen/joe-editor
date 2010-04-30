@@ -25,6 +25,9 @@ struct bw {
 	int	linums;
 	int	top_changed;	/* Top changed */
 	struct lattr_db *db;	/* line attribute database */
+	unsigned char *prompt;
+	int promptofst;
+	int promptlen;
 };
 
 extern int dspasis;	/* Display characters above 127 as-is */
@@ -37,7 +40,7 @@ void bwins PARAMS((BW *w, long int l, long int n, int flg));
 void bwdel PARAMS((BW *w, long int l, long int n, int flg));
 void bwgen PARAMS((BW *w, int linums));
 void bwgenh PARAMS((BW *w));
-BW *bwmk PARAMS((W *window, B *b, int prompt));
+BW *bwmk PARAMS((W *window, B *b, int prompt, unsigned char *ps));
 void bwmove PARAMS((BW *w, int x, int y));
 void bwresz PARAMS((BW *w, int wi, int he));
 void bwrm PARAMS((BW *w));

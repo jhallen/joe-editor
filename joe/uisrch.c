@@ -45,17 +45,11 @@ static void frirec(IREC *i)
 static void rmisrch(struct isrch *isrch)
 {				/* Eliminate a struct isrch */
 	if (isrch) {
-		vsrm(isrch->pattern);
-		vsrm(isrch->prompt);
+		obj_free(isrch->pattern);
+		obj_free(isrch->prompt);
 		frchn(&fri, &isrch->irecs);
 		joe_free(isrch);
 	}
-}
-
-static int iabrt(BW *bw, struct isrch *isrch)
-{				/* User hit ^C */
-	rmisrch(isrch);
-	return -1;
 }
 
 static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
@@ -90,11 +84,12 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 
 	i->wrap_flag = srch->wrap_flag;
 
-	vsrm(srch->pattern);
-	srch->pattern = vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern));
+	obj_free(srch->pattern);
+	srch->pattern = vsncpy(NULL, 0, sv(isrch->pattern));
+	obj_perm(srch->pattern);
 	srch->backwards = isrch->dir;
 
-	if (dopfnext(bw, srch, NULL)) {
+	if (dopfnext(bw, srch)) {
 		if(joe_beep)
 			ttputc(7);
 	}
@@ -103,11 +98,12 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 
 /* Main user interface */
 /* When called with c==-1, it just creates the prompt */
-static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
+static int itype(BW *bw, int c, struct isrch *isrch)
 {
 	IREC *i;
 	int omid;
 
+	again:
 	if (isrch->quote) {
 		goto in;
 	}
@@ -120,7 +116,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 			mid = 1;
 			dofollows();
 			mid = omid;
-			isrch->pattern = vstrunc(isrch->pattern, sLEN(isrch->pattern) - i->what);
+			isrch->pattern = vstrunc(isrch->pattern, vslen(isrch->pattern) - i->what);
 			frirec(deque_f(IREC, link, i));
 		} else {
 			if(joe_beep)
@@ -163,11 +159,12 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 
 			i->wrap_flag = srch->wrap_flag;
 
-			vsrm(srch->pattern);
-			srch->pattern = vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern));
+			obj_free(srch->pattern);
+			srch->pattern = vsncpy(NULL, 0, isrch->pattern, vslen(isrch->pattern));
+			obj_perm(srch->pattern);
 			srch->backwards = isrch->dir;
 
-			if (dopfnext(bw, srch, NULL)) {
+			if (dopfnext(bw, srch)) {
 				if(joe_beep)
 					ttputc(7);
 				frirec(i);
@@ -178,13 +175,10 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 	} else if (c >= 0 && c < 32) {
 		/* Done when a control character is received */
 		nungetc(c);
-		if (notify) {
-			*notify = 1;
-		}
 		smode = 2;
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
-			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, sLen(lastisrch->pattern));
+			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, vslen(lastisrch->pattern));
 			rmisrch(lastisrch);
 		}
 		lastisrch = isrch;
@@ -227,7 +221,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		/* Translate bytes to utf-8 */
 		unsigned char buf[16];
 		int x;
-		for (x=0; x!=sLEN(isrch->pattern); ++x) {
+		for (x=0; x!=vslen(isrch->pattern); ++x) {
 			int c = to_uni(bw->b->o.charmap, isrch->pattern[x]);
 			utf8_encode(buf,c);
 			isrch->prompt = vsncpy(sv(isrch->prompt),sz(buf));
@@ -235,7 +229,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 	} else if (!locale_map->type && bw->b->o.charmap->type) {
 		/* Translate utf-8 to bytes */
 		unsigned char *p = isrch->pattern;
-		int len = sLEN(isrch->pattern);
+		int len = vslen(isrch->pattern);
 		while (len) {
 			int c = utf8_decode_fwrd(&p, &len);
 			if (c>=0) {
@@ -248,9 +242,10 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		isrch->prompt = vsncpy(sv(isrch->prompt),sv(isrch->pattern));
 	}
 
-	if (mkqwnsr(bw->parent, sv(isrch->prompt), itype, iabrt, isrch, notify)) {
-		return 0;
-	} else {
+	c = query(bw->parent, sv(isrch->prompt), QW_SR);
+	if (c != -1)
+		goto again;
+	else {
 		rmisrch(isrch);
 		return -1;
 	}
@@ -265,8 +260,8 @@ static int doisrch(BW *bw, int dir)
 	isrch->dir = dir;
 	isrch->quote = 0;
 	isrch->prompt = vsncpy(NULL, 0, sz(joe_gettext(_("I-find: "))));
-	isrch->ofst = sLen(isrch->prompt);
-	return itype(bw, -1, isrch, NULL);
+	isrch->ofst = vslen(isrch->prompt);
+	return itype(bw, -1, isrch);
 }
 
 int uisrch(BW *bw)
@@ -275,7 +270,7 @@ int uisrch(BW *bw)
 		struct isrch *isrch = lastisrch;
 
 		lastisrch = 0;
-		return itype(bw, 'S' - '@', isrch, NULL);
+		return itype(bw, 'S' - '@', isrch);
 	} else {
 		if (globalsrch) {
 			rmsrch(globalsrch);
@@ -283,7 +278,7 @@ int uisrch(BW *bw)
 		}
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
-			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, sLen(lastisrch->pattern));
+			lastpat = vsncpy(lastpat, 0, sv(lastisrch->pattern));
 			rmisrch(lastisrch);
 			lastisrch = 0;
 		}
@@ -297,7 +292,7 @@ int ursrch(BW *bw)
 		struct isrch *isrch = lastisrch;
 
 		lastisrch = 0;
-		return itype(bw, 'R' - '@', isrch, NULL);
+		return itype(bw, 'R' - '@', isrch);
 	} else {
 		if (globalsrch) {
 			rmsrch(globalsrch);
@@ -305,7 +300,7 @@ int ursrch(BW *bw)
 		}
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
-			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, sLen(lastisrch->pattern));
+			lastpat = vsncpy(lastpat, 0, sv(lastisrch->pattern));
 			rmisrch(lastisrch);
 			lastisrch = 0;
 		}

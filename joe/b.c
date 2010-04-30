@@ -1,4 +1,4 @@
-/*
+ /*
  *	Editor engine
  *	Copyright
  *		(C) 1992 Joseph H. Allen
@@ -25,8 +25,6 @@ extern int errno;
 #include <selinux/selinux.h>
 static int selinux_enabled = -1;
 #endif
-
-unsigned char stdbuf[stdsiz];
 
 int guesscrlf = 0;
 int guessindent = 0;
@@ -160,7 +158,7 @@ B *bafter(B *b)
 
 int udebug_joe(BW *bw)
 {
-	unsigned char buf[1024];
+	unsigned char *buf = vsmk(128);
 
 	B *b;
 	P *p;
@@ -170,13 +168,13 @@ int udebug_joe(BW *bw)
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next) {
 		if (b->name)
-			joe_snprintf_1(buf, sizeof(buf), "Buffer %s\n", b->name);
+			buf = vsfmt(buf, 0, USTR "Buffer %s\n", b->name);
 		else
-			joe_snprintf_1(buf, sizeof(buf), "Buffer 0x%p\n", (void *)b);
+			buf = vsfmt(buf, 0, USTR "Buffer 0x%p\n", (void *)b);
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		for (p = b->bof->link.next; p != b->bof; p = p->link.next) {
-			joe_snprintf_1(buf, sizeof(buf), "  Pointer created by %s\n", p->tracker);
+			buf = vsfmt(buf, 0, USTR "  Pointer created by %s\n", p->tracker);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}
@@ -719,7 +717,7 @@ int pgetc(P *p)
 		int c; /* , oc; */
 		int d;
 		int n; /* , m; */
-		int wid = 0;
+		int wid;
 
 		val = p->valcol;	/* Remember if column number was valid */
 		c = pgetb(p);		/* Get first byte */
@@ -2184,13 +2182,12 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 
 	*skip = 0;
 	*amnt = MAXLONG;
-	x = sLEN(n) - 1;
+	x = obj_len(n) - 1;
 	if (x > 0 && n[x] >= '0' && n[x] <= '9') {
-		for (x = sLEN(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
+		for (x = obj_len(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 		if (n[x] == ',' && x && n[x-1] != '\\') {
 			n[x] = 0;
-
-#if SIZEOF_LONG_LONG && SIZEOF_OFF_T == SIZEOF_LONG_LONG
+#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
 				sscanf((char *)(n + x + 2), "%llx", skip);
 			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
@@ -2212,10 +2209,11 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 			--x;
 			if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 				for (; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
-				if (n[x] == ',' && x && n[x-1]!='\\') {
+				if (n[x] == ',' && x && n[x-1] != '\\') {
 					n[x] = 0;
 					*amnt = *skip;
-#if SIZEOF_LONG_LONG && SIZEOF_OFF_T == SIZEOF_LONG_LONG
+
+#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T
 					if (n[x + 1] == 'x' || n[x + 1] == 'X')
 						sscanf((char *)(n + x + 2), "%llx", skip);
 					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
@@ -2259,8 +2257,7 @@ unsigned char *canonical(unsigned char *n)
 
 				s = (unsigned char *)getenv("HOME");
 				z = vsncpy(NULL, 0, sz(s));
-				z = vsncpy(z, sLEN(z), sz(n + x));
-				vsrm(n);
+				z = vsncpy(sv(z), sz(n + x));
 				n = z;
 			} else {
 				struct passwd *passwd;
@@ -2269,11 +2266,9 @@ unsigned char *canonical(unsigned char *n)
 				passwd = getpwnam((char *)(n + 1));
 				n[x] = '/';
 				if (passwd) {
-					unsigned char *z = vsncpy(NULL, 0,
-							 sz((unsigned char *)(passwd->pw_dir)));
+					unsigned char *z = vsdupz((unsigned char *)(passwd->pw_dir));
 
-					z = vsncpy(z, sLEN(z), sz(n + x));
-					vsrm(n);
+					z = vscatz(z, n + x);
 					n = z;
 				}
 			}
@@ -2569,9 +2564,6 @@ opnerr:
 		prm(p);
 	}
 
-	/* Eliminate parsed name */
-	vsrm(n);
-
 	b->er = berror;
 	return b;
 }
@@ -2783,10 +2775,8 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 			/* Try to copy permissions */
 			if (!lstat((char *)dequote(s),&lsbuf)) {
 				int g;
-				if (!break_symlinks && S_ISLNK(lsbuf.st_mode)) {
+				if (!break_symlinks && S_ISLNK(lsbuf.st_mode))
 					goto nobreak;
-				}
-
 #ifdef WITH_SELINUX
 				security_context_t se;
 				if (selinux_enabled == -1)
@@ -2923,24 +2913,26 @@ unsigned char *brs(P *p, int size)
 	return brmem(p, s, size);
 }
 
-unsigned char *brvs(P *p, int size)
+unsigned char *brvs(unsigned char *s,P *p, int size)
 {
-	unsigned char *s = vstrunc(NULL, size);
+	s = vstrunc(s, size);
 
-	return brmem(p, (unsigned char *)s, size);
+	return brmem(p, s, size);
 }
 
-unsigned char *brzs(P *p, unsigned char *buf, int size)
+unsigned char *brlinevs(unsigned char *buf, P *p)
 {
-	P *q=pdup(p, USTR "brzs");
+	P *q=pdup(p, USTR "brlinevs");
+	size_t size;
 	p_goto_eol(q);
 
-	if(q->byte-p->byte<size)
-		size = q->byte - p->byte;
+	size = q->byte - p->byte;
 
 	prm(q);
+	buf = vsensure(buf, size);
 	brmem(p,buf,size);
 	buf[size]=0;
+	obj_len(buf) = size;
 	return buf;
 }
 
@@ -2979,6 +2971,7 @@ RETSIGTYPE ttsig(int sig)
 	if ((ttsig_f = fdopen(tmpfd, "a")) == NULL)
 		_exit(1);
 
+	/* Do not use joe_gettext() here or you might get an infinite loop */
 	fprintf(ttsig_f, "\n*** These modified files were found in JOE when it aborted on %s", ctime(&tim));
 	if (sig == -2)
 		fprintf(ttsig_f, "*** JOE was aborted due to swap file I/O error\n");
@@ -2992,9 +2985,9 @@ RETSIGTYPE ttsig(int sig)
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
 		if (b->changed) {
 			if (b->name)
-				fprintf(ttsig_f, (char *)joe_gettext(_("\n*** File \'%s\'\n")), b->name);
+				fprintf(ttsig_f, "\n*** File \'%s\'\n", b->name);
 			else
-				fprintf(ttsig_f, (char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")));
+				fprintf(ttsig_f, "\n*** File \'(Unnamed)\'\n");
 			fflush(ttsig_f);
 			bsavefd(b->bof, fileno(ttsig_f), b->eof->byte);
 		}
@@ -3019,19 +3012,18 @@ int lock_it(unsigned char *qpath,unsigned char *bf)
         unsigned char *path = dequote(qpath);
 	unsigned char *lock_name=dirprt(path);
 	unsigned char *name=namprt(path);
-	unsigned char buf[1024];
+	unsigned char *buf;
 	unsigned char *user = (unsigned char *)getenv("USER");
 	unsigned char *host = (unsigned char *)getenv("HOSTNAME");
 	int len;
 	if (!user) user=USTR "me";
 	if (!host) host=USTR "here";
-	lock_name=vsncpy(sv(lock_name),sc(".#"));
-	lock_name=vsncpy(sv(lock_name),sv(name));
-	joe_snprintf_3(buf,sizeof(buf),"%s@%s.%d",user,host,getpid());
+	lock_name=vscat(lock_name,sc(".#"));
+	lock_name=vscat(lock_name,sv(name));
+	buf=vsfmt(NULL,0,USTR "%s@%s.%d",user,host,getpid());
 	/* Fail only if there was an existing lock */
 	if (!symlink((char *)buf,(char *)lock_name) || errno != EEXIST) {
-		vsrm(lock_name);
-		vsrm(name);
+		obj_free(lock_name);
 		return 0;
 	}
 	if (bf) {
@@ -3039,8 +3031,7 @@ int lock_it(unsigned char *qpath,unsigned char *bf)
 		if (len<0) len = 0;
 		bf[len] = 0;
 	}
-	vsrm(lock_name);
-	vsrm(name);
+	obj_free(lock_name);
 	return -1;
 }
 
@@ -3049,11 +3040,10 @@ void unlock_it(unsigned char *qpath)
         unsigned char *path = dequote(qpath);
 	unsigned char *lock_name=dirprt(path);
 	unsigned char *name=namprt(path);
-	lock_name=vsncpy(sv(lock_name),sc(".#"));
-	lock_name=vsncpy(sv(lock_name),sv(name));
+	lock_name=vscat(lock_name,sc(".#"));
+	lock_name=vscat(lock_name,sv(name));
 	unlink((char *)lock_name);
-	vsrm(lock_name);
-	vsrm(name);
+	obj_free(lock_name);
 }
 
 /* True if file is regular */

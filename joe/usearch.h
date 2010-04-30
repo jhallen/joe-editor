@@ -45,7 +45,7 @@ struct search {
 SRCH *mksrch PARAMS((unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all));
 void rmsrch PARAMS((SRCH *srch));
 
-int dopfnext PARAMS((BW *bw, SRCH *srch, int *notify));
+int dopfnext PARAMS((BW *bw, SRCH *srch));
 
 int pffirst PARAMS((BW *bw));
 int pfnext PARAMS((BW *bw));
@@ -72,7 +72,5 @@ extern SRCH *globalsrch;
 
 extern unsigned char *rest_key;
 extern unsigned char *backup_key;
-
-int fwrd_c PARAMS((unsigned char **s));
 
 #endif

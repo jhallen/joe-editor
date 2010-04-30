@@ -44,6 +44,9 @@ int utf8_decode_fwrd PARAMS((unsigned char **p,int *plen));
 
 void utf8_init PARAMS((struct utf8_sm *utf8_sm));
 
+int fwrd_c PARAMS((unsigned char **s));
+void copy_c PARAMS((unsigned char **d, unsigned char **s));
+
 void joe_locale();
 void to_utf8 PARAMS((struct charmap *map,unsigned char *s,int c));
 int from_utf8 PARAMS((struct charmap *map,unsigned char *s));
@@ -55,7 +58,7 @@ extern struct charmap *locale_map;	/* Default bytemap of terminal */
 extern unsigned char *locale_lang;	/* Locale language (like de_DE) */
 extern unsigned char *locale_msgs;	/* Locale language for editor messages (like de_DE) */
 
-void my_iconv PARAMS((unsigned char *dest,struct charmap *dest_map,
+unsigned char *my_iconv PARAMS((unsigned char *dest,struct charmap *dest_map,
               unsigned char *src,struct charmap *src_map));
 
 struct charmap *guess_map PARAMS((unsigned char *buf, int len));

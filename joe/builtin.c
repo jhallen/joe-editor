@@ -7,7 +7,7 @@
  */
 #include "types.h"
 
-JFILE *jfopen(unsigned char *name, char *mode)
+JFILE *jfopen(unsigned char *name, const char *mode)
 {
 	if (name[0] == '*') {
 		int x;
@@ -42,22 +42,26 @@ int jfclose(JFILE *f)
 	return rtn;
 }
 
-unsigned char *jfgets(unsigned char *buf,int len,JFILE *f)
+unsigned char *jfgets(unsigned char **buf,JFILE *f)
 {
 	if (f->f)
-		return (unsigned char *)fgets((char *)buf, len, f->f);
+		return vsgets(buf, f->f);
 	else {
+		unsigned char *b = *buf;
+		b = vstrunc(b, 0);
 		if (f->p[0]) {
 			int x;
 			for (x = 0; f->p[x] && f->p[x] != '\n'; ++x)
-				buf[x] = f->p[x];
+				b = vsadd(b, f->p[x]);
 			if (f->p[x] == '\n') {
-				buf[x++] = '\n';
+				++x;
 			}
-			buf[x] = 0;
 			f->p += x;
-			return buf;
-		} else
+			*buf = b;
+			return b;
+		} else {
+			*buf = b;
 			return 0;
+		}
 	}
 }

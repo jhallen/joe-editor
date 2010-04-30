@@ -30,7 +30,7 @@ struct menu {
 
 /* Create a menu */
 /* FIXME: ??? ---> */
-MENU *mkmenu PARAMS((W *loc, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify));
+MENU *mkmenu PARAMS((W *loc, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object));
 
 /* Menu user functions */
 
@@ -63,5 +63,7 @@ extern WATOM watommenu; /* Menu WATOM */
 extern int menu_above; /* Menu position: above or below */
 extern int bg_menu; /* Background color for menu */
 extern int transpose;
+
+int choose(W *w,W *targ,unsigned char **s,int *cursor);
 
 #endif

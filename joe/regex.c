@@ -7,116 +7,6 @@
  */
 #include "types.h"
 
-int escape(int utf8,unsigned char **a, int *b)
-{
-	int c;
-	unsigned char *s = *a;
-	int l = *b;
-
-	if (*s == '\\' && l >= 2) {
-		++s; --l;
-		switch (*s) {
-		case 'n':
-			c = 10;
-			++s; --l;
-			break;
-		case 't':
-			c = 9;
-			++s; --l;
-			break;
-		case 'a':
-			c = 7;
-			++s; --l;
-			break;
-		case 'b':
-			c = 8;
-			++s; --l;
-			break;
-		case 'f':
-			c = 12;
-			++s; --l;
-			break;
-		case 'e':
-			c = 27;
-			++s; --l;
-			break;
-		case 'r':
-			c = 13;
-			++s; --l;
-			break;
-		case '8':
-			c = 8;
-			++s; --l;
-			break;
-		case '9':
-			c = 9;
-			++s; --l;
-			break;
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-			c = *s - '0';
-			++s; --l;
-			if (l > 0 && *s >= '0' && *s <= '7') {
-				c = c * 8 + s[1] - '0';
-				++s; --l;
-			}
-			if (l > 0 && *s >= '0' && *s <= '7') {
-				c = c * 8 + s[1] - '0';
-				++s; --l;
-			}
-			break;
-		case 'x':
-		case 'X':
-			c = 0;
-			++s; --l;
-			if (l > 0 && *s >= '0' && *s <= '9') {
-				c = c * 16 + *s - '0';
-				++s; --l;
-			} else if (l > 0 && *s >= 'A' && *s <= 'F') {
-				c = c * 16 + *s - 'A' + 10;
-				++s; --l;
-			} else if (l > 0 && *s >= 'a' && *s <= 'f') {
-				c = c * 16 + *s - 'a' + 10;
-				++s; --l;
-			}
-
-			if (l > 0 && *s >= '0' && *s <= '9') {
-				c = c * 16 + *s - '0';
-				++s; --l;
-			} else if (l > 0 && *s >= 'A' && *s <= 'F') {
-				c = c * 16 + *s - 'A' + 10;
-				++s; --l;
-			} else if (l > 0 && *s >= 'a' && *s <= 'f') {
-				c = c * 16 + *s - 'a' + 10;
-				++s; --l;
-			}
-			break;
-		default:
-			if (utf8)
-				c = utf8_decode_fwrd(&s, &l);
-			else {
-				c = *s++;
-				--l;
-			}
-			break;
-		}
-	} else if (utf8) {
-		c = utf8_decode_fwrd(&s,&l);
-	} else {
-		c = *s++;
-		--l;
-	}
-	*a = s;
-	*b = l;
-	return c;
-}
-
 static int brack(int utf8,unsigned char **a, int *la, int c)
 {
 	int inverse = 0;
@@ -178,8 +68,9 @@ static void savec(int utf8,unsigned char **pieces, int n, int c)
 	}
 
 	if (pieces[n])
-		vsrm(pieces[n]);
+		obj_free(pieces[n]);
 	s = vsncpy(s, 0, buf, len);
+	obj_perm(s);
 	pieces[n] = s;
 }
 
@@ -193,6 +84,7 @@ static void saves(unsigned char **pieces, int n, P *p, long int szz)
 		pieces[n] = vstrunc(pieces[n], (int) szz);
 		brmem(p, pieces[n], (int) szz);
 	}
+	obj_perm(pieces[n]);
 }
 
 /* Returns -1 (NO_MORE_DATA) for end of file.

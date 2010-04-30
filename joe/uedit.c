@@ -462,8 +462,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 				} else if (c != NO_MORE_DATA)
 					pgetc(p);
 			} else if ((bw->o.cpp_comment || bw->o.pound_comment ||
-			            bw->o.semi_comment || bw->o.vhdl_comment ||
-			            bw->o.tex_comment) && c == '\n') {
+			            bw->o.semi_comment || bw->o.tex_comment || bw->o.vhdl_comment) && c == '\n') {
 				P *q = pdup(p, USTR "tomatch_word");
 				int cc;
 				p_goto_bol(q);
@@ -582,7 +581,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					else if (c == '\\') pgetc(p);
 			} else if ((bw->o.c_comment || bw->o.cpp_comment) && c == '/') {
 				c = pgetc(p);
-				if (c == '*') {
+				if (bw->o.c_comment && c == '*') {
 					c = pgetc(p);
 					do {
 						do {
@@ -590,7 +589,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 						} while ((c = pgetc(p)) != NO_MORE_DATA);
 						c = pgetc(p);
 					} while (c != NO_MORE_DATA && c != '/');
-				} else if (c == '/') {
+				} else if (bw->o.cpp_comment && c == '/') {
 					while ((c = pgetc(p)) != NO_MORE_DATA)
 						if (c == '\n')
 							break;
@@ -978,7 +977,7 @@ int utomatch(BW *bw)
 						} while ((d = pgetc(p)) != NO_MORE_DATA);
 						d = pgetc(p);
 					} while (d != NO_MORE_DATA && d != '/');
-				} else if (d == '/') {
+				} else if (bw->o.cpp_comment && d == '/') {
 					while ((d = pgetc(p)) != NO_MORE_DATA)
 						if (d == '\n')
 							break;
@@ -1031,12 +1030,12 @@ int utomatch(BW *bw)
 				} else if (d != NO_MORE_DATA)
 					pgetc(p);
 			} else if ((bw->o.cpp_comment || bw->o.pound_comment ||
-			            bw->o.semi_comment || bw->o.vhdl_comment || bw->o.tex_comment) && d == '\n') {
+			            bw->o.semi_comment || bw->o.tex_comment || bw->o.vhdl_comment) && d == '\n') {
 				P *q = pdup(p, USTR "utomatch");
 				int cc;
 				p_goto_bol(q);
 				while((cc = pgetc(q)) != '\n') {
-					if (bw->o.pound_comment && cc == '$' && brch(q) == '#') {
+					if (bw->o.pound_comment && cc == '$' && brch(q)=='#') {
 						pgetc(q);
 					} else if (cc == '\\') {
 						if (pgetc(q) == '\n')
@@ -1380,13 +1379,19 @@ int udnslide(BW *bw)
 
 static B *linehist = NULL;	/* History of previously entered line numbers */
 
-static int doline(BW *bw, unsigned char *s, void *object, int *notify)
+int uline(BW *bw)
 {
-	long num = calc(bw, s);
+	long num;
+	unsigned char *s;
 
-	if (notify)
-		*notify = 1;
-	vsrm(s);
+	s = ask(bw->parent, joe_gettext(_("Go to line (^C to abort): ")), &linehist,
+	        NULL, NULL, locale_map, 0, 0, NULL);
+
+	if (!s)
+		return -1;
+
+	num = calc(bw, s);
+
 	if (num >= 1 && !merr) {
 		int tmp = mid;
 
@@ -1406,25 +1411,23 @@ static int doline(BW *bw, unsigned char *s, void *object, int *notify)
 	}
 }
 
-int uline(BW *bw)
-{
-	if (wmkpw(bw->parent, joe_gettext(_("Go to line (^C to abort): ")), &linehist, doline, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
-		return 0;
-	else
-		return -1;
-}
-
 /* Move cursor to specified column number */
 
 static B *colhist = NULL;	/* History of previously entered column numbers */
 
-static int docol(BW *bw, unsigned char *s, void *object, int *notify)
+int ucol(BW *bw)
 {
-	long num = calc(bw, s);
+	long num;
+	unsigned char *s;
 
-	if (notify)
-		*notify = 1;
-	vsrm(s);
+	s = ask(bw->parent, joe_gettext(_("Go to column (^C to abort): ")), &colhist,
+	        NULL, NULL, locale_map, 0, 0, NULL);
+
+	if (!s)
+		return -1;
+
+	num = calc(bw, s);
+
 	if (num >= 1 && !merr) {
 		int tmp = mid;
 
@@ -1442,25 +1445,20 @@ static int docol(BW *bw, unsigned char *s, void *object, int *notify)
 	}
 }
 
-int ucol(BW *bw)
-{
-	if (wmkpw(bw->parent, joe_gettext(_("Go to column (^C to abort): ")), &colhist, docol, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
-		return 0;
-	else
-		return -1;
-}
-
 /* Move cursor to specified byte number */
 
 static B *bytehist = NULL;	/* History of previously entered byte numbers */
 
-static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
+int ubyte(BW *bw)
 {
-	long num = calc(bw, s);
+	long num;
+	unsigned char *s;
 
-	if (notify)
-		*notify = 1;
-	vsrm(s);
+	s = ask(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist,
+	        NULL, NULL, locale_map, 0, 0, NULL);
+
+	num = calc(bw, s);
+
 	if (num >= 0 && !merr) {
 		int tmp = mid;
 
@@ -1476,14 +1474,6 @@ static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
 			msgnw(bw->parent, joe_gettext(_("Invalid byte number")));
 		return -1;
 	}
-}
-
-int ubyte(BW *bw)
-{
-	if (wmkpw(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
-		return 0;
-	else
-		return -1;
 }
 
 /* Delete character under cursor
@@ -1889,24 +1879,20 @@ int utypebw(BW *bw, int k)
 
 static B *unicodehist = NULL;	/* History of previously entered unicode characters */
 
-static int dounicode(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	int num;
-	sscanf((char *)s,"%x",(unsigned  *)&num);
-	if (notify)
-		*notify = 1;
-	vsrm(s);
-	utypebw_raw(bw, num, 1);
-	bw->cursor->xcol = piscol(bw->cursor);
-	return 0;
-}
-
 int quotestate;
 int quoteval;
 
-static int doquote(BW *bw, int c, void *object, int *notify)
+int uquote(BW *bw)
 {
 	unsigned char buf[40];
+	int c;
+
+	quotestate = 0;
+	c = query(bw->parent, sz(joe_gettext(_("Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"))), QW_STAY);
+	if (c == -1)
+		return -1;
+
+	again:
 
 	if (c < 0 || c >= 256) {
 		nungetc(c);
@@ -1918,30 +1904,37 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			quoteval = c - '0';
 			quotestate = 1;
 			joe_snprintf_1(buf, sizeof(buf), "ASCII %c--", c);
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			c = query(bw->parent, sz(buf), QW_STAY);
+			if (c == -1)
 				return -1;
 			else
-				return 0;
+				goto again;
 		} else if (c == 'x' || c == 'X') {
 			if (bw->b->o.charmap->type) {
-				if (!wmkpw(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, dounicode,
-				           NULL, NULL, NULL, NULL, NULL, locale_map, 0))
+				unsigned char *s = ask(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, NULL, utypebw, locale_map, 0, 0, NULL);
+				if (s) {
+					int num;
+					sscanf((char *)s,"%x",(unsigned *)&num);
+					utypebw_raw(bw, num, 1);
+					bw->cursor->xcol = piscol(bw->cursor);
 					return 0;
-				else
+				} else
 					return -1;
 			} else {
 				quotestate = 3;
-				if (!mkqwna(bw->parent, sc("ASCII 0x--"), doquote, NULL, NULL, notify))
+				c = query(bw->parent, sc("ASCII 0x--"), QW_STAY);
+				if (c == -1)
 					return -1;
 				else
-					return 0;
+					goto again;
 			}
 		} else if (c == 'o' || c == 'O') {
 			quotestate = 5;
-			if (!mkqwna(bw->parent, sc("ASCII 0---"), doquote, NULL, NULL, notify))
+			c = query(bw->parent, sc("ASCII 0---"), QW_STAY);
+			if (c == -1)
 				return -1;
 			else
-				return 0;
+				goto again;
 		} else {
 			if ((c >= 0x40 && c <= 0x5F) || (c >= 'a' && c <= 'z'))
 				c &= 0x1F;
@@ -1956,10 +1949,11 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			joe_snprintf_2(buf, sizeof(buf), "ASCII %c%c-", quoteval + '0', c);
 			quoteval = quoteval * 10 + c - '0';
 			quotestate = 2;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			c = query(bw->parent, sz(buf), QW_STAY);
+			if (c == -1)
 				return -1;
 			else
-				return 0;
+				goto again;
 		}
 		break;
 	case 2:
@@ -1974,26 +1968,29 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			joe_snprintf_1(buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - '0';
 			quotestate = 4;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			c = query(bw->parent, sz(buf), QW_STAY);
+			if (c == -1)
 				return -1;
 			else
-				return 0;
+				goto again;
 		} else if (c >= 'a' && c <= 'f') {
 			joe_snprintf_1(buf, sizeof(buf), "ASCII 0x%c-", c + 'A' - 'a');
 			quoteval = c - 'a' + 10;
 			quotestate = 4;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			c = query(bw->parent, sz(buf), QW_STAY);
+			if (c == -1)
 				return -1;
 			else
-				return 0;
+				goto again;
 		} else if (c >= 'A' && c <= 'F') {
 			joe_snprintf_1(buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - 'A' + 10;
 			quotestate = 4;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			c = query(bw->parent, sz(buf), QW_STAY);
+			if (c == -1)
 				return -1;
 			else
-				return 0;
+				goto again;
 		}
 		break;
 	case 4:
@@ -2016,10 +2013,11 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			joe_snprintf_1(buf, sizeof(buf), "ASCII 0%c--", c);
 			quoteval = c - '0';
 			quotestate = 6;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			c = query(bw->parent, sz(buf), QW_STAY);
+			if (c == -1)
 				return -1;
 			else
-				return 0;
+				goto again;
 		}
 		break;
 	case 6:
@@ -2027,10 +2025,11 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			joe_snprintf_2(buf, sizeof(buf), "ASCII 0%c%c-", quoteval + '0', c);
 			quoteval = quoteval * 8 + c - '0';
 			quotestate = 7;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			c = query(bw->parent, sz(buf), QW_STAY);
+			if (c == -1)
 				return -1;
 			else
-				return 0;
+				goto again;
 		}
 		break;
 	case 7:
@@ -2041,64 +2040,39 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		}
 		break;
 	}
-	if (notify)
-		*notify = 1;
-	return 0;
-}
-
-int uquote(BW *bw)
-{
-	quotestate = 0;
-	if (mkqwna(bw->parent, sz(joe_gettext(_("Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"))), doquote, NULL, NULL, NULL))
-		return 0;
-	else
-		return -1;
-}
-
-static int doquote9(BW *bw, int c, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	if ((c >= 0x40 && c <= 0x5F) || (c >= 'a' && c <= 'z'))
-		c &= 0x1F;
-	if (c == '?')
-		c = 127;
-	c |= 128;
-	utypebw_raw(bw, c, 1);
-	bw->cursor->xcol = piscol(bw->cursor);
-	return 0;
-}
-
-static int doquote8(BW *bw, int c, void *object, int *notify)
-{
-	if (c == '`') {
-		if (mkqwna(bw->parent, sc("Meta-Ctrl-"), doquote9, NULL, NULL, notify))
-			return 0;
-		else
-			return -1;
-	}
-	if (notify)
-		*notify = 1;
-	c |= 128;
-	utypebw_raw(bw, c, 1);
-	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
 }
 
 int uquote8(BW *bw)
 {
-	if (mkqwna(bw->parent, sc("Meta-"), doquote8, NULL, NULL, NULL))
-		return 0;
-	else
+	int c;
+	c = query(bw->parent, sc("Meta-"), QW_STAY);
+	if (c == -1)
 		return -1;
+	if (c == '`') {
+		c = query(bw->parent, sc("Meta-Ctrl-"), QW_STAY);
+		if (c == -1)
+			return -1;
+		if ((c >= 0x40 && c <= 0x5F) || (c >= 'a' && c <= 'z'))
+			c &= 0x1F;
+		if (c == '?')
+			c = 127;
+	}
+	c |= 128;
+	utypebw_raw(bw, c, 1);
+	bw->cursor->xcol = piscol(bw->cursor);
+	return 0;
+
 }
 
-static int doctrl(BW *bw, int c, void *object, int *notify)
+int uctrl(BW *bw)
 {
-	int org = bw->o.overtype;
-
-	if (notify)
-		*notify = 1;
+	int c;
+	int org;
+	c = query(bw->parent, sz(joe_gettext(_("Quote"))), QW_STAY);
+	if (c == -1)
+		return -1;
+	org = bw->o.overtype;
 	bw->o.overtype = 0;
 	if (bw->parent->huh == srchstr && c == '\n') {
 		utypebw(bw, '\\');
@@ -2108,14 +2082,6 @@ static int doctrl(BW *bw, int c, void *object, int *notify)
 	bw->o.overtype = org;
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
-}
-
-int uctrl(BW *bw)
-{
-	if (mkqwna(bw->parent, sz(joe_gettext(_("Quote"))), doctrl, NULL, NULL, NULL))
-		return 0;
-	else
-		return -1;
 }
 
 /* User hit Return.  Deal with autoindent.
@@ -2171,90 +2137,65 @@ int uopen(BW *bw)
 
 /* Set book-mark */
 
-static int dosetmark(BW *bw, int c, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	if (c >= '0' && c <= ':') {
-		pdupown(bw->cursor, bw->b->marks + c - '0', USTR "dosetmark");
-		poffline(bw->b->marks[c - '0']);
-		if (c!=':') {
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Mark %d set")), c - '0');
-			msgnw(bw->parent, msgbuf);
-		}
-		return 0;
-	} else {
-		nungetc(c);
-		return -1;
-	}
-}
-
 int usetmark(BW *bw, int c)
 {
-	if (c >= '0' && c <= ':')
-		return dosetmark(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sz(joe_gettext(_("Set mark (0-9):"))), dosetmark, NULL, NULL, NULL))
-		return 0;
-	else
-		return -1;
+	if (c < '0' || c > ':') {
+		c = query(bw->parent, sz(joe_gettext(_("Set mark (0-9):"))), QW_STAY);
+		if (c == -1)
+			return -1;
+		if (c < '0' || c > ':') {
+			nungetc(c);
+			return -1;
+		}
+	}
+	pdupown(bw->cursor, bw->b->marks + c - '0', USTR "dosetmark");
+	poffline(bw->b->marks[c - '0']);
+	if (c!=':') {
+		msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("Mark %d set")), c - '0'));
+	}
+	return 0;
 }
 
 /* Goto book-mark */
 
-static int dogomark(BW *bw, int c, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	if (c >= '0' && c <= ':')
-		if (bw->b->marks[c - '0']) {
-			pset(bw->cursor, bw->b->marks[c - '0']);
-			bw->cursor->xcol = piscol(bw->cursor);
-			return 0;
-		} else {
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Mark %d not set")), c - '0');
-			msgnw(bw->parent, msgbuf);
-			return -1;
-	} else {
-		nungetc(c);
-		return -1;
-	}
-}
-
 int ugomark(BW *bw, int c)
 {
-	if (c >= '0' && c <= '9')
-		return dogomark(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sz(joe_gettext(_("Goto bookmark (0-9):"))), dogomark, NULL, NULL, NULL))
+	if (c < '0' || c > ':') {
+		c = query(bw->parent, sz(joe_gettext(_("Set mark (0-9):"))), QW_STAY);
+		if (c == -1)
+			return -1;
+		if (c < '0' || c > ':') {
+			nungetc(c);
+			return -1;
+		}
+	}
+	if (bw->b->marks[c - '0']) {
+		pset(bw->cursor, bw->b->marks[c - '0']);
+		bw->cursor->xcol = piscol(bw->cursor);
 		return 0;
-	else
+	} else {
+		msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("Mark %d not set")), c - '0'));
 		return -1;
+	}
 }
 
 /* Goto next instance of character */
 
-static int dobkwdc;
-
-static int dofwrdc(BW *bw, int k, void *object, int *notify)
+int ufwrdc(BW *bw, int k)
 {
 	int c;
 	P *q;
-
-	if (notify)
-		*notify = 1;
 	if (k < 0 || k >= 256) {
-		nungetc(k);
-		return -1;
+		k = query(bw->parent, sz(joe_gettext(_("Forward to char: "))), QW_STAY);
+		if (k < 0 || k >= 256) {
+			nungetc(k);
+			return -1;
+		}
 	}
 	q = pdup(bw->cursor, USTR "dofwrdc");
-	if (dobkwdc) {
-		while ((c = prgetc(q)) != NO_MORE_DATA)
-			if (c == k)
-				break;
-	} else {
-		while ((c = pgetc(q)) != NO_MORE_DATA)
-			if (c == k)
-				break;
-	}
+	while ((c = pgetc(q)) != NO_MORE_DATA)
+		if (c == k)
+			break;
 	if (c == NO_MORE_DATA) {
 		msgnw(bw->parent, joe_gettext(_("Not found")));
 		prm(q);
@@ -2267,78 +2208,72 @@ static int dofwrdc(BW *bw, int k, void *object, int *notify)
 	}
 }
 
-int ufwrdc(BW *bw, int k)
-{
-	dobkwdc = 0;
-	if (k >= 0 && k < 256)
-		return dofwrdc(bw, k, NULL, NULL);
-	else if (mkqw(bw->parent, sz(joe_gettext(_("Forward to char: "))), dofwrdc, NULL, NULL, NULL))
-		return 0;
-	else
-		return -1;
-}
-
 int ubkwdc(BW *bw, int k)
 {
-	dobkwdc = 1;
-	if (k >= 0 && k < 256)
-		return dofwrdc(bw, k, NULL, NULL);
-	else if (mkqw(bw->parent, sz(joe_gettext(_("Backward to char: "))), dofwrdc, NULL, NULL, NULL))
-		return 0;
-	else
+	int c;
+	P *q;
+	if (k < 0 || k >= 256) {
+		k = query(bw->parent, sz(joe_gettext(_("Backward to char: "))), QW_STAY);
+		if (k < 0 || k >= 256) {
+			nungetc(k);
+			return -1;
+		}
+	}
+	q = pdup(bw->cursor, USTR "dofwrdc");
+	while ((c = prgetc(q)) != NO_MORE_DATA)
+		if (c == k)
+			break;
+	if (c == NO_MORE_DATA) {
+		msgnw(bw->parent, joe_gettext(_("Not found")));
+		prm(q);
 		return -1;
+	} else {
+		pset(bw->cursor, q);
+		bw->cursor->xcol = piscol(bw->cursor);
+		prm(q);
+		return 0;
+	}
 }
 
 /* Display a message */
 
-static int domsg(BASE *b, unsigned char *s, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	zcpy(msgbuf, s);
-	vsrm(s);
-	msgnw(b->parent, msgbuf);
-	return 0;
-}
-
 int umsg(BASE *b)
 {
-	if (wmkpw(b->parent, joe_gettext(_("Message (^C to abort): ")), NULL, domsg, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
-		return 0;
-	else
+	unsigned char *s;
+	s = ask(b->parent, joe_gettext(_("Message (^C to abort): ")), NULL,
+	        NULL, NULL, locale_map, 0, 0, NULL);
+
+	if (!s)
 		return -1;
+
+	msgnw(b->parent, s);
+	return 0;
 }
 
 /* Insert text */
 
-static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	int x,fill;
-	unsigned char *str;
-
-	if (notify)
-		*notify = 1;
-	if (s[0]=='`') {   
-	   str=vsmk(1024);
-	   fill=' ';
-	   str=stagen(str,bw,&s[1],fill);
-	   if (str) {
-	     for(x=0;x!=sLEN(str);++x) utypebw(bw,str[x]);
-	     vsrm(str);
-	     }
-	} else
-	for (x = 0; x != sLEN(s); ++x)
-		utypebw(bw, s[x]);
-	vsrm(s);
-	return 0;
-}
-
 int utxt(BW *bw)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Insert (^C to abort): ")), NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.charmap, 0))
-		return 0;
-	else
-		return -1;
+	int x, fill;
+	unsigned char *s;
+
+	s = ask(bw->parent, joe_gettext(_("Insert (^C to abort): ")),
+	        NULL, NULL, utypebw, bw->b->o.charmap, 0, 0, NULL);
+
+	if (s[0] == '`') {
+		unsigned char *str = vsmk(1024);
+		fill = ' ';
+		str = stagen(str, bw, &s[1], fill);
+		if (str) {
+			for (x = 0; x != vslen(str); ++x)
+				utypebw(bw, str[x]);
+		}
+	} else {
+		for (x = 0; x != vslen(s); ++x)
+			utypebw(bw, s[x]);
+	}
+
+	return 0;
 }
 
 /* Insert current file name */

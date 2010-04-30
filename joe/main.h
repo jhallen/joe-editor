@@ -14,7 +14,7 @@ extern Screen *maint;		/* Primary screen */
 extern int usexmouse;		/* Use xterm mouse support? */
 void nungetc PARAMS((int c));
 void dofollows PARAMS((void));
-int edloop PARAMS((int flg));
+int edloop(void);
 void edupd PARAMS((int flg));
 
 extern volatile int dostaupd;	/* Force status line update */

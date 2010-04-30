@@ -44,7 +44,7 @@ static void fake_key(int c)
 	if(x)
 		maint->curwin->main->kbd->seq[x-1]=maint->curwin->kbd->seq[x-1];
 	if(m)
-		exemac(m);
+		co_call(exemac,m);
 }
 
 /* Translate mouse coordinates */

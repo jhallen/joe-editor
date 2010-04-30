@@ -148,7 +148,7 @@ static long prefix(BW *bw, P *p,int up)
 		pgetc(q);
 	while (!pisbol(q)) {
 		/* int c; */
-		if (!joe_isblank(p->b->o.charmap, ( /* c = */ prgetc(q)))) {
+		if (!joe_isblank(p->b->o.charmap, (/* c = */ prgetc(q)))) {
 		/*
 			if (up && (c == '*' || c == '-')) {
 				if (!pisbol(q)) {
@@ -185,14 +185,14 @@ int within = 0;
 
 P *pbop(BW *bw, P *p)
 {
+	P *last;
 	long indent;
 	long prelen;
-	P *last;
 
 	p_goto_bol(p);
+	last = pdup(p, USTR "pbop");
 	indent = nindent(bw, p, 0);
 	prelen = prefix(bw, p, 0);
-	last = pdup(p, USTR "pbop");
 	while (!pisbof(p) && (!within || !markb || p->byte > markb->byte)) {
 		long ind;
 		long len;
@@ -223,7 +223,8 @@ P *pbop(BW *bw, P *p)
 		if (ind < indent) {
 			pset(p, last);
 			break;
-			/* if (pisbof(p)) {
+			/*
+			if (pisbof(p)) {
 				break;
 			}
 			pprevl(p);
@@ -361,15 +362,16 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 			if (!bw->o.autoindent) {
 				/* Don't indent second line of single-line paragraphs if autoindent is off */
 				int x = zlen(indents);
-				int orgx = x;
+				int orgx;
 				while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
 					indents[--x] = 0;
-				if (x && orgx != x) {
+				if (x && x != orgx) {
 					indents[x++] = ' ';
 					indents[x] = 0;
 				}
 				indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
 			}
+			/* Don't duplicate if it looks like a bullet */
 			for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
 			y = zlen(indents);
 			while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
@@ -377,7 +379,7 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 			/* Don't duplicate bullet */
 /*			if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
 			    (y == 1 || indents[y - 2] == ' ' || indents[y - 2] == '\t'))
-			    	indents[y - 1] = ' '; */
+				indents[y - 1] = ' '; */
 			/* Fix C comment */
 			if (indents[x] == '/' && indents[x + 1] == '*')
 				indents[x] = ' ';
@@ -456,8 +458,8 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 		/* Move word to beginning of next line */
 		binsc(p, '\n');
 		
-		/* When overtype is on, do not insert lines */
-		if (!no_over && p->b->o.overtype){
+		/* Take care that wordwrap is done the right way when overtype mode is active */
+		if (!no_over && p->b->o.overtype) {
 			/* delete the next line break which is unnecessary */
 			r = pdup(p, USTR "wrapword");
 			/* p_goto_eol(r); */
@@ -478,7 +480,7 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 			p_goto_eol(s);
 			
 			/* If s is located behind r then the line goes beyond the right margin and we need to call wordwrap() for that line. */
-/*
+/* for this to work properly we need to detect end of paragraph
 			if (r->byte < s->byte){
 				wrapword(bw, r, indent, french, 1, indents);
 			}
@@ -577,7 +579,7 @@ int uformat(BW *bw)
 		y = zlen(indents);
 		while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
 			--y;
-		/* Don't duplicate if it looks like a bullet */
+		/* Don't duplicate bullet */
 /*		if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
 		    (y == 1 || indents[y - 2] == ' ' || indents[y - 2] == '\t'))
 			indents[y - 1] = ' '; */
@@ -662,10 +664,8 @@ int uformat(BW *bw)
 				f = 1;
 /*				pset(d,b);
 				pgetc(d);
-				if (c == '\n' || piseol(d) || joe_isspace(bw->b->o.charmap,brch(d))) {
-					f = 1;
-				}
-*/
+				if (joe_isspace(bw->b->o.charmap,brch(d)))
+					f = 1; */
 			}
 			prm(d);
 			
