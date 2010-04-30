@@ -515,7 +515,7 @@ int main(int argc, char **real_argv, char **envv)
 		help_on(maint);
 	}
 	if (!nonotice) {
-		joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2008 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
+		joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2010 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
 
 		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
 	}
