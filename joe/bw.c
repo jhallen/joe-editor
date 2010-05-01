@@ -382,6 +382,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
          			/* Starting column to display */
               			/* Range for marked block */
 {
+	int ansi = bw->o.ansi;
 	int ox = x;
 	int tach;
 	int done = 1;
@@ -500,7 +501,16 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					c = utf8_decode(&utf8_sm,bc);
 
 					if (c>=0) /* Normal decoded character */
-						wid = joe_wcwidth(1,c);
+						if (ansi) {
+							c = ansi_decode(&ansi_sm, c);
+							if (c >= 0) /* Not ansi */
+								wid = joe_wcwidth(1, c);
+							else { /* Skip ansi character */
+								wid = 0;
+								++idx;
+							}
+						} else
+							wid = joe_wcwidth(1,c);
 					else if(c== -1) /* Character taken */
 						wid = -1;
 					else if(c== -2) { /* Incomplete sequence (FIXME: do something better here) */
@@ -512,12 +522,16 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					else if(c== -3) /* Control character 128-191, 254, 255 */
 						wid = 1;
 				} else {
-					c = ansi_decode(&ansi_sm, bc);
-					if (c>=0) /* Not ansi */
+					if (ansi) {
+						c = ansi_decode(&ansi_sm, bc);
+						if (c>=0) /* Not ansi */
+							wid = 1;
+						else {
+							wid = 0;
+							++idx;
+						}
+					} else {
 						wid = 1;
-					else {
-						wid = 0;
-						++idx;
 					}
 				}
 
@@ -627,7 +641,16 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					utf8_char = utf8_decode(&utf8_sm,bc);
 
 					if (utf8_char >= 0) { /* Normal decoded character */
-						wid = joe_wcwidth(1,utf8_char);
+						if (ansi) {
+							utf8_char = ansi_decode(&ansi_sm, utf8_char);
+							if (utf8_char >= 0) {
+								wid = joe_wcwidth(1, utf8_char);
+							} else {
+								wid = -1;
+								++idx;
+							}
+						} else
+							wid = joe_wcwidth(1,utf8_char);
 					} else if(utf8_char== -1) { /* Character taken */
 						wid = -1;
 					} else if(utf8_char== -2) { /* Incomplete sequence (FIXME: do something better here) */
@@ -642,12 +665,17 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 						utf8_char = 'X';
 					}
 				} else { /* Regular */
-					utf8_char = ansi_decode(&ansi_sm, bc);
-					if (utf8_char >= 0) /* Not ansi */
+					if (ansi) {
+						utf8_char = ansi_decode(&ansi_sm, bc);
+						if (utf8_char >= 0) /* Not ansi */
+							wid = 1;
+						else {
+							wid = -1;
+							++idx;
+						}
+					} else {
+						utf8_char = bc;
 						wid = 1;
-					else {
-						wid = -1;
-						++idx;
 					}
 				}
 

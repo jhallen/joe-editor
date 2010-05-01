@@ -27,104 +27,103 @@ void vt_beep(BW *bw)
 
 void vt_type(BW *bw, int c)
 {
-	int o = bw->o.overtype;
-	int pid = bw->pid;
-
-	/* Set proper modes.. */
-	bw->pid = 0;
-	bw->o.overtype = 1;
-
-	utypebw(bw, c);
-
-	/* Restore user modes */
-	bw->o.overtype = o;
-	bw->pid = pid;
+	if (piseol(bw->vtcur)) {
+		binsc(bw->vtcur, c);
+		pgetc(c);
+	}
 }
 
 void vt_lf(BW *bw)
 {
-	int col = bw->cursor->xcol;
-	if (!pnextl(bw->cursor)) {
-		binsc(bw->cursor, '\n');
-		pgetc(bw->cursor);
+	int col = bw->vtcur->xcol;
+	if (!pnextl(bw->vtcur)) {
+		binsc(bw->vtcur, '\n');
+		pgetc(bw->vtcur);
 	}
-	pcol(bw->cursor, col);
+	pcol(bw->vtcur, col);
 }
 
 void vt_reverse_lf(BW *bw)
 {
-	if (bw->cursor->line) {
-		int col = bw->cursor->xcol;
-		pprevl(bw->cursor);
-		pcol(bw->cursor, col);
+	if (bw->vtcur->line) {
+		int col = bw->vtcur->xcol;
+		pprevl(bw->vtcur);
+		pcol(bw->vtcur, col);
 	} else {
-		int col = bw->cursor->xcol;
-		p_goto_bol(bw->cursor);
-		binsc(bw->cursor, '\n');
-		pcol(bw->cursor, col);
+		int col = bw->vtcur->xcol;
+		p_goto_bol(bw->vtcur);
+		binsc(bw->vtcur, '\n');
+		pcol(bw->vtcur, col);
 	}
 }
 
 void vt_insert_spaces(BW *bw, int n)
 {
 	while (n--)
-		binsc(bw->cursor, ' ');
+		binsc(bw->vtcur, ' ');
 }
 
 void vt_cr(BW *bw)
 {
-	p_goto_bol(bw->cursor);
+	p_goto_bol(bw->vtcur);
 }
 
 void vt_tab(BW *bw)
 {
-	vt_type(vt, '\t');
+	if (piseol(bw->vtcur)) {
+		binsc(bw->vtcur, '\t');
+		pgetc(bw->vtcur);
+	} else {
+		int col = bw->vtcur->xcol;
+		col += bw->vtcur->b->o.tab - col % bw->vtcur->b->o.tab;
+		pcol(bw->vtcur, col);
+	}
 }
 
 void vt_left(BW *bw, int n)
 {
-	if (n > bw->cursor->xcol)
-		bw->cursor->xcol = 0;
+	if (n > bw->vtcur->xcol)
+		bw->vtcur->xcol = 0;
 	else
-		bw->cursor->xcol -= n;
-	pcol(bw->cursor, bw->cursor->xcol);
+		bw->vtcur->xcol -= n;
+	pcol(bw->vtcur, bw->vtcur->xcol);
 }
 
 void vt_right(BW *bw, int n)
 {
-	bw->cursor->xcol += n;
-	pcol(bw->cursor, bw->cursor->xcol);
+	bw->vtcur->xcol += n;
+	pcol(bw->vtcur, bw->vtcur->xcol);
 }
 
 void vt_up(BW *bw, int n)
 {
-	if (n > bw->cursor->line)
-		n = bw->cursor->line;
+	if (n > bw->vtcur->line)
+		n = bw->vtcur->line;
 	while (n--) {
-		pprevl(bw->cursor);
+		pprevl(bw->vtcur);
 	}
-	pcol(bw->cursor, bw->cursor->xcol);
+	pcol(bw->vtcur, bw->vtcur->xcol);
 }
 
 void vt_down(BW *bw, int n)
 {
-	if (n > bw->b->eof->line - bw->cursor->line)
-		n = bw->b->eof->line - bw->cursor->line;
+	if (n > bw->b->eof->line - bw->vtcur->line)
+		n = bw->b->eof->line - bw->vtcur->line;
 	while (n--) {
-		pnextl(bw->cursor);
+		pnextl(bw->vtcur);
 	}
-	pcol(bw->cursor, bw->cursor->xcol);
+	pcol(bw->vtcur, bw->vtcur->xcol);
 }
 
 void vt_col(BW *bw, int col)
 {
-	bw->cursor->xcol = col;
-	pcol(bw->cursor, bw->cursor->xcol);
+	bw->vtcur->xcol = col;
+	pcol(bw->vtcur, bw->vtcur->xcol);
 }
 
 void vt_row(BW *bw, int row)
 {
-	// Hmm...
+	
 }
 
 void vt_erase_eos(BW *bw)
@@ -141,18 +140,18 @@ void vt_erase_screen(BW *bw)
 
 void vt_erase_line(BW *bw)
 {
-	P *p = pdup(bw->cursor, USTR "vt_erase_line");
-	int col = bw->cursor->xcol;
+	P *p = pdup(bw->vtcur, USTR "vt_erase_line");
+	int col = bw->vtcur->xcol;
 
-	p_goto_bol(bw->cursor);
+	p_goto_bol(bw->vtcur);
 	pnextl(p);
-	if (bw->cursor->byte == p->byte) {
+	if (bw->vtcur->byte == p->byte) {
 		/* Do nothing */
 	} else {
-		bdel(bw->cursor, p);
+		bdel(bw->vtcur, p);
 	}
 	prm(p);
-	pcol(bw->cursor, col);
+	pcol(bw->vtcur, col);
 }
 
 void vt_erase_bol(BW *bw)
@@ -161,12 +160,12 @@ void vt_erase_bol(BW *bw)
 
 void vt_erase_eol(BW *bw)
 {
-	P *p = p_goto_eol(pdup(bw->cursor, USTR "vt_erase_eol"));
+	P *p = p_goto_eol(pdup(bw->vtcur, USTR "vt_erase_eol"));
 
-	if (bw->cursor->byte == p->byte) {
+	if (bw->vtcur->byte == p->byte) {
 		/* Do nothing */
 	} else
-		bdel(bw->cursor, p);
+		bdel(bw->vtcur, p);
 	prm(p);
 	return 0;
 }

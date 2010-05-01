@@ -799,7 +799,7 @@ int pgetc(P *p)
 			++(p->line);
 			p->col = 0;
 			p->valcol = 1;
-                } else if (c == '\033') { /* Hide ansi */
+                } else if (p->b->o.ansi && c == '\033') { /* Hide ansi */
                         int d;
                         int v = p->valcol;
                         while ((d = pgetb(p)) != NO_MORE_DATA)
@@ -884,7 +884,7 @@ int prgetb(P *p)
 /* move p to the previous character (try to keep col updated) */
 int prgetc(P *p)
 {
-	if (p->b->o.charmap->type || 1) {
+	if (p->b->o.charmap->type || p->b->o.ansi) {
 
 		if (pisbol(p))
 			return prgetb(p);
@@ -1020,7 +1020,7 @@ P *p_goto_indent(P *p, int c)
 /* move p to the end of line */
 P *p_goto_eol(P *p)
 {
-	if (p->b->o.crlf || p->b->o.charmap->type || 1)
+	if (p->b->o.crlf || p->b->o.charmap->type || p->b->o.ansi)
 		while (!piseol(p))
 			pgetc(p);
 	else
@@ -1127,7 +1127,7 @@ P *pline(P *p, long line)
 P *pcol(P *p, long goalcol)
 {
 	p_goto_bol(p);
-	if(p->b->o.charmap->type || 1) {
+	if(p->b->o.charmap->type || p->b->o.ansi) {
 		do {
 			int c;
 			int wid;
@@ -1199,7 +1199,7 @@ P *pcolwse(P *p, long goalcol)
 P *pcoli(P *p, long goalcol)
 {
 	p_goto_bol(p);
-	if (p->b->o.charmap->type || 1) {
+	if (p->b->o.charmap->type || p->b->o.ansi) {
 		while (p->col < goalcol) {
 			int c;
 			c = brc(p);

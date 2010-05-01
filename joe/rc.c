@@ -154,6 +154,7 @@ OPTIONS pdefault = {
 	0,		/* semi_comment */
 	0,		/* tex_comment */
 	0,		/* hex */
+	0,		/* hide ansi */
 	NULL,		/* text_delimiters */
 	NULL,		/* Characters which can indent paragraphs */
 	NULL,		/* macro to execute for new files */
@@ -211,6 +212,7 @@ OPTIONS fdefault = {
 	0,		/* semi_comment */
 	0,		/* tex_comment */
 	0,		/* hex */
+	0,		/* hide ansi */
 	NULL,		/* text_delimiters */
 	USTR ">;!#%/*-",	/* Characters which can indent paragraphs */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
@@ -306,6 +308,7 @@ struct glopts {
 } glopts[] = {
 	{USTR "overwrite",4, NULL, (unsigned char *) &fdefault.overtype, USTR _("Overtype mode"), USTR _("Insert mode"), USTR _("T Overtype ") },
 	{USTR "hex",4, NULL, (unsigned char *) &fdefault.hex, USTR _("Hex edit mode"), USTR _("Text edit mode"), USTR _("  Hex edit mode ") },
+	{USTR "ansi",4, NULL, (unsigned char *) &fdefault.ansi, USTR _("Hide ANSI sequences"), USTR _("Reveal ANSI sequences"), USTR _("  Hide ANSI mode ") },
 	{USTR "autoindent",	4, NULL, (unsigned char *) &fdefault.autoindent, USTR _("Autoindent enabled"), USTR _("Autoindent disabled"), USTR _("I Autoindent ") },
 	{USTR "wordwrap",	4, NULL, (unsigned char *) &fdefault.wordwrap, USTR _("Wordwrap enabled"), USTR _("Wordwrap disabled"), USTR _("W Word wrap ") },
 	{USTR "tab",	5, NULL, (unsigned char *) &fdefault.tab, USTR _("Tab width (%d): "), 0, USTR _("D Tab width "), 0, 1, 64 },
