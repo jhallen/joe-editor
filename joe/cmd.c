@@ -371,7 +371,7 @@ int execmd(CMD *cmd, int k)
 	    (TYPETW|TYPEPW) */
 
 	/* Send data to shell window: this is broken ^K ^H (help) sends its ^H to shell */
-	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && piseof(bw->cursor) &&
+	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->cursor->byte == bw->b->vt->vtcur->byte &&
 	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype && k>=32 && k<256))) {
 		unsigned char c = k;
 		joe_write(bw->b->out, &c, 1);

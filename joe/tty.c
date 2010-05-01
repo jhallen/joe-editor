@@ -714,6 +714,25 @@ void ttgtsz(int *x, int *y)
 #endif
 }
 
+/* Set window size */
+
+void ttstsz(int fd, int w, int h)
+{
+#ifdef TIOCSSIZE
+	struct ttysize getit;
+	getit.ts_cols = w;
+	getit.ts_lines = h;
+	joe_ioctl(fd, TIOCSSIZE, &getit);
+#else
+#ifdef TIOCSWINSZ
+	struct winsize getit;
+	getit.ws_col = w;
+	getit.ws_row = h;
+	joe_ioctl(fd, TIOCSWINSZ, &getit);
+#endif
+#endif
+}
+
 int ttshell(unsigned char *cmd)
 {
 	int x, omode = ttymode;
@@ -1014,7 +1033,8 @@ static unsigned char **newenv(unsigned char **old, unsigned char *s)
 
 /* If out_only is set, leave program's stdin attached to JOE's stdin */
 
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only)
+MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only,
+           int w, int h)
 {
 	unsigned char buf[80];
 	int fds[2];
@@ -1116,7 +1136,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 			/* Open the TTY */
 			if ((x = open((char *)name, O_RDWR)) != -1) {	/* Standard input */
-				unsigned char **env = newenv(mainenv, USTR "TERM=");
+				unsigned char **env = newenv(mainenv, USTR "TERM=linux");
 
 
 				if (!out_only) {
@@ -1150,6 +1170,8 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 #endif
 					/* We could probably have a special TTY set-up for JOE, but for now
 					 * we'll just use the TTY setup for the TTY was was run on */
+					 if (w != -1)
+					         ttstsz(0, w, h);
 
 					/* Execute the shell */
 					execve((char *)cmd, (char **)args, (char **)env);

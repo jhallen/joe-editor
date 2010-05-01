@@ -126,6 +126,7 @@ struct buffer {
 	int	er;		/* Error code when file was loaded */
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
+	VT	*vt;		/* video terminal emulator */
 	struct lattr_db *db;	/* Linked list of line attribute databases */
 	void (*parseone)(struct charmap *map,unsigned char *s,unsigned char **rtn_name,
 	                 long *rtn_line);

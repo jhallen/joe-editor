@@ -1,147 +1,215 @@
 /* Terminal emulator */
 
-#define MAXARGS 2
+#include "types.h"
 
-enum vt_state {
-	vt_idle,
-	vt_esc,
-	vt_args,
-};
+VT *mkvt(B *b, int top, int height, int width)
+{
+	VT *vt = joe_malloc(sizeof(VT));
+	vt->b = b;
+	vt->vtcur = pdup(b->eof, USTR "vt");
+	vt->state = vt_idle;
+	vt->top = top;
+	vt->height = height;
+	vt->width = width;
+	vt->argc = 0;
+	return vt;
+}
 
+void vtrm(VT *vt)
+{
+	if (vt->vtcur)
+		prm(vt->vtcur);
+	joe_free(vt);
+}
 
-
-struct vt_context {
-	enum vt_state state;
-
-	/* Numeric arguments */
-	int argv[MAXARGS + 1];
-	int argc;
-
-	BW *bw;
-};
-
-void vt_beep(BW *bw)
+void vt_beep(VT *bw)
 {
 	ttputc(7);
 }
 
-void vt_type(BW *bw, int c)
+void vt_type(VT *bw, int c)
 {
+	int col;
 	if (piseol(bw->vtcur)) {
 		binsc(bw->vtcur, c);
-		pgetc(c);
+		pgetc(bw->vtcur);
+	} else {
+		P *q = pdup(bw->vtcur, USTR "vt_type");
+		int col = piscol(q);
+		pcol(q, col + 1);
+		bdel(bw->vtcur, q);
+		prm(q);
+		binsc(bw->vtcur, c);
+		pgetc(bw->vtcur);
+	}
+	col = piscol(bw->vtcur);
+	if (col == bw->width) {
+		if (piseol(bw->vtcur)) {
+			binsc(bw->vtcur, '\n');
+			pgetc(bw->vtcur);
+		} else {
+			pnextl(bw->vtcur);
+		}
 	}
 }
 
-void vt_lf(BW *bw)
+void vt_lf(VT *bw)
 {
-	int col = bw->vtcur->xcol;
+	int col = piscol(bw->vtcur);
 	if (!pnextl(bw->vtcur)) {
 		binsc(bw->vtcur, '\n');
 		pgetc(bw->vtcur);
 	}
 	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
+	if (bw->vtcur->line >= bw->top + bw->height)
+		bw->top = bw->vtcur->line - bw->height + 1;
 }
 
-void vt_reverse_lf(BW *bw)
-{
-	if (bw->vtcur->line) {
-		int col = bw->vtcur->xcol;
-		pprevl(bw->vtcur);
-		pcol(bw->vtcur, col);
-	} else {
-		int col = bw->vtcur->xcol;
-		p_goto_bol(bw->vtcur);
-		binsc(bw->vtcur, '\n');
-		pcol(bw->vtcur, col);
-	}
-}
-
-void vt_insert_spaces(BW *bw, int n)
+void vt_insert_spaces(VT *bw, int n)
 {
 	while (n--)
 		binsc(bw->vtcur, ' ');
 }
 
-void vt_cr(BW *bw)
+void vt_cr(VT *bw)
 {
 	p_goto_bol(bw->vtcur);
 }
 
-void vt_tab(BW *bw)
+void vt_tab(VT *bw)
 {
 	if (piseol(bw->vtcur)) {
 		binsc(bw->vtcur, '\t');
 		pgetc(bw->vtcur);
 	} else {
-		int col = bw->vtcur->xcol;
+		int col = piscol(bw->vtcur);
 		col += bw->vtcur->b->o.tab - col % bw->vtcur->b->o.tab;
 		pcol(bw->vtcur, col);
+		pfill(bw->vtcur, col, ' ');
 	}
 }
 
-void vt_left(BW *bw, int n)
+void vt_left(VT *bw, int n)
 {
-	if (n > bw->vtcur->xcol)
-		bw->vtcur->xcol = 0;
+	int col = piscol(bw->vtcur);
+	if (n > col)
+		col = 0;
 	else
-		bw->vtcur->xcol -= n;
-	pcol(bw->vtcur, bw->vtcur->xcol);
+		col -= n;
+	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_right(BW *bw, int n)
+void vt_right(VT *bw, int n)
 {
-	bw->vtcur->xcol += n;
-	pcol(bw->vtcur, bw->vtcur->xcol);
+	int col = piscol(bw->vtcur);
+	col += n;
+	if (col >= bw->width)
+		col = bw->width - 1;
+	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_up(BW *bw, int n)
+void vt_up(VT *bw, int n)
 {
-	if (n > bw->vtcur->line)
-		n = bw->vtcur->line;
-	while (n--) {
-		pprevl(bw->vtcur);
+	long line = bw->vtcur->line;
+	int col = piscol(bw->vtcur);
+	line -= n;
+	if (line < bw->top) {
+		line = bw->top;
 	}
-	pcol(bw->vtcur, bw->vtcur->xcol);
+	pline(bw->vtcur, line);
+	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_down(BW *bw, int n)
+void vt_reverse_lf(VT *bw)
 {
-	if (n > bw->b->eof->line - bw->vtcur->line)
-		n = bw->b->eof->line - bw->vtcur->line;
-	while (n--) {
-		pnextl(bw->vtcur);
+	if (bw->vtcur->line > bw->top)
+		vt_up(bw, 1);
+	else {
+		int col;
+
+		/* Delete last line */
+		if (bw->vtcur->b->eof->line >= bw->top + bw->height - 1) {
+			P *q = pdup(bw->vtcur, USTR "vt_reverse_lf");
+			P *r;
+			pline(q, bw->top + bw->height - 1);
+			r = pdup(q, USTR "vt_reverse_lf1");
+			pnextl(r);
+			bdel(q, r);
+			prm(r);
+			prm(q);
+		}
+
+		/* Scroll up */
+		col = piscol(bw->vtcur);
+		p_goto_bol(bw->vtcur);
+		binsc(bw->vtcur, '\n');
+		pcol(bw->vtcur, col);
+		pfill(bw->vtcur, col, ' ');
 	}
-	pcol(bw->vtcur, bw->vtcur->xcol);
 }
 
-void vt_col(BW *bw, int col)
+void vt_down(VT *bw, int n)
 {
-	bw->vtcur->xcol = col;
-	pcol(bw->vtcur, bw->vtcur->xcol);
+	long line = bw->vtcur->line;
+	int col = piscol(bw->vtcur);
+	line += n;
+	if (line >= bw->top + bw->height)
+		line = bw->top + bw->height - 1;
+	while (line > bw->b->eof->line) {
+		p_goto_eof(bw->vtcur);
+		binsc(bw->vtcur, '\n');
+		pgetc(bw->vtcur);
+	}
+	pline(bw->vtcur, line);
+	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_row(BW *bw, int row)
+void vt_col(VT *bw, int col)
 {
-	
+	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_erase_eos(BW *bw)
+void vt_row(VT *bw, int row)
+{
+	int col = piscol(bw->vtcur);
+	long line = bw->top + row;
+	if (line >= bw->top + bw->height)
+		line = bw->top + bw->height - 1;
+	while (line > bw->b->eof->line) {
+		p_goto_eof(bw->vtcur);
+		binsc(bw->vtcur, '\n');
+		pgetc(bw->vtcur);
+	}
+	pline(bw->vtcur, line);
+	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
+}
+
+void vt_erase_eos(VT *bw)
+{
+	P *p = pdup(bw->b->eof, USTR "vt_erase_line");
+	bdel(bw->vtcur, p);
+	prm(p);
+}
+
+void vt_erase_bos(VT *bw)
 {
 }
 
-void vt_erase_bos(BW *bw)
+void vt_erase_screen(VT *bw)
 {
 }
 
-void vt_erase_screen(BW *bw)
-{
-}
-
-void vt_erase_line(BW *bw)
+void vt_erase_line(VT *bw)
 {
 	P *p = pdup(bw->vtcur, USTR "vt_erase_line");
-	int col = bw->vtcur->xcol;
+	int col = piscol(bw->vtcur);
 
 	p_goto_bol(bw->vtcur);
 	pnextl(p);
@@ -152,13 +220,14 @@ void vt_erase_line(BW *bw)
 	}
 	prm(p);
 	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_erase_bol(BW *bw)
+void vt_erase_bol(VT *bw)
 {
 }
 
-void vt_erase_eol(BW *bw)
+void vt_erase_eol(VT *bw)
 {
 	P *p = p_goto_eol(pdup(bw->vtcur, USTR "vt_erase_eol"));
 
@@ -167,33 +236,37 @@ void vt_erase_eol(BW *bw)
 	} else
 		bdel(bw->vtcur, p);
 	prm(p);
-	return 0;
 }
 
-void vt_insert_lines(BW *bw, int n)
+void vt_insert_lines(VT *bw, int n)
 {
 }
 
-void vt_delete_lines(BW *bw, int n)
+void vt_delete_lines(VT *bw, int n)
 {
 }
 
-void vt_delete_chars(BW *bw, int n)
+void vt_delete_chars(VT *bw, int n)
 {
 }
 
-void vt_scroll_up(BW *bw, int n)
+void vt_scroll_up(VT *bw, int n)
 {
 }
 
-void vt_scroll_down(BW *bw, int n)
+void vt_scroll_down(VT *bw, int n)
 {
 }
 
-void vt_erase_chars(BW *bw, int n)
+void vt_erase_chars(VT *bw, int n)
 {
 }
 
+void vt_set_region(VT *vw, int top, int bot)
+{
+}
+
+/*
 Odd VT100 codes:
 
 ESC (	default font
@@ -260,9 +333,19 @@ ESC [ ? 7 h
 
 ESC [ ? 25 h  show cursor
 ESC [ ? 25 l  hide cursor
+*/
 
+int vt_arg(VT *vt, int argn, int dflt)
+{
+	while (vt->argc <= argn) {
+		vt->argv[vt->argc++] = 0;
+	}
+	if (!vt->argv[argn])
+		vt->argv[argn] = dflt;
+	return vt->argv[argn];
+}
 
-void vt_data(struct vt_context *vt, unsigned char *dat, int siz)
+void vt_data(VT *vt, unsigned char *dat, int siz)
 {
 	while (siz--) {
 		unsigned char c = *dat++;
@@ -296,6 +379,8 @@ void vt_data(struct vt_context *vt, unsigned char *dat, int siz)
 					} case 15: { /* SI- vt100: Regular char set */
 						break;
 					} case 27: { /* ESC */
+						vt->bufx = 0;
+						vt->buf[vt->bufx++] = 27;
 						vt->state = vt_esc;
 						break;
 					} case 0x84: { /* Same as ESC D */
@@ -326,10 +411,13 @@ void vt_data(struct vt_context *vt, unsigned char *dat, int siz)
 						break;
 					} case 0x9B: { /* Same as ESC [, CSI */
 						vt->argc = 0;
-						vt->args[0] = 0;
+						vt->argv[0] = 0;
 						vt->state = vt_args;
+						vt->bufx = 0;
+						vt->buf[vt->bufx++] = 27;
+						vt->buf[vt->bufx++] = '[';
 						break;
-					} case 0x9C; { /* Same as ESC \ */
+					} case 0x9C: { /* Same as ESC \ */
 						break;
 					} case 0x9D: { /* Same as ESC ] */
 						break;
@@ -370,13 +458,16 @@ void vt_data(struct vt_context *vt, unsigned char *dat, int siz)
 					break;
 				} else if (c == '[') { /* CSI */
 					vt->argc = 0;
-					vt->args[0] = 0;
+					vt->argv[0] = 0;
 					vt->state = vt_args;
+					vt->buf[vt->bufx++] = '[';
 				} else { /* Ignore the rest... */
 					vt->state = vt_idle;
 				}
 				break;
 			} case vt_args: {
+				if (vt->bufx < sizeof(vt->buf) - 1)
+					vt->buf[vt->bufx++] = c;
 				if (c >= '0' && c <= '9') {
 					if (vt->argc < MAXARGS)
 						vt->argv[vt->argc] = vt->argv[vt->argc] * 10 + c - '0';
@@ -385,16 +476,14 @@ void vt_data(struct vt_context *vt, unsigned char *dat, int siz)
 						++vt->argc;
 						vt->argv[vt->argc] = 0;
 					}
+				} else if (c == '?') {
+					/* Options */
 				} else {
 					int x;
 					vt->state = vt_idle;
 					if (vt->argc < MAXARGS) {
 						++vt->argc;
 					}
-					/* Set default value of arguments */
-					for (x = 0; x != vt->argc; ++x)
-						if (vt->argv[x] == 0)
-							vt->argv[x] = 1;
 					switch (c) {
 						case '@': { /* Insert spaces */
 							vt_insert_spaces(vt, vt_arg(vt, 0, 1));
@@ -438,6 +527,7 @@ void vt_data(struct vt_context *vt, unsigned char *dat, int siz)
 									vt_erase_screen(vt);
 									break;
 								}
+							}
 							break;
 						} case 'K': { /* Erase line: default=to end of line, 1=to beg. of line, 2=entire line */
 							switch (vt_arg(vt, 0, 0)) {
@@ -491,6 +581,11 @@ void vt_data(struct vt_context *vt, unsigned char *dat, int siz)
 									vt100 ansi.sys: default=understrike,bold,inverse off
 									ansi.sys: 30 - 37: foreground color
 									ansi.sys: 40 - 47: background color */
+							int x;
+							for (x = 0; x != vt->bufx; ++x) {
+								binsc(vt->vtcur, vt->buf[x]);
+								pgetb(vt->vtcur);
+							}
 							break;
 						} case 'n': { /* 6: send cursor position as ESC [ row ; col R */
 							break;

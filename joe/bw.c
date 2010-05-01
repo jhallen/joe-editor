@@ -1338,7 +1338,9 @@ int ustat(BW *bw)
 		joe_snprintf_1(bf2, sizeof(bf2), "%lx", bw->cursor->byte);
 #endif
 
-	if (c == NO_MORE_DATA)
+	if (bw->b->vt)
+		joe_snprintf_2(buf, sizeof(buf), joe_gettext(_("cursor=%ld vt=%ld")), (long)bw->cursor->byte, (long)bw->b->vt->vtcur->byte);
+	else if (c == NO_MORE_DATA)
 		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2);
 	else
 		joe_snprintf_9(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));

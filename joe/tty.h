@@ -185,7 +185,7 @@ void signrm PARAMS((void));
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only));
+MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int w, int h));
 
 /* int subshell(int *ptyfd);
  * Execute a subshell.  Returns 'pid' of shell or zero if there was a

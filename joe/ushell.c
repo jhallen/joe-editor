@@ -14,6 +14,10 @@ static void cdone(B *b)
 	b->pid = 0;
 	close(b->out);
 	b->out = -1;
+	if (b->vt) {
+		vtrm(b->vt);
+		b->vt = 0;
+	}
 }
 
 static void cdone_parse(B *b)
@@ -21,24 +25,41 @@ static void cdone_parse(B *b)
 	b->pid = 0;
 	close(b->out);
 	b->out = -1;
+	if (b->vt) {
+		vtrm(b->vt);
+		b->vt = 0;
+	}
 	parserrb(b);
 }
 
 /* Executed for each chunk of data we get from the shell */
 
-static void cfollow(B *b,long byte)
+BW *follow_list[100];
+int follow_list_n;
+
+static void cready(B *b,long byte)
 {
 	W *w;
+	follow_list_n = 0;
 	 if ((w = maint->topwin) != NULL) {
 	 	do {
 	 		if ((w->watom->what&TYPETW) && ((BW *)w->object)->b==b && ((BW *)w->object)->cursor->byte==byte) {
 	 			BW *bw = (BW *)w->object;
-	 			p_goto_eof(bw->cursor);
-				bw->cursor->xcol = piscol(bw->cursor);
+	 			follow_list[follow_list_n++] = bw;
 	 		}
 		w = w->link.next;
 	 	} while (w != maint->topwin);
 	 }
+}
+
+static void cfollow(B *b,long byte)
+{
+	int x;
+	for (x = 0; x != follow_list_n; ++x) {
+		BW *bw = follow_list[x];
+		pgoto(bw->cursor, b->vt->vtcur->byte);
+		bw->cursor->xcol = piscol(bw->cursor);
+	}
 }
 
 static void cdata(B *b, unsigned char *dat, int siz)
@@ -49,6 +70,11 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	unsigned char bf[1024];
 	int x, y;
 
+	cready(b, b->vt->vtcur->byte);
+
+	vt_data(b->vt, dat, siz);
+
+/*
 	for (x = y = 0; x != siz; ++x) {
 		if (dat[x] == 13 || dat[x] == 0) {
 			;
@@ -72,7 +98,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	}
 	prm(r);
 	prm(q);
-
+*/
 	cfollow(b,byte);
 	undomark();
 }
@@ -97,9 +123,13 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		varm(s);
 		return -1;
 	}
+	bw->b->vt = mkvt(bw->b, bw->top->line, bw->h, bw->w);
+	bw->o.ansi = 1;
+	bw->b->o.ansi = 1;
+	bw->o.syntax = bw->b->o.syntax = load_syntax("ansi");
 	/* p_goto_eof(bw->cursor); */
 
-	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only))) {
+	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, bw->w, bw->h))) {
 		varm(s);
 		msgnw(bw->parent, joe_gettext(_("No ptys available")));
 		return -1;
@@ -133,7 +163,7 @@ int ubknd(BW *bw)
 	a = vamk(3);
 	s = vsncpy(NULL, 0, sz(sh));
 	a = vaadd(a, s);
-	s = vsncpy(NULL, 0, sc("-i"));
+	s = vsncpy(NULL, 0, sc("-ls"));
 	a = vaadd(a, s);
 	return cstart(bw, sh, a, NULL, NULL, 0, 0);
 }
