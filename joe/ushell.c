@@ -52,24 +52,26 @@ static void cready(B *b,long byte)
 	 }
 }
 
-static void cfollow(B *b,long byte)
+static void cfollow(B *b)
 {
 	int x;
 	for (x = 0; x != follow_list_n; ++x) {
 		BW *bw = follow_list[x];
 		pgoto(bw->cursor, b->vt->vtcur->byte);
 		bw->cursor->xcol = piscol(bw->cursor);
+		dofollows();
+		pline(bw->top, b->vt->top);
 	}
 }
 
 static void cdata(B *b, unsigned char *dat, int siz)
 {
-	P *q = pdup(b->eof, USTR "cdata");
+/*	P *q = pdup(b->eof, USTR "cdata");
 	P *r = pdup(b->eof, USTR "cdata");
 	long byte = q->byte;
 	unsigned char bf[1024];
 	int x, y;
-
+*/
 	cready(b, b->vt->vtcur->byte);
 
 	vt_data(b->vt, dat, siz);
@@ -99,7 +101,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	prm(r);
 	prm(q);
 */
-	cfollow(b,byte);
+	cfollow(b);
 	undomark();
 }
 

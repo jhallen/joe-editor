@@ -97,6 +97,7 @@ int edloop(int flg)
 	}
 	while (!leave && (!flg || !term)) {
 		MACRO *m;
+		BW *bw;
 		int c;
 
 		if (exmsg && !flg) {
@@ -114,7 +115,13 @@ int edloop(int flg)
 
 		if (!ahead && c == 10)
 			c = 13;
-		m = dokey(maint->curwin->kbd, c);
+
+		/* Use special kbd if we're handing data to a shell window */
+		bw = (BW *)maint->curwin->object;
+		if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->cursor->byte == bw->b->vt->vtcur->byte)
+			m = dokey(bw->b->vt->kbd, c);
+		else
+			m = dokey(maint->curwin->kbd, c);
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
 			int x = maint->curwin->kbd->x;
 

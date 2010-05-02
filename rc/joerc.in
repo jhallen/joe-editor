@@ -3,7 +3,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.joerc
-	2 - @JOERC@/joerc
+	2 - /home/jhallen/etc/joe/joerc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -613,9 +613,9 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
-\i \i  default joerc file is here @JOERC@/joerc \|\i \i
-\i \i  default syntax and i18n files are here @JOEDATA@ \|\i \i
-\i \i  additional documentation can be found here @JOEDOC@ \|\i \i
+\i \i  default joerc file is here /home/jhallen/etc/joe/joerc \|\i \i
+\i \i  default syntax and i18n files are here /home/jhallen/share/joe \|\i \i
+\i \i  additional documentation can be found here /home/jhallen/share/doc/joe \|\i \i
 }
 
 {CharTable
@@ -1143,3 +1143,9 @@ type		^@ TO ÿ
 
 :querysr		Search & replace query window
 type		^@ TO ÿ
+
+:shell			Input to shell windows
+type		^@ TO ÿ
+uparw		^K P
+uparw		^K p
+uparw		^K ^P

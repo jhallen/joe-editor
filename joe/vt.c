@@ -12,6 +12,7 @@ VT *mkvt(B *b, int top, int height, int width)
 	vt->height = height;
 	vt->width = width;
 	vt->argc = 0;
+	vt->kbd = mkkbd(kmap_getcontext("shell"));
 	return vt;
 }
 
@@ -19,6 +20,7 @@ void vtrm(VT *vt)
 {
 	if (vt->vtcur)
 		prm(vt->vtcur);
+	rmkbd(vt->kbd);
 	joe_free(vt);
 }
 

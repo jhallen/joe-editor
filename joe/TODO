@@ -1,3 +1,14 @@
+When you use grep in a buffer, you can parserr.. but grep output can be
+highlighted with escape sequences.. parserr includes them in the file names.
+
+Esc sequences could be optimized out: delete one if it results in same
+attributes that already exist.
+
+Problems with UTF-8 mode..
+
+output from emacs is wrong...
+
+
 For JOE-3.6
 
 	auto reload of modified files?  a mode for this?
