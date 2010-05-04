@@ -11,15 +11,19 @@ Pgetc() does not now always return a character... how to fix?
 Resize vt window size when joe window is resized (vt window is the joe
 window with the cursor after a resize?)
 
-Need raw mode.
+Need raw mode which works the old way.. (mostly for debugging joe..)
 
 Need ^K ' to make a new window... (how to go to it? Have one for grep?
 Compile?)
 
 Who owns keyboard, application or joe?
+^K V should jump to vt cursor...
 
 Logbuf?  Sometimes?
 
+Hex mode probably doesn't mix correctly with vt
+
+Note: termcap emulation functions are gone from curses..
 
 
 For JOE-3.6
