@@ -60,7 +60,18 @@ static void cfollow(B *b)
 		pgoto(bw->cursor, b->vt->vtcur->byte);
 		bw->cursor->xcol = piscol(bw->cursor);
 		dofollows();
-		pline(bw->top, b->vt->top);
+		// pline(bw->top, b->vt->top);
+	}
+}
+
+void vt_scrdn()
+{
+	int x;
+	for (x = 0; x != follow_list_n; ++x) {
+		BW *bw = follow_list[x];
+		pnextl(bw->top);
+		if (bw->parent->y != -1)
+			nscrlup(bw->parent->t->t, bw->y, bw->y + bw->h, 1);
 	}
 }
 

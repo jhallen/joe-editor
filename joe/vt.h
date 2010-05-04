@@ -24,6 +24,9 @@ struct vt_context {
 	int height;
 	int width;
 
+	int regn_top;
+	int regn_bot;
+
 	P *vtcur;
 	B *b;
 

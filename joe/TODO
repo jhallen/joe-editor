@@ -3,10 +3,23 @@ highlighted with escape sequences.. parserr includes them in the file names.
 
 Esc sequences could be optimized out: delete one if it results in same
 attributes that already exist.
+	Ugh...
 
-Problems with UTF-8 mode..
+Pgetc() does not now always return a character... how to fix?
+	Ugh...
 
-output from emacs is wrong...
+Resize vt window size when joe window is resized (vt window is the joe
+window with the cursor after a resize?)
+
+Need raw mode.
+
+Need ^K ' to make a new window... (how to go to it? Have one for grep?
+Compile?)
+
+Who owns keyboard, application or joe?
+
+Logbuf?  Sometimes?
+
 
 
 For JOE-3.6

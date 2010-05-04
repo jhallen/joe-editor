@@ -729,6 +729,14 @@ int pgetc(P *p)
 		if (c==NO_MORE_DATA)
 			return c;
 
+                if (p->b->o.ansi && c == '\033') { /* Hide ansi */
+                        while ((d = pgetb(p)) != NO_MORE_DATA)
+                                if (d >= 'A' && d <= 'Z' || d >= 'a' && d <= 'z')
+                                        break;
+                        p->valcol = val;
+                        return c;
+                }
+
 		if ((c&0xE0)==0xC0) { /* Two bytes */
 			n = 1;
 			c &= 0x1F;

@@ -9,6 +9,8 @@ VT *mkvt(B *b, int top, int height, int width)
 	vt->vtcur = pdup(b->eof, USTR "vt");
 	vt->state = vt_idle;
 	vt->top = top;
+	vt->regn_top = 0;
+	vt->regn_bot = height;
 	vt->height = height;
 	vt->width = width;
 	vt->argc = 0;
@@ -48,7 +50,7 @@ void vt_type(VT *bw, int c)
 		pgetc(bw->vtcur);
 	}
 	col = piscol(bw->vtcur);
-	if (col == bw->width) {
+	if (col >= bw->width) {
 		if (bw->b->eof->line != bw->vtcur->line) {
 			pnextl(bw->vtcur);
 		} else {
@@ -68,9 +70,37 @@ void vt_lf(VT *bw)
 		return;
 	}
 	col = piscol(bw->vtcur);
-	if (!pnextl(bw->vtcur)) {
-		binsc(bw->vtcur, '\n');
-		pgetc(bw->vtcur);
+	if (bw->vtcur->line == bw->top + bw->regn_bot - 1) {
+		if (bw->regn_top != 0) {
+			/* Delete top line */
+			P *p = pdup(bw->vtcur, USTR "vt_lf");
+			P *q;
+			pline(p, bw->top + bw->regn_top);
+			q = pdup(p, USTR "vt_lf");
+			pnextl(q);
+			bdel(p, q);
+			prm(q);
+			prm(p);
+		} else {
+			W *w;
+			/* Save top line in buffer */
+			++bw->top;
+			vt_scrdn();
+		}
+		/* Move to next line: add line if we are at end */
+		if (!pnextl(bw->vtcur)) {
+			binsc(bw->vtcur, '\n');
+			pgetc(bw->vtcur);
+		} else { /* Insert if we are not at end */
+			p_goto_bol(bw->vtcur);
+			binsc(bw->vtcur, '\n');
+		}
+	} else {
+		/* Move to next line: add line if we are at end */
+		if (!pnextl(bw->vtcur)) {
+			binsc(bw->vtcur, '\n');
+			pgetc(bw->vtcur);
+		}
 	}
 	pcol(bw->vtcur, col);
 	pfill(bw->vtcur, col, ' ');
@@ -145,29 +175,31 @@ void vt_up(VT *bw, int n)
 void vt_reverse_lf(VT *bw)
 {
 	bw->xn = 0;
-	if (bw->vtcur->line > bw->top)
-		vt_up(bw, 1);
-	else {
-		int col;
+	if (bw->vtcur->line >= bw->top) {
+		if (bw->vtcur->line != bw->top + bw->regn_top)
+			vt_up(bw, 1);
+		else {
+			int col;
 
-		/* Delete last line */
-		if (bw->vtcur->b->eof->line >= bw->top + bw->height - 1) {
-			P *q = pdup(bw->vtcur, USTR "vt_reverse_lf");
-			P *r;
-			pline(q, bw->top + bw->height - 1);
-			r = pdup(q, USTR "vt_reverse_lf1");
-			pnextl(r);
-			bdel(q, r);
-			prm(r);
-			prm(q);
+			/* Delete last line */
+			if (bw->vtcur->b->eof->line >= bw->top + bw->regn_bot - 1) {
+				P *q = pdup(bw->vtcur, USTR "vt_reverse_lf");
+				P *r;
+				pline(q, bw->top + bw->regn_bot - 1);
+				r = pdup(q, USTR "vt_reverse_lf1");
+				pnextl(r);
+				bdel(q, r);
+				prm(r);
+				prm(q);
+			}
+
+			/* Scroll up */
+			col = piscol(bw->vtcur);
+			p_goto_bol(bw->vtcur);
+			binsc(bw->vtcur, '\n');
+			pcol(bw->vtcur, col);
+			pfill(bw->vtcur, col, ' ');
 		}
-
-		/* Scroll up */
-		col = piscol(bw->vtcur);
-		p_goto_bol(bw->vtcur);
-		binsc(bw->vtcur, '\n');
-		pcol(bw->vtcur, col);
-		pfill(bw->vtcur, col, ' ');
 	}
 }
 
@@ -227,6 +259,17 @@ void vt_erase_bos(VT *bw)
 
 void vt_erase_screen(VT *bw)
 {
+	long li = bw->vtcur->line;
+	int col = piscol(bw->vtcur);
+	bw->xn = 0;
+	pline(bw->vtcur, bw->top);
+	bdel(bw->vtcur, bw->b->eof);
+	while (bw->vtcur->line < li) {
+		binsc(bw->vtcur, '\n');
+		pgetc(bw->vtcur);
+	}
+	pcol(bw->vtcur, col);
+	pfill(bw->vtcur, col, ' ');
 }
 
 void vt_erase_line(VT *bw)
@@ -263,14 +306,60 @@ void vt_erase_eol(VT *bw)
 
 void vt_insert_lines(VT *bw, int n)
 {
+	bw->xn = 0;
+	if (bw->vtcur->line < bw->top + bw->regn_bot)
+		while (n--) {
+			P *p = pdup(bw->vtcur, USTR "vt_insert_lines");
+			p_goto_bol(p);
+			binsc(p, '\n');
+			pline(p, bw->top + bw->regn_bot);
+			if (p->line == bw->top + bw->regn_bot) {
+				P *q = pdup(p, USTR "vt_insert_lines");
+				if (pnextl(q)) {
+					bdel(p, q);
+				}
+				prm(q);
+			}
+			prm(p);
+		}
 }
 
 void vt_delete_lines(VT *bw, int n)
 {
+	bw->xn = 0;
+	if (bw->vtcur->line < bw->top + bw->regn_bot)
+		while (n--) {
+			int col = piscol(bw->vtcur);
+			P *a = pdup(bw->vtcur, USTR "vt_delete_lines");
+			P *p;
+			P *q;
+			pline(a, bw->top + bw->regn_bot);
+			if (a->line == bw->top + bw->regn_bot) {
+				binsc(a, '\n');
+			}
+			prm(a);
+			p = pdup(bw->vtcur, USTR "vt_delete_lines");
+			q = pdup(p, USTR "vt_delete_lines");
+			p_goto_bol(p);
+			if (pnextl(q)) {
+				bdel(p, q);
+			}
+			prm(q);
+			prm(p);
+			pcol(bw->vtcur, col);
+		}
 }
 
 void vt_delete_chars(VT *bw, int n)
 {
+	bw->xn = 0;
+	while (n && !piseol(bw->vtcur)) {
+		P *q = pdup(bw->vtcur, USTR "vt_delete_chars");
+		pgetc(q);
+		bdel(bw->vtcur, q);
+		prm(q);
+		n--;
+	}
 }
 
 void vt_scroll_up(VT *bw, int n)
@@ -285,8 +374,13 @@ void vt_erase_chars(VT *bw, int n)
 {
 }
 
-void vt_set_region(VT *vw, int top, int bot)
+void vt_set_region(VT *bw, int top, int bot)
 {
+	bw->xn = 0;
+	if (top < bw->height && bot < bw->height && top <= bot) {
+		bw->regn_top = top;
+		bw->regn_bot = bot + 1;
+	}
 }
 
 /*
@@ -473,6 +567,7 @@ void vt_data(VT *vt, unsigned char *dat, int siz)
 					vt->state = vt_idle;
 					break;
 				} else if (c == 'F') { /* Goto lower left of screen */
+					break;
 				} else if (c == 'H') { /* Set tab */
 					break;
 				} else if (c == '7') { /* vt100: save position and attributes */
@@ -608,12 +703,18 @@ void vt_data(VT *vt, unsigned char *dat, int siz)
 							for (x = 0; x != vt->bufx; ++x) {
 								binsc(vt->vtcur, vt->buf[x]);
 								pgetb(vt->vtcur);
+								vt->vtcur->valcol = 0;
 							}
 							break;
 						} case 'n': { /* 6: send cursor position as ESC [ row ; col R */
 							break;
 						} case 'r': { /* vt100: Set scrolling region */
-							vt_set_region(vt, vt_arg(vt, 0, 1) - 1, vt_arg(vt, 1, vt->height) - 1);
+							if (vt->argc < 2)
+								vt_set_region(vt, 0, vt->height - 1);
+							else
+								vt_set_region(vt, vt_arg(vt, 0, 1) - 1, vt_arg(vt, 1, vt->height) - 1);
+							vt_row(vt, 0);
+							vt_col(vt, 0);
 							break;
 						} case 's': { /* ansi.sys: save cursor position */
 							break;
