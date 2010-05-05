@@ -3,7 +3,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.joerc
-	2 - /home/jhallen/etc/joe/joerc
+	2 - @JOERC@/jmacsrc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -108,7 +108,7 @@
 
  -noxon		Attempt to turn off ^S/^Q processing
 
- -orphan	Put extra files given on command line in orphaned buffers
+-orphan		Put extra files given on command line in orphaned buffers
 		instead of in windows
 
  -dopadding	Output pad characters (for when there is no tty handshaking)
@@ -613,9 +613,9 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
-\i \i  default joerc file is here /home/jhallen/etc/joe/joerc \|\i \i
-\i \i  default syntax and i18n files are here /home/jhallen/share/joe \|\i \i
-\i \i  additional documentation can be found here /home/jhallen/share/doc/joe \|\i \i
+\i \i  default joerc file is here @JOERC@/joerc \|\i \i
+\i \i  default syntax and i18n files are here @JOEDATA@ \|\i \i
+\i \i  additional documentation can be found here @JOEDOC@ \|\i \i
 }
 
 {CharTable
@@ -701,9 +701,12 @@ abort		^K Q
 abort		^K ^Q
 abort		^K q
 arg		^K \		Repeat next command
-explode		^K I		Show all windows or show only one window
-explode		^K ^I
-explode		^K i
+ explode		^K I		Show all windows or show only one window
+ explode		^K ^I
+ explode		^K i
+tw1		^K I
+tw1		^K ^I
+tw1		^K i
 help		^K H		Help menu
 help		^K ^H
 help		^K h
@@ -781,6 +784,13 @@ aspellword	^[ n
  Man page
 
 :def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
+
+ Shell windows
+
+:def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,bknd!,eof
+:def shell2 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 2 *",rtn,bknd!,eof
+:def shell3 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 3 *",rtn,bknd!,eof
+:def shell4 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 4 *",rtn,bknd!,eof
 
  Here we guess some common key sequences which either do not have termcap
  sequences or which are frequently wrong.  Note that if the termcap entry is
@@ -1049,6 +1059,9 @@ uparw		.ku		Go up
 uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
+shell1		^[ O S
+shell2		^[ O R
+shell3		^[ O Q
 
 :prompt			Prompt windows
 :inherit main
@@ -1149,3 +1162,6 @@ type		^@ TO ÿ
 uparw		^K P
 uparw		^K p
 uparw		^K ^P
+shell1		^[ O S
+shell2		^[ O R
+shell3		^[ O Q

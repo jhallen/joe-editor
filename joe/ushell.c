@@ -132,7 +132,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		*notify = 1;
 	}
 	if (bw->b->pid) {
-		msgnw(bw->parent, joe_gettext(_("Program already running in this window")));
+/*		msgnw(bw->parent, joe_gettext(_("Program already running in this window"))); */
 		varm(s);
 		return -1;
 	}

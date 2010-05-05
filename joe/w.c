@@ -860,9 +860,9 @@ int umfit(BW *bw)
 		return -1;
 	}
 	/* Request size */
-	if (p->t->h - 6 < 3)
+	if ((p->t->h >> 1) < 3) /* -6 */
 		return -1;
-	seth(p, p->t->h - 6);
+	seth(p, (p->t->h >> 1)); /* -6 */
 	t->topwin = p;
 	t->curwin = p;
 	/* Fit them on the screen */
