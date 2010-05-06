@@ -865,7 +865,7 @@ execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 finish		^[ ^I		Complete word in document
 finish		^[ ^M		Complete word: used to be math
-mwind,mfit,jump,bol		^[ SP
+mwind!,mfit,jump,bol		^[ SP
 isrch		^[ s		Forward incremental search
 isrch		^[ S		Forward incremental search
 isrch		^[ ^S		Forward incremental search
@@ -931,8 +931,8 @@ pbuf		^[ ^U		Prev buffer
  Standard JOE user interface
 
 quote8		^\		Enter Meta chars
- quote		`		Enter Ctrl chars
-quote		^[ '		Enter Ctrl chars
+quote		`		Enter Ctrl chars
+ quote		^[ '		Enter Ctrl chars
 quote		^Q
 
 backs		^?		Backspace
@@ -1059,9 +1059,10 @@ uparw		.ku		Go up
 uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
-shell1		^[ O S
-shell2		^[ O R
-shell3		^[ O Q
+shell1		.k1
+shell2		.k2
+shell3		.k3
+shell4		.k4
 
 :prompt			Prompt windows
 :inherit main
@@ -1158,10 +1159,20 @@ type		^@ TO ÿ
 type		^@ TO ÿ
 
 :shell			Input to shell windows
-type		^@ TO ÿ
-uparw		^K P
-uparw		^K p
-uparw		^K ^P
-shell1		^[ O S
-shell2		^[ O R
-shell3		^[ O Q
+:inherit main
+"[A"		 [ A
+"[A"		.ku
+"[B"		 [ B
+"[B"		.kd
+"[C"		 [ C
+"[C"		.kr
+"[D"		 [ D
+"[D"		.kl
+""		^A		BOL for bash
+""		^C		Abort
+""		^D		Eof
+""		^E		EOL for bash
+"	"	^I		Tab
+""		^H		Backspace
+""		^M		Return
+""		^?		Backspace

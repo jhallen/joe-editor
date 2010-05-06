@@ -1,6 +1,3 @@
-When you use grep in a buffer, you can parserr.. but grep output can be
-highlighted with escape sequences.. parserr includes them in the file names.
-
 Esc sequences could be optimized out: delete one if it results in same
 attributes that already exist.
 	Ugh...
@@ -10,20 +7,39 @@ Pgetc() does not now always return a character... how to fix?
 
 Resize vt window size when joe window is resized (vt window is the joe
 window with the cursor after a resize?)
+	vt size should be size of last joe window user typed in.
 
 Need raw mode which works the old way.. (mostly for debugging joe..)
-
-Need ^K ' to make a new window... (how to go to it? Have one for grep?
-Compile?)
-
-Who owns keyboard, application or joe?
-^K V should jump to vt cursor...
 
 Logbuf?  Sometimes?
 
 Hex mode probably doesn't mix correctly with vt
 
+
+
+When you use grep in a buffer, you can parserr.. but grep output can be
+highlighted with escape sequences.. parserr includes them in the file names.
+	(done- you can now hit ESC SPACE in a shell window: would like it to
+be ^G.. also it would be nice buffer was parsed... maybe with progressive
+parsing?)
+
+Who owns keyboard, application or joe?
+	Usually we want it to work the old way..
+	It was nice when ` uparw actually worked..
+		(there is one sneaky way to make ` work the old way...  have
+		it mean quote only if it's the first thing in the read buffer)
+	(done- but check other rc files...)
+
+^K V should jump to vt cursor... (done)
+
+Need ^K ' to make a new window... (how to go to it? Have one for grep?
+Compile?)
+	We have F1 - F4
+		If you exit shell and hit F2 again it messes up... (need
+better way to detect it's a shell window- filename compare, perhaps).
+
 Note: termcap emulation functions are gone from curses..
+	No, ncurses-devel was missing on ubuntu..
 
 
 For JOE-3.6

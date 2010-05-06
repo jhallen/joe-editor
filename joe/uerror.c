@@ -391,6 +391,22 @@ ERROR *srcherr(BW *bw,unsigned char *file,long line)
 	return 0;
 }
 
+/* Delete ansi formatting */
+
+void kill_ansi(unsigned char *s)
+{
+	unsigned char *d = s;
+	while (*s)
+		if (*s == 27) {
+			while (*s && (*s == 27 || *s == '[' || *s >= '0' && *s <= '9' || *s == ';'))
+				++s;
+			if (*s)
+				++s;
+		} else
+			*d++ = *s++;
+	*d = 0;
+}
+
 int ujump(BW *bw)
 {
 	int rtn = -1;
@@ -400,6 +416,7 @@ int ujump(BW *bw)
 	p_goto_bol(p);
 	p_goto_eol(q);
 	s = brvs(p, (int) (q->byte - p->byte));
+	kill_ansi(s);
 	prm(p);
 	prm(q);
 	if (s) {
@@ -408,7 +425,7 @@ int ujump(BW *bw)
 		if (bw->b->parseone)
 			bw->b->parseone(bw->b->o.charmap,s,&name,&line);
 		else
-			parseone(bw->b->o.charmap,s,&name,&line);
+			parseone_grep(bw->b->o.charmap,s,&name,&line);
 		if (name && line != -1) {
 			ERROR *p = srcherr(bw, name, line);
 			uprevw((BASE *)bw);

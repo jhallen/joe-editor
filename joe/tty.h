@@ -84,6 +84,8 @@ void ttclsn PARAMS((void));
  */
 int ttgetc PARAMS((void));
 
+int ttcheck PARAMS((void));
+
 /* void ttputc(char c);  Write a character to the output buffer.  If it becomes
  * full, call ttflsh()
  */
@@ -139,6 +141,7 @@ void ttsusp PARAMS((void));
 int ttflsh PARAMS((void));
 
 extern int have; /* Set if we have typeahead */
+extern unsigned char havec; /* typeahead character */
 extern int leave; /* Set if we're exiting (so don't check for typeahead) */
 
 #ifdef __MSDOS__

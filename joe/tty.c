@@ -172,7 +172,7 @@ static int speeds[] = {
 /* Input buffer */
 
 int have = 0;			/* Set if we have pending input */
-static unsigned char havec;	/* Character read in during pending input check */
+unsigned char havec;	/* Character read in during pending input check */
 int leave = 0;			/* When set, typeahead checking is disabled */
 
 /* TTY mode flag.  1 for open, 0 for closed */
@@ -503,6 +503,39 @@ static void pauseit(void)
 #endif
 #endif
 
+/* Check for type-ahead */
+
+int ttcheck()
+{
+	/* Check for typeahead or next packet */
+
+	if (!have && !leave) {
+		if (ackkbd != -1) {
+			fcntl(mpxfd, F_SETFL, O_NDELAY);
+			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
+				fcntl(mpxfd, F_SETFL, 0);
+				joe_read(mpxfd, pack.data, pack.size);
+				have = 1;
+				acceptch = pack.ch;
+			} else
+				fcntl(mpxfd, F_SETFL, 0);
+		} else {
+			/* Set terminal input to non-blocking */
+			fcntl(fileno(termin), F_SETFL, O_NDELAY);
+
+			/* Try to read */
+			if (read(fileno(termin), &havec, 1) == 1)
+				have = 1;
+
+			/* Set terminal back to blocking */
+			fcntl(fileno(termin), F_SETFL, 0);
+		}
+	}
+	return have;
+}
+
+/* Flush output and check for type ahead */
+
 int ttflsh(void)
 {
 	/* Flush output */
@@ -555,29 +588,7 @@ int ttflsh(void)
 	}
 
 	/* Check for typeahead or next packet */
-
-	if (!have && !leave) {
-		if (ackkbd != -1) {
-			fcntl(mpxfd, F_SETFL, O_NDELAY);
-			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
-				fcntl(mpxfd, F_SETFL, 0);
-				joe_read(mpxfd, pack.data, pack.size);
-				have = 1;
-				acceptch = pack.ch;
-			} else
-				fcntl(mpxfd, F_SETFL, 0);
-		} else {
-			/* Set terminal input to non-blocking */
-			fcntl(fileno(termin), F_SETFL, O_NDELAY);
-
-			/* Try to read */
-			if (read(fileno(termin), &havec, 1) == 1)
-				have = 1;
-
-			/* Set terminal back to blocking */
-			fcntl(fileno(termin), F_SETFL, 0);
-		}
-	}
+	ttcheck();
 	return 0;
 }
 
