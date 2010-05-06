@@ -507,6 +507,17 @@ static void pauseit(void)
 
 int ttcheck()
 {
+	/* Ack previous packet */
+	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
+		unsigned char c = 0;
+
+		if (pack.who && pack.who->func)
+			joe_write(pack.who->ackfd, &c, 1);
+		else
+			joe_write(ackkbd, &c, 1);
+		acceptch = NO_MORE_DATA;
+	}
+
 	/* Check for typeahead or next packet */
 
 	if (!have && !leave) {
@@ -574,17 +585,6 @@ int ttflsh(void)
 #endif
 
 		obufp = 0;
-	}
-
-	/* Ack previous packet */
-	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
-		unsigned char c = 0;
-
-		if (pack.who && pack.who->func)
-			joe_write(pack.who->ackfd, &c, 1);
-		else
-			joe_write(ackkbd, &c, 1);
-		acceptch = NO_MORE_DATA;
 	}
 
 	/* Check for typeahead or next packet */

@@ -579,7 +579,30 @@ void vt_data(VT *vt, unsigned char *dat, int siz)
 					vt->argv[0] = 0;
 					vt->state = vt_args;
 					vt->buf[vt->bufx++] = '[';
+				} else if (c == '{') {
+					vt->bufx = 0;
+					vt->state = vt_cmd;
 				} else { /* Ignore the rest... */
+					vt->state = vt_idle;
+				}
+				break;
+			} case vt_cmd: {
+				if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == ',' || c == '_') {
+					if (vt->bufx < sizeof(vt->buf) - 1)
+						vt->buf[vt->bufx++] = c;
+				} else {
+					if (c == '}') {
+						MACRO *m;
+						int rtn;
+						vt->buf[vt->bufx] = 0;
+						m = mparse(NULL, vt->buf, &rtn);
+						if (rtn >= 0) {
+							/* FIXME should only do this if cursor is on window */
+							exmacro(m, 1);
+							edupd(1);
+						}
+						rmmacro(m);
+					}
 					vt->state = vt_idle;
 				}
 				break;

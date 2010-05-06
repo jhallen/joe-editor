@@ -4,6 +4,7 @@ enum vt_state {
 	vt_idle,
 	vt_esc,
 	vt_args,
+	vt_cmd
 };
 
 struct vt_context {
