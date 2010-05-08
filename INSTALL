@@ -57,6 +57,9 @@ Installation procedure
 
   To create a Cygwin binary distribution, use the 'cygbuild' script.
 
+  On Ubuntu, you need to: sudo apt-get install ncurses-dev
+  for JOE to access the terminfo database.
+
   JOE uses the GNU Automake and Autoconf suites to build itself.
 
   Run configure script, type one of these:
