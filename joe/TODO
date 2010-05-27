@@ -1,3 +1,31 @@
+Fix crashing bug.. doesn't seem to happen in gdb..
+
+
+Edit from within shell window with this:
+(how to fix security hole?)
+(need shell-window local current directory?)
+
+function do_math () {
+	echo '{'math,'"'$1'"',rtn}
+	echo '{'rtn,math,'"'ans:ins'"',rtn}
+}
+
+function do_edit () {
+	echo '{'edit,'"'$1'"',rtn}
+}
+
+function do_cd () {
+	cd $1
+	echo '{'cd,dellin!,'"'`pwd`/'"',rtn}
+}
+
+alias math='do_math'
+alias edit='do_edit'
+alias cd='do_cd'
+
+
+
+
 Esc sequences could be optimized out: delete one if it results in same
 attributes that already exist.
 	Ugh...

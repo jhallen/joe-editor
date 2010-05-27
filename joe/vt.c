@@ -587,7 +587,8 @@ void vt_data(VT *vt, unsigned char *dat, int siz)
 				}
 				break;
 			} case vt_cmd: {
-				if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == ',' || c == '_') {
+				if (c != '}') {
+				/* if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == ',' || c == '_') { */
 					if (vt->bufx < sizeof(vt->buf) - 1)
 						vt->buf[vt->bufx++] = c;
 				} else {
@@ -595,6 +596,7 @@ void vt_data(VT *vt, unsigned char *dat, int siz)
 						MACRO *m;
 						int rtn;
 						vt->buf[vt->bufx] = 0;
+						/* printf("Got command '%s'\r\n", vt->buf); */
 						m = mparse(NULL, vt->buf, &rtn);
 						if (rtn >= 0) {
 							/* FIXME should only do this if cursor is on window */

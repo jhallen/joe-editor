@@ -677,6 +677,19 @@ int doedit(BW *bw, unsigned char *s, void *obj, int *notify)
 		return doedit1(bw, YES_CODE, s, notify);
 }
 
+int dosetcd(BW *bw, unsigned char *s, void *obj, int *notify)
+{
+	if (notify) {
+		*notify = 1;
+	}
+	if (s[0])
+		set_current_dir(s, 1);
+	joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Directory prefix set to %s")), s);
+	msgnw(bw->parent, msgbuf);
+	vsrm(s);
+	return 0;
+}
+
 int okrepl(BW *bw)
 {
 	if (bw->b->count == 1 && bw->b->changed) {
@@ -690,6 +703,15 @@ int okrepl(BW *bw)
 int uedit(BW *bw)
 {
 	if (wmkpw(bw->parent, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist, doedit, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,7)) {
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+int usetcd(BW *bw)
+{
+	if (wmkpw(bw->parent, joe_gettext(_("Set current directory (^C to abort): ")), &filehist, dosetcd, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,7)) {
 		return 0;
 	} else {
 		return -1;

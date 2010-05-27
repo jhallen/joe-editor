@@ -407,6 +407,8 @@ void kill_ansi(unsigned char *s)
 	*d = 0;
 }
 
+extern unsigned char *current_dir;
+
 int ujump(BW *bw)
 {
 	int rtn = -1;
@@ -421,11 +423,17 @@ int ujump(BW *bw)
 	prm(q);
 	if (s) {
 		unsigned char *name = NULL;
+		unsigned char *fullname = NULL;
 		long line = -1;
 		if (bw->b->parseone)
 			bw->b->parseone(bw->b->o.charmap,s,&name,&line);
 		else
 			parseone_grep(bw->b->o.charmap,s,&name,&line);
+		/* Prepend current directory.. */
+		fullname = vsncpy(NULL, 0, sv(current_dir));
+		fullname = vsncpy(sv(fullname), sv(name));
+		vsrm(name);
+		name = canonical(fullname);
 		if (name && line != -1) {
 			ERROR *p = srcherr(bw, name, line);
 			uprevw((BASE *)bw);

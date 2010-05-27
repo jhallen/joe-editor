@@ -44,6 +44,7 @@ CMD cmds[] = {
 	{USTR "build", TYPETW + TYPEPW, ubuild, NULL, 0, NULL},
 	{USTR "byte", TYPETW + TYPEPW, ubyte, NULL, 0, NULL},
 	{USTR "cancel", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ucancel, NULL, 0, NULL},
+	{USTR "cd", TYPETW, usetcd, NULL, 0, NULL},
 	{USTR "center", TYPETW + TYPEPW + EFIXXCOL + EMOD, ucenter, NULL, 1, NULL},
 	{USTR "charset", TYPETW + TYPEPW, ucharset, NULL, 0, NULL}, 
 	{USTR "ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
