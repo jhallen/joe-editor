@@ -1,3 +1,10 @@
+Do better when hitting ^C.. pop back to previous buffer in window?  Keep
+history list for this?
+
+Resize needs more testing.  Resize with 'man ls' not quite working.
+Weird things will happen with multiple window with synchronized cursors.
+
+
 Edit from within shell window with this:
 (how to fix security hole?)
 (need shell-window local current directory?)
@@ -38,10 +45,6 @@ attributes that already exist.
 
 Pgetc() does not now always return a character... how to fix?
 	Ugh...
-
-Resize vt window size when joe window is resized (vt window is the joe
-window with the cursor after a resize?)
-	vt size should be size of last joe window user typed in.
 
 Need raw mode which works the old way.. (mostly for debugging joe..)
 

@@ -1164,6 +1164,10 @@ void bwresz(BW *w, int wi, int he)
 	}
 	w->w = wi;
 	w->h = he;
+	if (w->b->vt && w->cursor->byte == w->b->vt->vtcur->byte && w->b->pid) {
+		vt_resize(w->b->vt, he, wi);
+		ttstsz(w->b->out, wi, he);
+	}
 }
 
 BW *bwmk(W *window, B *b, int prompt)

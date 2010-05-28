@@ -39,3 +39,5 @@ VT *mkvt(B *b, int top, int height, int width);
 void vtrm(VT *vt);
 
 void vt_data(VT *vt, unsigned char *dat, int siz);
+
+void vt_resize(VT *vt, int height, int width);
