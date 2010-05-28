@@ -1147,7 +1147,8 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 			/* Open the TTY */
 			if ((x = open((char *)name, O_RDWR)) != -1) {	/* Standard input */
-				unsigned char **env = newenv(mainenv, USTR "TERM=linux");
+				unsigned char **enva = newenv(mainenv, USTR "TERM=linux");
+				unsigned char **env = newenv(enva, USTR "JOE=1");
 
 
 				if (!out_only) {

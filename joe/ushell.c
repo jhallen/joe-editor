@@ -34,19 +34,19 @@ static void cdone_parse(B *b)
 
 /* Executed for each chunk of data we get from the shell */
 
-BW *follow_list[100];
-int follow_list_n;
-
 static void cready(B *b,long byte)
 {
 	W *w;
-	follow_list_n = 0;
 	 if ((w = maint->topwin) != NULL) {
 	 	do {
-	 		if ((w->watom->what&TYPETW) && ((BW *)w->object)->b==b && ((BW *)w->object)->cursor->byte==byte) {
+	 		if (w->watom->what & TYPETW) {
 	 			BW *bw = (BW *)w->object;
-	 			follow_list[follow_list_n++] = bw;
-	 		}
+		 		if (bw->b == b && bw->cursor->byte == byte) {
+		 			bw->shell_flag = 1;
+		 		} else {
+		 			bw->shell_flag = 0;
+		 		}
+			}
 		w = w->link.next;
 	 	} while (w != maint->topwin);
 	 }
@@ -54,25 +54,39 @@ static void cready(B *b,long byte)
 
 static void cfollow(B *b)
 {
-	int x;
-	for (x = 0; x != follow_list_n; ++x) {
-		BW *bw = follow_list[x];
-		pgoto(bw->cursor, b->vt->vtcur->byte);
-		bw->cursor->xcol = piscol(bw->cursor);
-		dofollows();
-		// pline(bw->top, b->vt->top);
-	}
+	W *w;
+	 if ((w = maint->topwin) != NULL) {
+	 	do {
+	 		if (w->watom->what & TYPETW) {
+	 			BW *bw = (BW *)w->object;
+	 			if (bw->shell_flag) {
+	 				bw->shell_flag = 0;
+	 				pgoto(bw->cursor, b->vt->vtcur->byte);
+	 				bw->cursor->xcol = piscol(bw->cursor);
+	 				dofollows();
+	 			}
+			}
+		w = w->link.next;
+	 	} while (w != maint->topwin);
+	 }
 }
 
 void vt_scrdn()
 {
-	int x;
-	for (x = 0; x != follow_list_n; ++x) {
-		BW *bw = follow_list[x];
-		pnextl(bw->top);
-		if (bw->parent->y != -1)
-			nscrlup(bw->parent->t->t, bw->y, bw->y + bw->h, 1);
-	}
+	W *w;
+	 if ((w = maint->topwin) != NULL) {
+	 	do {
+	 		if (w->watom->what & TYPETW) {
+	 			BW *bw = (BW *)w->object;
+	 			if (bw->shell_flag) {
+	 				pnextl(bw->top);
+	 				if (bw->parent->y != -1)
+						nscrlup(bw->parent->t->t, bw->y, bw->y + bw->h, 1);
+	 			}
+			}
+		w = w->link.next;
+	 	} while (w != maint->topwin);
+	 }
 }
 
 static void cdata(B *b, unsigned char *dat, int siz)

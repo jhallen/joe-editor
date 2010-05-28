@@ -1,9 +1,10 @@
-Fix crashing bug.. doesn't seem to happen in gdb..
-
-
 Edit from within shell window with this:
 (how to fix security hole?)
 (need shell-window local current directory?)
+
+function do_clear () {
+	echo '{'psh,bof,markb,eof,markk,blkdel}
+}
 
 function do_math () {
 	echo '{'math,'"'$1'"',rtn}
@@ -16,13 +17,18 @@ function do_edit () {
 
 function do_cd () {
 	cd $1
-	echo '{'cd,dellin!,'"'`pwd`/'"',rtn}
+	if [ "_$JOE" == "_1" ];
+	then
+		echo '{'cd,dellin!,'"'`pwd`/'"',rtn}
+	fi
 }
 
-alias math='do_math'
-alias edit='do_edit'
-alias cd='do_cd'
-
+if [ "_$JOE" == "_1" ];
+then
+	alias clear='do_clear'
+	alias math='do_math'
+	alias edit='do_edit'
+fi
 
 
 

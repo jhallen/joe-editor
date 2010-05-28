@@ -1211,6 +1211,7 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->top_changed = 1;
 	w->linums = 0;
 	w->db = 0;
+	w->shell_flag = 0;
 	return w;
 }
 
