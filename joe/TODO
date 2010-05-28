@@ -8,6 +8,8 @@ Weird things will happen with multiple window with synchronized cursors.
 Edit from within shell window with this:
 (how to fix security hole?)
 (need shell-window local current directory?)
+(Logbuf?  Sometimes?)
+
 
 function do_clear () {
 	echo '{'psh,bof,markb,eof,markk,blkdel}
@@ -23,7 +25,11 @@ function do_edit () {
 }
 
 function do_cd () {
-	cd $1
+	if [ "$1" == "" ]; then
+		cd
+	else
+		cd "$1"
+	fi
 	if [ "_$JOE" == "_1" ];
 	then
 		echo '{'cd,dellin!,'"'`pwd`/'"',rtn}
@@ -47,8 +53,6 @@ Pgetc() does not now always return a character... how to fix?
 	Ugh...
 
 Need raw mode which works the old way.. (mostly for debugging joe..)
-
-Logbuf?  Sometimes?
 
 Hex mode probably doesn't mix correctly with vt
 
