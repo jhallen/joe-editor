@@ -2696,7 +2696,7 @@ B *borphan(void)
 	B *b;
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->orphan && !b->scratch) {
+		if (b->orphan && (!b->scratch || b->pid)) {
 			b->orphan = 0;
 			return b;
 		}
