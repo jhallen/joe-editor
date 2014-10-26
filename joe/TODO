@@ -1,49 +1,40 @@
+Mode to start joe with shell window.
+
+Save per-shell window current directory in joe state file?
+
 Do better when hitting ^C.. pop back to previous buffer in window?  Keep
 history list for this?
+
+Trouble when we switch to orphan mode:
+	^K I does not put orphaned buffers on screen...
+	Have to get users used to ^[ u and ^[ v
+
+Add magic joe command: append list of buffers.
+
+It would be nice if ^G was goto instead of ESC space
+
+Think through grep and compile.. maybe parse has to be progressive.
+
+Think more about keeping cursor in sync: from shell window, edit file, ^C,
+we're back in shell window but cursor is in wrong place.
+
+Context help for shell window?
 
 Resize needs more testing.  Resize with 'man ls' not quite working.
 Weird things will happen with multiple window with synchronized cursors.
 
+Resize not working when you kill other window?
 
-Edit from within shell window with this:
-(how to fix security hole?)
-(need shell-window local current directory?)
-(Logbuf?  Sometimes?)
+Joe-specific shell aliases:
+	How to fix security hole?
+		Allow only: shell_ macros.
+		But also allow: "string" and rtn for arguments.
 
+        Would be nice if there was history for each virtual console.
+		BASH HISTFILE.
 
-function do_clear () {
-	echo '{'psh,bof,markb,eof,markk,blkdel}
-}
-
-function do_math () {
-	echo '{'math,'"'$1'"',rtn}
-	echo '{'rtn,math,'"'ans:ins'"',rtn}
-}
-
-function do_edit () {
-	echo '{'edit,'"'$1'"',rtn}
-}
-
-function do_cd () {
-	if [ "$1" == "" ]; then
-		cd
-	else
-		cd "$1"
-	fi
-	if [ "_$JOE" == "_1" ];
-	then
-		echo '{'cd,dellin!,'"'`pwd`/'"',rtn}
-	fi
-}
-
-if [ "_$JOE" == "_1" ];
-then
-	alias clear='do_clear'
-	alias math='do_math'
-	alias edit='do_edit'
-fi
-
-
+	Need per-shell window current directory.
+	Logbuf?  Sometimes?
 
 Esc sequences could be optimized out: delete one if it results in same
 attributes that already exist.

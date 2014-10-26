@@ -130,7 +130,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	undomark();
 }
 
-int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only)
+int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only, unsigned char *first_command)
 {
 #ifdef __MSDOS__
 	if (notify) {
@@ -162,6 +162,8 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		return -1;
 	} else {
 		bw->b->pid = m->pid;
+		if (first_command)
+			write(bw->b->out, (char *)first_command, zlen(first_command));
 	}
 	return 0;
 #endif
@@ -172,6 +174,8 @@ int ubknd(BW *bw)
 	unsigned char **a;
 	unsigned char *s;
         unsigned char *sh;
+	unsigned char start_sh[] = ". " JOERC "shell.sh\n";
+	unsigned char start_csh[] = "source " JOERC "shell.csh\n";
 
         if (!modify_logic(bw,bw->b))
         	return -1;
@@ -190,9 +194,9 @@ int ubknd(BW *bw)
 	a = vamk(3);
 	s = vsncpy(NULL, 0, sz(sh));
 	a = vaadd(a, s);
-	s = vsncpy(NULL, 0, sc("-ls"));
+	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL, 0, 0);
+	return cstart(bw, sh, a, NULL, NULL, 0, 0, zstr(sh, "csh") ? start_csh : start_sh);
 }
 
 /* Run a program in a window */
@@ -212,7 +216,7 @@ static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 0, 0);
+	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 0, 0, NULL);
 }
 
 B *runhist = NULL;
@@ -235,7 +239,7 @@ static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 1, 0);
+	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 1, 0, NULL);
 }
 
 B *buildhist = NULL;

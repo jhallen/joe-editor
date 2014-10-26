@@ -4,9 +4,9 @@ data_docdir = $(docdir)
 
 sysconf_joe_built = joerc jicerc.ru jmacsrc jstarrc rjoerc jpicorc
 
-sysconf_joe_DATA = $(sysconf_joe_built) ftyperc
+sysconf_joe_DATA = $(sysconf_joe_built) ftyperc shell.sh shell.csh
 
-EXTRA_DIST = joerc.in jicerc.ru.in jmacsrc.in jstarrc.in jpicorc.in rjoerc.in ftyperc
+EXTRA_DIST = joerc.in jicerc.ru.in jmacsrc.in jstarrc.in jpicorc.in rjoerc.in ftyperc shell.sh shell.csh
 
 joerc : joerc.in
 	sed 's,@JOERC\@,$(sysconf_joedir),; s,@JOEDOC\@,$(data_docdir),; s,@JOEDATA\@,$(data_joedir),; s,@SPELL\@,@SPELL@,' $(srcdir)/joerc.in > $@

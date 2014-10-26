@@ -590,7 +590,7 @@ int main(int argc, char **real_argv, char **envv)
 			cmd = vsncpy(NULL, 0, sc("/bin/cat"));
 			a = vaadd(a, cmd);
 			
-			cstart (maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1);
+			cstart (maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1, NULL);
 		}
 	}
 
