@@ -96,6 +96,7 @@
 	*		idle	noeat
 	"xX"		hex
 	"."		float
+	"eE"		epart
 	"0-9"		first_number
 
 :hex Constant
