@@ -1,0 +1,63 @@
+# JOE syntax highlight file for Windows INI files
+
+=Idle
+=Comment	green
+=String		cyan
+=Keyword	bold
+=Escape		bold cyan
+
+:idle Idle
+	*		key		recolor=-1
+	"#;"		comment		recolor=-1
+	"["		section		recolor=-1
+	" \t\r\n"	idle
+
+:comment Comment
+	*		comment
+	"\n"		idle
+
+:key Idle
+	*		key
+	"="		valuefirst
+	"\r\n"		idle
+
+:valuefirst String
+	*		value		recolor=-1
+	"\""		dqvalue		recolor=-1
+	"'"		sqvalue		recolor=-1
+	" \t"		valuefirst
+
+:value String
+	*		value
+	"#;"		comment		recolor=-1
+	"\r\n"		idle
+
+# Quoted value (")
+:dqvalue String
+	*		dqvalue
+	"\""		deadline
+	"\\"		descape		recolor=-1
+	"\r\n"		idle
+
+:descape Escape
+	*		dqvalue
+
+# Quoted value (')
+:sqvalue String
+	*		sqvalue
+	"'"		deadline
+	"\\"		sescape		recolor=-1
+	"\r\n"		idle
+
+:sescape Escape
+	*		sqvalue
+
+:deadline Idle
+	*		deadline
+	"\r\n"		idle
+	";#"		comment		recolor=-1
+
+:section Keyword
+	*		section
+	"]"		deadline
+	"\r\n"		idle

@@ -678,6 +678,21 @@
 -autoindent
 -syntax tcl
 
+ CSharp
+*.cs
+-autoindent
+-syntax csharp
+-smarthome
+-smartbacks
+-purify
+-cpara >#!;*/%
+-text_delimiters #region=#endregion:#if=#elif=#else=#endif
+
+ RESX/.NET resource files
+*.resx
+-autoindent
+-syntax xml
+
  Joe Syntax File
 *.jsf
 -autoindent
@@ -718,6 +733,22 @@
  System RC file
 *rc
 -syntax conf
+
+ Windows batch files
+*.bat
+-autoindent
+-syntax batch
+
+*.cmd
+-autoindent
+-syntax batch
+
+ Windows configuration files
+*.ini
+-syntax ini
+
+*.inf
+-syntax ini
 
  JOERC file
 *ftyperc
