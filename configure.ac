@@ -192,5 +192,5 @@ syntax/sml.jsf syntax/sql.jsf syntax/awk.jsf syntax/cobol.jsf syntax/sed.jsf
 syntax/ps.jsf syntax/ada.jsf syntax/troff.jsf syntax/haskell.jsf
 syntax/rexx.jsf syntax/skill.jsf syntax/lua.jsf syntax/ruby.jsf syntax/m4.jsf
 syntax/joerc.jsf syntax/spec.jsf syntax/matlab.jsf syntax/jsf.jsf syntax/jsf_check.jsf
-syntax/csharp.jsf syntax/batch.jsf syntax/ini.jsf])
+syntax/csharp.jsf syntax/batch.jsf syntax/ini.jsf syntax/go.jsf])
 AC_OUTPUT

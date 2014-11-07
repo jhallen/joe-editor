@@ -690,6 +690,13 @@
 -autoindent
 -syntax tcl
 
+ Go language
+*.go
+-autoindent
+-syntax go
+-smarthome
+-smartbacks
+
  CSharp
 *.cs
 -autoindent
