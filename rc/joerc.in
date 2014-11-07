@@ -750,6 +750,7 @@ defm3up		M3UP
 defm3drag	M3DRAG		Select a region of lines
 
 xtmouse		^[ [ M		Introduces an xterm mouse event
+extmouse	^[ [ <		Introduces an extended xterm mouse event
 
 if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 

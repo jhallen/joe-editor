@@ -760,6 +760,7 @@ defm3up		M3UP
 defm3drag	M3DRAG		Отметить последовательность строк
 
 xtmouse		^[ [ M		Начало обработки событий мыши в xterm
+extmouse	^[ [ <		Introduces an extended xterm mouse event (TODO: translate to Russian)
 
 if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 

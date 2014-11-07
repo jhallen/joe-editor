@@ -84,6 +84,7 @@ CMD cmds[] = {
 	{USTR "execmd", TYPETW + TYPEPW, uexecmd, NULL, 0, NULL},
 	{USTR "explode", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uexpld, NULL, 0, NULL},
 	{USTR "exsave", TYPETW + TYPEPW, uexsve, NULL, 0, NULL},
+	{USTR "extmouse", TYPETW+TYPEPW+TYPEMENU+TYPEQW, uextmouse, 0, 0, 0 },
 	{USTR "ffirst", TYPETW + TYPEPW, pffirst, NULL, 0, NULL},
 	{USTR "filt", TYPETW + TYPEPW + EMOD + EBLOCK, ufilt, NULL, 0, NULL},
 	{USTR "finish", TYPETW + TYPEPW + EMOD, ufinish, NULL, 1, NULL},

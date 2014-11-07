@@ -686,6 +686,7 @@ defm3up		M3UP
 defm3drag	M3DRAG		Select a region of lines
 
 xtmouse		^[ [ M		Introduces an xterm mouse event
+extmouse	^[ [ <		Introduces an extended xterm mouse event
 
 :main			Text editing window
 :inherit windows

@@ -42,6 +42,7 @@ void mousedrag PARAMS((int x, int y));
 
 /* user command handlers */
 int uxtmouse PARAMS((BW *));		/* handle an xterm mouse control sequence */
+int uextmouse PARAMS((BW *));		/* handle an extended xterm mouse control sequence */
 int utomouse PARAMS((BW *));		/* move the pointer to the mouse */
 int udefmdown PARAMS((BW *));	/* default mouse click handlers */
 int udefmup PARAMS((BW *));
