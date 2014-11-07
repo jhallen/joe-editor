@@ -2,6 +2,9 @@
 # (c) 2012 Matthias S. Benkmann
 # License: http://creativecommons.org/licenses/by/3.0/deed.en_US
 
+# Small modifications by jjjordan to better suit white backgrounds and 16-color
+# consoles.  (Original colors commented out below)
+
 # Standard colors:
 #
 # Foreground:
@@ -34,23 +37,23 @@
 
 =Idle
 =Error          red bold
-=Comment        bold green
+=Comment        green #bold green
 =SingleQuoted   cyan
 =DoubleQuoted   cyan
 =BackQuoted     cyan
 =Escape         bold cyan
 =Operator       bold cyan
-=Parentheses    bold yellow
+=Parentheses    #bold yellow
 =Brackets       yellow
-=Curlies        bold magenta
-=Semicolon      bold yellow
+=Brace          magenta #bold magenta
+=Semicolon      #bold yellow
 =Period         bold
 =PeriodDecimal  red
 =Number         red
 =Constant       red
-=Comma          bold yellow
-=Identifier     fg_333
-=ExportedIdentifier fg_444
+=Comma          #bold yellow
+=Identifier     #fg_333
+=ExportedIdentifier #fg_444
 =Keyword        bold
 =Type           bold
 =BuiltinFunction bold
@@ -131,7 +134,7 @@
 :brackets Brackets
   *            main
 
-:curlies  Curlies
+:curlies  Brace
   *            main
 
 :semicolon Semicolon
