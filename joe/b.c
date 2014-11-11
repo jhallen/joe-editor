@@ -2511,14 +2511,17 @@ opnerr:
 		int hist[20];
 		int hist_val[20];
 		int nhist = 0;
-		int old_max;
 		int max;
 		int maxi;
-		found_space = 0;
-		found_tab = 0;
+		int space_lines = 0;
+		int tab_lines = 0;
+		
 		p=pdup(b->eof, USTR "bload");
 		/* Create histogram of indentation values */
 		for (y = 0; y != 50; ++y) {
+			found_space = 0;
+			found_tab = 0;
+			
 			p_goto_bol(p);
 			if ((i = pisindentg(p))) {
 				for (x = 0; x != nhist; ++x)
@@ -2531,41 +2534,47 @@ opnerr:
 				} else if (x != nhist) {
 					++hist[x];
 				}
+				
+				/* Count characters used for indent */
+				if (found_tab) tab_lines++;
+				else if (found_space) space_lines++;
 			}
-			if (prgetc(p)==NO_MORE_DATA)
+			
+			if (prgetc(p) == NO_MORE_DATA)
 				break;
 		}
-		/* Find GCM of top 3 most popular indentation values */
-		old_max = 0;
-		for (y = 0; y != 3; ++y) {
-			max = 0;
-			for (x = 0; x != nhist; ++x)
-				if (hist[x] > max) {
-					max = hist[x];
-					maxi = x;
-				}
-			if (max) {
-				if (!old_max)
-					old_max = max;
-				if (guessed_step)
-					guessed_step = euclid(guessed_step, hist_val[maxi]);
-				else
-					guessed_step = hist_val[maxi];
-				hist[maxi] = 0;
-			}
-		}
-		/* If guessed value is large, scale it down some */
-		while (!(guessed_step & 1) && guessed_step > 8)
-			guessed_step >>= 1;
-
-		if (found_tab && !found_space) {
+		
+		if (tab_lines > space_lines) {
+			/* If more lines were indented with tabs than spaces, pick tabs. */
 			b->o.indentc = '\t';
 			b->o.istep = 1;
-		} else if (found_space) {
+		} else if (space_lines > 0) {
+			/* Find GCM of top 3 most popular indentation values */
+			for (y = 0; y != 3; ++y) {
+				max = 0;
+				for (x = 0; x != nhist; ++x)
+					if (hist[x] > max) {
+						max = hist[x];
+						maxi = x;
+					}
+				if (max) {
+					if (guessed_step)
+						guessed_step = euclid(guessed_step, hist_val[maxi]);
+					else
+						guessed_step = hist_val[maxi];
+					hist[maxi] = 0;
+				}
+			}
+			
+			/* If guessed value is large, scale it down some */
+			while (!(guessed_step & 1) && guessed_step > 8)
+				guessed_step >>= 1;
+			
 			b->o.indentc = ' ';
 			if (guessed_step)
 				b->o.istep = guessed_step;
 		}
+
 		prm(p);
 	}
 
