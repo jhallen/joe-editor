@@ -7,6 +7,9 @@
  */
 #include "types.h"
 
+#define HEX_RESTORE_UTF8	2
+#define HEX_RESTORE_CRLF	4
+
 /* Commands which just type in variable values */
 
 int ucharset(BW *bw)
@@ -241,13 +244,13 @@ void lazy_opts(B *b, OPTIONS *o)
 		/* Hex not allowed with UTF-8 */
 		if (o->charmap->type) {
 			o->charmap = find_charmap(USTR "c");
-			o->hex |= 2;
+			o->hex |= HEX_RESTORE_UTF8;
 		}
 		
 		/* Hex not allowed with CRLF */
 		if (o->crlf) {
 			o->crlf = 0;
-			o->hex |= 4;
+			o->hex |= HEX_RESTORE_CRLF;
 		}
 	}
 	
@@ -937,12 +940,16 @@ static int applyopt(BW *bw, void *optp, int y, int flg)
 	int oldval, newval;
 	
 	oldval = *(int *)optp;
-	if (flg == 0)
+	if (flg == 0) {
 		/* Return pressed: toggle */
 		newval = !oldval;
-	else
-		/* flg==1 => '1' pressed; backspace/'0' otherwise */
-		newval = (flg == 1);
+	} else if (flg == 1) {
+		/* '1' pressed */
+		newval = oldval ? oldval : 1; /* Keep oldval if already 'on' */
+	} else {
+		/* '0' or backspace or something else */
+		newval = 0;
+	}
 
 	*(int *)optp = newval;
 	msgnw(bw->parent, newval ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
@@ -969,26 +976,26 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			
 			/* Kill UTF-8 and CRLF modes if we switch to hex display */
 			if (glopts[y].ofst == (unsigned char *) &fdefault.hex - (unsigned char *) &fdefault) {
-				if (bw->o.hex) {
+				if (bw->o.hex && !oldval) {
 					bw->o.hex = 1;
 					if (bw->b->o.charmap->type) {
 						/* Switch out of UTF-8 mode */
 						doencoding(bw, vsncpy(NULL, 0, sc("C")), NULL, NULL);
-						bw->o.hex |= 2;
+						bw->o.hex |= HEX_RESTORE_UTF8;
 					}
 					
 					if (bw->o.crlf) {
 						/* Switch out of CRLF mode */
 						bw->o.crlf = 0;
-						bw->o.hex |= 4;
+						bw->o.hex |= HEX_RESTORE_CRLF;
 					}
-				} else {
-					if ((oldval & 2) && !zcmp(bw->b->o.charmap->name, USTR "ascii")) {
+				} else if (!bw->o.hex && oldval) {
+					if ((oldval & HEX_RESTORE_UTF8) && !zcmp(bw->b->o.charmap->name, USTR "ascii")) {
 						/* Switch back into UTF-8 */
 						doencoding(bw, vsncpy(NULL, 0, sc("UTF-8")), NULL, NULL);
 					}
 					
-					if (oldval & 4) {
+					if (oldval & HEX_RESTORE_CRLF) {
 						/* Turn CRLF back on */
 						bw->o.crlf = 1;
 					}
