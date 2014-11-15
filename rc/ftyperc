@@ -478,7 +478,16 @@
  Javascript
 *.js
 -autoindent
--syntax java
+-syntax javascript
+-smarthome
+-smartbacks
+-purify
+-cpara >#!;*/%
+
+ Typescript
+*.ts
+-autoindent
+-syntax typescript
 -smarthome
 -smartbacks
 -purify
