@@ -712,7 +712,8 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 @SPELL@file	^[ l
 @SPELL@word	^[ n
 
-paste			^[ ] 5 2 ;		Bracketed paste
+paste			^[ ] 5 2 ;		Base64 paste (obsolete)
+brpaste			^[ [ 2 0 0 ~		Bracketed paste
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

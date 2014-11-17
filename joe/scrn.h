@@ -42,6 +42,8 @@ struct scrn {
 				   init. string */
 	unsigned char	*cd;		/* Clear to end of screen */
 	unsigned char	*te;		/* Restoration string */
+	unsigned char	*brp;		/* Bracketed paste mode */
+	unsigned char	*bre;		/* Stop bracketed paste */
 
 	int	haz;		/* Terminal can't print ~s */
 	int	os;		/* Terminal overstrikes */
