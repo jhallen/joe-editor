@@ -456,6 +456,7 @@ SCRN *nopen(CAP *cap)
 {
 	SCRN *t = (SCRN *) joe_malloc(sizeof(SCRN));
 	int x, y;
+	int ansiish;
 
 	ttopen();
 
@@ -526,47 +527,62 @@ SCRN *nopen(CAP *cap)
 		t->avattr |= INVERSE;
       oops:
 
+	/* Does it look like an ansi terminal? (it has bold which begins with ESC [) */
+#ifndef TERMINFO
+	ansiish = t->md && t->md[0] == '\\' && t->md[1] == 'E' && t->md[2] == '[';
+#else
+	ansiish = t->md && t->md[0] == '\033' && t->md[1] == '[';
+#endif
+	
+	/* No termcap for bracketed paste.  ANSI-looking terminals will either support bracketed paste
+	   or this setting will cause no harm. */
+	if (ansiish) {
+#ifndef TERMINFO
+		t->brp = USTR "\\E[?2004h";
+		t->bre = USTR "\\E[?2004l";
+#else
+		t->brp = USTR "\033[?2004h";
+		t->bre = USTR "\033[?2004l";
+#endif
+	} else {
+		t->brp = t->bre = 0;
+	}
 
 	if (assume_color || assume_256color) {
-		/* Install 8 color support if it looks like an ansi terminal (it has bold which begins with ESC [) */
+		/* Install 8 color support if it looks like an ansi terminal */
+		if (ansiish && !t->Sf) {
 #ifndef TERMINFO
-		if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
 			t->ut = 1;
 			t->Sf = USTR "\\E[3%dm";
 			t->Sb = USTR "\\E[4%dm";
 			t->Co = 8;
-		}
 #else
-		if (!t->Sf && t->md && t->md[0]=='\033' && t->md[1]=='[') { 
 			t->ut = 1;
 			t->Sf = USTR "\033[3%p1%dm";
 			t->Sb = USTR "\033[4%p1%dm";
-		}
 #endif
+		}
 	}
 
 	t->assume_256 = 0;
       	if (assume_256color && t->Co < 256) {
 		/* Force 256 color support */
-#ifndef TERMINFO
-		if (t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
+		if (ansiish) {
 			t->assume_256 = 1;
+#ifndef TERMINFO
 #ifdef junk
 			t->ut = 1;
 			t->Sf = USTR "\\E[38;5;%dm";
 			t->Sb = USTR "\\E[48;5;%dm";
 #endif
-		}
 #else
-		if (t->md && t->md[0]=='\033' && t->md[1]=='[') { 
-			t->assume_256 = 1;
 #ifdef junk
 			t->ut = 1;
 			t->Sf = USTR "\033[38;5;%p1%dm";
 			t->Sb = USTR "\033[48;5;%p1%dm";
 #endif
-		}
 #endif
+		}
 	}
 
 	t->so = NULL;
@@ -747,6 +763,8 @@ SCRN *nopen(CAP *cap)
 		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
 	if (!skiptop && t->cl)
 		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
+	if (t->brp)
+		texec(t->cap, t->brp, 1, 0, 0, 0, 0);
 
 /* Initialize variable screen size dependant vars */
 	t->scrn = NULL;
@@ -1650,6 +1668,8 @@ void nescape(SCRN *t)
 	npartial(t);
 	cpos(t, 0, t->li - 1);
 	eraeol(t, 0, t->li - 1, 0);
+	if (t->bre)
+		texec(t->cap, t->bre, 1, 0, 0, 0, 0);
 	if (t->te)
 		texec(t->cap, t->te, 1, 0, 0, 0, 0);
 }
@@ -1661,6 +1681,8 @@ void nreturn(SCRN *t)
 		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
 	if (!skiptop && t->cl)
 		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
+	if (t->brp)
+		texec(t->cap, t->brp, 1, 0, 0, 0, 0);
 	nredraw(t);
 }
 
@@ -1672,6 +1694,8 @@ void nclose(SCRN *t)
 	clrins(t);
 	setregn(t, 0, t->li);
 	cpos(t, 0, t->li - 1);
+	if (t->bre)
+		texec(t->cap, t->bre, 1, 0, 0, 0, 0);
 	if (t->te)
 		texec(t->cap, t->te, 1, 0, 0, 0, 0);
 	ttclose();

@@ -314,6 +314,7 @@ unsigned char *joe_getcodeset(unsigned char *l)
     if (zstr(l, USTR "KOI8-R")) return USTR "KOI8-R";
     if (zstr(l, USTR "KOI8-U")) return USTR "KOI8-U";
     if (zstr(l, USTR "620")) return USTR "TIS-620";
+    if (zstr(l, USTR "1251")) return USTR "CP1251";
     if (zstr(l, USTR "2312")) return USTR "GB2312";
     if (zstr(l, USTR "HKSCS")) return USTR "Big5HKSCS";   /* no MIME charset */
     if (zstr(l, USTR "Big5") || zstr(l, USTR "BIG5")) return USTR "Big5";

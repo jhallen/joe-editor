@@ -19,6 +19,7 @@ int *attr_buf = 0;
 int attr_size = 0;
 
 int stack_count = 0;
+static int state_count = 0; /* Max transitions possible without cycling */
 
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state)
 {
@@ -38,12 +39,19 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	int mark2 = 0;  /* offset to mark end from current pos */
 	int mark_en = 0;/* set if marking */
 	int recolor_delimiter_or_keyword;
+	
+	/* Nothing should reference 'h' above here. */
+	if (h_state.state < 0) {
+		/* Indicates a previous error -- highlighting disabled */
+		return h_state;
+	}
 
 	buf[0]=0;	/* Forgot this originally... took 5 months to fix! */
 
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd, *kw_cmd;
+		int iters = -8; /* +8 extra iterations before cycle detect. */
 		int x;
 
 		/* Hack so we can have UTF-8 characters without crashing */
@@ -69,6 +77,12 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 		/* Loop while noeat */
 		do {
+			/* Guard against infinite loops from buggy syntaxes */
+			if (iters++ > state_count) {
+				invalidate_state(&h_state);
+				return h_state;
+			}
+			
 			/* Color with current state */
 			attr[-1] = h->color;
 
@@ -242,6 +256,7 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 			state->cmd[y] = &syntax->default_cmd;
 		state->delim = 0;
 		htadd(syntax->ht_states, state->name, state);
+		++state_count;
 	}
 	return state;
 }

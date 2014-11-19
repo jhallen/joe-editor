@@ -750,6 +750,7 @@ defm3up		M3UP
 defm3drag	M3DRAG		Select a region of lines
 
 xtmouse		^[ [ M		Introduces an xterm mouse event
+extmouse	^[ [ <		Introduces an extended xterm mouse event
 
 if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
@@ -786,7 +787,8 @@ aspellword	^[ n
  sequences or which are frequently wrong.  Note that if the termcap entry is
  correct, it will override these later on.
 
-paste			^[ ] 5 2 ;		Bracketed paste
+paste			^[ ] 5 2 ;		Base64 paste (obsolete)
+brpaste			^[ [ 2 0 0 ~		Bracketed paste
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

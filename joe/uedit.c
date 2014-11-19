@@ -2373,3 +2373,37 @@ int upaste(BW  *bw, int k)
 
 	return 0;
 }
+
+int ubrpaste(BW *bw, int k)
+{
+	const unsigned char *terminator = "\033[201~";
+	int tidx = 0;
+	int c;
+	int saved_ww = bw->o.wordwrap;
+	int saved_ai = bw->o.autoindent;
+	int saved_sp = bw->o.spaces;
+	
+	bw->o.wordwrap = bw->o.autoindent = bw->o.spaces = 0;
+	
+	while (terminator[tidx] && -1 != (c = ttgetc())) {
+		if (c == terminator[tidx]) {
+			tidx++;
+		} else {
+			int i;
+			for (i = 0; i < tidx; i++)
+				utypebw(bw, terminator[i]);
+			tidx = 0;
+			
+			if (c == 13)
+				rtntw(bw);
+			else
+				utypebw(bw, c);
+		}
+	}
+	
+	bw->o.wordwrap = saved_ww;
+	bw->o.autoindent = saved_ai;
+	bw->o.spaces = saved_sp;
+	
+	return 0;
+}

@@ -395,6 +395,7 @@ done
 	*		string
 	"\""		string noeat
 	"\n"		reset
+	"\\"		string_escape	recolor=-1
 	"0-9.\-+ #hjILtz$"	string_control
 
 :char Constant

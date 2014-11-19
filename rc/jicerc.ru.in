@@ -760,6 +760,7 @@ defm3up		M3UP
 defm3drag	M3DRAG		Отметить последовательность строк
 
 xtmouse		^[ [ M		Начало обработки событий мыши в xterm
+extmouse	^[ [ <		Introduces an extended xterm mouse event (TODO: translate to Russian)
 
 if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
@@ -787,7 +788,8 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
 :def grep_find scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
 
-paste			^[ [ 2 0 2 ~		Bracketed paste
+paste			^[ [ 2 0 2 ~		Base64 paste (obsolete) ???
+brpaste			^[ [ 2 0 0 ~		Bracketed paste
 rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm
 rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right Gnome-terminal
  rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw

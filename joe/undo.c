@@ -305,7 +305,7 @@ static void yankdel(long where, B *b)
 				--nyanked;
 			}
 			rec = alrec();
-			if (size < SMALL) {
+			if (size < SMALL && size > 0) {
 				rec->small = (unsigned char *) joe_malloc(size);
 				brmem(b->bof, rec->small, (int) b->eof->byte);
 			} else {
