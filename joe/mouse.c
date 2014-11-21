@@ -81,50 +81,8 @@ int mcoord(int x)
 		return 0; /* This should not happen */
 }
 
-static int readextmousecoord()
+static int joe_mouse_event(BW *bw)
 {
-	struct utf8_sm state;
-	int c;
-
-	/* Up to two bytes supported, with a max of 2048. */
-
-	utf8_init(&state);
-	c = utf8_decode(&state, (unsigned char)ttgetc());
-	if (c == -1)
-	{
-		c = utf8_decode(&state, (unsigned char)ttgetc());
-	}
-
-	return max(c, 0);
-}
-
-int uxtmouse(BW *bw)
-{
-#ifndef JOEWIN
-	Cb = ttgetc()-32;
-	if (Cb < 0)
-		return -1;
-	Cx = ttgetc();
-	if (Cx < 32)
-		return -1;
-	Cy = ttgetc();
-	if (Cy < 32)
-		return -1;
-#else
-	Cb = readextmousecoord() - 32;
-	if (Cb < 0)
-		return -1;
-	Cx = readextmousecoord();
-	if (Cx < 32)
-		return -1;
-	Cy = readextmousecoord();
-	if (Cy < 32)
-		return -1;
-#endif
-
-	Cx = mcoord(Cx);
-	Cy = mcoord(Cy);
-
 	if ((Cb & 0x41) == 0x40) {
 		fake_key(KEY_MWUP);
 		return 0;
@@ -182,6 +140,78 @@ int uxtmouse(BW *bw)
 	}
 
 	return 0;
+}
+
+static int readextmousecoord()
+{
+	struct utf8_sm state;
+	int c;
+
+	/* Up to two bytes supported, with a max of 2048. */
+
+	utf8_init(&state);
+	c = utf8_decode(&state, (unsigned char)ttgetc());
+	if (c == -1)
+	{
+		c = utf8_decode(&state, (unsigned char)ttgetc());
+	}
+
+	return max(c, 0);
+}
+
+int uxtmouse(BW *bw)
+{
+#ifndef JOEWIN
+	Cb = ttgetc()-32;
+	if (Cb < 0)
+		return -1;
+	Cx = ttgetc();
+	if (Cx < 32)
+		return -1;
+	Cy = ttgetc();
+	if (Cy < 32)
+		return -1;
+#else
+	Cb = readextmousecoord() - 32;
+	if (Cb < 0)
+		return -1;
+	Cx = readextmousecoord();
+	if (Cx < 32)
+		return -1;
+	Cy = readextmousecoord();
+	if (Cy < 32)
+		return -1;
+#endif
+
+	Cx = mcoord(Cx);
+	Cy = mcoord(Cy);
+	return joe_mouse_event(bw);
+}
+
+/* Parse xterm extended 1006 mode mouse event parameters. */
+
+int uextmouse(BW *bw)
+{
+	int c;
+	Cb = Cx = Cy = 0;
+	while ((c = ttgetc()) != ';') {
+		if (c < '0' || c > '9')
+			return -1;
+		Cb = 10 * Cb + c - '0';
+	}
+	while ((c = ttgetc()) != ';') {
+		if (c < '0' || c > '9')
+			return -1;
+		Cx = 10 * Cx + c - '0';
+	}
+	while ((c = ttgetc()) != 'M' && c != 'm') {
+		if (c < '0' || c > '9')
+			return -1;
+		Cy = 10 * Cy + c - '0';
+	}
+	if (c == 'm')
+		Cb |= 3;
+	return joe_mouse_event(bw);
 }
 
 int mnow()
@@ -859,6 +889,7 @@ void mouseopen()
 		/* No ttflsh() in Windows, because this comes before the rendezvous. */
 #else
 		ttputs(USTR "\33[?1002h");
+		ttputs(USTR "\33[?1006h");
 		if (joexterm)
 			ttputs(USTR "\33[?2007h");
 		ttflsh();
@@ -878,6 +909,7 @@ void mouseclose()
 #else
 		if (joexterm)
 			ttputs(USTR "\33[?2007l");
+		ttputs(USTR "\33[?1006l");
 		ttputs(USTR "\33[?1002l");
 		ttflsh();
 #endif
