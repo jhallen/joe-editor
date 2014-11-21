@@ -1,3 +1,7 @@
 windows/bin
 windows/src/bin
-.log$
+\.log$
+\.suo$
+\.sdf$
+\.pyc$
+~$
