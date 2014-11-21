@@ -2,6 +2,10 @@
 
 #include "config.h"
 
+#ifdef JOEWIN
+#include "joedata.h"
+#endif
+
 /* Common header files */
 
 #include <stdio.h>
@@ -9,6 +13,20 @@
 #include <errno.h>
 #include <math.h>
 #include <stdarg.h>
+
+#ifdef JOEWIN
+// Windows header
+#define WIN32_LEAN_AND_MEAN
+#include "jwwin.h"
+
+// Things defined in windows.h that we don't want...
+#undef HTSIZE
+#undef ERROR
+#undef small
+
+// Other headers
+#include <io.h>
+#endif
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -110,13 +128,19 @@ typedef int pid_t;
 #endif
 
 /* Largest signed integer */
+#ifndef MAXINT
 #define MAXINT  ((((unsigned int)-1)/2)-1)
+#endif
 
 /* Largest signed long */
+#ifndef MAXLONG
 #define MAXLONG ((((unsigned long)-1L)/2)-1)
+#endif
 
 /* Largest signed long long */
+#ifndef MAXLONGLONG
 #define MAXLONGLONG ((((unsigned long long)-1L)/2)-1)
+#endif
 
 /* Largest off_t */
 /* BSD provides a correct OFF_MAX macro, but AIX provides a broken one,
@@ -177,8 +201,7 @@ typedef int pid_t;
 /* These do not belong here. */
 
 /* #define KEYS		256 */
-#define KEYS 267	/* 256 ascii + mdown, mup, mdrag, m2down, m2up, m2drag,
-                                        m3down, m3up, m3drag */
+#define KEYS		273	/* 256 ascii + mouse */
 #define KEY_MDOWN	256
 #define KEY_MUP		257
 #define KEY_MDRAG	258
@@ -190,6 +213,12 @@ typedef int pid_t;
 #define KEY_M3DRAG	264
 #define KEY_MWUP	265
 #define KEY_MWDOWN	266
+#define KEY_MRDOWN	267
+#define KEY_MRUP	268
+#define KEY_MRDRAG	269
+#define KEY_MMDOWN	270
+#define KEY_MMUP	271
+#define KEY_MMDRAG	272
 
 #define FITHEIGHT	4		/* Minimum text window height */
 #define LINCOLS		10
@@ -248,6 +277,10 @@ struct highlight_state {
 
 /* Include files */
 
+#ifdef JOEWIN
+#include "jwcolors.h"
+#endif
+
 #include "obj.h"
 #include "coroutine.h"
 #include "b.h"
@@ -294,3 +327,11 @@ struct highlight_state {
 #include "w.h"
 #include "gettext.h"
 #include "builtin.h"
+
+#ifdef JOEWIN
+#include "jwglobals.h"
+#include "jwglue.h"
+#include "bupdates.h"
+#include "uwindows.h"
+#include "jwutils.h"
+#endif

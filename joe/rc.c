@@ -252,7 +252,7 @@ void setopt(B *b, unsigned char *parsed_name)
 		pieces[x] = NULL;
 
 	for (o = options; o; o = o->next)
-		if (rmatch(o->name_regex, parsed_name)) {
+		if (rmatch(o->name_regex, parsed_name, 0)) {
 			if(o->contents_regex) {
 				P *p = pdup(b->bof, USTR "setopt");
 				if (pmatch(pieces,o->contents_regex,zlen(o->contents_regex),p,0,0)) {
@@ -665,48 +665,63 @@ static int syntaxcmplt(BW *bw)
 	if (!syntaxes) {
 		unsigned char *oldpwd = pwd();
 		unsigned char **t;
+		unsigned char **syntmp;
 		unsigned char *p;
 		int x, y;
 
-		if (chpwd(USTR (JOEDATA "syntax")))
-			return -1;
-		t = rexpnd(USTR "*.jsf");
-		if (!t) {
-			chpwd(oldpwd);
-			return -1;
-		}
-		if (!valen(t)) {
-			chpwd(oldpwd);
-			return -1;
-		}
+		syntmp = vamk(1);
 
-		syntaxes = vamk(1);
-		vaperm(syntaxes);
-
-		for (x = 0; x != valen(t); ++x) {
-			unsigned char *r = vsncpy(NULL,0,t[x],(unsigned char *)strrchr((char *)(t[x]),'.')-t[x]);
-			syntaxes = vaadd(syntaxes,r);
+		if (!chpwd(USTR JOEDATA_PLUS("syntax")) && (t = rexpnd(USTR "*.jsf"))) {
+			for (x = 0; x != valen(t); ++x) {
+				unsigned char *r = vsncpy(NULL,0,t[x],(unsigned char *)strrchr((char *)(t[x]),'.')-t[x]);
+				syntmp = vaadd(syntmp,r);
+			}
 		}
 
 		p = (unsigned char *)getenv("HOME");
 		if (p) {
+#ifndef JOEWIN
 			unsigned char *buf = vsfmt(NULL, 0, USTR "%s/.joe/syntax",p);
+#else
+			unsigned char *buf = vsfmt(NULL, 0, USTR "%s\\syntax",p);
+#endif
+
 			if (!chpwd(buf) && (t = rexpnd(USTR "*.jsf"))) {
 				for (x = 0; x != valen(t); ++x)
 					*strrchr((char *)t[x],'.') = 0;
 				for (x = 0; x != valen(t); ++x) {
-					for (y = 0; y != valen(syntaxes); ++y)
-						if (!zcmp(t[x],syntaxes[y]))
+					for (y = 0; y != valen(syntmp); ++y)
+						if (!zcmp(t[x],syntmp[y]))
 							break;
-					if (y == valen(syntaxes)) {
+					if (y == valen(syntmp)) {
 						unsigned char *r = vsncpy(NULL,0,sv(t[x]));
-						syntaxes = vaadd(syntaxes,r);
+						syntmp = vaadd(syntmp,r);
 					}
 				}
 			}
 		}
 
-		vasort(av(syntaxes));
+#ifdef JOEWIN
+		/* Load from builtins */
+		t = jgetbuiltins(USTR ".jsf");
+		for (x = 0; x != valen(t); ++x) {
+			*strrchr((char *)t[x],'.') = 0;
+			for (y = 0; y != valen(syntmp); ++y)
+				if (!zcmp(t[x], syntmp[y])) 
+					break;
+			if (y == valen(syntmp)) {
+				unsigned char *r = vsncpy(NULL,0,sv(t[x]));
+				syntmp = vaadd(syntmp,r);
+			}
+		}
+#endif
+
+		if (valen(syntmp)) {
+			vaperm(syntmp);
+			vasort(av(syntmp));
+			syntaxes = syntmp;
+		}
+
 		chpwd(oldpwd);
 	}
 	return simple_cmplt(bw,syntaxes);
@@ -1234,15 +1249,23 @@ int procrc(CAP *cap, unsigned char *name)
 							unsigned char *bf = 0;
 							unsigned char *p = (unsigned char *)getenv("HOME");
 							int rtn = -1;
-							if (p && buf[x] != '/') {
+							if (p && !ISDIRSEP(buf[x])) {
+#ifndef JOEWIN
 								bf = vsfmt(bf, 0, USTR "%s/.joe/%s",p,buf + x);
+#else
+								bf = vsfmt(bf, 0, USTR "%s\\%s",p,buf + x);
+#endif
 								rtn = procrc(cap, bf);
 							}
-							if (rtn == -1 && buf[x] != '/') {
+							if (rtn == -1 && !ISDIRSEP(buf[x])) {
 								bf = vsfmt(bf, 0, USTR "%s%s",JOERC,buf + x);
 								rtn = procrc(cap, bf);
 							}
-							if (rtn == -1 && buf[x] == '/') {
+							if (rtn == -1 && !ISDIRSEP(buf[x])) {
+								bf = vsfmt(bf, 0, USTR "*%s", buf + x);
+								rtn = procrc(cap, bf);
+							}
+							if (rtn == -1 && !ISDIRSEP(buf[x])) {
 								bf = vsfmt(bf, 0, USTR "%s",buf + x);
 								rtn = procrc(cap, bf);
 							}
@@ -1422,7 +1445,12 @@ void save_state()
 		return;
 	if (!path)
 		return;
+#ifndef JOEWIN
 	path = vsfmt(NULL,0,USTR "%s/.joe_state",path);
+#else
+	/* No dot-files in Windows */
+	path = vsfmt(NULL,0,USTR "%s\\joe_state",path);
+#endif
 	old_mask = umask(0066);
 	f = fopen((char *)path,"w");
 	umask(old_mask);
@@ -1459,7 +1487,12 @@ void load_state()
 		return;
 	if (!path)
 		return;
+#ifndef JOEWIN
 	path = vsfmt(NULL,0,USTR "%s/.joe_state",path);
+#else
+	/* No dotfiles in Windows */
+	path = vsfmt(NULL,0,USTR "%s\\joe_state",path);
+#endif
 	f = fopen((char *)path,"r");
 	if(!f)
 		return;

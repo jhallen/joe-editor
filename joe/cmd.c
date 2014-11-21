@@ -61,6 +61,12 @@ CMD cmds[] = {
 	{USTR "defm3down", TYPETW+TYPEPW, udefm3down, 0, 0, 0 },
 	{USTR "defm3up", TYPETW+TYPEPW, udefm3up, 0, 0, 0 },
 	{USTR "defm3drag", TYPETW+TYPEPW, udefm3drag, 0, 0, 0 },
+	{USTR "defmrdown", TYPETW+TYPEPW, udefmrdown, 0, 0, 0 },
+	{USTR "defmrup", TYPETW+TYPEPW, udefmrup, 0, 0, 0 },
+	{USTR "defmrdrag", TYPETW+TYPEPW, udefmrdrag, 0, 0, 0 },
+	{USTR "defmmdown", TYPETW+TYPEPW, udefmmdown, 0, 0, 0 },
+	{USTR "defmmup", TYPETW+TYPEPW, udefmmup, 0, 0, 0 },
+	{USTR "defmmdrag", TYPETW+TYPEPW, udefmmdrag, 0, 0, 0 },
 	{USTR "delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl, NULL, 1, USTR "deleol"},
 	{USTR "delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, udelch, NULL, 1, USTR "backs"},
 	{USTR "deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, NULL, 1, USTR "delbol"}, 
@@ -200,6 +206,12 @@ CMD cmds[] = {
 	{USTR "uparwmenu", TYPEMENU, umuparw, NULL, 1, USTR "dnarwmenu"}, 
 	{USTR "upper", TYPETW + TYPEPW + EMOD + EBLOCK, uupper, NULL, 0, NULL},
 	{USTR "upslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, uupslide, NULL, 1, USTR "dnslide"},
+#ifdef JOEWIN
+	{USTR "winblkcpy", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, uwinblkcpy, NULL, 0, NULL},
+	{USTR "wincontext", TYPETW + TYPEPW + TYPEQW + TYPEMENU, uwincontext, NULL, 0, NULL},
+	{USTR "wincopy", TYPETW + TYPEPW + EBLOCK, uwincopy, NULL, 0, NULL},
+	{USTR "winpaste", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, uwinpaste, NULL, 0, NULL},
+#endif
 	{USTR "upslidemenu", TYPEMENU, umscrup, NULL, 1, USTR "dnslidemenu"},
 	{USTR "xtmouse", TYPETW+TYPEPW+TYPEMENU+TYPEQW, uxtmouse, 0, 0, 0 },
 	{USTR "yank", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyank, NULL, 1, NULL},
@@ -285,6 +297,9 @@ int modify_logic(BW *bw,B *b)
 			b->didfirst = 1;
 			if (bw->o.mfirst)
 				exmacro(bw->o.mfirst,1);
+#ifdef JOEWIN
+			notify_changed_buffer(b);
+#endif
 		}
 		if (b->rdonly) {
 			msgnw(bw->parent,joe_gettext(_("Other buffer is read only")));
@@ -300,6 +315,9 @@ int modify_logic(BW *bw,B *b)
 			b->didfirst = 1;
 			if (bw->o.mfirst)
 				exmacro(bw->o.mfirst,1);
+#ifdef JOEWIN
+			notify_changed_buffer(b);
+#endif
 		}
 		if (b->rdonly) {
 			msgnw(bw->parent,joe_gettext(_("Read only")));

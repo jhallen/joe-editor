@@ -35,54 +35,49 @@
     <ConfigFile Include="$(JoeConfDir)\joerc" />
     <ConfigFile Include="$(JoeConfDir)\jpicorc" />
     <ConfigFile Include="$(JoeConfDir)\jstarrc" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\4gl.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\ada.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\asm.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\awk.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\batch.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\c.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\cobol.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\conf.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\csh.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\csharp.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\css.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\diff.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\fortran.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\haskell.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\html.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\ini.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\java.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\javascript.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\joerc.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\jsf.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\jsf_check.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\lisp.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\lua.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\m4.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\mail.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\mason.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\matlab.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\ocaml.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\pascal.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\perl.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\php.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\ps.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\python.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\rexx.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\ruby.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\sed.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\sh.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\skill.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\sml.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\spec.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\sql.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\tcl.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\tex.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\troff.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\typescript.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\verilog.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\vhdl.jsf" />
-    <SyntaxFile Include="$(JoeSyntaxDir)\xml.jsf" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\4gl.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\ada.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\asm.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\awk.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\c.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\cobol.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\conf.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\csh.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\css.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\diff.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\fortran.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\haskell.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\html.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\java.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\joerc.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\jsf.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\jsf_check.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\lisp.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\lua.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\m4.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\mail.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\mason.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\matlab.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\ocaml.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\pascal.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\perl.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\php.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\ps.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\python.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\rexx.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\ruby.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\sed.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\sh.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\skill.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\sml.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\spec.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\sql.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\tcl.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\tex.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\troff.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\verilog.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\vhdl.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\xml.jsf.in" />
     <ColorFile Include="$(SchemesDir)\putty-black.joecolor" />
     <ColorFile Include="$(SchemesDir)\putty-white.joecolor" />
     <ColorFile Include="$(SchemesDir)\solarized.joecolor" />
@@ -180,12 +175,12 @@
     <RemoveDir Directories="$(IntDir)" />
   </Target>
   <!-- Syntax File Targets -->
-  <Target Name="CopySyntaxFiles" Inputs="@(SyntaxFile)" Outputs="@(SyntaxFile->'$(SyntaxOutDir)\%(Filename)%(Extension)')">
+  <Target Name="CopySyntaxFiles" Inputs="@(SyntaxFile)" Outputs="@(SyntaxFile->'$(SyntaxOutDir)\%(Filename)')">
     <MakeDir Directories="$(SyntaxOutDir)" Condition="!Exists('$(SyntaxOutDir)')" />
-    <Copy SourceFiles="@(SyntaxFile)" DestinationFolder="$(SyntaxOutDir)" />
+    <Copy SourceFiles="@(SyntaxFile)" DestinationFiles="@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)')" />
     <!-- Output minified files -->
     <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
-    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(SyntaxFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezejsf.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)')) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezejsf.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
   </Target>
   <Target Name="CleanSyntaxFiles">
     <RemoveDir Directories="$(SyntaxOutDir)" />

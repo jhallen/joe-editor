@@ -74,12 +74,11 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	prm(q);
 
 	cfollow(b,byte);
-	undomark();
 }
 
 int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build, int out_only)
 {
-#ifdef __MSDOS__
+#if defined(__MSDOS__) || defined(JOEWIN)
 	varm(s);
 	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
@@ -222,6 +221,9 @@ int ugrep(BW *bw)
 
 int ukillpid(BW *bw)
 {
+#ifdef JOEWIN
+	return 0;
+#else
 	if (bw->b->pid) {
 		int c = query(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), 0);
 		if (bw->b->pid && (c == YES_CODE || yncheck(yes_key, c)))
@@ -230,4 +232,5 @@ int ukillpid(BW *bw)
 	} else {
 		return 0;
 	}
+#endif
 }

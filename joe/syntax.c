@@ -8,6 +8,11 @@
 
 #include "types.h"
 
+#ifdef JOEWIN
+#include "jwcolors.h"
+struct jwcolors *currentscheme = NULL;
+#endif
+
 /* Parse one line.  Returns new state.
    'syntax' is the loaded syntax definition for this buffer.
    'line' is advanced to start of next line.
@@ -19,6 +24,7 @@ int *attr_buf = 0;
 int attr_size = 0;
 
 int stack_count = 0;
+static int state_count = 0; /* Basis for maximum number of transitions before terminating loop */
 
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state)
 {
@@ -39,12 +45,18 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	int mark_en = 0;/* set if marking */
 	int recolor_delimiter_or_keyword;
 
+	if (h_state.state < 0) {
+		/* Indicates an error.  Give up. */
+		return h_state;
+	}
+
 	buf[0]=0;	/* Forgot this originally... took 5 months to fix! */
 
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd, *kw_cmd;
 		int x;
+		int iters = 0;
 
 		/* Hack so we can have UTF-8 characters without crashing */
 		if (c < 0 || c > 255)
@@ -69,6 +81,12 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 		/* Loop while noeat */
 		do {
+			/* Guard against runaway loops */
+			if (iters++ > state_count) {
+				invalidate_state(&h_state);
+				return h_state;
+			}
+
 			/* Color with current state */
 			attr[-1] = h->color;
 
@@ -234,6 +252,9 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 		state->name=zdup(name);
 		state->no=syntax->nstates;
 		state->color=FG_WHITE;
+#ifdef JOEWIN
+		state->colorp=0;
+#endif
 		/* Expand the state table if necessary */
 		if(syntax->nstates==syntax->szstates)
 			syntax->states=joe_realloc(syntax->states,sizeof(struct high_state *)*(syntax->szstates*=2));
@@ -242,6 +263,7 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 			state->cmd[y] = &syntax->default_cmd;
 		state->delim = 0;
 		htadd(syntax->ht_states, state->name, state);
+		++state_count;
 	}
 	return state;
 }
@@ -294,6 +316,37 @@ struct high_color *find_color(struct high_color *colors,unsigned char *name,unsi
 	return color;
 }
 
+#ifdef JOEWIN
+
+int convertjwsyncolor(struct jwsyntaxcolor *syncolor)
+{
+	int ret = 0;
+
+	if (syncolor->fgcoloridx >= 0)
+	{
+		ret |= FG_NOT_DEFAULT | (syncolor->fgcoloridx << FG_SHIFT);
+	}
+
+	if (syncolor->bgcoloridx >= 0)
+	{
+		ret |= BG_NOT_DEFAULT | (syncolor->bgcoloridx << BG_SHIFT);
+	}
+
+	if (syncolor->attrs & SYNTAX_FLAG_UNDERLINE)
+	{
+		ret |= UNDERLINE;
+	}
+
+	if (syncolor->attrs & SYNTAX_FLAG_INVERSE)
+	{
+		ret |= INVERSE;
+	}
+
+	return ret;
+}
+
+#endif
+
 void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned char *name,int line)
 {
 	unsigned char *bf = 0;
@@ -323,6 +376,26 @@ void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned ch
 				color->color |= meta_color(bf);
 			}
 		}
+
+#ifdef JOEWIN
+		color->defaultcolor = color->color;
+
+		if (currentscheme)
+		{
+			struct jwsyntaxcolor *scolor;
+			
+			scolor = searchsyntaxcolor(currentscheme, (char*)name, (char*)color->name);
+			if (!scolor)
+			{
+				scolor = searchsyntaxcolor(currentscheme, "", (char*)color->name);
+			}
+
+			if (scolor)
+			{
+				color->color = convertjwsyncolor(scolor);
+			}
+		}
+#endif
 	} else {
 		i_printf_2((char *)joe_gettext(_("%s %d: Missing class name\n")),name,line);
 	}
@@ -443,12 +516,105 @@ struct high_param *parse_params(struct high_param *current_params,unsigned char 
 	return params;
 }
 
+#ifdef JOEWIN
+
+/* Load JOEWIN color scheme */
+
+void applyscheme(struct jwcolors *colors)
+{
+	struct high_syntax *syntax;
+
+	/* This function always gets a fresh, unreferenced copy of the scheme */
+	if (currentscheme)
+	{
+		freecolorscheme(currentscheme);
+	}
+
+	currentscheme = colors;
+
+	/* First reset any syntaxes we may have touched */
+	for (syntax = syntax_list; syntax; syntax = syntax->next)
+	{
+		struct high_color *color;
+
+		for (color = syntax->color; color; color = color->next)
+		{
+			color->color = color->defaultcolor;
+		}
+	}
+
+	/* Load scheme into existing syntaxes */
+	for (syntax = syntax_list; syntax; syntax = syntax->next)
+	{
+		int i;
+
+		/* Reload colors */
+		if (currentscheme)
+		{
+			struct high_color *color;
+			for (color = syntax->color; color; color = color->next)
+			{
+				struct jwsyntaxcolor *scolor;
+
+				scolor = searchsyntaxcolor(currentscheme, (char*)syntax->name, (char*)color->name);
+				if (!scolor)
+				{
+					scolor = searchsyntaxcolor(currentscheme, "", (char*)color->name);
+				}
+
+				if (scolor)
+				{
+					color->color = convertjwsyncolor(scolor);
+				}
+			}
+		}
+
+		/* Reload state->color mappings */
+		for (i = 0; i < syntax->nstates; i++)
+		{
+			struct high_state *state = syntax->states[i];
+			if (state && state->colorp)
+			{
+				state->color = state->colorp->color;
+			}
+		}
+	}
+
+	/* Update the statusbar and selection colors (if they are defined in the scheme) */
+
+	if (iscolordefined(colors, STATUS_BG_CODE) && iscolordefined(colors, STATUS_FG_CODE))
+	{
+		/* These look backwards, but keep in mind the status line is typically inverted */
+		bg_stalin = BG_NOT_DEFAULT | FG_NOT_DEFAULT | (STATUS_FG_CODE << BG_SHIFT) | (STATUS_BG_CODE << FG_SHIFT);
+	} else {
+		bg_stalin = bg_text;
+	}
+
+	if (iscolordefined(colors, SELECTION_BG_CODE))
+	{
+		selectmask = ~BG_MASK;
+		selectatr = BG_NOT_DEFAULT | (SELECTION_BG_CODE << BG_SHIFT);
+
+		if (iscolordefined(colors, SELECTION_FG_CODE))
+		{
+			selectmask &= ~FG_MASK;
+			selectatr |= FG_NOT_DEFAULT | (SELECTION_FG_CODE << FG_SHIFT);
+		}
+	}
+	else
+	{
+		selectmask = ~INVERSE;
+		selectatr = INVERSE;
+	}
+}
+
+#endif
 
 struct high_syntax *load_syntax_subr(unsigned char *name,unsigned char *subr,struct high_param *params);
 
 /* Parse options */
 
-void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
+void parse_options(struct high_syntax *syntax, struct high_cmd *cmd, JFILE *f,unsigned char *p, int parsing_strings, unsigned char *name, int line)
 {
 	unsigned char *buf = vsmk(128);
 	unsigned char *bf = 0;
@@ -498,7 +664,7 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 		} else if(!parsing_strings && (!zcmp(bf,USTR "strings") || !zcmp(bf,USTR "istrings"))) {
 			if (bf[0]=='i')
 				cmd->ignore = 1;
-			while(vsgets(&buf,f)) {
+			while(jfgets(&buf, f)) {
 				++line;
 				p = buf;
 				parse_ws(&p,'#');
@@ -558,7 +724,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	int clist[256];
 	unsigned char *p;
 	int c;
-	FILE *f = 0;
+	JFILE *f = 0;
 	struct ifstack *stack=0;
 	struct high_state *state=0;	/* Current state */
 	struct high_state *first=0;	/* First state */
@@ -569,21 +735,31 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	/* Load it */
 	p = (unsigned char *)getenv("HOME");
 	if (p) {
+#ifndef JOEWIN
 		name = vsfmt(name, 0, USTR "%s/.joe/syntax/%s.jsf",p,syntax->name);
-		f = fopen((char *)name,"r");
+#else
+		name = vsfmt(name, 0, USTR "%s\\syntax\\%s.jsf", p, syntax->name);
+#endif
+		f = jfopen(name, "r");
 	}
 
 	if (!f) {
 		name = vsfmt(name, 0, USTR "%ssyntax/%s.jsf",JOEDATA,syntax->name);
-		f = fopen((char *)name,"r");
+		f = jfopen(name, "r");
 	}
-	if(!f) {
+
+	if (!f) {
+		name = vsfmt(name, 0, USTR "*%s.jsf", syntax->name);
+		f = jfopen(name, "r");
+	}
+
+	if (!f) {
 		obj_free(name);
 		return 0;
 	}
 
 	/* Parse file */
-	while(vsgets(&buf,f)) {
+	while (jfgets(&buf, f)) {
 		++line;
 		p = buf;
 		c = parse_ws(&p,'#');
@@ -652,7 +828,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 			/* Ignore this line because of ifdef */
 		} else if(!parse_char(&p, '=')) {
 			/* Parse color */
-			parse_color_def(&syntax->color,p,name,line);
+			parse_color_def(&syntax->color,p,syntax->name,line);
 		} else if ((syntax->subr && !this_one) || (!syntax->subr && inside_subr)) {
 			/* Ignore this line because it's not the code we want */
 		} else if(!parse_char(&p, ':')) {
@@ -670,7 +846,14 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 						if(!zcmp(color->name,bf))
 							break;
 					if(color)
+#ifndef JOEWIN
 						state->color=color->color;
+#else
+					{
+						state->color=color->color;
+						state->colorp=color;
+					}
+#endif
 					else {
 						state->color=0;
 						i_printf_2((char *)joe_gettext(_("%s %d: Unknown class\n")),name,line);
@@ -743,7 +926,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 		joe_free(st);
 	}
 
-	fclose(f);
+	jfclose(f);
 
 	obj_free(name);
 	return first;

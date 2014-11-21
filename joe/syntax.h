@@ -15,6 +15,9 @@ struct high_color {
 	struct high_color *next;
 	unsigned char *name;		/* Symbolic name of color */
 	int color;			/* Color value */
+#ifdef JOEWIN
+	int defaultcolor;		/* Default color (irrespective of scheme) */
+#endif
 };
 
 /* State */
@@ -25,6 +28,9 @@ struct high_state {
 	int color;			/* Color for this state */
 	struct high_cmd *cmd[256];	/* Character table */
 	struct high_cmd *delim;		/* Matching delimiter */
+#ifdef JOEWIN
+	struct high_color *colorp;
+#endif
 };
 
 /* Parameter list */
@@ -99,5 +105,9 @@ extern struct high_color *global_colors;
 void parse_color_def PARAMS((struct high_color **color_list,unsigned char *p,unsigned char *name,int line));
 
 void dump_syntax PARAMS((BW *bw));
+
+#ifdef JOEWIN
+void applyscheme PARAMS((struct jwcolors *colors));
+#endif
 
 #endif

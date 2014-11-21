@@ -21,12 +21,7 @@ struct stack {
 	va_list args;
 
 	/* initial PC, SP to use for call to func */
-#ifdef USE_UCONTEXT
-	ucontext_t uc[1];
-#else
-	jmp_buf go;
-	char *stk;
-#endif
+	void *cothread;
 };
 
 /* A suspended co-routine */
@@ -36,12 +31,7 @@ struct coroutine {
 	Obj saved_obj_stack;		/* To restore obj stack */
 	int override;			/* To use override_val instead of normal return value */
 	int override_val;
-	/* To restore PC, SP, regs... */
-#ifdef USE_UCONTEXT
-	ucontext_t uc[1];
-#else
-	jmp_buf cont;
-#endif
+	void *cothread;
 };
 
 /* Call a function as a co-routine (it runs with its own stack).  co_call

@@ -1650,6 +1650,7 @@ void nescape(SCRN *t)
 	npartial(t);
 	cpos(t, 0, t->li - 1);
 	eraeol(t, 0, t->li - 1, 0);
+	ttflsh();
 	if (t->te)
 		texec(t->cap, t->te, 1, 0, 0, 0, 0);
 }
@@ -1662,6 +1663,7 @@ void nreturn(SCRN *t)
 	if (!skiptop && t->cl)
 		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 	nredraw(t);
+	ttflsh();
 }
 
 void nclose(SCRN *t)
@@ -2103,15 +2105,40 @@ void unesc_genfmt(unsigned char *d, unsigned char *s, int len, int max)
 	*d = 0;
 }
 
+
+#ifdef JOEWIN
+
+static void genfmti(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg, int iatr);
+
 /* Generate text with formatting escape sequences */
 
 void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
+{
+	genfmti(t, x, y, ofst, s, atr, flg, 0);
+}
+
+/* Generate text with formatting escape sequences and custom inverse colors */
+
+static void genfmti(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg, int iatr)
+#else
+/* Generate text with formatting escape sequences */
+
+void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
+#endif
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
 	int col = 0;
 	int c;
 	struct utf8_sm sm;
+#ifdef JOEWIN
+	int inverted = !!(atr & INVERSE);
+	int origcolor = atr & ~(FG_MASK | BG_MASK);
+
+	if (iatr && inverted) {
+		atr = iatr | (atr & ~(FG_MASK | BG_MASK | INVERSE));
+	}
+#endif
 
 	utf8_init(&sm);
 
@@ -2124,7 +2151,17 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
 				break;
 			case 'i':
 			case 'I':
+#ifdef JOEWIN
+				if (iatr) {
+					inverted = !inverted;
+					atr = (inverted ? iatr : origcolor)
+					    | (atr & ~(FG_MASK | BG_MASK));
+				} else {
+					atr ^= INVERSE;
+				}
+#else
 				atr ^= INVERSE;
+#endif
 				break;
 			case 'b':
 			case 'B':

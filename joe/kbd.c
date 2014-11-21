@@ -81,6 +81,12 @@ static int keyval(unsigned char *s)
 		else if(!zcmp(s,USTR "M3DOWN")) return KEY_M3DOWN;
 		else if(!zcmp(s,USTR "M3UP")) return KEY_M3UP;
 		else if(!zcmp(s,USTR "M3DRAG")) return KEY_M3DRAG;
+		else if(!zcmp(s,USTR "MRDOWN")) return KEY_MRDOWN;
+		else if(!zcmp(s,USTR "MRUP")) return KEY_MRUP;
+		else if(!zcmp(s,USTR "MRDRAG")) return KEY_MRDRAG;
+		else if(!zcmp(s,USTR "MMDOWN")) return KEY_MMDOWN;
+		else if(!zcmp(s,USTR "MMUP")) return KEY_MMUP;
+		else if(!zcmp(s,USTR "MMDRAG")) return KEY_MMDRAG;
 		else return s[0];
 	} else if (s[1] || !s[0])
 		return -1;
@@ -264,7 +270,11 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 			if (kmap->keys[v].k == 0)
 				kmap->keys[v].value.submap = NULL;
 			kmap->keys[v].k = 1;
-			kmap->keys[v].value.submap = kbuild(cap, kmap->keys[v].value.bind, seq, bind, err, capseq, seql);
+			kmap->keys[v].value.submap = kbuild(cap, kmap->keys[v].value.submap, seq, bind, err, capseq, seql);
+			if (!kmap->keys[v].value.submap) {
+				/* This could have been due to an error during the recursion. */
+				kmap->keys[v].k = 0;
+			}
 		} else {
 			if (kmap->keys[v].k == 1)
 				rmkmap(kmap->keys[v].value.submap);

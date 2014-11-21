@@ -333,7 +333,7 @@ unsigned char *vsgets(unsigned char **sp, FILE *f)
 
 	for (i = 0;;) {
 		s_size = obj_size(s);
-		for (; i != s_size && ((c = getc(f), (c != -1 && c != '\n'))); ++i)
+		for (; i != s_size && ((c = getc(f), (c != -1 && c != '\n' && c != '\r'))); ++i)
 			s[i] = c;
 		if (i == s_size) {
 			s = vsensure(s, s_size * 2);
@@ -934,6 +934,18 @@ void vasort(unsigned char **ary, int len)
 	if (!ary || !len)
 		return;
 	qsort(ary, len, sizeof(unsigned char *), (int (*)(const void *, const void *))_acmp);
+}
+
+static int _aicmp(unsigned char **a, unsigned char **b)
+{
+	return stricmp(*a, *b);
+}
+
+void vaisort(unsigned char **ary, int len)
+{
+	if (!ary || !len)
+		return;
+	qsort(ary, len, sizeof(unsigned char *), (int (*)(const void *, const void *))_aicmp);
 }
 
 unsigned char **vawords(unsigned char **a, unsigned char *s, int len, unsigned char *sep, int seplen)

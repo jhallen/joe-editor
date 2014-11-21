@@ -33,6 +33,9 @@ struct bw {
 extern int dspasis;	/* Display characters above 127 as-is */
 extern int mid;		/* Controls how window scrolls: when set, scroll window enough so that line with cursor becomes centered */
 
+extern int selectmask;	/* Attribute mask for selected text */
+extern int selectatr;	/* Attribute value for selected text */
+
 void bwfllw PARAMS((BW *w));
 void bwfllwt PARAMS((BW *w));
 void bwfllwh PARAMS((BW *w));

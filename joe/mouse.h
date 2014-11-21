@@ -52,6 +52,12 @@ int udefm2drag PARAMS((BW *));
 int udefm3down PARAMS((BW *));
 int udefm3up PARAMS((BW *));
 int udefm3drag PARAMS((BW *));
+int udefmrdown PARAMS((BW *));
+int udefmrup PARAMS((BW *));
+int udefmrdrag PARAMS((BW *));
+int udefmmdown PARAMS((BW *));
+int udefmmup PARAMS((BW *));
+int udefmmdrag PARAMS((BW *));
 
 int mnow();
 void reset_trig_time();

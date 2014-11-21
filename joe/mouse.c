@@ -33,8 +33,30 @@ int joexterm=0;			/* set if we're using Joe's modified xterm */
 static int selecting = 0;	/* Set if we did any selecting */
 
 static int Cb, Cx, Cy;
+static int Lx, Ly;
 static int last_msec=0;		/* time in ms when event occurred */
 static int clicks;
+static int Cbutton;
+
+#ifdef JOEWIN
+
+#undef MOUSE_MULTI_THRESH
+#define MOUSE_MULTI_THRESH dblclicktime
+static int dblclicktime=0;	/* Delay between double clicks */
+
+/* Extended mouse mode (complicated by out-of-bounds coordinates).  Completely undefined elsewhere.
+   Kindof have to invent own thing here, though this is loosely based off the rejected xterm patch
+   as well as improvements to xterm for mouse support in large terminals */
+
+#define COORD_MAX		2047
+
+#else
+
+#define COORD_MAX		255
+
+#endif
+
+#define COORD_OUTOFFRAME_START	(COORD_MAX - 15)
 
 static void fake_key(int c)
 {
@@ -51,18 +73,34 @@ static void fake_key(int c)
 
 int mcoord(int x)
 {
-	if (x>=33 && x<=240)
+	if (x>=32 && x<=COORD_OUTOFFRAME_START)
 		return x - 33 + 1;
-	else if (x==32)
-		return -1 + 1;
-	else if (x>240)
-		return x - 257 + 1;
+	else if (x>COORD_OUTOFFRAME_START)
+		return x - COORD_MAX - 1;
 	else
 		return 0; /* This should not happen */
 }
 
+static int readextmousecoord()
+{
+	struct utf8_sm state;
+	int c;
+
+	/* Up to two bytes supported, with a max of 2048. */
+
+	utf8_init(&state);
+	c = utf8_decode(&state, (unsigned char)ttgetc());
+	if (c == -1)
+	{
+		c = utf8_decode(&state, (unsigned char)ttgetc());
+	}
+
+	return max(c, 0);
+}
+
 int uxtmouse(BW *bw)
 {
+#ifndef JOEWIN
 	Cb = ttgetc()-32;
 	if (Cb < 0)
 		return -1;
@@ -72,6 +110,17 @@ int uxtmouse(BW *bw)
 	Cy = ttgetc();
 	if (Cy < 32)
 		return -1;
+#else
+	Cb = readextmousecoord() - 32;
+	if (Cb < 0)
+		return -1;
+	Cx = readextmousecoord();
+	if (Cx < 32)
+		return -1;
+	Cy = readextmousecoord();
+	if (Cy < 32)
+		return -1;
+#endif
 
 	Cx = mcoord(Cx);
 	Cy = mcoord(Cy);
@@ -86,28 +135,64 @@ int uxtmouse(BW *bw)
 		return 0;
 	}
 
-	if ((Cb & 3) == 3)
+	if ((Cb & 3) == 3) {
 		/* button released */
-		mouseup(Cx,Cy);
-	else if ((Cb & 3) == (rtbutton ? 2 : 0))	/* preferred button */
+		if (Cbutton == 0)
+			mouseup(Cx,Cy);
+		else if (Cbutton == 1)
+			fake_key(KEY_MMUP);
+		else if (Cbutton == 2)
+			fake_key(KEY_MRUP);
+
+		Cbutton = -1;
+	} else if ((Cb & 3) == (rtbutton ? 2 : 0)) {	/* preferred ("left") button */
+		Cbutton = 0;
 		if ((Cb & 32) == 0)
 			/* button pressed */
 			mousedn(Cx,Cy);
 		else
 			/* drag */
 			mousedrag(Cx,Cy);
-	else if ((maint->curwin->watom->what & TYPETW ||
+	} else if ((maint->curwin->watom->what & TYPETW ||
 	          maint->curwin->watom->what & TYPEPW) &&
 	          joexterm && (Cb & 3) == 1)		/* Paste */
+#ifndef JOEWIN
 		ttputs(USTR "\33]52;;?\33\\");
+#else
+	{
+		CMD *c = findcmd(USTR "winpaste");
+		if (c) execmd(c, 0);
+	}
+#endif
+	else if ((Cb & 3) == 1) {
+		/* Middle button */
+		Cbutton = 1;
+		if ((Cb & 32) == 0)
+			fake_key(KEY_MMDOWN);
+		else
+			fake_key(KEY_MMDRAG);
+	}
+	else if ((Cb & 3) == 0 || (Cb & 3) == 2) {
+		/* Right button -- not caught in above case so opposite of "preferred" */
+		Cbutton = 2;
+		if ((Cb & 32) == 0)
+			fake_key(KEY_MRDOWN);
+		else
+			fake_key(KEY_MRDRAG);
+	}
+
 	return 0;
 }
 
 int mnow()
 {
+#ifndef JOEWIN
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+#else
+	return (int)GetTickCount();
+#endif
 }
 
 void mousedn(int x,int y)
@@ -117,20 +202,28 @@ void mousedn(int x,int y)
 		/* not a multiple click */
 		clicks=1;
 		fake_key(KEY_MDOWN);
-	} else if(clicks==1) {
-		/* double click */
-		clicks=2;
-		fake_key(KEY_M2DOWN);
-	} else if(clicks==2) {
-		/* triple click */
-		clicks=3;
-		fake_key(KEY_M3DOWN);
+	} else if (Lx == Cx && Ly == Cy) {
+		if (clicks == 1) {
+			/* double click */
+			clicks = 2;
+			fake_key(KEY_M2DOWN);
+		} else if (clicks == 2) {
+			/* triple click */
+			clicks = 3;
+			fake_key(KEY_M3DOWN);
+		} else {
+			/* start over */
+			clicks = 1;
+			fake_key(KEY_MDOWN);
+		}
 	} else {
-		/* start over */
-		clicks=1;
+		clicks = 1;
 		fake_key(KEY_MDOWN);
 	}
+	Lx = Cx, Ly = Cy;
 }
+
+#ifndef JOEWIN /* We can do better in Windows... */
 
 /* Return base64 code character given 6-bit number */
 
@@ -209,10 +302,13 @@ static void ttputs64_flush()
     base64_pad = 0;
 }
 
+#endif
+
 void select_done(struct charmap *map)
 {
 	/* Feed text to xterm */
 	if (joexterm && markv(1)) {
+#ifndef JOEWIN
 		long left = markb->xcol;
 		long right = markk->xcol;
 		P *q = pdup(markb, USTR "select_done");
@@ -265,6 +361,10 @@ void select_done(struct charmap *map)
 		ttputs64_flush();
 		ttputs(USTR "\33\\");
 		prm(q);
+#else
+		CMD *c = findcmd(USTR "wincopy");
+		if (c) execmd(c, 0);
+#endif
 	}
 }
 
@@ -294,20 +394,44 @@ void mouseup(int x,int y)
 
 void mousedrag(int x,int y)
 {
+#ifdef JOEWIN
+	// HACK: PuTTY sends multiple mouse updates even if the pointer has moved
+	// by a pixel but not to the point that it covers a different character.
+	// This makes for a bad mouse experience in most cases -- you inadvertently
+	// select a new block when you tried to simply reposition the cursor, so
+	// normally just checking Current != Last is good enough to guard against
+	// this.  However, this adversely affects automatic horizontal scrolling.
+	// JOE doesn't have a horizontal auto-scroller (it does vertical), so once
+	// the mouse cursor exits the confines of the window, you can't get it to
+	// select more characters horizontally.
+	// SO, we make an exception in the case when the cursors is outside of the
+	// editor's bounds -- if you keep moving the mouse, it will keep selecting
+	// more characters.
+	int w, h;
+
+	ttgtsz(&w, &h);
+
 	Cx = x, Cy = y;
-	switch(clicks) {
-		case 1:
-			fake_key(KEY_MDRAG);
-			break;
+	if ((Lx != Cx || Ly != Cy) || (Cx <= 0 || Cx >= w)) {
+#else
+	Cx = x, Cy = y;
+	if (Lx != Cx || Ly != Cy) {
+#endif
+		switch(clicks) {
+			case 1:
+				fake_key(KEY_MDRAG);
+				break;
   
-		case 2:
-			fake_key(KEY_M2DRAG);
-			break;
+			case 2:
+				fake_key(KEY_M2DRAG);
+				break;
   
-		case 3:
-			fake_key(KEY_M3DRAG);
-			break;
+			case 3:
+				fake_key(KEY_M3DRAG);
+				break;
+		}
 	}
+	Lx = Cx, Ly = Cy;
 }
 
 int drag_size; /* Set if we are resizing a window */
@@ -320,6 +444,9 @@ int utomouse(BW *xx)
 	if (!w)
 		return -1;
 	maint->curwin = w;
+#ifdef JOEWIN
+	notify_selection();
+#endif
 	bw = w->object;
 	drag_size = 0;
 	if (w->watom->what == TYPETW) {
@@ -445,7 +572,12 @@ static int tomousestay()
 					goal_col = 0;
 					goal_line = bw->top->line;
 				} else if (y >= w->y + w->h) {
+#ifdef JOEWIN
+					// More windows-y behavior.  Scroll jumps around alot otherwise.
+					goal_col = x + bw->top->col;
+#else
 					goal_col = 1000;
+#endif
 					goal_line = w->h + bw->top->line - 2;
 				} else
 					goal_line = y - w->y + bw->top->line - 1;
@@ -454,7 +586,12 @@ static int tomousestay()
 					goal_col = 0;
 					goal_line = bw->top->line;
 				} else if (y >= w->y + w->h) {
+#ifdef JOEWIN
+					// More windows-y behavior.  Scroll jumps around alot otherwise.
+					goal_col = x + bw->top->col;
+#else
 					goal_col = 1000;
+#endif
 					goal_line = w->h + bw->top->line - 1;
 				} else
 					goal_line = y - w->y + bw->top->line;
@@ -678,14 +815,54 @@ int udefm3up(BW *bw)
 	return 0;
 }
 
+int udefmrdown(BW *bw)
+{
+	return 0;
+}
+
+int udefmrup(BW *bw)
+{
+	return 0;
+}
+
+int udefmrdrag(BW *bw)
+{
+	return 0;
+}
+
+int udefmmdown(BW *bw)
+{
+	return 0;
+}
+
+int udefmmup(BW *bw)
+{
+	return 0;
+}
+
+int udefmmdrag(BW *bw)
+{
+	return 0;
+}
+
 void mouseopen()
 {
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
+#ifdef JOEWIN
+		/* Use system-wide double click time */
+		dblclicktime = GetDoubleClickTime();
+
+		/* Extended (~2000x2000 mode) mouse tracking + external coordinates */
+		ttputs(USTR "\33[?1005h\33[?2007h");
+
+		/* No ttflsh() in Windows, because this comes before the rendezvous. */
+#else
 		ttputs(USTR "\33[?1002h");
 		if (joexterm)
 			ttputs(USTR "\33[?2007h");
 		ttflsh();
+#endif
 	}
 #endif
 }
@@ -694,10 +871,16 @@ void mouseclose()
 {
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
+#ifdef JOEWIN
+		ttputs(USTR "\33[?1005l\33[?2007l");
+
+		/* No ttflsh() in Windows, because this comes before the rendezvous. */
+#else
 		if (joexterm)
 			ttputs(USTR "\33[?2007l");
 		ttputs(USTR "\33[?1002l");
 		ttflsh();
+#endif
 	}
 #endif
 }

@@ -8,6 +8,10 @@
  */
 #include "types.h"
 
+#ifdef JOEWIN
+#include <assert.h>
+#endif
+
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
@@ -226,11 +230,15 @@ ssize_t joe_write(int fd, void *buf, size_t size)
 
 int joe_ioctl(int fd, int req, void *ptr)
 {
+#ifdef JOEWIN
+	return -1;
+#else
 	int rt;
 	do {
 		rt = ioctl(fd, req, ptr);
 	} while (rt == -1 && errno == EINTR);
 	return rt;
+#endif
 }
 
 /* Heap checking versions of malloc() */
@@ -444,6 +452,83 @@ unsigned char *zchr(unsigned char *s, int c)
 unsigned char *zrchr(unsigned char *s, int c)
 {
 	return (unsigned char *)strrchr((char *)s,c);
+}
+
+int filecmp(unsigned char* s1, unsigned char* s2)
+{
+#ifndef JOEWIN
+	return zcmp(s1, s2);
+#else
+	if (!s1 || !s2)
+	{
+		if (!s1 && !s2)
+		{
+			return 0;
+		}
+
+		return s1 ? 1 : -1;
+	}
+
+	for (;; s1++, s2++)
+	{
+		unsigned char c1 = *s1, c2 = *s2;
+		
+		if (!c1 || !c2)
+		{
+			if (!c1 && !c2)
+			{
+				return 0;
+			}
+
+			return c1 ? 1 : -1;
+		}
+
+		if (c1 == c2)
+		{
+			/* Pass */
+		}
+		else if ((c1 == '\\' || c1 == '/') && (c2 == '\\' || c2 == '/'))
+		{
+			/* Pass */
+		}
+		else if (tolower(c1) == tolower(c2))
+		{
+			/* Pass */
+		}
+		else if (c1 < c2)
+		{
+			return -1;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+#endif
+}
+
+int fullfilecmp(unsigned char *f1, unsigned char *f2)
+{
+#ifndef JOEWIN
+	return zcmp(f1, f2);
+#else
+	wchar_t wf1[MAX_PATH + 1], wf2[MAX_PATH + 1];
+
+	if (utf8towcs(wf1, f1, MAX_PATH) || utf8towcs(wf2, f2, MAX_PATH))
+	{
+		/* Can't convert! */
+		assert(FALSE);
+		return filecmp(f1, f2);
+	}
+
+	if (fixpath(wf1, MAX_PATH) || fixpath(wf2, MAX_PATH))
+	{
+		return filecmp(f1, f2);
+	}
+
+	/* Is this really the way to compare filenames in every locale? */
+	return wcsicmp(wf1, wf2);
+#endif
 }
 
 #ifndef SIG_ERR

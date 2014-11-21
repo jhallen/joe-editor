@@ -28,6 +28,8 @@ unsigned char *joeterm = NULL;
 
 /* Default termcap entry */
 
+#ifndef JOEWIN
+
 unsigned char defentry[] = "\
 :co#80:li#25:am:\
 :ho=\\E[H:cm=\\E[%i%d;%dH:cV=\\E[%i%dH:\
@@ -39,6 +41,80 @@ unsigned char defentry[] = "\
 :al=\\E[L:AL=\\E[%dL:dl=\\E[M:DL=\\E[%dM:\
 :ic=\\E[@:IC=\\E[%d@:dc=\\E[P:DC=\\E[%dP:\
 ";
+
+#else
+
+/*
+ * Termcap from http://www.chiark.greenend.org.uk/~sgtatham/putty/wishlist/terminfo.html (first one)
+ * Derived via:
+ *    tic putty-terminfo
+ *    infocmp -CrtT putty
+ * Note that there are *TWO* available at the page, the following IF picks which one to use.
+ */
+
+#if 1
+
+unsigned char defentry[] = "\
+:NP:am:km:mi:ms:ut:xn:\
+:Co#8:co#80:it#8:li#24:pa#64:\
+:@7=\\E[4~:@8=\\EOM:AB=\\E[4%dm:AF=\\E[3%dm:AL=\\E[%dL:\
+:DC=\\E[%dP:DL=\\E[%dM:DO=\\E[%dB:F1=\\E[23~:F2=\\E[24~:\
+:F3=\\E[25~:F4=\\E[26~:F5=\\E[28~:F6=\\E[29~:F7=\\E[31~:\
+:F8=\\E[32~:F9=\\E[33~:FA=\\E[34~:IC=\\E[%d@:Km=\\E[M:\
+:LE=\\E[%dD:RA=\\E[?7l:RI=\\E[%dC:SA=\\E[?7h:UP=\\E[%dA:\
+:ac=``aaffggiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~:\
+:ae=^O:al=\\E[L:as=^N:bl=^G:bt=\\E[Z:cb=\\E[1K:cd=\\E[J:ce=\\E[K:\
+:ch=\\E[%i%dG:cl=\\E[H\\E[2J:cm=\\E[%i%d;%dH:cr=^M:\
+:cs=\\E[%i%d;%dr:ct=\\E[3g:cv=\\E[%i%dd:dc=\\E[P:dl=\\E[M:\
+:do=\\E[B:eA=\\E(B\\E)0\\E[=L:ec=\\E[%dX:ei=\\E[4l:ho=\\E[H:\
+:ic=\\E[@:im=\\E[4h:is=\\E[?3l\\E[4l\\E>\\E[=L:k1=\\E[11~:\
+:k2=\\E[12~:k3=\\E[13~:k4=\\E[14~:k5=\\E[15~:k6=\\E[17~:\
+:k7=\\E[18~:k8=\\E[19~:k9=\\E[20~:k;=\\E[21~:kB=\\E[Z:kC=\\EOG:\
+:kD=\\E[3~:kI=\\E[2~:kN=\\E[6~:kP=\\E[5~:kb=\177:kd=\\EOB:\
+:ke=\\E[?1l\\E>:kh=\\E[1~:kl=\\EOD:kr=\\EOC:ks=\\E[?1h\\E=\\E[=L:\
+:ku=\\EOA:le=\\E[D:mb=\\E[5m:md=\\E[1m:me=\\E[0m:mk=\\E[8m:\
+:mr=\\E[7m:nd=\\E[C:op=\\E[39;49m:r1=\\Ec:\
+:r2=\\E[?3l\\E[4l\\E>\\E[=L:rc=\\E8:sc=\\E7:se=\\E[27m:sf=^J:\
+:so=\\E[7m:sr=\\EM:st=\\EH:ta=^I:u7=\\E[6n:u9=\\E[c:ue=\\E[24m:\
+:up=\\E[A:us=\\E[4m:vb=\\E[?5h\\E[?5l:ve=\\E[?25h:vi=\\E[?25l:\
+";
+
+#else
+
+unsigned char defentry[] = "\
+:am:eo:km:mi:ms:xn:xo:\
+:Co#8:co#80:it#8:li#24:pa#64:\
+:#2=\\E[7$:#4=\\E[d:%c=\\E[6$:%e=\\E[5$:%i=\\E[c:*4=\\E[3$:\
+:*7=\\E[8$:@7=\\E[4~:@8=\\EOM:AB=\\E[4%dm:AF=\\E[3%dm:\
+:AL=\\E[%dL:DC=\\E[%dP:DL=\\E[%dM:DO=\\E[%dB:F1=\\E[23~:\
+:F2=\\E[24~:F3=\\E[25~:F4=\\E[26~:F5=\\E[28~:F6=\\E[29~:\
+:F7=\\E[31~:F8=\\E[32~:F9=\\E[33~:FA=\\E[34~:IC=\\E[%d@:\
+:K1=\\EOw:K2=\\EOu:K3=\\EOy:K4=\\EOq:K5=\\EOs:Km=\\E[M:LE=\\E[%dD:\
+:RI=\\E[%dC:UP=\\E[%dA:\
+:ac=``aaffggjjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~:\
+:ae=^O:al=\\E[L:as=^N:bl=^G:cb=\\E[1K:cd=\\E[J:ce=\\E[K:\
+:ch=\\E[%i%dG:cl=\\E[H\\E[2J:cm=\\E[%i%d;%dH:cr=^M:\
+:cs=\\E[%i%d;%dr:ct=\\E[3g:cv=\\E[%i%dd:dc=\\E[P:dl=\\E[M:\
+:do=^J:eA=\\E(B\\E)0:ei=\\E[4l:ho=\\E[H:i1=\\E[?47l\\E=\\E[?1l:\
+:ic=\\E[@:im=\\E[4h:\
+:is=\\E[r\\E[m\\E[2J\\E[H\\E[?7h\\E[?1;3;4;6l\\E[4l:\
+:k1=\\E[11~:k2=\\E[12~:k3=\\E[13~:k4=\\E[14~:k5=\\E[15~:\
+:k6=\\E[17~:k7=\\E[18~:k8=\\E[19~:k9=\\E[20~:k;=\\E[21~:\
+:kB=\\E[Z:kD=\\E[3~:kE=\\E[8^:kI=\\E[2~:kN=\\E[6~:kP=\\E[5~:\
+:kb=\177:kd=\\E[B:ke=\\E>:kh=\\E[1~:kl=\\E[D:kr=\\E[C:ks=\\E=:\
+:ku=\\E[A:le=^H:mb=\\E[5m:md=\\E[1m:me=\\E[m\017:mr=\\E[7m:\
+:nd=\\E[C:op=\\E[39;49m:\
+:r1=\\E>\\E[1;3;4;5;6l\\E[?7h\\E[m\\E[r\\E[2J\\E[H:\
+:r2=\\E[r\\E[m\\E[2J\\E[H\\E[?7h\\E[?1;3;4;6l\\E[4l\\E>:\
+:rc=\\E8:s0=\\E(B:s1=\\E(0:sc=\\E7:se=\\E[27m:sf=^J:so=\\E[7m:\
+:sr=\\EM:st=\\EH:ta=^I:te=\\E[2J\\E[?47l\\E8:ti=\\E7\\E[?47h:\
+:ue=\\E[24m:up=\\E[A:us=\\E[4m:vb=\\E[?5h\\E[?5l:ve=\\E[?25h:\
+:vi=\\E[?25l:\
+";
+
+#endif
+
+#endif
 
 /* Return true if termcap line matches name */
 
@@ -174,7 +250,7 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
 	cap->sort = (struct sortentry *) joe_malloc(sizeof(struct sortentry) * (sortsiz = 64));
 
 	cap->sortlen = 0;
-
+#ifndef JOEWIN
 	tp = (unsigned char *)getenv("TERMCAP");
 
 	if (tp && tp[0] == '/')
@@ -191,7 +267,12 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
 			} else
 				namebuf = NULL;
 			namebuf = vsncpy(sv(namebuf), sc(".termcap "));
+#ifdef JOEWIN
+			/* JOERC is not a constant in joewin */
+			namebuf = vsncpy(sv(namebuf), sz(JOERC));
+#else
 			namebuf = vsncpy(sv(namebuf), sc(JOERC));
+#endif
 			namebuf = vsncpy(sv(namebuf), sc("termcap /etc/termcap"));
 		}
 	}
@@ -216,9 +297,11 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
  joe_free(cap);
  return 0;
 */
+#endif // !JOEWIN
 		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap entry.  Using ansi default\n")));
 		ti = 0;
 		cap->tbuf = vsncpy(cap->tbuf, 0, sc(defentry));
+#ifndef JOEWIN
 		goto checktc;
 	}
 	idx = 0;
@@ -264,6 +347,7 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
 			--y;
 		goto nextfile;
 	}
+#endif // !_JOEWIN
 
       doline:
 	pp = cap->tbuf + ti;

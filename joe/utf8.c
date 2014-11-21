@@ -21,7 +21,9 @@
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #	include <locale.h>
+#ifndef JOEWIN
 #       include <langinfo.h>
+#endif
 #endif
 
 /* If we didn't find a CODESET in locale.h/langinfo.h, forget about setlocale */

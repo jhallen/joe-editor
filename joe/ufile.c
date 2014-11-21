@@ -19,11 +19,60 @@
 int copy_security_context(const char *from_file, const char *to_file);
 #endif
 
+#ifdef JOEWIN
+//// Needed for copy (with security attributes)
+//#include <shellapi.h>
+#include <assert.h>
+#endif
+
 int orphan;
 unsigned char *backpath = NULL;		/* Place to store backup files */
 B *filehist = NULL;	/* History of file names */
 int nobackups = 0;
 int exask = 0;
+
+#ifdef JOEWIN
+
+static unsigned char *escapename(unsigned char *name)
+{
+	unsigned char *s;
+	unsigned char *c;
+	int bcount = 0;
+
+	if (!name)
+	{
+		return NULL;
+	}
+
+	for (c = name; *c; c++)
+	{
+		if (*c == '\\')
+		{
+			bcount++;
+		}
+	}
+
+	if (bcount > 0)
+	{
+		s = vsmk(strlen(name) + bcount + 1);
+		for (c = name; *c; c++)
+		{
+			s = vsadd(s, *c);
+			if (*c == '\\')
+			{
+				s = vsadd(s, '\\');
+			}
+		}
+	}
+	else
+	{
+		s = name;
+	}
+
+	return s;
+}
+
+#endif
 
 /* Ending message generator */
 /**** message which is shown after closing joe (CTRL+x; CTRL+k) *****/
@@ -37,6 +86,11 @@ void genexmsg(BW *bw, int saved, unsigned char *name)
 	} else {
 		s = joe_gettext(_("(Unnamed)"));
 	}
+
+#ifdef JOEWIN
+	name = escapename(name);
+	s = escapename(s);
+#endif
 
 	if (name) {
 		if (saved) {
@@ -93,6 +147,10 @@ int ushell(BW *bw)
 
 int usys(BW *bw)
 {
+#ifdef JOEWIN
+	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
+	return -1;
+#else
 	unsigned char *s = ask(bw->parent, joe_gettext(_("System (^C to abort): ")), NULL, NULL, utypebw, bw->b->o.charmap, 1, 0, NULL);
 	if (s) {
 		int rtn;
@@ -103,12 +161,43 @@ int usys(BW *bw)
 	} else {
 		return -1;
 	}
+#endif
 }
 
 /* Copy a file */
 
 static int cp(unsigned char *from, unsigned char *to)
 {
+#ifdef JOEWIN
+	wchar_t wfrom[MAX_PATH + 1], wto[MAX_PATH + 1];
+	int cpresult;
+	
+	if (utf8towcs(wfrom, from, MAX_PATH) || utf8towcs(wto, to, MAX_PATH))
+	{
+		assert(FALSE);
+		return -1;
+	}
+
+	cpresult = !CopyFileW(wfrom, wto, FALSE);
+	if (!cpresult)
+	{
+		/* Success */
+
+		/* Make sure backup file has write permission.  Copying a read-only file will carry its attributes. */
+		_wchmod(wto, _S_IREAD | _S_IWRITE);
+	}
+
+	return cpresult;
+
+	//SHFILEOPSTRUCT fop;
+
+	//fop.hwnd = NULL;
+	//fop.wFunc = FO_COPY;
+	//fop.pFrom = from;
+	//fop.pTo = to;
+	//fop.fFlags = FOF_NOCONFIRMATION | FOF_NO_UI | FOF_NOERRORUI;
+	//return SHFileOperation(&fop);
+#else
 	int f, g, amnt;
 	struct stat sbuf;
 	char buf[8192];
@@ -120,7 +209,6 @@ static int cp(unsigned char *from, unsigned char *to)
 	struct utimbuf utbuf;
 #endif
 #endif
-
 	f = open((char *)from, O_RDONLY);
 	if (f < 0) {
 		return -1;
@@ -160,6 +248,7 @@ static int cp(unsigned char *from, unsigned char *to)
 #endif
 
 	return 0;
+#endif
 }
 
 /* Make backup file if it needs to be made
@@ -317,6 +406,10 @@ static int saver(BW *bw, int c, struct savereq *req)
 		} else
 			goto again;
 	}
+#ifdef JOEWIN
+	/* definitely changed, potentially renamed */
+	notify_renamed_buffer(bw->b);
+#endif
 	if (bw->b->er == -1 && bw->o.msnew) {
 		exmacro(bw->o.msnew,1);
 		bw->b->er = -3;
@@ -340,7 +433,7 @@ static int saver(BW *bw, int c, struct savereq *req)
 		}
 		if (!bw->b->name && req->name[0]!='!' && req->name[0]!='>')
 			bw->b->name = joesep(zdup(req->name));
-		if (bw->b->name && !zcmp(bw->b->name, req->name)) {
+		if (bw->b->name && !fullfilecmp(bw->b->name, req->name)) {
 			bw_unlock(bw);
 			bw->b->changed = 0;
 			saverr(bw->b->name);
@@ -461,7 +554,7 @@ static int dosave1(BW *bw, unsigned char *s, struct savereq *req)
 
 	if (s[0] != '!' && !(s[0] == '>' && s[1] == '>')) {
 		/* It's a normal file: not a pipe or append */
-		if (!bw->b->name || zcmp(s, bw->b->name)) {
+		if (!bw->b->name || fullfilecmp(s, bw->b->name)) {
 			/* Newly named file or name is different than buffer */
 			f = open((char *)dequote(s), O_RDONLY);
 			if (f != -1) {
@@ -489,6 +582,7 @@ int usave(BW *bw)
 	unsigned char *s = ask(bw->parent, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist, USTR "Names", cmplt,
 	                       locale_map, bw->b->name ? 1 : 7, 0, bw->b->name);
 	if (s) {
+		joesep(s);
 		return dosave1(bw, s, mksavereq(NULL,NULL,NULL,1, 0));
 	} else {
 		return -1;
@@ -572,7 +666,10 @@ int doedit(BW *bw,int c,unsigned char *s)
 		mid = 1;
 		dofollows();
 		mid = omid;
-		
+#ifdef JOEWIN
+		if (ret != -1)
+			notify_new_buffer(bw->b);
+#endif
 		return ret;
 	} else if (c == NO_CODE || yncheck(no_key, c)) {
 		/* Edit already loaded buffer */
@@ -614,6 +711,9 @@ int doedit(BW *bw,int c,unsigned char *s)
 		mid = 1;
 		dofollows();
 		mid = omid;
+#ifdef JOEWIN
+		notify_changed_buffer(b);
+#endif
 		return ret;
 	} else {
 		/* FIXME: need abort handler to prevent leak */
@@ -764,6 +864,9 @@ static int dorepl(BW *bw, unsigned char *s, void *obj)
 	mid = 1;
 	dofollows();
 	mid = omid;
+#ifdef JOEWIN
+	notify_changed_buffer(b);
+#endif
 	return ret;
 }
 
@@ -892,6 +995,9 @@ int ulose(BW *bw)
 		}
 	}
 	b=bw->b;
+#ifdef JOEWIN
+	notify_deleting_buffer(b);
+#endif
 	cnt = b->count;
 	b->count = 1;
 	genexmsg(bw, 0, NULL);
@@ -1098,3 +1204,93 @@ int ureload_all(BW *bw)
 	}
 	return er;
 }
+
+#ifdef JOEWIN
+
+static W *getmousedropwindow(int x, int y)
+{
+	W *w, *best;
+
+	best = NULL;
+
+	/* Find BW we're dropping onto */
+	w = maint->topwin;
+	do
+	{
+		if (w->watom->what & TYPETW)
+		{
+			if (best == NULL)
+			{
+				best = w;
+			}
+			else if (w->y <= y && (w->y > best->y || best->y > y))
+			{
+				best = w;
+			}
+		}
+
+		w = w->link.next;
+	} while (w != maint->topwin);
+
+	return best;
+}
+
+int dodropfiles(va_list args)
+{
+	unsigned char **files;
+	unsigned int count, i;
+	int x, y;
+	W *target;
+	BW *bwtarget;
+	static CMD *explode = NULL;
+
+	files = va_arg(args, unsigned char **);
+	x = va_arg(args, int);
+	y = va_arg(args, int);
+
+	target = getmousedropwindow(x, y);
+	if (target)
+	{
+		count = valen(files);
+
+		for (i = 0; i < count; i++)
+		{
+			bwtarget = (BW*)target->object;
+			if (bwtarget)
+			{
+				unsigned char *s = files[i];
+				B *b = bcheck_loaded(s);
+
+				if (b) {
+					/* Buffer not modified- just use it as is */
+					doedit(bwtarget, NO_CODE, s);
+				} else
+					/* File not in buffer: don't ask */
+					doedit(bwtarget, YES_CODE, s);
+			}
+		}
+
+		/* If more than one file, explode all files */
+		if (count > 1)
+		{
+			if (explode == NULL)
+			{
+				explode = findcmd(USTR "explode");
+			}
+
+			// We really ought to just make our own logic in w.c for this, but for now let's
+			// take the easy way out.
+			bwtarget = (BW*)target->object;
+			if (bwtarget && bwtarget->parent->t->h - bwtarget->parent->t->wind != getgrouph(bwtarget->parent))
+			{
+				execmd(explode, 0);
+			}
+
+			execmd(explode, 0);
+		}
+	}
+
+	return 0;
+}
+
+#endif

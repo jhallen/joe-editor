@@ -21,7 +21,8 @@ def main(version, outfile_h, outfile_wxi, designation):
     while len(vparts) < 4:
         vparts.append('0')
     
-    svnrev = getsvnrev()
+    #svnrev = getsvnrev()
+    svnrev = '999' # TODO: What to do for Mercurial?
     if svnrev:
     	svnrevstr = "svn rev %s, " % svnrev
     else:

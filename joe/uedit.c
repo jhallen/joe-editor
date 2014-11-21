@@ -1358,8 +1358,13 @@ int uupslide(BW *bw)
 		scrup(bw, 1, 0);
 		return 0;
 	} else
+#ifdef JOEWIN
+		/* I don't like the scroll-wheel behavior.  I could add a command *just* for the mouse events, but I'm lazy. */
+		return -1;
+#else
 		/* was return -1; */
 		return uuparw(bw);
+#endif
 }
 
 int udnslide(BW *bw)
@@ -1371,8 +1376,13 @@ int udnslide(BW *bw)
 		scrdn(bw, 1, 0);
 		return 0;
 	} else
+#ifdef JOEWIN
+		/* I don't like the scroll-wheel behavior.  I could add a command *just* for the mouse events, but I'm lazy. */
+		return -1;
+#else
 		/* was return -1; */
 		return udnarw(bw);
+#endif
 }
 
 /* Move cursor to specified line number */

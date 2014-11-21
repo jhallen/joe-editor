@@ -1,17 +1,18 @@
-﻿Build started 11/20/2014 2:59:52 AM.
-     1>Project "C:\Users\JJ\Documents\src\joewin\src\exe\standalone\jmacs.vcxproj" on node 4 (Build target(s)).
+﻿Build started 11/21/2014 3:29:22 AM.
+     1>Project "\\wheezy\src\joe\windows-port\windows\src\exe\standalone\jmacs.vcxproj" on node 6 (Build target(s)).
      1>ResourceCompile:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\bin\rc.exe /D NDEBUG /D "PERSONALITY=\"jmacs\"" /D _USING_V110_SDK71_ /D _UNICODE /D UNICODE /l"0x0409" /IC:\Users\JJ\Documents\src\joewin\src\build\\..\common /IC:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Intermediate\version /nologo /fo"C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\joewin.res" ..\joewin.rc 
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\bin\rc.exe /D NDEBUG /D "PERSONALITY=\"jmacs\"" /D _USING_V110_SDK71_ /D _UNICODE /D UNICODE /l"0x0409" /I"\\wheezy\src\joe\windows-port\windows\src\build\\..\common" /I"\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Intermediate\version" /nologo /fo"\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\joewin.res" ..\joewin.rc 
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\bin\rc.exe /D NDEBUG /D "PERSONALITY=\"jmacs\"" /D _USING_V110_SDK71_ /D _UNICODE /D UNICODE /l"0x0409" /I"\\wheezy\src\joe\windows-port\windows\src\build\\..\common" /I"\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Intermediate\version" /nologo /fo"\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\builtins.res" \\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\\builtins.rc 
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Standalone\jmacs.exe" /NOLOGO comctl32.lib imm32.lib winmm.lib C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Intermediate\joewincommon\resources.res kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Standalone\jmacs.pdb" /SUBSYSTEM:WINDOWS,"5.01" /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Standalone\jmacs.lib" /MACHINE:X86 /SAFESEH C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\joewin.res
-         C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\builtins.res
-         C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\main.obj
-         C:\Users\JJ\Documents\src\joewin\bin\x86\Release\Object\joewincommon\joewincommon.lib
-         C:\Users\JJ\Documents\src\joewin\bin\x86\Release\Object\puttytel\puttytel.lib
-         C:\Users\JJ\Documents\src\joewin\bin\x86\Release\Object\joe\joe.lib
-         jmacs.vcxproj -> C:\Users\JJ\Documents\src\joewin\src\build\\..\..\bin\x86\Release\Standalone\jmacs.exe
-     1>Done Building Project "C:\Users\JJ\Documents\src\joewin\src\exe\standalone\jmacs.vcxproj" (Build target(s)).
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\jmacs.exe" /NOLOGO comctl32.lib imm32.lib winmm.lib "\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Intermediate\joewincommon\resources.res" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\jmacs.pdb" /SUBSYSTEM:WINDOWS,"5.01" /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\jmacs.lib" /MACHINE:X86 /SAFESEH "\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\joewin.res"
+         "\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\builtins.res"
+         "\\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\Intermediate\jmacs\main.obj"
+         "\\wheezy\src\joe\windows-port\windows\bin\x86\Release\Object\joewincommon\joewincommon.lib"
+         "\\wheezy\src\joe\windows-port\windows\bin\x86\Release\Object\puttytel\puttytel.lib"
+         "\\wheezy\src\joe\windows-port\windows\bin\x86\Release\Object\joe\joe.lib"
+         jmacs.vcxproj -> \\wheezy\src\joe\windows-port\windows\src\build\\..\..\bin\x86\Release\Standalone\jmacs.exe
+     1>Done Building Project "\\wheezy\src\joe\windows-port\windows\src\exe\standalone\jmacs.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.68
+Time Elapsed 00:00:02.15

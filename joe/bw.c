@@ -11,6 +11,10 @@
 int dspasis = 0;
 int marking = 0;
 
+/* Selected text format */
+int selectatr = INVERSE;
+int selectmask = ~INVERSE;
+
 static P *getto(P *p, P *cur, P *top, long int line)
 {
 
@@ -350,6 +354,8 @@ void bwdel(BW *w, long int l, long int n, int flg)
 
 /* Update a single line */
 
+#define SELECT_IF(c)	{ if (c) { ca = selectatr; cm = selectmask; } else { ca = 0; cm = -1; } }
+
 static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long int scr, long int from, long int to,HIGHLIGHT_STATE st,BW *bw)
         
       
@@ -366,7 +372,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	long byte = p->byte;
 	unsigned char *bp;	/* Buffer pointer, 0 if not set */
 	int amnt;		/* Amount left in this segment of the buffer */
-	int c, ta, c1;
+	int c, ta;
 	unsigned char bc;
 	int ungetit = -1;
 
@@ -376,6 +382,8 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
         P *tmp;
         int idx=0;
         int atr = BG_COLOR(bg_text); 
+	int ca = 0;		/* Additional attributes for current character */
+	int cm = -1;		/* Attribute mask for current character */
 
 	utf8_init(&utf8_sm);
 
@@ -442,19 +450,13 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			if (square)
 				if (bc == '\t') {
 					long tcol = col + p->b->o.tab - col % p->b->o.tab;
-
-					if (tcol > from && tcol <= to)
-						c1 = INVERSE;
-					else
-						c1 = 0;
-				} else if (col >= from && col < to)
-					c1 = INVERSE;
-				else
-					c1 = 0;
-			else if (byte >= from && byte < to)
-				c1 = INVERSE;
-			else
-				c1 = 0;
+					SELECT_IF(tcol > from && tcol <= to);
+				} else {
+					SELECT_IF(col >= from && col < to);
+				}
+			else {
+				SELECT_IF(byte >= from && byte < to);
+			}
 			++byte;
 			if (bc == '\t') {
 				ta = p->b->o.tab - col % p->b->o.tab;
@@ -562,25 +564,20 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				if (bc == '\t') {
 					long tcol = scr + x - ox + p->b->o.tab - (scr + x - ox) % p->b->o.tab;
 
-					if (tcol > from && tcol <= to)
-						c1 = INVERSE;
-					else
-						c1 = 0;
-				} else if (scr + x - ox >= from && scr + x - ox < to)
-					c1 = INVERSE;
-				else
-					c1 = 0;
-			else if (byte >= from && byte < to)
-				c1 = INVERSE;
-			else
-				c1 = 0;
+					SELECT_IF(tcol > from && tcol <= to);
+				} else {
+					SELECT_IF(scr + x - ox >= from && scr + x - ox < to);
+				}
+			else {
+				SELECT_IF(byte >= from && byte < to);
+			}
 			++byte;
 			if (bc == '\t') {
 				ta = p->b->o.tab - ((x - ox + scr) % p->b->o.tab);
 				tach = ' ';
 			      dota:
 				do {
-					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, c1|atr);
+					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, (atr&cm)|ca);
 					if (ifhave)
 						goto bye;
 					if (++x == w)
@@ -619,11 +616,11 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					if (x+wid > w) {
 						/* If character hits right most column, don't display it */
 						while (x < w) {
-							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', c1|atr);
+							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', (atr&cm)|ca);
 							x++;
 						}
 					} else {
-						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
+						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, (atr&cm)|ca);
 						x += wid;
 					}
 				} else
@@ -904,13 +901,14 @@ void bwgenh(BW *w)
 	for (screen = t->scrn + y * w->t->w; y != bot; ++y, (screen += w->t->w), (attr += w->t->w)) {
 		unsigned char txt[80];
 		int fmt[80];
-		unsigned char bf[16];
+		unsigned char bf[17];
 		int x;
 		memset(txt,' ',76);
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
 		if (!flg) {
-#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T
+/* Theoretically, this should work, but in windows q->byte still ends up being a long */
+#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T && !defined(JOEWIN)
 			sprintf((char *)bf,"%8llx ",q->byte);
 #else
 			sprintf((char *)bf,"%8lx ",q->byte);
@@ -1181,7 +1179,7 @@ struct file_pos *find_file_pos(unsigned char *name)
 {
 	struct file_pos *p;
 	for (p = file_pos.link.next; p != &file_pos; p = p->link.next)
-		if (!zcmp(p->name, name)) {
+		if (!fullfilecmp(p->name, name)) {
 			promote(struct file_pos,link,&file_pos,p);
 			return p;
 		}
@@ -1220,8 +1218,25 @@ void save_file_pos(FILE *f)
 {
 	struct file_pos *p;
 	for (p = file_pos.link.prev; p != &file_pos; p = p->link.prev) {
+#ifdef JOEWIN
+		wchar_t wpath[MAX_PATH + 1];
+		char zpath[PATH_MAX + 1];
+
+		fprintf(f,"	%ld ",p->line);
+
+		if (utf8towcs(wpath, p->name, MAX_PATH) || fixpath(wpath, MAX_PATH) || wcstoutf8(zpath, wpath, PATH_MAX))
+		{
+			/* Just do it the stupid way */
+			emit_string(f,p->name,zlen(p->name));
+		}
+		else
+		{
+			emit_string(f,zpath,zlen(zpath));
+		}
+#else
 		fprintf(f,"	%ld ",p->line);
 		emit_string(f,p->name,zlen(p->name));
+#endif
 		fprintf(f,"\n");
 	}
 	fprintf(f,"done\n");

@@ -701,7 +701,7 @@ static unsigned char *cull(unsigned char *a, unsigned char *b)
 {
 	int x;
 
-	for (x = 0; a[x] && b[x] && a[x] == b[x]; ++x) ;
+	for (x = 0; a[x] && b[x] && MATCHCANON(a[x]) == MATCHCANON(b[x]); ++x) ;
 	return vstrunc(a, x);
 }
 

@@ -48,4 +48,10 @@ int ynchecks PARAMS((unsigned char *string, unsigned char *s));
 int ureload(BW *bw);
 int ureload_all(BW *bw);
 
+#ifdef JOEWIN
+
+int dodropfiles(va_list);
+
+#endif
+
 #endif

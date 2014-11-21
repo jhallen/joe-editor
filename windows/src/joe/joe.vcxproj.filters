@@ -21,17 +21,14 @@
     <ClInclude Include="$(JoeSrcDir)\autoconf.h">
       <Filter>JoeWin Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(JoeExternalSrcDir)\libco\choose.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(JoeExternalSrcDir)\libco\libco.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(JoeExternalSrcDir)\b.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(JoeExternalSrcDir)\blocks.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\builtin.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="$(JoeExternalSrcDir)\bw.h">
       <Filter>Header Files</Filter>
@@ -167,6 +164,12 @@
     </ClInclude>
     <ClInclude Include="$(JoeExternalSrcDir)\w.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeSrcDir)\libco\choose.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeSrcDir)\libco\libco.h">
+      <Filter>JoeWin Files</Filter>
     </ClInclude>
     <ClInclude Include="$(JoeSrcDir)\bupdates.h">
       <Filter>JoeWin Files</Filter>
@@ -314,9 +317,6 @@
     <ClCompile Include="$(JoeExternalSrcDir)\w.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClInclude Include="$(JoeSrcDir)\builtin.h">
-      <Filter>JoeWin Files</Filter>
-    </ClInclude>
     <ClCompile Include="$(JoeSrcDir)\builtin.c">
       <Filter>JoeWin Files</Filter>
     </ClCompile>
@@ -338,14 +338,14 @@
     <ClCompile Include="$(JoeSrcDir)\tty.c">
       <Filter>JoeWin Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(JoeExternalSrcDir)\libco\amd64.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="$(JoeSrcDir)\libco\amd64.c">
+      <Filter>JoeWin Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(JoeExternalSrcDir)\libco\fiber.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="$(JoeSrcDir)\libco\fiber.c">
+      <Filter>JoeWin Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(JoeExternalSrcDir)\libco\x86.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="$(JoeSrcDir)\libco\x86.c">
+      <Filter>JoeWin Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -936,7 +936,7 @@ static int checkmark(BW *bw)
 
 int ufilt(BW *bw)
 {
-#ifdef __MSDOS__
+#if defined(__MSDOS__) || defined(JOEWIN)
 	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
 #else

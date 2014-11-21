@@ -582,6 +582,9 @@ int abortit(BW *bw)
 	joe_free(tw);
 	w->object = NULL;
 	wabort(w);	/* Eliminate this window and it's children */
+#ifdef JOEWIN
+	notify_selection();
+#endif
 	return 0;
 }
 
@@ -734,5 +737,8 @@ BW *wmktw(Screen *t, B *b)
 	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 	bw->object = (void *) (tw = (TW *) joe_malloc(sizeof(TW)));
 	iztw(tw, w->y);
+#ifdef JOEWIN
+	notify_new_buffer(b);
+#endif
 	return bw;
 }

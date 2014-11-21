@@ -19,7 +19,16 @@
 #endif
 #endif
 
+#ifndef JOEWIN
 extern int errno;
+#define EXTRA_FILE_FLAGS ""
+#else
+/* All files need to be opened in binary mode in Windows */
+#define EXTRA_FILE_FLAGS "b"
+#include <assert.h>
+#endif
+
+
 
 #ifdef WITH_SELINUX
 #include <selinux/selinux.h>
@@ -158,6 +167,7 @@ B *bafter(B *b)
 
 int udebug_joe(BW *bw)
 {
+	void debug_stacks(BW*);
 	unsigned char *buf = vsmk(128);
 
 	B *b;
@@ -179,6 +189,17 @@ int udebug_joe(BW *bw)
 			pnextl(bw->cursor);
 		}
 	}
+	debug_stacks(bw);
+#ifdef JOEWIN
+	{
+		const char *jwQueueMemory();
+
+		binss(bw->cursor, USTR jwQueueMemory());
+		pnextl(bw->cursor);
+		pnextl(bw->cursor);
+		pnextl(bw->cursor); /* Three lines of output */
+	}
+#endif
 	dump_syntax(bw);
 	return 0;
 }
@@ -262,6 +283,9 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->out = -1;
 	b->db = 0;
 	b->parseone = 0;
+#ifdef JOEWIN
+	b->pchanges = 0;
+#endif
 	enquef(B, link, &bufs, b);
 	pcoalesce(b->bof);
 	pcoalesce(b->eof);
@@ -277,6 +301,10 @@ B *bmk(B *prop)
 /* Eliminate a buffer */
 void brm(B *b)
 {
+#ifdef JOEWIN
+	notify_deleting_buffer();
+#endif
+
 	if (b && !--b->count) {
 		if (b->changed)
 			abrerr(b->name);
@@ -411,6 +439,10 @@ void breplace(B *b, B *n)
 
 	/* Delete rest of n */
 	brm(n);
+
+#ifdef JOEWIN
+	notify_renamed_buffer(b);
+#endif
 }
 
 P *poffline(P *p)
@@ -1889,6 +1921,9 @@ void bdel(P *from, P *to)
 		else
 			brm(b);
 		from->b->changed = 1;
+#ifdef JOEWIN
+		notify_changed_buffer(from->b);
+#endif
 	}
 }
 
@@ -2037,7 +2072,9 @@ static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 	if (p->b->undo)
 		undoins(p->b->undo, p, amnt);
 	p->b->changed = 1;
-
+#ifdef JOEWIN
+	notify_changed_buffer(p->b);
+#endif
 }
 
 /* Insert a buffer at pointer position (the buffer goes away) */
@@ -2246,7 +2283,7 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 
 unsigned char *canonical(unsigned char *n)
 {
-#ifndef __MSDOS__
+#ifndef JOEWIN
 	int x;
 	unsigned char *s;
 	if (n[0] == '~') {
@@ -2323,7 +2360,11 @@ long pisindentg(P *p)
 
 unsigned char *dequote(unsigned char *s)
 {
-        static unsigned char buf[1024];
+#ifdef JOEWIN
+		/* Backslashes should never mean 'escape' in Windows-land. */
+		return s;
+#else
+		static unsigned char buf[1024];
         unsigned char *p = buf;
         while (*s) {
                 if (*s =='\\')
@@ -2333,6 +2374,7 @@ unsigned char *dequote(unsigned char *s)
         }
         *p = 0;
         return buf;
+#endif
 }
 
 /* Load file into new buffer and return the new buffer */
@@ -2367,7 +2409,7 @@ B *bload(unsigned char *s)
 	n = parsens(s, &skip, &amnt);
 
 	/* Open file or stream */
-#ifndef __MSDOS__
+#if !defined(__MSDOS__) && !defined(JOEWIN)
 	if (n[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
@@ -2392,12 +2434,12 @@ B *bload(unsigned char *s)
 		b = bmk(NULL);
 		goto empty;
 	} else {
-		fi = fopen((char *)dequote(n), "r+");
+		fi = fopen((char *)dequote(n), "r+" EXTRA_FILE_FLAGS);
 		if (!fi)
 			nowrite = 1;
 		else
 			fclose(fi);
-		fi = fopen((char *)dequote(n), "r");
+		fi = fopen((char *)dequote(n), "r" EXTRA_FILE_FLAGS);
 		if (!fi)
 			nowrite = 0;
 		if (fi) {
@@ -2445,9 +2487,13 @@ B *bload(unsigned char *s)
 	setopt(b,n);
 	b->rdonly = b->o.readonly;
 
+#ifdef JOEWIN
+	notify_new_buffer(b);
+#endif
+
 	/* Close stream */
 err:
-#ifndef __MSDOS__
+#if !defined(__MSDOS__) && !defined(JOEWIN)
 	if (s[0] == '!')
 		pclose(fi);
 	else
@@ -2583,7 +2629,7 @@ B *bfind(unsigned char *s)
 		return b;
 	}
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name && !zcmp(s, b->name)) {
+		if (b->name && !fullfilecmp(s, b->name)) {
 			if (!b->orphan)
 				++b->count; /* Assumes caller is going to put this in a window! */
 			else
@@ -2612,7 +2658,7 @@ B *bfind_scratch(unsigned char *s)
 		return b;
 	}
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name && !zcmp(s, b->name)) {
+		if (b->name && !fullfilecmp(s, b->name)) {
 			if (!b->orphan)
 				++b->count;
 			else
@@ -2648,7 +2694,7 @@ B *bcheck_loaded(unsigned char *s)
 		return NULL;
 	}
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name && !zcmp(s, b->name)) {
+		if (b->name && !fullfilecmp(s, b->name)) {
 			return b;
 		}
 
@@ -2739,6 +2785,7 @@ int break_symlinks; /* Set to break symbolic links and hard links on writes */
 int bsave(P *p, unsigned char *s, off_t size, int flag)
 {
 	struct stat sbuf;
+	unsigned char* filename = s;
 	int have_stat = 0;
 	FILE *f;
 	off_t skip, amnt;
@@ -2749,22 +2796,25 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 	if (amnt < size)
 		size = amnt;
 
-#ifndef __MSDOS__
+#if !defined(__MSDOS__) && !defined(JOEWIN)
 	if (s[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
 		f = popen((char *)dequote(s + 1), "w");
 	} else
 #endif
-	if (s[0] == '>' && s[1] == '>')
-		f = fopen((char *)dequote(s + 2), "a");
-	else if (!zcmp(s, USTR "-")) {
+	if (s[0] == '>' && s[1] == '>') {
+		filename = (char *)dequote(s + 2);
+		f = fopen(filename, "a" EXTRA_FILE_FLAGS);
+	} else if (!zcmp(s, USTR "-")) {
 		nescape(maint->t);
 		ttclsn();
 		f = stdout;
-	} else if (skip || amnt != MAXLONG)
-		f = fopen((char *)dequote(s), "r+");
-	else {
+		filename = NULL;
+	} else if (skip || amnt != MAXLONG) {
+		filename = (char *)dequote(s);
+		f = fopen(filename, "r+" EXTRA_FILE_FLAGS);
+	} else {
 		have_stat = !stat((char *)dequote(s), &sbuf);
 		if (!have_stat)
 			sbuf.st_mode = 0666;
@@ -2789,8 +2839,11 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 					}
 				}
 #endif
-				unlink((char *)dequote(s));
+#ifndef JOEWIN
 				g = creat((char *)dequote(s), sbuf.st_mode & ~(S_ISUID | S_ISGID));
+#else
+				g = creat((char *)dequote(s), sbuf.st_mode);
+#endif
 #ifdef WITH_SELINUX
 				if (selinux_enabled) {
 					setfilecon((char *)dequote(s), &se);
@@ -2804,7 +2857,8 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 			}
 		}
 
-		f = fopen((char *)dequote(s), "w");
+		filename = (char *)dequote(s);
+		f = fopen((char *)dequote(s), "w" EXTRA_FILE_FLAGS);
 		norm = 1;
 	}
 	joesep(s);
@@ -2834,11 +2888,15 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 
 	/* Restore setuid bit */
 	if (!berror && have_stat) {
+#ifndef JOEWIN
 		fchmod(fileno(f), sbuf.st_mode);
+#else
+		chmod(filename, sbuf.st_mode & (S_IREAD | S_IWRITE));
+#endif
 	}
 
 err:
-#ifndef __MSDOS__
+#if !defined(__MSDOS__) && !defined(JOEWIN)
 	if (s[0] == '!')
 		pclose(f);
 	else
@@ -2850,7 +2908,7 @@ err:
 
 	/* Update orignal date of file */
 	/* If it's not named, it's about to be */
-	if (!berror && norm && flag && (!p->b->name || flag == 2 || !zcmp(s,p->b->name))) {
+	if (!berror && norm && flag && (!p->b->name || flag == 2 || !filecmp(s,p->b->name))) {
 		if (!stat((char *)dequote(s),&sbuf))
 			p->b->mod_time = sbuf.st_mtime;
 	}
@@ -2947,10 +3005,24 @@ RETSIGTYPE ttsig(int sig)
 	int tmpfd;
 	struct stat sbuf;
 
+#ifdef JOEWIN
+    /* Allow us to inspect */
+    assert(0);
+#endif
+
 	/* Do not allow double-fault */
 	if (ttsig_f)
 		_exit(1);
 
+#ifdef JOEWIN
+	/* 'open' gets redefined, but only accepts two arguments -- use the normal system version */
+	if ((tmpfd = _open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
+        /* The lstat call is to make sure DEADJOE isn't linked to anything
+           (this was to cover a security hole).  We don't have an equivalent
+           so continue */
+        if ((tmpfd = _open("DEADJOE", O_RDWR | O_APPEND)) < 0)
+            _exit(1);
+#else
 	if ((tmpfd = open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
 		if (lstat("DEADJOE", &sbuf) < 0)
 			_exit(1);
@@ -2967,6 +3039,7 @@ RETSIGTYPE ttsig(int sig)
 			_exit(1);
 		if (fchmod(tmpfd, S_IRUSR | S_IWUSR) < 0)
 			_exit(1);
+#endif
 	}
 	if ((ttsig_f = fdopen(tmpfd, "a")) == NULL)
 		_exit(1);
@@ -3009,6 +3082,9 @@ RETSIGTYPE ttsig(int sig)
 
 int lock_it(unsigned char *qpath,unsigned char *bf)
 {
+#ifdef JOEWIN
+	return 0;
+#else
         unsigned char *path = dequote(qpath);
 	unsigned char *lock_name=dirprt(path);
 	unsigned char *name=namprt(path);
@@ -3033,10 +3109,12 @@ int lock_it(unsigned char *qpath,unsigned char *bf)
 	}
 	obj_free(lock_name);
 	return -1;
+#endif
 }
 
 void unlock_it(unsigned char *qpath)
 {
+#ifndef JOEWIN
         unsigned char *path = dequote(qpath);
 	unsigned char *lock_name=dirprt(path);
 	unsigned char *name=namprt(path);
@@ -3044,6 +3122,7 @@ void unlock_it(unsigned char *qpath)
 	lock_name=vscat(lock_name,sv(name));
 	unlink((char *)lock_name);
 	obj_free(lock_name);
+#endif
 }
 
 /* True if file is regular */

@@ -377,6 +377,9 @@ int wnext(Screen *t)
 {
 	if (t->curwin->link.next != t->curwin) {
 		t->curwin = t->curwin->link.next;
+#ifdef JOEWIN
+		notify_selection();
+#endif
 		if (t->curwin->y == -1)
 			wfit(t);
 		return 0;
@@ -390,6 +393,9 @@ int wprev(Screen *t)
 {
 	if (t->curwin->link.prev != t->curwin) {
 		t->curwin = t->curwin->link.prev;
+#ifdef JOEWIN
+		notify_selection();
+#endif
 		if (t->curwin->y == -1) {
 			t->topwin = findtopw(t->curwin);
 			wfit(t);
@@ -623,6 +629,9 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height
 		else {
 			izque(W, link, new);
 			t->curwin = t->topwin = new;
+#ifdef JOEWIN
+			notify_selection();
+#endif
 		}
 	}
 

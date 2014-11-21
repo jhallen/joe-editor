@@ -300,7 +300,7 @@ unsigned char **regsub(unsigned char **z, int len, unsigned char *s)
 	int x;
 
 	for (x = 0; x != len; ++x)
-		if (rmatch(s, z[x]))
+		if (rmatch(s, z[x], 0))
 			lst = vaadd(lst, vsncpy(NULL, 0, sz(z[x])));
 	return lst;
 }

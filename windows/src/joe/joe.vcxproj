@@ -26,7 +26,7 @@
   <Import Project="..\build\JoeWin.settings.targets" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(JoeExternalSrcDir);$(JoeSrcDir);$(JoeWinCommonSrcDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(JoeSrcDir);$(JoeExternalSrcDir);$(JoeWinCommonSrcDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>JOEWIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader />
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -40,10 +40,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(JoeExternalSrcDir)\libco\choose.h" />
-    <ClInclude Include="$(JoeExternalSrcDir)\libco\libco.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\b.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\blocks.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\builtin.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\bw.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\charmap.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\cmd.h" />
@@ -89,6 +88,8 @@
     <ClInclude Include="$(JoeExternalSrcDir)\utils.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\vfile.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\w.h" />
+    <ClInclude Include="$(JoeSrcDir)\libco\choose.h" />
+    <ClInclude Include="$(JoeSrcDir)\libco\libco.h" />
     <ClInclude Include="$(JoeSrcDir)\autoconf.h" />
     <ClInclude Include="$(JoeSrcDir)\builtin.h" />
     <ClInclude Include="$(JoeSrcDir)\bupdates.h" />
@@ -97,9 +98,6 @@
     <ClInclude Include="$(JoeSrcDir)\uwindows.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(JoeExternalSrcDir)\libco\amd64.c" />
-    <ClCompile Include="$(JoeExternalSrcDir)\libco\fiber.c" />
-    <ClCompile Include="$(JoeExternalSrcDir)\libco\x86.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\b.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\blocks.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\bw.c" />
@@ -143,6 +141,9 @@
     <ClCompile Include="$(JoeExternalSrcDir)\utils.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\vfile.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\w.c" />
+    <ClCompile Include="$(JoeSrcDir)\libco\amd64.c" />
+    <ClCompile Include="$(JoeSrcDir)\libco\fiber.c" />
+    <ClCompile Include="$(JoeSrcDir)\libco\x86.c" />
     <ClCompile Include="$(JoeSrcDir)\builtin.c" />
     <ClCompile Include="$(JoeSrcDir)\bupdates.c" />
     <ClCompile Include="$(JoeSrcDir)\i18n.c" />

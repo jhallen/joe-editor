@@ -27,6 +27,9 @@ unsigned char *zchr PARAMS((unsigned char *s, int c));
 unsigned char *zrchr PARAMS((unsigned char *s, int c));
 unsigned char *zcat PARAMS((unsigned char *a, unsigned char *b));
 
+int filecmp PARAMS((unsigned char *a, unsigned char *b));
+int fullfilecmp PARAMS((unsigned char *a, unsigned char *b));
+
 /*
  * Functions which return minimum/maximum of two numbers  
  */

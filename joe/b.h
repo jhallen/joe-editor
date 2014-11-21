@@ -129,6 +129,9 @@ struct buffer {
 	void (*parseone)(struct charmap *map,unsigned char *s,unsigned char **rtn_name,
 	                 long *rtn_line);
 	                        /* Error parser for this buffer */
+#ifdef JOEWIN
+	int	pchanges;	/* Changes to this buffer that are pending to be sent to the frontend */
+#endif
 };
 
 extern B bufs;

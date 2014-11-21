@@ -8,16 +8,17 @@
   </PropertyGroup>
 
   <PropertyGroup>
+	<JoeRoot>$(MSBuildThisFileDirectory)\..\..\..</JoeRoot>
 	<JoeWinRoot>$(MSBuildThisFileDirectory)\..</JoeWinRoot>
 	<BinaryRoot>$(JoeWinRoot)\..\bin</BinaryRoot>
-	<JoeExternalSrcDir>$(JoeWinRoot)\joe\joe</JoeExternalSrcDir>
+	<JoeExternalSrcDir>$(JoeRoot)\joe</JoeExternalSrcDir>
 	<PuttyExternalSrcDir>$(JoeWinRoot)\putty\putty</PuttyExternalSrcDir>
 	<JoeWinSrcDir>$(JoeWinRoot)\joewin\win</JoeWinSrcDir>
 	<JoeWinCommonSrcDir>$(JoeWinRoot)\common</JoeWinCommonSrcDir>
 	<JoeSrcDir>$(JoeWinRoot)\joe\win</JoeSrcDir>
 	<PuttySrcDir>$(JoeWinRoot)\putty\win</PuttySrcDir>
-	<JoeConfDir>$(JoeWinRoot)\..\cfg\conf</JoeConfDir>
-	<JoeSyntaxDir>$(JoeWinRoot)\..\cfg\syntax</JoeSyntaxDir>
+	<JoeConfDir>$(JoeWinRoot)\..\rc</JoeConfDir>
+	<JoeSyntaxDir>$(JoeRoot)\syntax</JoeSyntaxDir>
 	<SchemesDir>$(JoeWinRoot)\..\schemes</SchemesDir>
 	<SchemeGenDir>$(SchemesDir)\generated</SchemeGenDir>
 	<VimSchemeDir>$(SchemesDir)\generated\vimschemes</VimSchemeDir>
