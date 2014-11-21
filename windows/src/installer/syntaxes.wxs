@@ -16,6 +16,9 @@
       <Component Id="awkJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="awkJSF" Name="awk.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\awk.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="batchJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+        <File Id="batchJSF" Name="batch.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\batch.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="cJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="cJSF" Name="c.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\c.jsf" KeyPath="yes" />
       </Component>
@@ -28,6 +31,9 @@
       <Component Id="cshJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="cshJSF" Name="csh.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\csh.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="csharpJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+        <File Id="csharpJSF" Name="csharp.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\csharp.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="cssJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="cssJSF" Name="css.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\css.jsf" KeyPath="yes" />
       </Component>
@@ -37,14 +43,23 @@
       <Component Id="fortranJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="fortranJSF" Name="fortran.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\fortran.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="goJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+        <File Id="goJSF" Name="go.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\go.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="haskellJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="haskellJSF" Name="haskell.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\haskell.jsf" KeyPath="yes" />
       </Component>
       <Component Id="htmlJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="htmlJSF" Name="html.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\html.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="iniJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+        <File Id="iniJSF" Name="ini.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\ini.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="javaJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="javaJSF" Name="java.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\java.jsf" KeyPath="yes" />
+      </Component>
+      <Component Id="javascriptJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+	<File Id="javascriptJSF" Name="javascript.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\javascript.jsf" KeyPath="yes" />
       </Component>
       <Component Id="joercJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="joercJSF" Name="joerc.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\joerc.jsf" KeyPath="yes" />
@@ -123,6 +138,9 @@
       </Component>
       <Component Id="troffJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="troffJSF" Name="troff.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\troff.jsf" KeyPath="yes" />
+      </Component>
+      <Component Id="typescriptJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+	<File Id="typescriptJSF" Name="typescript.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\typescript.jsf" KeyPath="yes" />
       </Component>
       <Component Id="verilogJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="verilogJSF" Name="verilog.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\verilog.jsf" KeyPath="yes" />
