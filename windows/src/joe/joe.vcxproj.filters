@@ -1,0 +1,351 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="JoeWin Files">
+      <UniqueIdentifier>{a843eecc-7636-4916-986a-206aa1998cab}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(JoeSrcDir)\autoconf.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\libco\choose.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\libco\libco.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\b.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\blocks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\bw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\charmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\cmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\coroutine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\gettext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\help.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\i18n.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\kbd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\lattr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\macro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\mouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\obj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\poshist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\pw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\qw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\rc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\regex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\scrn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\syntax.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\tab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\termcapj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\tty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\tw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\ublock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\uedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\uerror.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\ufile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\uformat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\uisrch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\umath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\undo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\usearch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\ushell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\utag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\utf8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\vfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\w.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeSrcDir)\bupdates.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeSrcDir)\uwindows.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeSrcDir)\jwglue.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(JoeSrcDir)\joedata.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(JoeSrcDir)\joedata.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\b.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\blocks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\bw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\charmap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\cmd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\coroutine.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\gettext.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\help.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\kbd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\lattr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\macro.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\menu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\mouse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\obj.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\path.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\poshist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\pw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\queue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\qw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\rc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\regex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\scrn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\syntax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\tab.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\termcap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\tw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\ublock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\uedit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\uerror.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\ufile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\uformat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\uisrch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\umath.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\undo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\usearch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\ushell.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\utag.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\utf8.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\vfile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\w.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="$(JoeSrcDir)\builtin.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+    <ClCompile Include="$(JoeSrcDir)\builtin.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeSrcDir)\bupdates.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeSrcDir)\i18n.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeSrcDir)\uwindows.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeSrcDir)\env.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeSrcDir)\fs.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeSrcDir)\tty.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\libco\amd64.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\libco\fiber.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\libco\x86.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

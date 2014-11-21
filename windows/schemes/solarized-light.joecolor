@@ -1,0 +1,69 @@
+[Scheme]
+Name=solarized (light)
+Author=Ethan Schoonover <es@ethanschoonover.com>
+URL=http://ethanschoonover.com/solarized
+
+[Colors]
+base0=      #657b83 ;241
+base1=      #586e75 ;240
+base2=      #073642	;235
+base3=      #002b36 ;234
+base00=     #839496 ;244
+base01=     #93a1a1 ;245
+base02=     #eee8d5 ;254
+base03=     #fdf6e3 ;230
+
+orange=	    #cb4b16 ;166
+violet=     #6c71c4 ;61
+
+red=        #dc322f ;160
+green=      #859900 ;64
+boldgreen=  #586e75 ;166
+yellow=     #b58900 ;136
+blue=       #268bd2 ;33
+magenta=    #d33682 ;125
+cyan=       #2aa198 ;37
+
+black=      $base02
+boldblack=  $base03
+boldyellow= $base00
+boldblue=   $base0
+boldcyan=   $base1
+white=      $base2
+boldwhite=  $base3
+boldred=    $orange
+boldmagenta=$violet
+
+
+defaultbg=$base03
+defaultfg=$base0
+bolddefaultfg=$defaultfg
+bolddefaultbg=$defaultbg
+
+cursorcolor=$base0
+cursortext=$base03
+
+statusfg=$base1
+statusbg=$base02
+
+selectionfg=$base03
+selectionbg=$base01
+
+[Syntax]
+Comment=$base01
+PreProc=$orange
+Define=$orange
+Keyword=$green
+Type=$yellow
+String=$cyan
+Constant=$cyan
+Literal=$cyan
+Brace=$defaultfg
+Control=$defaultfg
+Escape=$red
+Bad=$red bold
+
+diff.DelLine=$red
+diff.AddLine=$green
+diff.ChgLine=$yellow
+diff.Garbage=$blue

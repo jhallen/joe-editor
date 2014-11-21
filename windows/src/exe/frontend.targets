@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>$(Personality)exe</RootNamespace>
+    <AssemblyName>$(Personality)</AssemblyName>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WriteOutputToRoot>true</WriteOutputToRoot>
+  </PropertyGroup>
+  <Import Project="..\build\JoeWin.settings.targets" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>joedll;$(JoeWinCommonSrcDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PERSONALITY="$(Personality)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MinSpace</Optimization>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>PERSONALITY="$(Personality)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="joedll\joedll.vcxproj">
+      <Project>{e4ab405b-0d5c-4c0c-8f2f-274477e65cae}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="$(IntDir)\builtins.rc">
+      <Visible>false</Visible>
+    </ResourceCompile>
+    <ResourceCompile Include="joewin.rc" />
+  </ItemGroup>
+  <PropertyGroup>
+    <BuiltinFilesLocation>$(OutputRootDir)\Intermediate\configuration</BuiltinFilesLocation>
+  </PropertyGroup>
+  <Import Project="..\build\JoeWin.targets" />
+</Project>

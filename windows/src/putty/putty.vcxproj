@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>puttytel</ProjectName>
+    <ProjectGuid>{C70343E3-1522-497D-9E37-5A7622DCDE9A}</ProjectGuid>
+    <RootNamespace>puttytel</RootNamespace>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="..\build\JoeWin.settings.targets" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(PuttyExternalSrcDir);$(PuttyExternalSrcDir)\charset;$(PuttyExternalSrcDir)\windows;$(JoeWinCommonSrcDir);$(PuttySrcDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SECURITY_WIN32;_WINDOWS;WIN32;JOEWIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderOutputFile>$(IntDir)</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(JoeWinCommonSrcDir)\joewincommon.vcxproj">
+      <Project>{6dadeba9-8b96-4e38-809c-cb3edf6bdbcb}</Project>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(PuttyExternalSrcDir)\dialog.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\ldisc.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\ldiscucs.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\minibidi.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\misc.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\nogss.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\settings.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\terminal.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\timing.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\tree234.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\version.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\sizetip.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winctrls.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\windefs.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\window.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winmisc.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winprint.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\wintime.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winucs.c" />
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winutils.c" />
+    <ClCompile Include="$(PuttySrcDir)\be_joewin_s.c" />
+    <ClCompile Include="$(PuttySrcDir)\joebackend.c" />
+    <ClCompile Include="$(PuttySrcDir)\userfuncs.c" />
+    <ClCompile Include="$(PuttySrcDir)\config.c" />
+    <ClCompile Include="$(PuttySrcDir)\stubs.c" />
+    <ClCompile Include="$(PuttySrcDir)\ui.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(PuttyExternalSrcDir)\charset\charset.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\dialog.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\int64.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\ldisc.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\misc.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\network.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\putty.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\puttymem.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\puttyps.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\windows\rcstuff.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\terminal.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\tree234.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\windows\win_res.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\windows\winhelp.h" />
+    <ClInclude Include="$(PuttyExternalSrcDir)\windows\winstuff.h" />
+    <ClInclude Include="$(PuttySrcDir)\jwuserfuncs.h" />
+    <ClInclude Include="$(PuttySrcDir)\jwconfig.h" />
+    <ClInclude Include="$(PuttySrcDir)\jwui.h" />
+  </ItemGroup>
+  <Import Project="..\build\JoeWin.targets" />
+</Project>

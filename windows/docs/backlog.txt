@@ -1,0 +1,117 @@
+Issues:
+
+X Remove termcap search logic from joe
+* Click on block should clear it
+* Double click on unused space behaves oddly
+* PuTTY should optimize scrolls and bitblt for quicker scrolling.  Cursor needs to be invalidated + many other screen update problems.
+X Joe/Putty should both start up in utf-8 mode.
+X Alt-enter should full-screen the editor
+X Apply Aero-snap fix to putty.
+X Make filenames unicode (utf-8).  Need to call into system wchar functions and convert input/output for filenames. (NOTE: wcstombs/mbstowcs)
+X When saving "..\blah.txt", status display is "Saved ..blah.txt" -- assumes \ is escape char.
+X On first save of "..\blah.txt", status line still shows the file as (Modified) -- the second save clears that.
+X If saved coordinates off the screen on startup, recenter the window.
+X Sometimes allocates too much memory for comm queue on startup.  Threads need to rendezvous to ensure both ends are ready for messages.
+X If saved color file not in expected directory, "(Default)" gets automatically selected.
+
+Backlog:
+
+X Check stuff into SVN
+X Get rid of unused PuTTY menu items.
+  - About box to be fixed when we upgrade VS's (resources did not upgrade from 2k8)
+X Windows environment
+  X Create AppData dir when necessary.  Use to save .joe_state
+  X Update joe to load joerc from program dir, install dir, and user appdata
+    (in that order) -- didn't do install dir.  Shouldn't be an issue.
+* Copy/Paste
+  X Implement Windows cut, copy, and paste commands
+  X Link paste to ^KC, link cut and copy to ^, and ^.
+  * Implement copy/paste menu items in PuTTY context menu
+* Hook into shell for opening/saving files
+  * Interactive file dialog on shift-tab
+  X Drag file to window: open
+* Naming convention/coding standard refactor.
+* RC file work (across all personalities)
+  * Default to CRLF ending.
+  * Remove hardcoded variables (use mouse, xterm 256, etc)
+  * Fast status refresh
+  * Create JoePad personality.
+  * Control-left/Control-right (can be done through RC files)
+  * Also shift-left/shift-right, shift-control-left/shift-control-right, etc..
+  * Better keyboard shortcuts for copy/paste (currently ^S is copy)
+X Behave better when user closes app through 'X'
+  X Handle QUIT command on joe side
+  X Data structure on PuTTY side to track open buffers in JOE
+  X Send event notifications from joe when buffer states change.
+  X Hook into quit and modify 'are you sure?' handling.
+  X Extra: update window title with active file.
+* Random improvements/Windows behavior
+  * Detect and tweak auto-completion for UNC paths.
+  * If invoked from install dir, then open 'My Documents' -- potentially
+    track last used path.
+  X Save/restore window size and placement.
+  * Disable Linux/emacs locking behavior.  Replace with proper Windows file locking.
+* Convert VIM color schemes
+  X Build initial, functional converter
+  X Cover C, Python
+  * XML
+  * HTML
+  X Override files
+* Color schemes
+  X Load color scheme from INI files on PuTTY end (just map colors)
+    from all standard locations (progdir, installdir, appdata).
+  X Modify PuTTY to remap colors based on scheme
+  X Modify JOE to load scheme info into syntax data structures
+  X Hook color schemes into Windows menu
+  X Add checkboxes for color schemes
+  X Modify PuTTY to draw bold fonts on certain colors
+  X Change joe drawing code to use special colors for status/selection
+  * Italic fonts?
+  X Save/load last used color scheme.
+  X Send color scheme over to joe on startup.
+  * Finish up custom colors for:
+    * Menu selection
+    * Status line
+    * Prompt Windows
+    * "-------" divider
+  * Indicate currently selected line (totally new feature)
+  * Indicate active buffer ala vim
+  * Total revamp of jsf files to allow finer-grained color mapping
+* In-program configurability
+  * JOE settings:
+    * Edit joerc file (or whatever current personality is)
+    * Open user configuration directory
+  * JOEWIN settings:
+    * Change font
+    X Change scheme
+    X Change cursor type
+X Reduce executable size
+  X Merge UNICODE mapping data in PuTTY and JOE into one common store of information
+  X Investigate whether JOE's builtin character maps can be taken care of through Win32 calls
+X Fix input/output channel.  Remove winsock and replace with thread-safe queue.
+* Rearrange build
+  X Populate schemes and conf files to output as part of build.
+  * Create script to build from command line.
+* Housekeeping tasks
+  * Pick a naming convention for common functions/defines/globals and use it consistently.
+  * Rearrange directory structure to get rid of 'externals' and house syntax/conf/colors
+    in a more consistent manner.
+  * Pull as much out of joewin as possible.  Much of it could go into joewincommon.  Don't know
+    if I need to keep the project around as a target for the DLL or not, but see if I can kill it.
+  * Snap to a more recent version of PuTTY (it's been about two years).
+* Executable reorganization
+  * Make the main entry point a DLL and create an EXE for each personality.
+  * Change the way resources are baked in: use real Windows resources instead of static strings.
+  * Create standalone versions of each editor personality with some set of baked-in resources.
+    * Separate output directories for these.
+  * Create a ZIP file project that collects the main parts to a ZIP
+  * Create a WiX project that generates an MSI (same stuff as ZIP)
+
+Joe issues
+* ^KH in search/replace prompt draws screen incorrectly. -- Repro's in JOE/Linux too.
+* What is the boundary for large files?  A 3MB file took a while to load (though it was probably disk access slowing it down).
+* ^[ shows up at top of screen too often (mouse moves, every non-alphanumeric)
+* JOE doesn't recognize UTF-8 preamble
+* Hex editor broken with file that has CRLF newlines, when editor is in CRLF mode (0d is hidden, causes weird jumps/numbering)
+* Edit lines past width of screen stop showing text/don't scroll to the right (broken in Linux, too)
+* Editor falls over with large files (tried with a 182M file).  It simply exits with no indication of an error.  Need to test this on Linux as well.  Seems to be a problem in vfiles but I haven't looked deep enough.

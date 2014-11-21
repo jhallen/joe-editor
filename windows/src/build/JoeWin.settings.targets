@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition="'$(Platform)' == ''">Win32</Platform>
+    
+    <PlatformToolset>v110_xp</PlatformToolset>
+  </PropertyGroup>
+
+  <PropertyGroup>
+	<JoeWinRoot>$(MSBuildThisFileDirectory)\..</JoeWinRoot>
+	<BinaryRoot>$(JoeWinRoot)\..\bin</BinaryRoot>
+	<JoeExternalSrcDir>$(JoeWinRoot)\joe\joe</JoeExternalSrcDir>
+	<PuttyExternalSrcDir>$(JoeWinRoot)\putty\putty</PuttyExternalSrcDir>
+	<JoeWinSrcDir>$(JoeWinRoot)\joewin\win</JoeWinSrcDir>
+	<JoeWinCommonSrcDir>$(JoeWinRoot)\common</JoeWinCommonSrcDir>
+	<JoeSrcDir>$(JoeWinRoot)\joe\win</JoeSrcDir>
+	<PuttySrcDir>$(JoeWinRoot)\putty\win</PuttySrcDir>
+	<JoeConfDir>$(JoeWinRoot)\..\cfg\conf</JoeConfDir>
+	<JoeSyntaxDir>$(JoeWinRoot)\..\cfg\syntax</JoeSyntaxDir>
+	<SchemesDir>$(JoeWinRoot)\..\schemes</SchemesDir>
+	<SchemeGenDir>$(SchemesDir)\generated</SchemeGenDir>
+	<VimSchemeDir>$(SchemesDir)\generated\vimschemes</VimSchemeDir>
+	<JoeDocsDir>$(JoeWinRoot)\..\docs</JoeDocsDir>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <PlatformDir Condition="'$(Platform)' == 'Win32'">x86</PlatformDir>
+    <PlatformDir Condition="'$(Platform)' == 'x86'">x86</PlatformDir>
+    <PlatformDir Condition="'$(Platform)' == 'x64'">x64</PlatformDir>
+    <OutputRootDir>$(BinaryRoot)\$(PlatformDir)\$(Configuration)</OutputRootDir>
+    <StandaloneDir Condition="'$(IsStandalone)' != ''">\Standalone</StandaloneDir>
+    <OutDir Condition="'$(WriteOutputToRoot)' == ''">$(OutputRootDir)$(StandaloneDir)\Object\$(RootNamespace)\</OutDir>
+    <OutDir Condition="'$(WriteOutputToRoot)' != ''">$(OutputRootDir)$(StandaloneDir)\</OutDir>
+    <IntDir>$(OutputRootDir)$(StandaloneDir)\Intermediate\$(RootNamespace)\</IntDir>
+    <IntermediateOutputPath>$(IntDir)</IntermediateOutputPath>
+    
+    <VersionDir>$(OutputRootDir)\Intermediate\version</VersionDir>
+    <SchemesOutDir>$(OutputRootDir)\schemes</SchemesOutDir>
+    <SyntaxOutDir>$(OutputRootDir)\syntax</SyntaxOutDir>
+    <ConfOutDir>$(OutputRootDir)\conf</ConfOutDir>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <FrontendDependencies>comctl32.lib;imm32.lib;winmm.lib;$(OutputRootDir)\Intermediate\joewincommon\resources.res</FrontendDependencies>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Find Python 2.7/6/5 -->
+    <_PyRegPrefix>HKEY_LOCAL_MACHINE\SOFTWARE\Python\PythonCore</_PyRegPrefix>
+    <_PythonPath>$([MSBuild]::GetRegistryValueFromView('$(_PyRegPrefix)\2.7\InstallPath', '', null, RegistryView.Registry64, RegistryView.Registry32))</_PythonPath>
+    <_PythonPath Condition="'$(_PythonPath)'==''">$([MSBuild]::GetRegistryValueFromView('$(_PyRegPrefix)\2.6\InstallPath', '', null, RegistryView.Registry64, RegistryView.Registry32))</_PythonPath>
+    <_PythonPath Condition="'$(_PythonPath)'==''">$([MSBuild]::GetRegistryValueFromView('$(_PyRegPrefix)\2.5\InstallPath', '', null, RegistryView.Registry64, RegistryView.Registry32))</_PythonPath>
+    <_Python Condition="'$(_PythonPath)'!=''">$(_PythonPath)\python.exe</_Python>
+  </PropertyGroup>
+
+  <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="version.props" />
+</Project>

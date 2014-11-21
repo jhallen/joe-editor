@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include properties.wxi ?>
+  
+  <Fragment>
+    <Component Id="CoreComponent" Guid="*" Directory="INSTALLFOLDER" Win64="$(var.Win64)">
+      <File Id="JoeWinDLL" Name="joewin.dll" DiskId="1" Source="$(var.BinRootDir)\joewin.dll" KeyPath="yes" />
+    </Component>
+    <Component Id="JoePersonality" Guid="*" Directory="INSTALLFOLDER" Win64="$(var.Win64)">
+      <File Id="JoeEXE" Name="joe.exe" DiskId="1" Source="$(var.BinRootDir)\joe.exe" KeyPath="yes" />
+    </Component>
+    <Component Id="JStarPersonality" Guid="*" Directory="INSTALLFOLDER" Win64="$(var.Win64)">
+      <File Id="JStarEXE" Name="jstar.exe" DiskId="1" Source="$(var.BinRootDir)\jstar.exe" KeyPath="yes" />
+    </Component>
+    <Component Id="JPicoPersonality" Guid="*" Directory="INSTALLFOLDER" Win64="$(var.Win64)">
+      <File Id="JPicoEXE" Name="jpico.exe" DiskId="1" Source="$(var.BinRootDir)\jpico.exe" KeyPath="yes" />
+    </Component>
+    <Component Id="JMacsPersonality" Guid="*" Directory="INSTALLFOLDER" Win64="$(var.Win64)">
+      <File Id="JMacsEXE" Name="jmacs.exe" DiskId="1" Source="$(var.BinRootDir)\jmacs.exe" KeyPath="yes" />
+    </Component>
+
+    <DirectoryRef Id="StartMenuShortcuts">
+      <Component Id="JoePersonalityShortcut" Guid="*" Win64="$(var.Win64)">
+	<Shortcut Id="JoeProgramMenuShortcut" Name="joe" Description="Joe's Own Editor: Standard version" Target="[#JoeEXE]" Icon="joewinicon.exe" WorkingDirectory="INSTALLFOLDER" />
+	<RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="joeshortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="JStarPersonalityShortcut" Guid="*" Win64="$(var.Win64)">
+	<Shortcut Id="JStarProgramMenuShortcut" Name="jstar" Description="Joe's Own Editor: WordStar emulation" Target="[#JStarEXE]" Icon="joewinicon.exe" WorkingDirectory="INSTALLFOLDER" />
+	<RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="jstarshortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="JMacsPersonalityShortcut" Guid="*" Win64="$(var.Win64)">
+	<Shortcut Id="JMacsProgramMenuShortcut" Name="jmacs" Description="Joe's Own Editor: Emacs emulation" Target="[#JMacsEXE]" Icon="joewinicon.exe" WorkingDirectory="INSTALLFOLDER" />
+	<RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="jmacsshortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="JPicoPersonalityShortcut" Guid="*" Win64="$(var.Win64)">
+	<Shortcut Id="JPicoProgramMenuShortcut" Name="jpico" Description="Joe's Own Editor: Pico emulation" Target="[#JPicoEXE]" Icon="joewinicon.exe" WorkingDirectory="INSTALLFOLDER" />
+	<RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="jpicoshortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

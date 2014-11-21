@@ -1,0 +1,421 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Conf files">
+      <UniqueIdentifier>{ca31a761-c826-4eff-9100-5a329557d2c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Syntax files">
+      <UniqueIdentifier>{be254d93-d48e-4be9-b09c-dfdc67848ef8}</UniqueIdentifier>
+      <Extensions>jsf</Extensions>
+    </Filter>
+    <Filter Include="VIM color files">
+      <UniqueIdentifier>{cc466dd3-f72d-411a-b17d-76896f6bf5a9}</UniqueIdentifier>
+      <Extensions>vim</Extensions>
+    </Filter>
+    <Filter Include="Color override files">
+      <UniqueIdentifier>{b88619d7-8255-4261-a60d-2517f9f461f5}</UniqueIdentifier>
+      <Extensions>override</Extensions>
+    </Filter>
+    <Filter Include="Color generators">
+      <UniqueIdentifier>{ddd65b73-e1d2-410d-9286-106e92872e99}</UniqueIdentifier>
+      <Extensions>py</Extensions>
+    </Filter>
+    <Filter Include="Native color files">
+      <UniqueIdentifier>{7e3f56e2-2bf0-4c82-96ed-33f82440e4b9}</UniqueIdentifier>
+      <Extensions>joecolor</Extensions>
+    </Filter>
+    <Filter Include="Docs">
+      <UniqueIdentifier>{edc9595d-d0ce-458a-826d-7e8b2da3c9d9}</UniqueIdentifier>
+      <Extensions>txt</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <DocFile Include="$(JoeDocsDir)\license.txt">
+      <Filter>Docs</Filter>
+    </DocFile>
+    <ColorFile Include="$(SchemesDir)\putty-black.joecolor">
+      <Filter>Native color files</Filter>
+    </ColorFile>
+    <ColorFile Include="$(SchemesDir)\putty-white.joecolor">
+      <Filter>Native color files</Filter>
+    </ColorFile>
+    <ColorFile Include="$(SchemesDir)\solarized.joecolor">
+      <Filter>Native color files</Filter>
+    </ColorFile>
+    <ColorFile Include="$(SchemesDir)\solarized-light.joecolor">
+      <Filter>Native color files</Filter>
+    </ColorFile>
+    <ColorFile Include="$(SchemesDir)\xterm.joecolor">
+      <Filter>Native color files</Filter>
+    </ColorFile>
+    <ColorGenFile Include="$(VimSchemeDir)\autumn.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\candycode.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\darkblue2.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\darkspectrum.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\dawn.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\desert.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\dusk.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\eclipse.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\freya.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\inkpot.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\ir_black.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\lucius.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\mayansmoke.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\molokai.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\moria-dark.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\moria-light.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\mustang.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\oceandeep.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\peaksea-dark.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\peaksea-light.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\pyte.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\railscasts.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\rdark.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\rootwater.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\sienna-dark.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\sienna-light.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\slate.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\synic.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\tango.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\tango2.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\wombat.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\xoria256.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\zenburn.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenFile Include="$(VimSchemeDir)\zenburn-hc.vim">
+      <Filter>VIM color files</Filter>
+    </ColorGenFile>
+    <ColorGenerator Include="$(SchemeGenDir)\convertvimcolor.py">
+      <Filter>Color generators</Filter>
+    </ColorGenerator>
+    <ColorGenerator Include="$(SchemeGenDir)\vimreader.py">
+      <Filter>Color generators</Filter>
+    </ColorGenerator>
+    <ColorOverrideFile Include="$(VimSchemeDir)\autumn.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\candycode.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\darkblue2.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\darkspectrum.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\dawn.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\desert.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\dusk.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\eclipse.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\freya.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\inkpot.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\ir_black.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\lucius.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\mayansmoke.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\molokai.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\moria-dark.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\moria-light.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\mustang.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\oceandeep.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\peaksea-dark.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\peaksea-light.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\pyte.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\railscasts.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\rdark.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\rootwater.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\sienna-dark.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\sienna-light.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\slate.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\synic.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\tango.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\tango2.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\wombat.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\xoria256.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\zenburn.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ColorOverrideFile Include="$(VimSchemeDir)\zenburn-hc.override">
+      <Filter>Color override files</Filter>
+    </ColorOverrideFile>
+    <ConfigFile Include="$(JoeConfDir)\ftyperc">
+      <Filter>Conf files</Filter>
+    </ConfigFile>
+    <ConfigFile Include="$(JoeConfDir)\jmacsrc">
+      <Filter>Conf files</Filter>
+    </ConfigFile>
+    <ConfigFile Include="$(JoeConfDir)\joerc">
+      <Filter>Conf files</Filter>
+    </ConfigFile>
+    <ConfigFile Include="$(JoeConfDir)\jpicorc">
+      <Filter>Conf files</Filter>
+    </ConfigFile>
+    <ConfigFile Include="$(JoeConfDir)\jstarrc">
+      <Filter>Conf files</Filter>
+    </ConfigFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\4gl.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\ada.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\asm.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\awk.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\batch.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\c.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\cobol.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\conf.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\csh.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\csharp.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\css.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\diff.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\fortran.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\haskell.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\html.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\ini.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\java.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\javascript.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\joerc.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\jsf.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\jsf_check.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\lisp.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\lua.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\m4.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\mail.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\mason.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\matlab.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\ocaml.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\pascal.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\perl.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\php.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\ps.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\python.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\rexx.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\ruby.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\sed.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\sh.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\skill.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\sml.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\spec.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\sql.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\tcl.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\tex.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\troff.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\typescript.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\verilog.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\vhdl.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\xml.jsf">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+  </ItemGroup>
+</Project>

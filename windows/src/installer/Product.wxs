@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include properties.wxi ?>
+  
+  <Product Id="$(var.ProductGuid)"
+     Name="Joe's Own Editor for Windows$(var.BitSuffix)"
+     Language="1033"
+     Version="$(var.JoeWinVersion)"
+     Manufacturer="John J. Jordan"
+     UpgradeCode="8bb90de3-e290-47ba-ae29-7cb5642319ae">
+
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"
+             Keywords="Installer" Description="JOE for Windows $(var.JoeWinDescVersion) Installer$(var.BitSuffix)"
+             Id="*"></Package>
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes"/>
+    
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER"/>
+    <UIRef Id="WixUI_Mondo" />
+
+    <Icon Id="joewinicon.exe" SourceFile="$(var.SrcRootDir)\exe\joewin.ico" />
+    <Property Id="ARPPRODUCTICON" Value="joewinicon.exe" />
+    <Property Id="ARPURLINFOABOUT" Value="http://joe-editor.sourceforge.net/" />
+    <Property Id="ARPHELPLINK" Value="https://sourceforge.net/p/joe-editor/" />
+    
+    <Feature Id="CompleteFeature" Title="JOE for Windows" Description="The complete JOE for Windows" Display="expand" Level="1" ConfigurableDirectory="INSTALLFOLDER" Absent="disallow" AllowAdvertise="no" InstallDefault="local">
+      <!-- This is here in order to disable "install to run from network" option.  We must have a component in the feature to disable it. -->
+      <ComponentRef Id="StartMenuShortcutsDirComponent" />
+      
+      <Feature Id="CoreFeature" Title="Core components" Description="The main executable and associated files" Level="1" Absent="disallow" AllowAdvertise="no" InstallDefault="local">
+        <ComponentRef Id="CoreComponent" />
+        <ComponentRef Id="FTypeRCComponent" />
+        <ComponentGroupRef Id="SyntaxComponentGroup" />
+        <ComponentGroupRef Id="StandardColorsComponentGroup" />
+	<ComponentRef Id="PathEnvComponent" />
+      </Feature>
+
+      <Feature Id="JoeFeature" Title="JOE editor" Description="Standard JOE editor personality" Level="1" AllowAdvertise="no" InstallDefault="local">
+        <ComponentRef Id="JoePersonality" />
+        <ComponentRef Id="JoeRCComponent" />
+        <ComponentRef Id="JoePersonalityShortcut" />
+      </Feature>
+
+      <Feature Id="JStarFeature" Title="JSTAR editor" Description="JOE's WordStar emulation personality" Level="2" AllowAdvertise="no" InstallDefault="local">
+        <ComponentRef Id="JStarPersonality" />
+        <ComponentRef Id="JStarRCComponent" />
+        <ComponentRef Id="JStarPersonalityShortcut" />
+      </Feature>
+
+      <Feature Id="JMacsFeature" Title="JMACS editor" Description="JOE's Emacs emulation personality" Level="2" AllowAdvertise="no" InstallDefault="local">
+        <ComponentRef Id="JMacsPersonality" />
+        <ComponentRef Id="JMacsRCComponent" />
+        <ComponentRef Id="JMacsPersonalityShortcut" />
+      </Feature>
+      
+      <Feature Id="JPicoFeature" Title="JPICO editor" Description="JOE's Pico emulation personality" Level="2" AllowAdvertise="no" InstallDefault="local">
+        <ComponentRef Id="JPicoPersonality" />
+        <ComponentRef Id="JPicoPersonalityShortcut" />
+        <ComponentRef Id="JPicoRCComponent" />
+      </Feature>
+
+      <Feature Id="ExtendedColorsFeature" Title="Extra color schemes" Description="Install all available color schemes.  Standard install also contains schemes, but not this many." Level="8" AllowAdvertise="no" InstallDefault="local">
+        <ComponentGroupRef Id="ExtendedColorsComponentGroup" />
+      </Feature>
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="INSTALLFOLDER" Name="JoeEditor">
+          <Directory Id="SYNTAXFOLDER" Name="syntax" />
+          <Directory Id="CONFIGFOLDER" Name="conf" />
+          <Directory Id="COLORFOLDER" Name="schemes" />
+          <Directory Id="DOCFOLDER" Name="doc" />
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="StartMenuShortcuts" Name="Joe's Own Editor$(var.BitSuffix)" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <Component Id="StartMenuShortcutsDirComponent" Guid="*" Directory="StartMenuShortcuts" Win64="$(var.Win64)">
+      <RemoveFolder Id="StartMenuShortcuts" On="uninstall" />
+      <RegistryKey Root="HKCU" Key="Software\JoeEditor" ForceDeleteOnUninstall="yes" ForceCreateOnInstall="yes">
+        <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLFOLDER]" />
+      </RegistryKey>
+    </Component>
+  </Fragment>
+
+  <Fragment>
+    <Component Id="PathEnvComponent" Guid="*" Directory="INSTALLFOLDER" Win64="$(var.Win64)">
+      <Environment Action="set" Id="SetPathToInstallFolder"
+		   Name="PATH" System="yes" Value="[INSTALLFOLDER]" Permanent="no" Part="last" />
+      
+      <RegistryKey Root="HKLM" Key="Software\JoeEditor" ForceDeleteOnUninstall="yes" ForceCreateOnInstall="yes">
+	<RegistryValue Type="string" Name="EnvPath" Value="1" />
+      </RegistryKey>
+    </Component>
+  </Fragment>
+</Wix>

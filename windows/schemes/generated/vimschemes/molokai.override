@@ -1,0 +1,6 @@
+[Scheme]
+Name=molokai
+Author=Tomas Restrepo
+BasedOn=monokai TextMate theme by Wimer Hazenberg
+URL=http://www.vim.org/scripts/script.php?script_id=2340
+Converted=Converted from vim to joecolors by JJ Jordan

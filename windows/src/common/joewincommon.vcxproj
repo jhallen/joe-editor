@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6DADEBA9-8B96-4E38-809C-CB3EDF6BDBCB}</ProjectGuid>
+    <RootNamespace>joewincommon</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="..\build\JoeWin.settings.targets" />
+  <ItemGroup>
+    <ClCompile Include="builtin.c" />
+    <ClCompile Include="comm.c" />
+    <ClCompile Include="globals.c" />
+    <ClCompile Include="colors.c" />
+    <ClCompile Include="lzf_d.c" />
+    <ClCompile Include="utils.c" />
+    <ClCompile Include="bentries.c" />
+    <ClCompile Include="wcwidth.c" />
+    <ClCompile Include="startup.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="jwbuiltin.h" />
+    <ClInclude Include="jwcolors.h" />
+    <ClInclude Include="jwcomm.h" />
+    <ClInclude Include="jwglobals.h" />
+    <ClInclude Include="jwres.h" />
+    <ClInclude Include="jwutils.h" />
+    <ClInclude Include="jwbentries.h" />
+    <ClInclude Include="$(VersionDir)\jwversion.h" />
+    <ClInclude Include="jwwin.h" />
+    <ClInclude Include="lzf.h" />
+    <ClInclude Include="lzfP.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources.rc" />
+  </ItemGroup>
+  <PropertyGroup>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
+  </PropertyGroup>
+  <!-- Generate jwversion.h -->
+  <ItemDefinitionGroup>
+    <CustomBuildStep>
+      <Command>$(_Python) ..\build\version.py $(JoeWinVersion) "$(VersionDir)\jwversion.h" "$(VersionDir)\jwversion.wxi" "$(JoeWinVersionDesignation)"</Command>
+      <Outputs>$(VersionDir)\DoesntExist.txt</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <Import Project="..\build\JoeWin.targets" />
+</Project>

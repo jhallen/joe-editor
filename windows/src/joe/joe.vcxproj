@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{309343C2-7801-49CA-95E4-C602A5CB75AB}</ProjectGuid>
+    <RootNamespace>joe</RootNamespace>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="..\build\JoeWin.settings.targets" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(JoeExternalSrcDir);$(JoeSrcDir);$(JoeWinCommonSrcDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>JOEWIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader />
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(JoeWinCommonSrcDir)\joewincommon.vcxproj">
+      <Project>{6dadeba9-8b96-4e38-809c-cb3edf6bdbcb}</Project>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(JoeExternalSrcDir)\libco\choose.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\libco\libco.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\b.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\blocks.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\bw.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\charmap.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\cmd.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\config.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\coroutine.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\gettext.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\hash.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\help.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\i18n.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\kbd.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\lattr.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\macro.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\main.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\menu.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\mouse.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\obj.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\path.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\poshist.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\pw.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\queue.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\qw.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\rc.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\regex.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\scrn.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\syntax.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\tab.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\termcapj.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\tty.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\tw.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\types.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\ublock.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\uedit.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\uerror.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\ufile.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\uformat.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\uisrch.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\umath.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\undo.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\usearch.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\ushell.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\utag.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\utf8.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\utils.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\vfile.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\w.h" />
+    <ClInclude Include="$(JoeSrcDir)\autoconf.h" />
+    <ClInclude Include="$(JoeSrcDir)\builtin.h" />
+    <ClInclude Include="$(JoeSrcDir)\bupdates.h" />
+    <ClInclude Include="$(JoeSrcDir)\joedata.h" />
+    <ClInclude Include="$(JoeSrcDir)\jwglue.h" />
+    <ClInclude Include="$(JoeSrcDir)\uwindows.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(JoeExternalSrcDir)\libco\amd64.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\libco\fiber.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\libco\x86.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\b.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\blocks.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\bw.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\charmap.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\cmd.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\coroutine.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\gettext.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\hash.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\help.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\kbd.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\lattr.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\macro.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\main.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\menu.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\mouse.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\obj.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\path.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\poshist.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\pw.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\queue.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\qw.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\rc.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\regex.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\scrn.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\syntax.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\tab.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\termcap.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\tw.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\ublock.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\uedit.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\uerror.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\ufile.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\uformat.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\uisrch.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\umath.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\undo.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\usearch.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\ushell.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\utag.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\utf8.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\utils.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\vfile.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\w.c" />
+    <ClCompile Include="$(JoeSrcDir)\builtin.c" />
+    <ClCompile Include="$(JoeSrcDir)\bupdates.c" />
+    <ClCompile Include="$(JoeSrcDir)\i18n.c" />
+    <ClCompile Include="$(JoeSrcDir)\joedata.c" />
+    <ClCompile Include="$(JoeSrcDir)\env.c" />
+    <ClCompile Include="$(JoeSrcDir)\fs.c" />
+    <ClCompile Include="$(JoeSrcDir)\tty.c" />
+    <ClCompile Include="$(JoeSrcDir)\uwindows.c" />
+  </ItemGroup>
+  <Import Project="..\build\JoeWin.targets" />
+</Project>

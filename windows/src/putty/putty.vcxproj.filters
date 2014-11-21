@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{0abe3ed3-47d3-4cec-a4c0-5bc4e2777e08}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{5d4f0349-196f-4db8-a1bf-f568f3aad54b}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{509726b7-dd75-474a-a7f2-03273b42de24}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="JoeWin Files">
+      <UniqueIdentifier>{24d2b8ad-4d16-45e2-9431-0876d47efa0b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(PuttySrcDir)\joebackend.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\dialog.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\ldisc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\ldiscucs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\minibidi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\misc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\nogss.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\settings.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\terminal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\timing.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\tree234.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\sizetip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winctrls.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\windefs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\window.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winmisc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winprint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\wintime.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winucs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttyExternalSrcDir)\windows\winutils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttySrcDir)\be_joewin_s.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttySrcDir)\userfuncs.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttySrcDir)\config.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttySrcDir)\stubs.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PuttySrcDir)\ui.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(PuttySrcDir)\jwconfig.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\charset\charset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\dialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\int64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\ldisc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\network.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\putty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\puttymem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\puttyps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\windows\rcstuff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\terminal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\tree234.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\windows\win_res.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\windows\winhelp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttyExternalSrcDir)\windows\winstuff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttySrcDir)\jwuserfuncs.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(PuttySrcDir)\jwui.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

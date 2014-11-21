@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include properties.wxi ?>
+  
+  <Fragment>
+    <!-- Default colors, always installed (keep this small) -->
+    <ComponentGroup Id="StandardColorsComponentGroup">
+      <Component Id="candycodeJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="candycodeJoeColor" Name="candycode.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\candycode.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="darkblue2JoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="darkblue2JoeColor" Name="darkblue2.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\darkblue2.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="desertJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="desertJoeColor" Name="desert.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\desert.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="inkpotJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="inkpotJoeColor" Name="inkpot.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\inkpot.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="ir_blackJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="ir_blackJoeColor" Name="ir_black.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\ir_black.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="luciusJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="luciusJoeColor" Name="lucius.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\lucius.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="mayansmokeJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="mayansmokeJoeColor" Name="mayansmoke.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\mayansmoke.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="molokaiJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="molokaiJoeColor" Name="molokai.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\molokai.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="pyteJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="pyteJoeColor" Name="pyte.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\pyte.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="solarizedlightJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="solarizedlightJoeColor" Name="solarized-light.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\solarized-light.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="solarizedJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="solarizedJoeColor" Name="solarized.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\solarized.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="wombatJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="wombatJoeColor" Name="wombat.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\wombat.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="xoria256JoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="xoria256JoeColor" Name="xoria256.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\xoria256.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="zenburnJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="zenburnJoeColor" Name="zenburn.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\zenburn.joecolor" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+    
+    <!-- Extra colors, installed only if user confirms -->
+    <ComponentGroup Id="ExtendedColorsComponentGroup">
+      <Component Id="autumnJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="autumnJoeColor" Name="autumn.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\autumn.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="darkspectrumJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="darkspectrumJoeColor" Name="darkspectrum.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\darkspectrum.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="dawnJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="dawnJoeColor" Name="dawn.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\dawn.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="duskJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="duskJoeColor" Name="dusk.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\dusk.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="eclipseJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="eclipseJoeColor" Name="eclipse.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\eclipse.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="freyaJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="freyaJoeColor" Name="freya.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\freya.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="moriadarkJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="moriadarkJoeColor" Name="moria-dark.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\moria-dark.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="morialightJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="morialightJoeColor" Name="moria-light.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\moria-light.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="mustangJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="mustangJoeColor" Name="mustang.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\mustang.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="oceandeepJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="oceandeepJoeColor" Name="oceandeep.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\oceandeep.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="peakseadarkJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="peakseadarkJoeColor" Name="peaksea-dark.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\peaksea-dark.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="peaksealightJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="peaksealightJoeColor" Name="peaksea-light.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\peaksea-light.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="railscastsJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="railscastsJoeColor" Name="railscasts.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\railscasts.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="rdarkJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="rdarkJoeColor" Name="rdark.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\rdark.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="rootwaterJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="rootwaterJoeColor" Name="rootwater.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\rootwater.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="siennadarkJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="siennadarkJoeColor" Name="sienna-dark.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\sienna-dark.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="siennalightJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="siennalightJoeColor" Name="sienna-light.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\sienna-light.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="slateJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="slateJoeColor" Name="slate.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\slate.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="synicJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="synicJoeColor" Name="synic.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\synic.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="tangoJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="tangoJoeColor" Name="tango.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\tango.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="tango2JoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="tango2JoeColor" Name="tango2.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\tango2.joecolor" KeyPath="yes" />
+      </Component>
+      <Component Id="zenburnhcJoeColorComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+        <File Id="zenburnhcJoeColor" Name="zenburn-hc.joecolor" DiskId="1" Source="$(var.SchemesRootDir)\zenburn-hc.joecolor" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

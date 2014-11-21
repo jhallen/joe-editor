@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include properties.wxi ?>
+
+  <Fragment>
+    <Component Id="JoeRCComponent" Guid="*" Directory="CONFIGFOLDER" Win64="$(var.Win64)">
+      <File Id="JoeRC" Name="joerc" DiskId="1" Source="$(var.ConfRootDir)\joerc" KeyPath="yes" />
+    </Component>
+    <Component Id="JStarRCComponent" Guid="*" Directory="CONFIGFOLDER" Win64="$(var.Win64)">
+      <File Id="JStarRC" Name="jstarrc" DiskId="1" Source="$(var.ConfRootDir)\jstarrc" KeyPath="yes" />
+    </Component>
+    <Component Id="JPicoRCComponent" Guid="*" Directory="CONFIGFOLDER" Win64="$(var.Win64)">
+      <File Id="JPicoRC" Name="jpicorc" DiskId="1" Source="$(var.ConfRootDir)\jpicorc" KeyPath="yes" />
+    </Component>
+    <Component Id="JMacsRCComponent" Guid="*" Directory="CONFIGFOLDER" Win64="$(var.Win64)">
+      <File Id="JMacsRC" Name="jmacsrc" DiskId="1" Source="$(var.ConfRootDir)\jmacsrc" KeyPath="yes" />
+    </Component>
+    <Component Id="FTypeRCComponent" Guid="*" Directory="CONFIGFOLDER" Win64="$(var.Win64)">
+      <File Id="FTypeRC" Name="ftyperc" DiskId="1" Source="$(var.ConfRootDir)\ftyperc" KeyPath="yes" />
+    </Component>
+  </Fragment>
+</Wix>

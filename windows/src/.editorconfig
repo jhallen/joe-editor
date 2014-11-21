@@ -1,0 +1,17 @@
+root = true
+
+[*]
+end_of_line = crlf
+indent_style = tab
+indent_size = 8
+tab_width = 8
+
+[*.wxs]
+end_of_line = crlf
+indent_style = spaces
+indent_size = 2
+
+[*proj]
+end_of_line = crlf
+indent_style = spaces
+indent_size = 2

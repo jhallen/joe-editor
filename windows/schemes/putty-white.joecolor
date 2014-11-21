@@ -1,0 +1,28 @@
+[Scheme]
+Name=PuTTY (white)
+Author=PuTTY team
+
+[Colors]
+defaultfg		=#000000
+bolddefaultfg	=#000000
+defaultbg		=#ffffff
+bolddefaultbg	=#bbbbbb
+cursortext		=#ffffff
+cursorcolor		=#000000
+
+black			=#000000
+boldblack		=#000000 bold
+red				=#bb0000
+boldred			=#ff5555
+green			=#00bb00
+boldgreen		=#55ff55
+yellow			=#bbbb00
+boldyellow		=#ffff55
+blue			=#0000bb
+boldblue		=#5555ff
+magenta			=#bb00bb
+boldmagenta		=#ff55ff
+cyan			=#00bbbb
+boldcyan		=#55ffff
+white			=#bbbbbb
+boldwhite		=#ffffff

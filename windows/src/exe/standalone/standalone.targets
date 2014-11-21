@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <RootNamespace>$(Personality)</RootNamespace>
+    <TargetName>$(Personality)</TargetName>
+    <Keyword>Win32Proj</Keyword>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WriteOutputToRoot>true</WriteOutputToRoot>
+    <IsStandalone>True</IsStandalone>
+  </PropertyGroup>
+  <Import Project="..\..\build\JoeWin.settings.targets" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(JoeWinSrcDir);$(JoeWinCommonSrcDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PERSONALITY="$(Personality)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(FrontendDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>PERSONALITY="$(Personality)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(PuttySrcDir)\..\putty.vcxproj">
+      <Project>{c70343e3-1522-497d-9e37-5a7622dcde9a}</Project>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="$(JoeWinCommonSrcDir)\joewincommon.vcxproj">
+      <Project>{6dadeba9-8b96-4e38-809c-cb3edf6bdbcb}</Project>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="$(JoeSrcDir)\..\joe.vcxproj">
+      <Project>{309343c2-7801-49ca-95e4-c602a5cb75ab}</Project>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="$(JoeWinRoot)\configuration\configuration.vcxproj">
+      <Project>{e6953f83-d839-416e-ae8c-101862808c15}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c" />
+    <None Include="..\joewin.ico" />
+    <ResourceCompile Include="..\joewin.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="$(IntDir)\builtins.rc">
+      <Visible>false</Visible>
+    </ResourceCompile>
+  </ItemGroup>
+  <PropertyGroup>
+    <BuiltinFilesLocation>$(OutputRootDir)\Intermediate\configuration</BuiltinFilesLocation>
+  </PropertyGroup>
+  <Import Project="..\..\build\JoeWin.targets" />
+</Project>

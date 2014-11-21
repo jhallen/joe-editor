@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?include $(var.VersionDir)\jwversion.wxi ?>
+  
+  <?if $(var.Platform) = x64 ?>
+    <?define BitSuffix = " (64 bit)" ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <?define ProductGuid = "$(var.ProductId64)" ?>
+  <?else ?>
+    <?define BitSuffix = "" ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <?define ProductGuid = "$(var.ProductId32)" ?>
+  <?endif ?>
+</Include>

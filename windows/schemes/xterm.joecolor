@@ -1,0 +1,28 @@
+[Scheme]
+Name=xterm (black)
+Author=xterm
+
+[Colors]
+defaultfg		=#e5e5e5
+bolddefaultfg	=#ffffff
+defaultbg		=#000000
+bolddefaultbg	=#777777
+cursortext		=#000000
+cursorcolor		=#e5e5e5
+
+black			=#000000
+boldblack		=#777777
+red				=#cd0000
+boldred			=#ff0000
+green			=#00cd00
+boldgreen		=#00ff00
+yellow			=#cdcd00
+boldyellow		=#ffff00
+blue			=#0000ee
+boldblue		=#5c5cff
+magenta			=#cd00cd
+boldmagenta		=#ff00ff
+cyan			=#00cdcd
+boldcyan		=#00ffff
+white			=#e5e5e5
+boldwhite		=#ffffff
