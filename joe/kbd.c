@@ -272,8 +272,8 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 			kmap->keys[v].k = 1;
 			kmap->keys[v].value.submap = kbuild(cap, kmap->keys[v].value.submap, seq, bind, err, capseq, seql);
 			if (!kmap->keys[v].value.submap) {
-				/* This could have been due to an error during the recursion. */
-				kmap->keys[v].k = 0;
+                        	/* Error during recursion. Prevent crash later. */
+                        	kmap->keys[v].k = 0;
 			}
 		} else {
 			if (kmap->keys[v].k == 1)

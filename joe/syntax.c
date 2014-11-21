@@ -24,7 +24,7 @@ int *attr_buf = 0;
 int attr_size = 0;
 
 int stack_count = 0;
-static int state_count = 0; /* Basis for maximum number of transitions before terminating loop */
+static int state_count = 0; /* Max transitions possible without cycling */
 
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state)
 {
@@ -44,9 +44,10 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	int mark2 = 0;  /* offset to mark end from current pos */
 	int mark_en = 0;/* set if marking */
 	int recolor_delimiter_or_keyword;
-
+	
+	/* Nothing should reference 'h' above here. */
 	if (h_state.state < 0) {
-		/* Indicates an error.  Give up. */
+		/* Indicates a previous error -- highlighting disabled */
 		return h_state;
 	}
 
@@ -55,8 +56,8 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd, *kw_cmd;
+		int iters = -8; /* +8 extra iterations before cycle detect. */
 		int x;
-		int iters = 0;
 
 		/* Hack so we can have UTF-8 characters without crashing */
 		if (c < 0 || c > 255)
@@ -81,12 +82,12 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 		/* Loop while noeat */
 		do {
-			/* Guard against runaway loops */
+			/* Guard against infinite loops from buggy syntaxes */
 			if (iters++ > state_count) {
 				invalidate_state(&h_state);
 				return h_state;
 			}
-
+			
 			/* Color with current state */
 			attr[-1] = h->color;
 

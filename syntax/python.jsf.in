@@ -2,7 +2,6 @@
 
 # TODO:
 #  * octal escape sequences
-#  * highlight function and class names?
 
 =Idle
 =Comment 	green
@@ -11,6 +10,7 @@
 =Constant 	cyan
 =Escape 	bold cyan
 =Keyword 	bold
+=Type		bold blue
 
 :idle Idle
 	*		idle
@@ -96,6 +96,7 @@
 	*		idle	noeat
 	"xX"		hex
 	"."		float
+	"eE"		epart
 	"0-9"		first_number
 
 :hex Constant
@@ -127,11 +128,12 @@
 :ident Idle
 	*		idle		noeat strings
 	"and"		kw
+	"as"		kw
 	"assert"	kw
 	"break"		kw
-	"class"		kw
+	"class"		defkw
 	"continue"	kw
-	"def"		kw
+	"def"		defkw
 	"del"		kw
 	"elif"		kw
 	"else"		kw
@@ -154,9 +156,27 @@
 	"return"	kw
 	"try"		kw
 	"while"		kw
+	"with"		kw
 	"yield"		kw
+	
+	"True"		constkw
+	"False"		constkw
+	"None"		constkw
 done
 	"a-zA-Z0-9_"	ident
 
 :kw Keyword
 	*	idle	noeat
+
+:constkw Keyword	# Technically constants, but might as well be keywords. I think it looks better, too.
+	*		idle noeat recolor=-1
+	"a-zA-Z"	constkw
+
+:defkw Keyword
+	*		idle noeat recolor=-1
+	"a-zA-Z"	defkw	# This is still the keyword.
+	" \t"		defname
+
+:defname Type
+	*		idle nodeat recolor=-1
+	"a-zA-Z0-9_"	defname
