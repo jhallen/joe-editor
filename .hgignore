@@ -1,7 +1,9 @@
 windows/bin
 windows/src/bin
+windows/tools/sync/repos
 \.log$
 \.suo$
 \.sdf$
 \.pyc$
 ~$
+\.opensdf$

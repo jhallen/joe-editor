@@ -18,7 +18,7 @@ Backlog:
 
 X Check stuff into SVN
 X Get rid of unused PuTTY menu items.
-  - About box to be fixed when we upgrade VS's (resources did not upgrade from 2k8)
+  X About box to be fixed when we upgrade VS's (resources did not upgrade from 2k8)
 X Windows environment
   X Create AppData dir when necessary.  Use to save .joe_state
   X Update joe to load joerc from program dir, install dir, and user appdata
@@ -26,15 +26,15 @@ X Windows environment
 * Copy/Paste
   X Implement Windows cut, copy, and paste commands
   X Link paste to ^KC, link cut and copy to ^, and ^.
-  * Implement copy/paste menu items in PuTTY context menu
+  X Implement copy/paste menu items in PuTTY context menu
 * Hook into shell for opening/saving files
   * Interactive file dialog on shift-tab
   X Drag file to window: open
-* Naming convention/coding standard refactor.
-* RC file work (across all personalities)
-  * Default to CRLF ending.
-  * Remove hardcoded variables (use mouse, xterm 256, etc)
-  * Fast status refresh
+X Naming convention/coding standard refactor.
+X RC file work (across all personalities)
+  X Default to CRLF ending.
+  X Remove hardcoded variables (use mouse, xterm 256, etc)
+  X Fast status refresh
   * Create JoePad personality.
   * Control-left/Control-right (can be done through RC files)
   * Also shift-left/shift-right, shift-control-left/shift-control-right, etc..
@@ -82,7 +82,7 @@ X Behave better when user closes app through 'X'
     * Edit joerc file (or whatever current personality is)
     * Open user configuration directory
   * JOEWIN settings:
-    * Change font
+    X Change font
     X Change scheme
     X Change cursor type
 X Reduce executable size
@@ -93,25 +93,25 @@ X Fix input/output channel.  Remove winsock and replace with thread-safe queue.
   X Populate schemes and conf files to output as part of build.
   * Create script to build from command line.
 * Housekeeping tasks
-  * Pick a naming convention for common functions/defines/globals and use it consistently.
-  * Rearrange directory structure to get rid of 'externals' and house syntax/conf/colors
+  X Pick a naming convention for common functions/defines/globals and use it consistently.
+  X Rearrange directory structure to get rid of 'externals' and house syntax/conf/colors
     in a more consistent manner.
-  * Pull as much out of joewin as possible.  Much of it could go into joewincommon.  Don't know
+  X Pull as much out of joewin as possible.  Much of it could go into joewincommon.  Don't know
     if I need to keep the project around as a target for the DLL or not, but see if I can kill it.
   * Snap to a more recent version of PuTTY (it's been about two years).
 * Executable reorganization
-  * Make the main entry point a DLL and create an EXE for each personality.
-  * Change the way resources are baked in: use real Windows resources instead of static strings.
-  * Create standalone versions of each editor personality with some set of baked-in resources.
-    * Separate output directories for these.
+  X Make the main entry point a DLL and create an EXE for each personality.
+  X Change the way resources are baked in: use real Windows resources instead of static strings.
+  X Create standalone versions of each editor personality with some set of baked-in resources.
+    X Separate output directories for these.
   * Create a ZIP file project that collects the main parts to a ZIP
-  * Create a WiX project that generates an MSI (same stuff as ZIP)
+  X Create a WiX project that generates an MSI (same stuff as ZIP)
 
 Joe issues
 * ^KH in search/replace prompt draws screen incorrectly. -- Repro's in JOE/Linux too.
 * What is the boundary for large files?  A 3MB file took a while to load (though it was probably disk access slowing it down).
 * ^[ shows up at top of screen too often (mouse moves, every non-alphanumeric)
 * JOE doesn't recognize UTF-8 preamble
-* Hex editor broken with file that has CRLF newlines, when editor is in CRLF mode (0d is hidden, causes weird jumps/numbering)
+X Hex editor broken with file that has CRLF newlines, when editor is in CRLF mode (0d is hidden, causes weird jumps/numbering)
 * Edit lines past width of screen stop showing text/don't scroll to the right (broken in Linux, too)
 * Editor falls over with large files (tried with a 182M file).  It simply exits with no indication of an error.  Need to test this on Linux as well.  Seems to be a problem in vfiles but I haven't looked deep enough.

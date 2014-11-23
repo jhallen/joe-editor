@@ -21,13 +21,21 @@ def main(version, outfile_h, outfile_wxi, designation):
     while len(vparts) < 4:
         vparts.append('0')
     
-    #svnrev = getsvnrev()
-    svnrev = '999' # TODO: What to do for Mercurial?
+    svnrev = getsvnrev()
     if svnrev:
-    	svnrevstr = "svn rev %s, " % svnrev
+    	revstr = "svn rev %s, " % svnrev
+    	revnum = cleansvnrev(svnrev)
+    	rev = svnrev
     else:
-    	svnrevstr = ""
-    	svnrev = ''
+        hgrev = gethgrev()
+        if hgrev:
+            revid, branch = hgrev
+            revnum = getdatebld()
+            rev = revid
+            revstr = "hg %s rev %s, " % (branch, revid)
+        else:
+            revstr = ""
+            rev = '0'
     
     if officialbuild:
         if vparts[-1] == '0': vparts[-1] = getdatebld()
@@ -37,13 +45,13 @@ def main(version, outfile_h, outfile_wxi, designation):
         desc = version + ' ' + buildname
         shortdesc = desc
     elif nightlybuild:
-        if vparts[-1] == '0': vparts[-1] = cleansvnrev(svnrev)
-        desc = version + ' Nightly build (%s%s)' % (svnrevstr, datetime.datetime.now().strftime('%d %b %Y'))
-        shortdesc = version + '-nightly-%s' % svnrev
+        if vparts[-1] == '0': vparts[-1] = revnum
+        desc = version + ' Nightly build (%s%s)' % (revstr, datetime.datetime.now().strftime('%d %b %Y'))
+        shortdesc = version + '-nightly-%s' % rev
     else:
-        if vparts[-1] == '0': vparts[-1] = cleansvnrev(svnrev)
-        desc = version + ' Developer build (%s%s)' % (svnrevstr, datetime.datetime.now().strftime('%d %b %Y'))
-        shortdesc = version + '-dev-%s' % svnrev
+        if vparts[-1] == '0': vparts[-1] = revnum
+        desc = version + ' Developer build (%s%s)' % (revstr, datetime.datetime.now().strftime('%d %b %Y'))
+        shortdesc = version + '-dev-%s' % rev
     
     year = datetime.datetime.now().year
     
@@ -88,21 +96,35 @@ def writefile(fname, content):
     outf.write(content)
     outf.close()
 
-def getsvnrev():
-    dir = os.path.dirname(sys.argv[0])
-    if dir: os.chdir(dir)
-    os.chdir("..\..")
+def getoutput(toroot, cmd):
+    olddir = os.getcwd()
     try:
-        proc = subprocess.Popen(['svnversion', '-nc'], stdout=subprocess.PIPE)
-    except:
+        dir = os.path.dirname(sys.argv[0])
+        if dir: os.chdir(dir)
+        os.chdir(toroot)
+        try:
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        except:
+            return None
+
+        output, errput = proc.communicate()
+        proc.wait()
+        
+        return output.strip()
+    finally:
+        os.chdir(olddir)
+
+def getsvnrev():
+    revs = getoutput("..\\..", ['svnversion', '-nc'])
+    
+    if revs is None:
         if 'JOEWIN_SVNREV' in os.environ:
             return os.environ['JOEWIN_SVNREV'].strip()
         return None
-
-    output, errput = proc.communicate()
-    proc.wait()
     
-    revs = output.strip()
+    if 'unversioned' in revs.lower():
+        return None
+    
     if ':' in revs:
         revs = revs.split(':')[-1]
     
@@ -111,6 +133,13 @@ def getsvnrev():
 def cleansvnrev(svnrev):
     if svnrev is None: return '0'
     return svnrev.strip('MPS')
+
+def gethgrev():
+    res = getoutput(".", ['hg', 'id', '-nib'])
+    if res is None: return None
+    
+    parent, revnum, branch = res.split(' ')
+    return parent, branch
 
 def getdatebld():
     now = datetime.datetime.now()

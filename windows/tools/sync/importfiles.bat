@@ -8,5 +8,4 @@ set treedir=%~dp0\..\..\src
 
 set xcmd=xcopy /Y /I
 
-FOR /F "tokens=*" %%f IN (%mapdir%\joe.files) DO %xcmd% %repodir%\joe\%%f %treedir%\joe\joe\%%f
 FOR /F "tokens=*" %%f IN (%mapdir%\putty.files) DO %xcmd% %repodir%\putty\%%f %treedir%\putty\putty\%%f
