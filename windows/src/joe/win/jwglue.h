@@ -1,3 +1,22 @@
+/*
+ *  This file is part of Joe's Own Editor for Windows.
+ *  Copyright (c) 2014 John J. Jordan.
+ *
+ *  Joe's Own Editor for Windows is free software: you can redistribute it 
+ *  and/or modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation, either version 2 of the 
+ *  License, or (at your option) any later version.
+ *
+ *  Joe's Own Editor for Windows is distributed in the hope that it will
+ *  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Joe's Own Editor for Windows.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef _JOEWIN_GLUE_H
 #define _JOEWIN_GLUE_H
 
@@ -19,7 +38,10 @@
 #define creat glue_creat
 #define getcwd glue_getcwd
 #define chdir glue_chdir
+
+#ifdef DEBUG		/* Intercept and redirect stderr to debugger console */
 #define fprintf glue_fprintf
+#endif
 
 /* Definitions of those functions */
 

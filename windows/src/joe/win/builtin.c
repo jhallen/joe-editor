@@ -1,10 +1,22 @@
 /*
- *	Built-in config files
- *	Copyright
- *		(C) 2006 Joseph H. Allen
+ *  This file is part of Joe's Own Editor for Windows.
+ *  Copyright (c) 2014 John J. Jordan.
  *
- *	This file is part of JOE (Joe's Own Editor)
+ *  Joe's Own Editor for Windows is free software: you can redistribute it 
+ *  and/or modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation, either version 2 of the 
+ *  License, or (at your option) any later version.
+ *
+ *  Joe's Own Editor for Windows is distributed in the hope that it will
+ *  be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Joe's Own Editor for Windows.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  */
+
 #include "types.h"
 #include <assert.h>
 
@@ -33,7 +45,8 @@ unsigned char *jfgets(unsigned char **buf, JFILE *f)
 			int i;
 
 			for (i = 0; i < f->sz && f->p[i] != '\n' && f->p[i] != '\r'; i++) b = vsadd(b, f->p[i]);
-			while (i < f->sz && (f->p[i] == '\r' || f->p[i] == '\n')) i++;
+			if (i < f->sz && f->p[i] == '\r') i++;
+			if (i < f->sz && f->p[i] == '\n') i++;
 
 			f->p += i;
 			f->sz -= i;
