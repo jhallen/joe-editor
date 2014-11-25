@@ -338,9 +338,13 @@ int handlejwcontrol(struct CommMessage *m)
 	}
 	else if (m->msg == COMM_EXEC)
 	{
-		CMD *c = findcmd(USTR m->buffer->buffer);
-		if (c) {
-			execmd(c, 0);
+		char *data = m->buffer ? m->buffer->buffer : (char*)m->ptr;
+
+		if (data) {
+			int sta;
+			MACRO *m = mparse(NULL, USTR data, &sta);
+			co_call(exemac, m);
+			rmmacro(m);
 			edupd(1);
 		}
 	}

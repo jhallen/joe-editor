@@ -2708,11 +2708,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 	    break;
 
 	case IDM_PASTE:
-	    jwSendComm0s(JW_SIDE_UI, COMM_EXEC, "winpaste");
+	    jwSendComm0p(JW_SIDE_UI, COMM_EXEC, "winpaste");
 	    break;
 
 	case IDM_COPY:
-	    jwSendComm0s(JW_SIDE_UI, COMM_EXEC, "wincopy");
+	    jwSendComm0p(JW_SIDE_UI, COMM_EXEC, "wincopy");
 	    break;
 
 #endif
