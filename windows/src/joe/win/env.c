@@ -32,6 +32,7 @@ char* glue_getenv(const char* env)
 				if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, &lang[len], LOCALE_NAME_MAX_LENGTH - len))
 				{
 					success = 1;
+					strcat(lang, ".UTF-8");
 				}
 			}
 

@@ -6,6 +6,7 @@
 */
 
 #include <wchar.h>
+#include "types.h"
 
 int joe_iswupper(void *foo, int c)
 {
@@ -126,15 +127,7 @@ int joe_wcwidth(int wide, int ucs)
 	int wcwidth(int);
 	int control;
 
-	/* First check in original source was:
-		// If terminal is not UTF-8 or file is not UTF-8: width is 1
-	        // FIXME
-		if (!locale_map->type || !wide)
-			return 1;
-	   But locale_map->type should be true, because we should *always* be in UTF-8 mode.
-	*/
-
-	if (!wide)
+	if (!locale_map->type || !wide)
 	{
 		return 1;
 	}

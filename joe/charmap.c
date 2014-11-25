@@ -974,12 +974,10 @@ struct windows_code_page
 
 /* See http://msdn.microsoft.com/en-us/library/dd317756(VS.85).aspx */
 static struct windows_code_page wincp[] = {
-    { 0, 37,    USTR "ibm037",         { USTR "ebcdic-us", NULL } },
     { 0, 437,   USTR "ibm437",         { USTR "dos-us", NULL } },
-    { 0, 500,   USTR "ibm500",         { USTR "ebcdic-intl", NULL } },
     { 0, 874,   USTR "windows-874",    { USTR "thai", USTR "tis-620", NULL } },
     { 0, 1250,  USTR "windows-1250",   { NULL } },
-    { 0, 1251,  USTR "windows-1251",   { USTR "windows-cyrillic", USTR "cp1251", NULL } }, /* cp# alias is here because it exists in standard JOE */
+    { 0, 1251,  USTR "windows-1251",   { USTR "windows-cyrillic", USTR "cp1251", NULL } },
     { 0, 1252,  USTR "windows-1252",   { USTR "windows-latin1", NULL } },
     { 0, 1253,  USTR "windows-1253",   { USTR "windows-greek", NULL } },
     { 0, 1254,  USTR "windows-1254",   { USTR "windows-turkish", NULL } },
@@ -987,7 +985,6 @@ static struct windows_code_page wincp[] = {
     { 0, 1256,  USTR "windows-1256",   { USTR "windows-arabic", USTR "cp1256", NULL } },
     { 0, 1257,  USTR "windows-1257",   { USTR "windows-baltic", NULL } },
     { 0, 1258,  USTR "windows-1258",   { USTR "windows-vietnamese", NULL } },
-    { 0, 10000, USTR "macintosh",      { NULL } },
     { 0, 20127, USTR "ascii",          { USTR "c", USTR "posix", NULL } },
     { 0, 20866, USTR "koi8-r",         { NULL } },
     { 0, 21866, USTR "koi8-u",         { NULL } },
@@ -1040,7 +1037,6 @@ static void init_wincp()
 	
 	alias_table = (struct alias_table_s*)malloc(sizeof(struct alias_table_s) * (alias_total + 1));
 	
-	n = 0;
 	for (n = 0, i = 0; wincp[i].codepage != -1; i++)
 	{
 		if (wincp[i].present)
@@ -1112,7 +1108,7 @@ static struct builtin_charmap *load_wincp(unsigned char *cpname)
 		}
 	}
 
-    fix_wincp(cp, result);
+	fix_wincp(cp, result);
 	
 	return result;
 }
