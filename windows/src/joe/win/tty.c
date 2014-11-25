@@ -338,13 +338,31 @@ int handlejwcontrol(struct CommMessage *m)
 	}
 	else if (m->msg == COMM_EXEC)
 	{
-		char *data = m->buffer ? m->buffer->buffer : (char*)m->ptr;
+		/* Called with either a buffer attached or a pointer to a const string */
+
+		char *data;
+		char buf[256];
+		char *dealloc = NULL;
+
+		/* mparse writes back to buffer, make sure it is in writeable memory! */
+		if (m->buffer) {
+			data = m->buffer->buffer;
+		} else if (m->ptr) {
+			if (strlen((char*)m->ptr) > sizeof(buf)) {
+				data = strdup((char*)m->ptr);
+				dealloc = data;
+			} else {
+				strcpy(buf, (char*)m->ptr);
+				data = buf;
+			}
+		}
 
 		if (data) {
 			int sta;
 			MACRO *m = mparse(NULL, USTR data, &sta);
 			co_call(exemac, m);
 			rmmacro(m);
+			if (dealloc) free(dealloc);
 			edupd(1);
 		}
 	}
