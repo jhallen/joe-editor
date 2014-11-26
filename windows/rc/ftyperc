@@ -703,10 +703,26 @@
 *proj
 -autoindent
 -syntax xml
+-indentc 32
+-istep 2
 
 *proj.filters
 -autoindent
 -syntax xml
+-indentc 32
+-istep 2
+
+*.targets
+-autoindent
+-syntax xml
+-indentc 32
+-istep 2
+
+*.props
+-autoindent
+-syntax xml
+-indentc 32
+-istep 2
 
  VSCT
 *.vsct

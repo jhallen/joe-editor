@@ -671,14 +671,14 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
           
           if (!(flags & _left) && fill)
             /* Fill for right justified */
-            vary = vsfill(vary, obj_len(vary), ' ', fill);
+            vary = vsfill(vary, obj_len(vary), (flags & _zero ? '0': ' '), fill);
 
           /* Print field */
           vary = vscat(vary, s, actual);
 
           if ((flags & _left) && fill)
             /* Fill for left justified */
-            vary = vsfill(vary, obj_len(vary), ' ', fill);
+            vary = vsfill(vary, obj_len(vary), (flags & _zero ? '0': ' '), fill);
 
           break;
           }

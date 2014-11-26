@@ -261,7 +261,11 @@ int ttgetc(void)
 		}
 		else
 		{
-			handlejwcontrol(m);
+			if (handlejwcontrol(m))
+			{
+				return -1;
+			}
+
 			jwReleaseComm(JW_SIDE_EDITOR, m);
 			goto loop;
 		}
@@ -388,7 +392,7 @@ int handlejwcontrol(struct CommMessage *m)
 		jwReleaseComm(JW_SIDE_EDITOR, m);
 
 		/* ...exit the thread */
-		jwexit(0);
+		return 1;
 	}
 
 	send_buffer_changes();

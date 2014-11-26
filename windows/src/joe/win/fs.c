@@ -94,9 +94,15 @@ struct dirent *readdir(void* handle)
 	return de;
 }
 
-int __cdecl glue_open(const char *filename, int oflag)
+int __cdecl glue_open(const char *filename, int oflag, ...)
 {
 	wchar_t wfilename[MAX_PATH + 1];
+	int pmode;
+	va_list ap;
+
+	va_start(ap, oflag);
+	pmode = va_arg(ap, int);
+	va_end(ap);
 
 	if (utf8towcs(wfilename, filename, MAX_PATH))
 	{
@@ -104,10 +110,10 @@ int __cdecl glue_open(const char *filename, int oflag)
 		return -1;
 	}
 
-	return _wopen(wfilename, oflag);
+	return _wopen(wfilename, oflag, pmode);
 }
 
-int glue_stat(const char *filename, struct _stat *buffer)
+int glue_stat(const char *filename, struct stat *buffer)
 {
 	wchar_t wfilename[MAX_PATH + 1];
 
@@ -117,7 +123,7 @@ int glue_stat(const char *filename, struct _stat *buffer)
 		return -1;
 	}
 
-	return _wstat(wfilename, buffer);
+	return jwstatfunc(wfilename, buffer);
 }
 
 FILE *glue_fopen(const char *filename, const char *mode)
@@ -175,6 +181,19 @@ int glue_chdir(const char *path)
 	}
 
 	return _wchdir(wpath);
+}
+
+int glue_unlink(const char *path)
+{
+	wchar_t wpath[MAX_PATH + 1];
+
+	if (utf8towcs(wpath, path, MAX_PATH))
+	{
+		assert(FALSE);
+		return -1;
+	}
+
+	return _wunlink(wpath);
 }
 
 int glue_fprintf(FILE *fp, const char *fmt, ...)

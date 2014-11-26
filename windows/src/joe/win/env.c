@@ -24,10 +24,12 @@
 
 #include "jwglue.h"
 #include "jwglobals.h"
+#include "jwutils.h"
 
 char* glue_getenv(const char* env)
 {
 	static char lang[LOCALE_NAME_MAX_LENGTH] = "";
+	static char temp[PATH_MAX] = "";
 
 	if (!strcmp(env, "HOME"))
 	{
@@ -64,6 +66,23 @@ char* glue_getenv(const char* env)
 		}
 
 		return lang;
+	}
+	else if (!strcmp(env, "TEMP"))
+	{
+		if (!*temp)
+		{
+			wchar_t wtemp[MAX_PATH];
+			int sz;
+
+			sz = GetTempPathW(MAX_PATH, wtemp);
+			if (wcstoutf8(temp, wtemp, PATH_MAX))
+			{
+				assert(0);
+				return NULL;
+			}
+		}
+
+		return temp;
 	}
 
 	return NULL;

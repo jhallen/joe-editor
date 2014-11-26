@@ -26,67 +26,67 @@
 #include <wchar.h>
 #include "types.h"
 
-int joe_iswupper(void *foo, int c)
+int joe_iswupper(struct charmap *foo, int c)
 {
-	return iswupper(c);
+	return iswupper((wint_t)c);
 }
 
-int joe_iswlower(void *foo, int c)
+int joe_iswlower(struct charmap *foo, int c)
 {
-	return iswlower(c);
+	return iswlower((wint_t)c);
 }
 
-int joe_iswalpha(void *foo, int c)
+int joe_iswalpha(struct charmap *foo, int c)
 {
-	return iswalpha(c);
+	return iswalpha((wint_t)c);
 }
 
-int joe_iswalpha_(void *foo, int c)
+int joe_iswalpha_(struct charmap *foo, int c)
 {
-	return (c == 0x5F) || iswalpha(c);
+	return (c == 0x5F) || iswalpha((wint_t)c);
 }
 
-int joe_iswalnum_(void *foo, int c)
+int joe_iswalnum_(struct charmap *foo, int c)
 {
-	return (c == 0x5F) || iswalnum(c);
+	return (c == 0x5F) || iswalnum((wint_t)c);
 }
 
-int joe_iswdigit(void *foo, int c)
+int joe_iswdigit(struct charmap *foo, int c)
 {
-	return iswdigit(c);
+	return iswdigit((wint_t)c);
 }
 
-int joe_iswspace(void *foo, int c)
+int joe_iswspace(struct charmap *foo, int c)
 {
-	return iswspace(c);
+	return iswspace((wint_t)c);
 }
 
-int joe_iswctrl(void *foo, int c)
+int joe_iswctrl(struct charmap *foo, int c)
 {
-	return iswcntrl(c);
+	return iswcntrl((wint_t)c);
 }
 
-int joe_iswpunct(void *foo, int c)
+int joe_iswpunct(struct charmap *foo, int c)
 {
-	return iswpunct(c);
+	return iswpunct((wint_t)c);
 }
 
-int joe_iswgraph(void *foo, int c)
+int joe_iswgraph(struct charmap *foo, int c)
 {
-	return iswgraph(c);
+	return iswgraph((wint_t)c);
 }
 
-int joe_iswprint(void *foo, int c)
+int joe_iswprint(struct charmap *foo, int c)
 {
-	return iswprint(c);
+	return iswprint((wint_t)c);
 }
 
-int joe_iswxdigit(void *foo, int c)
+int joe_iswxdigit(struct charmap *foo, int c)
 {
-	return iswxdigit(c);
+	return iswxdigit((wint_t)c);
 }
 
-int joe_iswblank(void *foo, int c)
+int joe_iswblank(struct charmap *foo, int c)
 {
 	// Don't know what this maps to in Windows, so just use the
 	// intervals from i18n.c
@@ -96,14 +96,14 @@ int joe_iswblank(void *foo, int c)
 		  : (c == 0x0009 || c == 0x0020 || c == 0x1680);
 }
 
-int joe_towupper(void *foo, int c)
+int joe_towupper(struct charmap *foo, int c)
 {
-	return towupper(c);
+	return towupper((wint_t)c);
 }
 
-int joe_towlower(void *foo, int c)
+int joe_towlower(struct charmap *foo, int c)
 {
-	return towlower(c);
+	return towlower((wint_t)c);
 }
 
 int unictrl(int ucs)

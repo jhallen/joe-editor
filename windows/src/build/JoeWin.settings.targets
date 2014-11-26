@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <!-- Default configuration if not supplied (commandline build) -->
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">Win32</Platform>
     
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <!-- Pick latest present VS version if not supplied -->
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\13.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">-13.0-</VisualStudioVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\12.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">-12.0-</VisualStudioVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\11.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">-11.0-</VisualStudioVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+
+    <!-- Pick toolset to use based on VS version (to enable XP targetting) -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '13.0'">v130_xp</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '12.0'">v120_xp</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '11.0'">v110_xp</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v$([System.String]::Copy('$(VisualStudioVersion)').Replace('.', ''))</PlatformToolset>
   </PropertyGroup>
 
   <PropertyGroup>

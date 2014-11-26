@@ -266,6 +266,8 @@ void vclose(VFILE *vfile)
 		vunlock(vfile->vpage);
 	if (vfile->vpage1)
 		vunlock(vfile->vpage1);
+	if (vfile->fd)
+		close(vfile->fd);
 	if (vfile->name) {
 		if (vfile->flags)
 			unlink((char *)vfile->name);
@@ -273,8 +275,6 @@ void vclose(VFILE *vfile)
 			vflshf(vfile);
 		obj_free(vfile->name);
 	}
-	if (vfile->fd)
-		close(vfile->fd);
 	joe_free(deque_f(VFILE, link, vfile));
 	for (x = 0; x != HTSIZE; x++)
 		for (pp = (VPAGE *) (htab + x), vp = pp->next; vp;)
