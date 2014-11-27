@@ -42,7 +42,7 @@ unsigned char *jfgets(unsigned char **buf, JFILE *f)
 		unsigned char *b = *buf;
 		b = vstrunc(b, 0);
 		if (f->sz && *f->p) {
-			int i;
+			unsigned int i;
 
 			for (i = 0; i < f->sz && f->p[i] != '\n' && f->p[i] != '\r'; i++) b = vsadd(b, f->p[i]);
 			if (i < f->sz && f->p[i] == '\r') i++;

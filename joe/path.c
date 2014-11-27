@@ -234,11 +234,7 @@ unsigned char *mktmp(unsigned char *where)
 		close(fd);
 		goto loop;	/* FIXME: possible endless loop --> DoS attack */
 	}
-#ifndef JOEWIN
 	if ((fd = open(name, O_RDWR | O_CREAT | O_EXCL, 0600)) == -1)
-#else
-	if ((fd = open(name, O_RDWR | O_CREAT | O_EXCL, S_IWRITE | S_IREAD)) == -1)
-#endif
 		return NULL;	/* FIXME: see above */
 	else
 		close(fd);

@@ -88,43 +88,43 @@ void jwLoadConfig(Config *cfg)
 		DWORD val;
 
 		sz = MAX_PATH;
-		if (ERROR_SUCCESS != RegQueryValueExW(hkey, L"ColorScheme", NULL, &type, cscheme, &sz) && type == REG_SZ)
+		if (ERROR_SUCCESS != RegQueryValueExW(hkey, L"ColorScheme", NULL, &type, (LPBYTE)cscheme, &sz) && type == REG_SZ)
 		{
 			wcscpy(cscheme, L"");
 		}
 
 		sz = sizeof(DWORD);
-		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Rows", NULL, &type, &val, &sz) && type == REG_DWORD)
+		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Rows", NULL, &type, (LPBYTE)&val, &sz) && type == REG_DWORD)
 		{
 			cfg->height = val;
 		}
 
 		sz = sizeof(DWORD);
-		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Columns", NULL, &type, &val, &sz) && type == REG_DWORD)
+		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Columns", NULL, &type, (LPBYTE)&val, &sz) && type == REG_DWORD)
 		{
 			cfg->width = val;
 		}
 
 		sz = sizeof(DWORD);
-		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"FontSize", NULL, &type, &val, &sz) && type == REG_DWORD)
+		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"FontSize", NULL, &type, (LPBYTE)&val, &sz) && type == REG_DWORD)
 		{
 			cfg->font.height = val;
 		}
 
 		sz = sizeof(DWORD);
-		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"FontBold", NULL, &type, &val, &sz) && type == REG_DWORD)
+		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"FontBold", NULL, &type, (LPBYTE)&val, &sz) && type == REG_DWORD)
 		{
 			cfg->font.isbold = val;
 		}
 
 		sz = sizeof(DWORD);
-		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Cursor", NULL, &type, &val, &sz) && type == REG_DWORD)
+		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Cursor", NULL, &type, (LPBYTE)&val, &sz) && type == REG_DWORD)
 		{
 			cfg->cursor_type = val;
 		}
 
 		sz = 64;
-		RegQueryValueExA(hkey, "FontName", NULL, &type, cfg->font.name, &sz);
+		RegQueryValueExA(hkey, "FontName", NULL, &type, (LPBYTE)cfg->font.name, &sz);
 
 		RegCloseKey(hkey);
 	}
@@ -145,18 +145,18 @@ void jwSaveSettings(Config *cfg)
 
 	if (ERROR_SUCCESS == RegCreateKeyExW(HKEY_CURRENT_USER, getkeyname(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkey, NULL))
 	{
-		RegSetValueExW(hkey, L"ColorScheme", 0, REG_SZ, cfg->currentcolors->file, sizeof(wchar_t) * (wcslen(cfg->currentcolors->file) + 1));
+		RegSetValueExW(hkey, L"ColorScheme", 0, REG_SZ, (LPBYTE)cfg->currentcolors->file, sizeof(wchar_t) * (wcslen(cfg->currentcolors->file) + 1));
 		
 		tmp = cfg->font.height;
-		RegSetValueExW(hkey, L"FontSize", 0, REG_DWORD, &tmp, sizeof(DWORD));
+		RegSetValueExW(hkey, L"FontSize", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
 		tmp = cfg->font.isbold;
-		RegSetValueExW(hkey, L"FontBold", 0, REG_DWORD, &tmp, sizeof(DWORD));
+		RegSetValueExW(hkey, L"FontBold", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
-		RegSetValueExA(hkey, "FontName", 0, REG_SZ, cfg->font.name, sizeof(char) * (strlen(cfg->font.name) + 1));
+		RegSetValueExA(hkey, "FontName", 0, REG_SZ, (LPBYTE)cfg->font.name, sizeof(char) * (strlen(cfg->font.name) + 1));
 		
 		tmp = cfg->cursor_type;
-		RegSetValueExW(hkey, L"Cursor", 0, REG_DWORD, &tmp, sizeof(DWORD));
+		RegSetValueExW(hkey, L"Cursor", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
 		RegCloseKey(hkey);
 	}
@@ -246,14 +246,14 @@ int jwLoadWindowLoc(POINT *point)
 		DWORD val;
 
 		sz = sizeof(DWORD);
-		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"X", NULL, &type, &val, &sz) && type == REG_DWORD)
+		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"X", NULL, &type, (LPBYTE)&val, &sz) && type == REG_DWORD)
 		{
 			point->x = val;
 			got++;
 		}
 
 		sz = sizeof(DWORD);
-		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Y", NULL, &type, &val, &sz) && type == REG_DWORD)
+		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Y", NULL, &type, (LPBYTE)&val, &sz) && type == REG_DWORD)
 		{
 			point->y = val;
 			got++;
@@ -294,10 +294,10 @@ void jwSaveWindowLoc(POINT point)
 		DWORD tmp;
 
 		tmp = point.x;
-		RegSetValueExW(hkey, L"X", 0, REG_DWORD, &tmp, sizeof(DWORD));
+		RegSetValueExW(hkey, L"X", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
 		tmp = point.y;
-		RegSetValueExW(hkey, L"Y", 0, REG_DWORD, &tmp, sizeof(DWORD));
+		RegSetValueExW(hkey, L"Y", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
 		RegCloseKey(hkey);
 	}
@@ -312,10 +312,10 @@ void jwSaveWindowSize(int rows, int cols)
 		DWORD tmp;
 
 		tmp = rows;
-		RegSetValueExW(hkey, L"Rows", 0, REG_DWORD, &tmp, sizeof(DWORD));
+		RegSetValueExW(hkey, L"Rows", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
 		tmp = cols;
-		RegSetValueExW(hkey, L"Columns", 0, REG_DWORD, &tmp, sizeof(DWORD));
+		RegSetValueExW(hkey, L"Columns", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
 		RegCloseKey(hkey);
 	}

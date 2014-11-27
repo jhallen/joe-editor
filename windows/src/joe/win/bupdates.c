@@ -210,7 +210,6 @@ static B *get_selected()
 
 static int make_update(B *buffer, struct buffer_update *bu, int include_name)
 {
-	W *w;
 	struct buffer_entry *be; /* The one we'll send */
 	struct buffer_entry *loc; /* Our local copy */
 	int namechanged = 0;

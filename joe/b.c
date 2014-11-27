@@ -3003,7 +3003,6 @@ RETSIGTYPE ttsig(int sig)
 	time_t tim = time(NULL);
 	B *b;
 	int tmpfd;
-	struct stat sbuf;
 
 #ifdef JOEWIN
     /* Allow us to inspect */
@@ -3014,20 +3013,14 @@ RETSIGTYPE ttsig(int sig)
 	if (ttsig_f)
 		_exit(1);
 
-#ifdef JOEWIN
-	/* 'open' gets redefined, but only accepts two arguments -- use the normal system version */
-	if ((tmpfd = _open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
-        /* The lstat call is to make sure DEADJOE isn't linked to anything
-           (this was to cover a security hole).  We don't have an equivalent
-           so continue */
-        if ((tmpfd = _open("DEADJOE", O_RDWR | O_APPEND)) < 0)
-            _exit(1);
-#else
 	if ((tmpfd = open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
+#ifndef JOEWIN
+		struct stat sbuf;
 		if (lstat("DEADJOE", &sbuf) < 0)
 			_exit(1);
 		if (!S_ISREG(sbuf.st_mode) || sbuf.st_uid != geteuid())
 			_exit(1);
+#endif
 		/*
 		   A race condition still exists between the lstat() and the open()
 		   systemcall, which leads to a possible denial-of-service attack
@@ -3037,6 +3030,7 @@ RETSIGTYPE ttsig(int sig)
 		 */
 		if ((tmpfd = open("DEADJOE", O_RDWR | O_APPEND)) < 0)
 			_exit(1);
+#ifndef JOEWIN
 		if (fchmod(tmpfd, S_IRUSR | S_IWUSR) < 0)
 			_exit(1);
 #endif
