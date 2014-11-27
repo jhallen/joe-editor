@@ -266,9 +266,14 @@ void vclose(VFILE *vfile)
 	if (vfile->vpage1)
 		vunlock(vfile->vpage1);
 	if (vfile->name) {
-		if (vfile->flags)
+		if (vfile->flags) {
+		        if (vfile->fd) {
+		                /* Unlink fails if file is open on some systems. */
+		                close(vfile->fd);
+		                vfile->fd = 0;
+		        }
 			unlink((char *)vfile->name);
-		else
+		} else
 			vflshf(vfile);
 		vsrm(vfile->name);
 	}
