@@ -178,5 +178,5 @@ done
 	" \t"		defname
 
 :defname Type
-	*		idle nodeat recolor=-1
+	*		idle noeat recolor=-1
 	"a-zA-Z0-9_"	defname
