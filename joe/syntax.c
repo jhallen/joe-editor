@@ -461,7 +461,7 @@ struct high_syntax *load_syntax_subr(unsigned char *name,unsigned char *subr,str
 
 /* Parse options */
 
-void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
+int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
 {
 	unsigned char buf[1024];
 	unsigned char bf[256];
@@ -533,7 +533,7 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 									cmd->keywords = htmk(64);
 								htadd(cmd->keywords,zdup(bf),kw_cmd);
 							}
-							parse_options(syntax,kw_cmd,f,p,1,name,line);
+							line = parse_options(syntax,kw_cmd,f,p,1,name,line);
 						} else
 							i_printf_2((char *)joe_gettext(_("%s %d: Missing state name\n")),name,line);
 					} else
@@ -550,6 +550,7 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 			cmd->recolor_mark = 1;
 		} else
 			i_printf_2((char *)joe_gettext(_("%s %d: Unknown option\n")),name,line);
+	return line;
 }
 
 struct ifstack {
@@ -730,7 +731,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 					if(!parse_ident(&p,bf,sizeof(bf))) {
 						int z;
 						cmd->new_state = find_state(syntax,bf);
-						parse_options(syntax,cmd,f,p,0,name,line);
+						line = parse_options(syntax,cmd,f,p,0,name,line);
 
 						/* Install command */
 						if (delim)
