@@ -177,15 +177,14 @@ const wchar_t *jwnextbuiltin(const wchar_t* prev, const wchar_t* suffix)
 	}
 
 	for (; *next; next += wcslen(next) + 1) {
-		int nlen;
-
-		if (!*next) return NULL;
-		if (!suffix) return next;
-
-		nlen = wcslen(next);
-
-		if (slen <= nlen && !wcsicmp(suffix, &next[nlen - slen])) {
+		if (!suffix) {
 			return next;
+		} else {
+			int nlen = wcslen(next);
+
+			if (slen <= nlen && !wcsicmp(suffix, &next[nlen - slen])) {
+				return next;
+			}
 		}
 	}
 

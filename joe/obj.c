@@ -335,6 +335,7 @@ unsigned char *vsgets(unsigned char **sp, FILE *f)
 		s_size = obj_size(s);
 		for (; i != s_size && ((c = getc(f), (c != -1 && c != '\n' && c != '\r'))); ++i)
 			s[i] = c;
+		if (c == '\r') getc(f);
 		if (i == s_size) {
 			s = vsensure(s, s_size * 2);
 		} else

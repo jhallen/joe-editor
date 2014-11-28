@@ -1,0 +1,11 @@
+To build Joe for Windows, you need to have installed:
+    - Visual Studio 2010 or later
+    - Python 2.x - native Windows version, not Cygwin
+    - WiX Toolset 3.8 or later (only required to build MSI installer)
+
+I would recommend installing VS Community 2013 and the latest revision of
+Python 2.7.  The older VS Express C++ edition may work, but I haven't tested
+it.  If you have Visual Studio 2012, you must have at least Update 1
+installed because it includes the necessary components to target Windows XP. 
+If you do not want the MSI, simply unload the "installer" project (in the
+dist folder).  The MSI will only be built in the "Release" configuration.
