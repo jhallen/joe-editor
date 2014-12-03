@@ -28,6 +28,10 @@
       <UniqueIdentifier>{edc9595d-d0ce-458a-826d-7e8b2da3c9d9}</UniqueIdentifier>
       <Extensions>txt</Extensions>
     </Filter>
+    <Filter Include="Translations">
+      <UniqueIdentifier>{f91b405b-d99a-43cc-a20c-64e761c54b62}</UniqueIdentifier>
+      <Extensions>po</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <DocFile Include="$(JoeDocsDir)\license.txt">
@@ -273,6 +277,9 @@
     <ConfigFile Include="$(JoeConfDir)\jstarrc">
       <Filter>Conf files</Filter>
     </ConfigFile>
+    <ConfigFile Include="$(JoeConfDir)\jicerc">
+      <Filter>Conf files</Filter>
+    </ConfigFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\4gl.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
@@ -420,5 +427,17 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\xml.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
+    <LanguageFile Include="$(JoeLangDir)\de.po">
+      <Filter>Translations</Filter>
+    </LanguageFile>
+    <LanguageFile Include="$(JoeLangDir)\fr.po">
+      <Filter>Translations</Filter>
+    </LanguageFile>
+    <LanguageFile Include="$(JoeLangDir)\ru.po">
+      <Filter>Translations</Filter>
+    </LanguageFile>
+    <LanguageFile Include="$(JoeLangDir)\uk.po">
+      <Filter>Translations</Filter>
+    </LanguageFile>
   </ItemGroup>
 </Project>

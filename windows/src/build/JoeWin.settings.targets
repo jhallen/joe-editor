@@ -34,6 +34,7 @@
 	<SchemeGenDir>$(SchemesDir)\generated</SchemeGenDir>
 	<VimSchemeDir>$(SchemesDir)\generated\vimschemes</VimSchemeDir>
 	<JoeDocsDir>$(JoeWinRoot)\..\docs</JoeDocsDir>
+	<JoeLangDir>$(JoeRoot)\po</JoeLangDir>
   </PropertyGroup>
   
   <PropertyGroup>

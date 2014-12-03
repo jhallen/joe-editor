@@ -35,6 +35,7 @@
     <ConfigFile Include="$(JoeConfDir)\joerc" />
     <ConfigFile Include="$(JoeConfDir)\jpicorc" />
     <ConfigFile Include="$(JoeConfDir)\jstarrc" />
+    <ConfigFile Include="$(JoeConfDir)\jicerc" />
     <SyntaxFile Include="$(JoeSyntaxDir)\4gl.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\ada.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\asm.jsf.in" />
@@ -100,7 +101,6 @@
     <ColorGenFile Include="$(VimSchemeDir)\freya.vim" />
     <ColorGenFile Include="$(VimSchemeDir)\inkpot.vim" />
     <ColorGenFile Include="$(VimSchemeDir)\ir_black.vim" />
-    <!--ColorGenFile Include="$(VimSchemeDir)\jellybeans.vim" /-->
     <ColorGenFile Include="$(VimSchemeDir)\lucius.vim" />
     <ColorGenFile Include="$(VimSchemeDir)\mayansmoke.vim" />
     <ColorGenFile Include="$(VimSchemeDir)\molokai.vim" />
@@ -120,8 +120,6 @@
     <ColorGenFile Include="$(VimSchemeDir)\synic.vim" />
     <ColorGenFile Include="$(VimSchemeDir)\tango.vim" />
     <ColorGenFile Include="$(VimSchemeDir)\tango2.vim" />
-    <!--ColorGenFile Include="$(VimSchemeDir)\twilight.vim" /-->
-    <!--ColorGenFile Include="$(VimSchemeDir)\vividchalk.vim" /-->
     <ColorGenFile Include="$(VimSchemeDir)\wombat.vim" />
     <ColorGenFile Include="$(VimSchemeDir)\xoria256.vim" />
     <ColorGenFile Include="$(VimSchemeDir)\zenburn-hc.vim" />
@@ -162,11 +160,15 @@
     <ColorOverrideFile Include="$(VimSchemeDir)\xoria256.override" />
     <ColorOverrideFile Include="$(VimSchemeDir)\zenburn-hc.override" />
     <ColorOverrideFile Include="$(VimSchemeDir)\zenburn.override" />
+    <LanguageFile Include="$(JoeLangDir)\de.po" />
+    <LanguageFile Include="$(JoeLangDir)\fr.po" />
+    <LanguageFile Include="$(JoeLangDir)\ru.po" />
+    <LanguageFile Include="$(JoeLangDir)\uk.po" />
   </ItemGroup>
   <Import Project="..\build\JoeWin.targets" />
   <!-- Targets -->
-  <Target Name="Build" DependsOnTargets="CopyConfigFiles; CopySyntaxFiles; CopyColorGenFiles; CopyColorFiles; CopyDocFiles" BeforeTargets="BeforeBuild" AfterTargets="AfterBuild" />
-  <Target Name="Clean" DependsOnTargets="CleanConfigFiles; CleanSyntaxFiles; CleanColorFiles; CleanDocFiles" BeforeTargets="BeforeClean" AfterTargets="AfterClean" />
+  <Target Name="Build" DependsOnTargets="CopyConfigFiles; CopySyntaxFiles; CopyColorGenFiles; CopyColorFiles; CopyDocFiles; CopyLanguageFiles" BeforeTargets="BeforeBuild" AfterTargets="AfterBuild" />
+  <Target Name="Clean" DependsOnTargets="CleanConfigFiles; CleanSyntaxFiles; CleanColorFiles; CleanDocFiles; CleanLanguageFiles" BeforeTargets="BeforeClean" AfterTargets="AfterClean" />
   <Target Name="Rebuild" DependsOnTargets="BeforeRebuild; Clean; Build" AfterTargets="AfterRebuild" />
   <!-- Config File Targets -->
   <Target Name="CopyConfigFiles" Inputs="@(ConfigFile)" Outputs="@(ConfigFile->'$(ConfOutDir)\%(Filename)%(Extension)')">
@@ -211,6 +213,7 @@
     <RemoveDir Directories="$(SchemesOutDir)" />
     <RemoveDir Directories="$(IntDir)" />
   </Target>
+  <!-- Doc File Targets -->
   <Target Name="CopyDocFiles" Inputs="@(DocFile)" Outputs="@(DocFile->'$(OutDir)\doc\%(Filename)%(Extension)')">
     <MakeDir Directories="$(OutDir)\doc" />
     <Copy SourceFiles="@(DocFile)" DestinationFolder="$(OutDir)\doc" />
@@ -218,5 +221,14 @@
   </Target>
   <Target Name="CleanDocFiles">
     <RemoveDir Directories="$(OutDir)\doc" />
+  </Target>
+  <!-- Language File Targets -->
+  <Target Name="CopyLanguageFiles" Inputs="@(LanguageFile)" Outputs="@(LanguageFile->'$(OutDir)\po\%(Filename)%(Extension)')">
+    <MakeDir Directories="$(OutDir)\po" />
+    <Copy SourceFiles="@(LanguageFile)" DestinationFolder="$(OutDir)\po" />
+    <Copy SourceFiles="@(LanguageFile)" DestinationFolder="$(IntDir)" />
+  </Target>
+  <Target Name="CleanLanguageFiles">
+    <RemoveDir Directories="$(OutDir)\po" />
   </Target>
 </Project>

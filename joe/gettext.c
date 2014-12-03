@@ -60,7 +60,7 @@ int load_po(JFILE *f)
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (jfgets(isfree(&buf),f)) {
+					if (jfgets(&buf,f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
@@ -81,7 +81,7 @@ int load_po(JFILE *f)
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (jfgets(isfree(&buf),f)) {
+					if (jfgets(&buf,f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
