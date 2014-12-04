@@ -226,7 +226,7 @@
   <Target Name="CopyLanguageFiles" Inputs="@(LanguageFile)" Outputs="@(LanguageFile->'$(OutDir)\po\%(Filename)%(Extension)')">
     <MakeDir Directories="$(OutDir)\po" />
     <Copy SourceFiles="@(LanguageFile)" DestinationFolder="$(OutDir)\po" />
-    <Copy SourceFiles="@(LanguageFile)" DestinationFolder="$(IntDir)" />
+    <Exec Condition="'$(_Python)' != '' and Exists('$(_Python)')" Command="FOR %%f IN (@(LanguageFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezepo.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
   </Target>
   <Target Name="CleanLanguageFiles">
     <RemoveDir Directories="$(OutDir)\po" />

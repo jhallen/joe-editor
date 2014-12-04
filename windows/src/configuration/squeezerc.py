@@ -164,7 +164,7 @@ def squeezeline(line, state):
             # Divert here and handle key input section special.
             parts = line[i+1:].split()
             for p in parts:
-                if len(p) == 1 or p.startswith('^') or p.startswith('.k') or p.startswith('.@') or p in specialkeys:
+                if len(p) == 1 or p.startswith('^') or p.startswith('.k') or p.lower().startswith('.f') or p.startswith('.@') or p in specialkeys:
                     result += ' ' + p
                 else:
                     break
