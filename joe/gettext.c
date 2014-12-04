@@ -60,7 +60,7 @@ int load_po(FILE *f)
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (vsgets(isfree(&buf),f)) {
+					if (vsgets(&buf, f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
@@ -81,7 +81,7 @@ int load_po(FILE *f)
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (vsgets(isfree(&buf),f)) {
+					if (vsgets(&buf, f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
