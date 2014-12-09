@@ -957,6 +957,8 @@ int ufilt(BW *bw)
 	}
 	s = ask(bw->parent, s, &filthist, NULL, utypebw, locale_map, 0, 0, NULL);
 
+	if (!s)
+		return -1;
 	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte) {
 		flg = 1; /* Empty block */
 		goto ok;
@@ -1143,7 +1145,7 @@ int uupper(BW *bw)
  * avg = sum/count
  *
  * stddev = sqrt(  (a-avg)^2 + (b-avg)^2 + (c-avg)^2 )
- *        = sqrt(  a^2-2*a*avg+avg^2  + b^2-2*b*avg+avg^2 + c^2-2*c*avg+avg^2 )
+ *        = sqrt(  a^2-2*a*avg+avg^2  + b^2-2*b*avg+avg^2 +c^2-2*c*avg+avg^2 )
  *        = sqrt(  a^2+b^2+c^2 + 3*avg^2 - 2*avg*(a+b+c) )
  *        = sqrt(  sumsq + count*avg^2 - 2*avg*sum  )
  *

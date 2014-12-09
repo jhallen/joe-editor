@@ -1106,7 +1106,12 @@ B *menuhist = NULL;
 int umenu(BW *bw)
 {
 	unsigned char *s = ask(bw->parent, joe_gettext(USTR _("Menu: ")), &menuhist, USTR "menu", menucmplt, locale_map, 0, 0, NULL);
-	struct rc_menu *menu = find_menu(s);
+	struct rc_menu *menu;
+	
+	if (!s)
+		return -1;
+	
+	menu = find_menu(s);
 	if (!menu) {
 		msgnw(bw->parent, joe_gettext(_("No such menu")));
 		return -1;
@@ -1144,7 +1149,12 @@ B *opthist = NULL;
 int umode(BW *bw)
 {
 	unsigned char *s = ask(bw->parent, joe_gettext(USTR _("Options: ")), &opthist, USTR "opt", optcmplt, locale_map, 0, 0, NULL);
-	int y = find_option(s);
+	int y;
+	
+	if (!s)
+		return -1;
+	
+	y = find_option(s);
 	if (y == -1) {
 		msgnw(bw->parent, joe_gettext(_("No such option")));
 		return -1;

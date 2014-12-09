@@ -1466,6 +1466,9 @@ int ubyte(BW *bw)
 
 	s = ask(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist,
 	        NULL, NULL, locale_map, 0, 0, NULL);
+	
+	if (!s)
+		return -1;
 
 	num = calc(bw, s);
 
@@ -2270,7 +2273,9 @@ int utxt(BW *bw)
 	s = ask(bw->parent, joe_gettext(_("Insert (^C to abort): ")),
 	        NULL, NULL, utypebw, bw->b->o.charmap, 0, 0, NULL);
 
-	if (s[0] == '`') {
+	if (!s) {
+		return -1;
+	} else if (s[0] == '`') {
 		unsigned char *str = vsmk(1024);
 		fill = ' ';
 		str = stagen(str, bw, &s[1], fill);
