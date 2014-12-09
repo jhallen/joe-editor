@@ -28,8 +28,7 @@
 
 char* glue_getenv(const char* env)
 {
-	static char lang[LOCALE_NAME_MAX_LENGTH] = "";
-	static char temp[PATH_MAX] = "";
+	static char *lang = NULL, *temp = NULL;
 
 	if (!strcmp(env, "HOME"))
 	{
@@ -41,27 +40,27 @@ char* glue_getenv(const char* env)
 	}
 	else if (!strcmp(env, "LANG"))
 	{
-		if (!*lang)
+		if (!lang)
 		{
-			int success = 0;
+			char langtmp[LOCALE_NAME_MAX_LENGTH];
 			
-			if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, lang, LOCALE_NAME_MAX_LENGTH))
+			if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, langtmp, LOCALE_NAME_MAX_LENGTH))
 			{
-				int len = strlen(lang);
+				int len = strlen(langtmp);
 
-				lang[len++] = '_';
-				if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, &lang[len], LOCALE_NAME_MAX_LENGTH - len))
+				langtmp[len++] = '_';
+				if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, &langtmp[len], LOCALE_NAME_MAX_LENGTH - len))
 				{
-					success = 1;
-					strcat(lang, ".UTF-8");
+					strcat(langtmp, ".UTF-8");
+					lang = strdup(langtmp);
 				}
 			}
 
-			if (!success)
+			if (!lang)
 			{
 				/* On error, default to English :-( */
 				assert(FALSE);
-				strcpy(lang, "en_US.UTF-8");
+				lang = "en_US.UTF-8";
 			}
 		}
 
@@ -69,13 +68,16 @@ char* glue_getenv(const char* env)
 	}
 	else if (!strcmp(env, "TEMP"))
 	{
-		if (!*temp)
+		if (!temp)
 		{
 			wchar_t wtemp[MAX_PATH];
 			int sz;
 
-			sz = GetTempPathW(MAX_PATH, wtemp);
-			if (wcstoutf8(temp, wtemp, PATH_MAX))
+			GetTempPathW(MAX_PATH, wtemp);
+			sz = wcstoutf8len(wtemp) + 1;
+			temp = (char *)malloc(sz);
+
+			if (wcstoutf8(temp, wtemp, sz))
 			{
 				assert(0);
 				return NULL;

@@ -32,7 +32,7 @@ def main(infname, outfname):
 
 def squeeze(infname, inf, outf):
     runningstr = None
-    for line in inf:
+    for line in list(inf) + [""]:
         lstr = line.strip()
         if runningstr is not None:
             if lstr.startswith('"'):

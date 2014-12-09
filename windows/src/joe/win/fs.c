@@ -23,28 +23,30 @@
 
 void *opendir(unsigned char *path)
 {
-	static struct dirent the_struct;
+	struct dirent *result;
 	wchar_t c;
 
-	if (utf8towcs(the_struct._startname, path, MAX_PATH))
+	result = (struct dirent *)malloc(sizeof(struct dirent));
+
+	if (utf8towcs(result->_startname, (char *)path, MAX_PATH))
 	{
 		assert(FALSE);
 		return NULL;
 	}
 
-	c = the_struct._startname[wcslen(the_struct._startname) - 1];
+	c = result->_startname[wcslen(result->_startname) - 1];
 	if (c != L'/' && c != L'\\')
 	{
-		wcscat(the_struct._startname, L"\\");
+		wcscat(result->_startname, L"\\");
 	}
 
-	wcscat(the_struct._startname, L"*.*");
+	wcscat(result->_startname, L"*.*");
 
-	the_struct.find_handle = INVALID_HANDLE_VALUE;
-	return &the_struct;
+	result->find_handle = INVALID_HANDLE_VALUE;
+	return result;
 }
 
-void closedir(void* handle)
+void closedir(void *handle)
 {
 	struct dirent* de = (struct dirent*)handle;
 	if (de)
@@ -56,10 +58,12 @@ void closedir(void* handle)
 			strcpy(de->d_name, "");
 			wcscpy(de->_startname, L"");
 		}
+
+		free(de);
 	}
 }
 
-struct dirent *readdir(void* handle)
+struct dirent *readdir(void *handle)
 {
 	struct dirent* de = (struct dirent*)handle;
 	if (de)

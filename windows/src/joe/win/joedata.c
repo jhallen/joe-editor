@@ -22,8 +22,19 @@
 
 const char* joedata_plus(const char* input)
 {
-    static char buffer[PATH_MAX];
-    strcpy(buffer, jw_joedata);
-    strcat(buffer, input);
-    return buffer;
+	static char *buffer = NULL;
+	int sz = strlen(input) + strlen(jw_joedata);
+
+	if (buffer) {
+		if (strlen(buffer) < sz) {
+			free(buffer);
+			buffer = (char *)malloc(sz + 1);
+		}
+	} else {
+		buffer = (char *)malloc(sz + 1);
+	}
+
+	strcpy(buffer, (char *)jw_joedata);
+	strcat(buffer, input);
+	return buffer;
 }
