@@ -957,6 +957,8 @@ int ufilt(BW *bw)
 	}
 	s = ask(bw->parent, s, &filthist, NULL, utypebw, locale_map, 0, 0, NULL);
 
+	if (!s)
+		return -1;
 	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte) {
 		flg = 1; /* Empty block */
 		goto ok;
