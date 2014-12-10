@@ -288,7 +288,7 @@ done
 	*		string
 	"x"		string_hex2
 	"u"		string_uni
-	"0-7"		string_octal3
+	"0-7"		string_octal2
 	"\n"		string			recolor=-2
 
 :string_hex1 Escape
@@ -318,7 +318,6 @@ done
 
 :string_octal2 Escape
 	*		string			noeat
-	"oO"		string_octal2
 	"0-7"		string_octal1
 
 :string_octal1 Escape
