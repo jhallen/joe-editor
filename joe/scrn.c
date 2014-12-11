@@ -121,8 +121,6 @@ int set_attr(SCRN *t, int c)
 {
 	int e;
 
-	c &= ~255;
-
 	/* Attributes which have gone off */
 	e = ((AT_MASK|FG_NOT_DEFAULT|BG_NOT_DEFAULT)&t->attrib & ~c);
 
@@ -134,6 +132,8 @@ int set_attr(SCRN *t, int c)
 				texec(t->cap, t->ue, 1, 0, 0, 0, 0);
 			if (t->se)
 				texec(t->cap, t->se, 1, 0, 0, 0, 0);
+			if (t->ZR)
+				texec(t->cap, t->ZR, 1, 0, 0, 0, 0);
 		}
 		t->attrib = 0;
 	}
@@ -160,6 +160,9 @@ int set_attr(SCRN *t, int c)
 	if (e & DIM)
 		if (t->mh)
 			texec(t->cap, t->mh, 1, 0, 0, 0, 0);
+	if (e & ITALIC)
+		if (t->ZH)
+			texec(t->cap, t->ZH, 1, 0, 0, 0, 0);
 
 	if ((t->attrib & FG_MASK) != (c & FG_MASK)) {
 		if (t->Sf) {
@@ -602,6 +605,12 @@ SCRN *nopen(CAP *cap)
 			t->avattr |= UNDERLINE;
 		t->ue = jgetstr(t->cap,USTR "ue");
 	}
+
+	t->ZH = NULL;
+	t->ZR = NULL;
+	if ((t->ZH = jgetstr(t->cap,USTR "ZH")) != NULL)
+			t->avattr |= ITALIC;
+		t->ZR = jgetstr(t->cap,USTR "ZR");
 
 	if (!(t->uc = jgetstr(t->cap,USTR "uc")))
 		if (t->ul)
@@ -1808,6 +1817,8 @@ int meta_color_single(unsigned char *s)
 		return BLINK;
 	else if(!zcmp(s,USTR "dim"))
 		return DIM;
+	else if(!zcmp(s,USTR "italic"))
+		return ITALIC;
 
 	/* ISO colors */
 	else if(!zcmp(s,USTR "white"))
@@ -2084,6 +2095,10 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
 			case 'b':
 			case 'B':
 				atr ^= BOLD;
+				break;
+			case 'l':
+			case 'L':
+				atr ^= ITALIC;
 				break;
 			case 'd':
 			case 'D':

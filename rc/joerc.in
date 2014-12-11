@@ -18,7 +18,7 @@
  Put each color override you want in the first column.
 
  Valid colors:
-   bold inverse blink dim underline
+   bold inverse blink dim underline italic
    white cyan magenta blue yellow green red black
    bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
 
@@ -238,6 +238,7 @@
   \b  Bold
   \d  Dim
   \f  Blink
+  \l  Italic
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M %x
 -rmsg  %S Row %r Col %c %t  Ctrl-K H for help
@@ -503,6 +504,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Use \b to turn on/off bold
  Use \d to turn on/off dim
  Use \f to turn on/off flash
+ Use \l to turn on/off italic
 
  Use \| to insert a spring: all springs in a given line are set to the same
  width such that the entire line exactly fits in the width of the screen (if

@@ -32,6 +32,7 @@ unsigned char defentry[] = "\
 :cd=\\E[J:ce=\\E[K:cl=\\E[H\\E[J:\
 :so=\\E[7m:se=\\E[m:us=\\E[4m:ue=\\E[m:\
 :mb=\\E[5m:md=\\E[1m:mh=\\E[2m:me=\\E[m:\
+:ZH=\\E[3m:ZR=\\E[m:\
 :ku=\\E[A:kd=\\E[B:kl=\\E[D:kr=\\E[C:\
 :al=\\E[L:AL=\\E[%dL:dl=\\E[M:DL=\\E[%dM:\
 :ic=\\E[@:IC=\\E[%d@:dc=\\E[P:DC=\\E[%dP:\

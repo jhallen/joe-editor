@@ -218,6 +218,12 @@ void help_display(Screen *t)
 							++str;
 							--x;
 							continue;
+						case 'l':
+						case 'L':
+							atr ^= ITALIC;
+							++str;
+							--x;
+							continue;
 						case 'f':
 						case 'F':
 							atr ^= BLINK;
