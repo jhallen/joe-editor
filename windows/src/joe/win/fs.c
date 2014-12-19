@@ -200,6 +200,20 @@ int glue_unlink(const char *path)
 	return _wunlink(wpath);
 }
 
+int glue_mkdir(const char *path, int mode)
+{
+	wchar_t wpath[MAX_PATH + 1];
+
+	if (utf8towcs(wpath, path, MAX_PATH))
+	{
+		assert(FALSE);
+		return -1;
+	}
+
+	/* No mode argument in windows, but the default should be reasonable. */
+	return _wmkdir(wpath);
+}
+
 int glue_fprintf(FILE *fp, const char *fmt, ...)
 {
 	int result;

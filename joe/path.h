@@ -67,7 +67,9 @@ int mkpath PARAMS((unsigned char *path));
 unsigned char *mktmp PARAMS((unsigned char *where));
 
 /* Change drive and directory */
+#ifndef JOEWIN /* Suppress a warning as this is handled in glue */
 #define chddir chdir
+#endif
 
 /* int rmatch(char *pattern,char *string);
  * Return true if string matches pattern

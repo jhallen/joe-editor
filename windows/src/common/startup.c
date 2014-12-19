@@ -19,6 +19,7 @@
 
 #include "jwwin.h"
 #include <shlobj.h>
+#include <wchar.h>
 #include <assert.h>
 #include "jwglobals.h"
 #include "jwutils.h"
@@ -187,6 +188,19 @@ int jwInitJoe(int argc, wchar_t **argv)
 
 			if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)jwInitJoe, &current) && current != exeModule) {
 				jwAddResourceHandle(current);
+			}
+		}
+
+		/* If started in joe's binary directory, change to user's home directory */
+		{
+			wchar_t exepath[MAX_PATH], curpath[MAX_PATH];
+
+			if (GetModuleFileName(NULL, exepath, MAX_PATH - 1) && _wgetcwd(curpath, MAX_PATH - 1)) {
+				if (!wcsnicmp(exepath, curpath, wcslen(curpath))) {
+					if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, exepath))) {
+						_wchdir(exepath);
+					}
+				}
 			}
 		}
 	}

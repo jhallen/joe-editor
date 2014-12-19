@@ -177,11 +177,7 @@ int mkpath(unsigned char *path)
 		c = *s;
 		*s = 0;
 		if (chddir((char *)path)) {
-#ifndef JOEWIN
 			if (mkdir((char *)path, 0777))
-#else
-			if (mkdir((char *)path))
-#endif
 			return 1;
 			if (chddir((char *)path))
 				return 1;

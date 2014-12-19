@@ -3005,8 +3005,8 @@ RETSIGTYPE ttsig(int sig)
 	int tmpfd;
 
 #ifdef JOEWIN
-    /* Allow us to inspect */
-    assert(0);
+	/* Allow us to inspect */
+	assert(0);
 #endif
 
 	/* Do not allow double-fault */
@@ -3044,6 +3044,10 @@ RETSIGTYPE ttsig(int sig)
 		fprintf(ttsig_f, "*** JOE was aborted due to swap file I/O error\n");
 	else if (sig == -1)
 		fprintf(ttsig_f, "*** JOE was aborted due to malloc returning NULL\n");
+#ifdef JOEWIN
+	else if (sig < 0)
+		fprintf(ttsig_f, "*** JOE was aborted by Windows error %X\n", sig);
+#endif
 	else if (sig)
 		fprintf(ttsig_f, "*** JOE was aborted by UNIX signal %d\n", sig);
 	else

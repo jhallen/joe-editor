@@ -58,18 +58,6 @@ static int ttysig = 0;
 /* Current window size */
 static int winwidth = 0, winheight = 0;
 
-/* Set signals for JOE */
-void sigjoe(void)
-{
-	ttysig = 1;
-}
-
-/* Restore signals for exiting */
-void signrm(void)
-{
-	ttysig = 0;
-}
-
 /* Open terminal and set signals */
 
 void ttopen(void)
@@ -403,3 +391,47 @@ int handlejwcontrol(struct CommMessage *m)
 void ttsusp(void)
 {
 }
+
+/* Exception handling */
+
+static DWORD editorthread;
+
+static LONG WINAPI SehHandler(LPEXCEPTION_POINTERS lpe)
+{
+	/* Only handle errors in the editor */
+	if (editorthread != GetCurrentThreadId())
+		return EXCEPTION_EXECUTE_HANDLER;
+	
+	ttsig(lpe->ExceptionRecord->ExceptionCode);
+}
+
+/* Set signals for JOE */
+void sigjoe(void)
+{
+	if (ttysig)
+		return;
+	ttysig = 1;
+
+	joe_set_signal(SIGSEGV, ttsig);
+	joe_set_signal(SIGABRT, ttsig);
+	joe_set_signal(SIGTERM, ttsig);
+	joe_set_signal(SIGILL, ttsig);
+
+	editorthread = GetCurrentThreadId();
+	SetUnhandledExceptionFilter(SehHandler);
+}
+
+/* Restore signals for exiting */
+void signrm(void)
+{
+	if (!ttysig)
+		return;
+	ttysig = 0;
+	joe_set_signal(SIGSEGV, SIG_DFL);
+	joe_set_signal(SIGABRT, SIG_DFL);
+	joe_set_signal(SIGTERM, SIG_DFL);
+	joe_set_signal(SIGILL, SIG_DFL);
+
+	SetUnhandledExceptionFilter(NULL);
+}
+

@@ -23,7 +23,7 @@ X Windows environment
   X Create AppData dir when necessary.  Use to save .joe_state
   X Update joe to load joerc from program dir, install dir, and user appdata
     (in that order) -- didn't do install dir.  Shouldn't be an issue.
-* Copy/Paste
+X Copy/Paste
   X Implement Windows cut, copy, and paste commands
   X Link paste to ^KC, link cut and copy to ^, and ^.
   X Implement copy/paste menu items in PuTTY context menu
@@ -31,7 +31,7 @@ X Windows environment
   * Interactive file dialog on shift-tab
   X Drag file to window: open
 X Naming convention/coding standard refactor.
-X RC file work (across all personalities)
+* RC file work (across all personalities)
   X Default to CRLF ending.
   X Remove hardcoded variables (use mouse, xterm 256, etc)
   X Fast status refresh
@@ -47,10 +47,11 @@ X Behave better when user closes app through 'X'
   X Extra: update window title with active file.
 * Random improvements/Windows behavior
   * Detect and tweak auto-completion for UNC paths.
-  * If invoked from install dir, then open 'My Documents' -- potentially
+  X If invoked from install dir, then open 'My Documents' -- potentially
     track last used path.
+    X Actually open user's "home directory"
   X Save/restore window size and placement.
-  * Disable Linux/emacs locking behavior.  Replace with proper Windows file locking.
+  * Lock files with native Windows locking if set in *rc file.
 * Convert VIM color schemes
   X Build initial, functional converter
   X Cover C, Python
@@ -71,7 +72,7 @@ X Behave better when user closes app through 'X'
   X Send color scheme over to joe on startup.
   * Finish up custom colors for:
     * Menu selection
-    * Status line
+    X Status line
     * Prompt Windows
     * "-------" divider
   * Indicate currently selected line (totally new feature)
@@ -98,7 +99,7 @@ X Fix input/output channel.  Remove winsock and replace with thread-safe queue.
     in a more consistent manner.
   X Pull as much out of joewin as possible.  Much of it could go into joewincommon.  Don't know
     if I need to keep the project around as a target for the DLL or not, but see if I can kill it.
-  * Snap to a more recent version of PuTTY (it's been about two years).
+  * Snap to a more recent version of PuTTY (it's been about four years).
 * Executable reorganization
   X Make the main entry point a DLL and create an EXE for each personality.
   X Change the way resources are baked in: use real Windows resources instead of static strings.
@@ -111,7 +112,11 @@ Joe issues
 * ^KH in search/replace prompt draws screen incorrectly. -- Repro's in JOE/Linux too.
 * What is the boundary for large files?  A 3MB file took a while to load (though it was probably disk access slowing it down).
 * ^[ shows up at top of screen too often (mouse moves, every non-alphanumeric)
-* JOE doesn't recognize UTF-8 preamble
+* JOE doesn't recognize UTF-8 BOM
 X Hex editor broken with file that has CRLF newlines, when editor is in CRLF mode (0d is hidden, causes weird jumps/numbering)
 * Edit lines past width of screen stop showing text/don't scroll to the right (broken in Linux, too)
-* Editor falls over with large files (tried with a 182M file).  It simply exits with no indication of an error.  Need to test this on Linux as well.  Seems to be a problem in vfiles but I haven't looked deep enough.
+X Editor falls over with large files (tried with a 182M file).  It simply exits with no indication of an error.  Need to test this on Linux as well.  Seems to be a problem in vfiles but I haven't looked deep enough.
+* Fix stat() calls to use 64-bit integers across the board.  Unfortunately, JOE uses long to internally represent time_t, off_t, and size_t
+  but: a) Windows never represents longs as 64 bits (even for 64 bit architectures); b) time_t is 64 bits but you need to use off64_t and size64_t
+  to get long values for those.  We are currently stuck using 32-bit stat structs until this is fixed across all platforms.
+

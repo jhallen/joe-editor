@@ -36,7 +36,9 @@
 #define creat glue_creat
 #define getcwd glue_getcwd
 #define chdir glue_chdir
+#define chddir glue_chdir
 #define unlink glue_unlink
+#define mkdir glue_mkdir
 
 #ifdef DEBUG		/* Intercept and redirect stderr to debugger console */
 #define fprintf glue_fprintf
@@ -79,5 +81,6 @@ char *glue_getcwd(char *output, size_t outsz);
 int glue_chdir(const char *path);
 int glue_fprintf(FILE *, const char *, ...);
 int glue_unlink(const char *path);
+int glue_mkdir(const char *path, int);
 
 #endif // _JOEWIN_GLUE_H
