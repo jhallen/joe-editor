@@ -2542,6 +2542,12 @@ opnerr:
 				break;
 		}
 		prm(p);
+
+		/* Hex mode should turn off crlf */
+		if (b->o.hex && b->o.crlf) {
+			b->o.crlf = 0;
+			b->o.hex |= HEX_RESTORE_CRLF;
+		}
 	}
 
 	/* Search backwards through file: if first indented line

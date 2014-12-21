@@ -55,4 +55,7 @@ int ulanguage PARAMS((BW *bw));
 
 unsigned char *get_status(BW *bw, unsigned char *s);
 
+#define HEX_RESTORE_UTF8	2
+#define HEX_RESTORE_CRLF	4
+
 #endif

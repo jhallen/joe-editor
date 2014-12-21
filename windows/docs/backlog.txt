@@ -119,4 +119,4 @@ X Editor falls over with large files (tried with a 182M file).  It simply exits 
 * Fix stat() calls to use 64-bit integers across the board.  Unfortunately, JOE uses long to internally represent time_t, off_t, and size_t
   but: a) Windows never represents longs as 64 bits (even for 64 bit architectures); b) time_t is 64 bits but you need to use off64_t and size64_t
   to get long values for those.  We are currently stuck using 32-bit stat structs until this is fixed across all platforms.
-
+* bload has a few surprises.  In particular, we load some options for a file, then we set some options based on light analysis of the file.  Which should have precedence?  guess_indent or an indentation that was specified elsewhere?

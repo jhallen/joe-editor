@@ -170,6 +170,30 @@ static int setjoeargs(int argc, wchar_t **argv)
 	return 0;
 }
 
+/* If started in joe's binary directory, change to user's home directory */
+static void setjoedir()
+{
+	wchar_t exepath[MAX_PATH], curpath[MAX_PATH];
+
+	if (GetModuleFileName(NULL, exepath, MAX_PATH - 1) && _wgetcwd(curpath, MAX_PATH - 1)) {
+		int curlen = wcslen(curpath);
+		wchar_t *p;
+
+		p = wcsrchr(exepath, L'\\');
+		if (p)
+			*p = 0;
+
+		if (curpath[curlen - 1] == L'\\')
+			curpath[curlen - 1] = 0;
+
+		if (!wcsicmp(exepath, curpath)) {
+			if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, exepath))) {
+				_wchdir(exepath);
+			}
+		}
+	}
+}
+
 int jwInitJoe(int argc, wchar_t **argv)
 {
 	void jwAddResourceHandle(HMODULE module);
@@ -179,6 +203,7 @@ int jwInitJoe(int argc, wchar_t **argv)
 	{
 		setjoedata();
 		setjoehome();
+		setjoedir();
 
 		/* Set up builtin resource loader */
 		{
@@ -188,19 +213,6 @@ int jwInitJoe(int argc, wchar_t **argv)
 
 			if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)jwInitJoe, &current) && current != exeModule) {
 				jwAddResourceHandle(current);
-			}
-		}
-
-		/* If started in joe's binary directory, change to user's home directory */
-		{
-			wchar_t exepath[MAX_PATH], curpath[MAX_PATH];
-
-			if (GetModuleFileName(NULL, exepath, MAX_PATH - 1) && _wgetcwd(curpath, MAX_PATH - 1)) {
-				if (!wcsnicmp(exepath, curpath, wcslen(curpath))) {
-					if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, exepath))) {
-						_wchdir(exepath);
-					}
-				}
 			}
 		}
 	}

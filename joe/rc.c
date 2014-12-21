@@ -7,9 +7,6 @@
  */
 #include "types.h"
 
-#define HEX_RESTORE_UTF8	2
-#define HEX_RESTORE_CRLF	4
-
 /* Commands which just type in variable values */
 
 int ucharset(BW *bw)
