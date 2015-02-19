@@ -2,7 +2,7 @@ Joe for Windows is the aggregation of many peoples' work, most notably
 Joseph H. Allen, the original author of the JOE editor, and Simon Tatham,
 the author of PuTTY (which this software uses for its frontend).  Both
 have been modified heavily and linked together by John J. Jordan to form
-this software.  I am indebted to their work, and the licensing terms for
+this software.  Their work makes this possible, and the licensing terms for
 each constituent codebase can be found here.
 
 JOE is Copyright 1992-2008 Joseph H. Allen and released under the GPLv1
@@ -13,6 +13,8 @@ PuTTY is copyright 1997-2010 Simon Tatham.
 JOE for Windows is Copyright 2010-2014 John J. Jordan and released under
 the GPL.
 
+The source code can be found on the JOE website, currently at
+http://sourceforge.net/p/joe-editor
 
 =============== PuTTY licensing terms ===============
 
