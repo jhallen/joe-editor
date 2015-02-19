@@ -10,16 +10,16 @@
 
 =Idle
 =Head	bold
-=HdTo	red bg_white
+=HdTo	bold blue
 =HdFrom	bold red
 =HdSbj	bold magenta
 =HdDate	bold
-=HdRRT	black bg_white
-=HdGrp	bold white bg_red
-=HdFuT	bold red bg_yellow
+=HdRRT	green
+=HdGrp	bold red
+=HdFuT	green
 =HdBad	bold red
-=Quot1	green bg_white
-=Quot2	bold blue bg_white
+=Quot1	green
+=Quot2	bold blue
 =Sign	bold magenta
 
 # Start in headers. We know we're out at the first blank line.
