@@ -161,6 +161,13 @@ typedef int pid_t;
 #endif
 #define NO_MORE_DATA EOF
 
+#ifndef JOEWIN
+
+/* This is defined as a function in Windows build since it is computed at runtime */
+#define JOEDATA_PLUS(x) (JOEDATA x)
+
+#endif
+
 #if defined __MSDOS__ && SIZEOF_INT == 2 /* real mode ms-dos compilers */
 #if SIZEOF_VOID_P == 4 /* real mode ms-dos compilers with 'far' memory model or something like that */
 #define physical(a)  (((unsigned long)(a)&0xFFFF)+(((unsigned long)(a)&0xFFFF0000)>>12))
@@ -282,6 +289,7 @@ struct highlight_state {
 #endif
 
 #include "obj.h"
+#include "libcoro.h"
 #include "coroutine.h"
 #include "b.h"
 #include "blocks.h"

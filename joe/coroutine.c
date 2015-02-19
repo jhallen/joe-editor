@@ -7,7 +7,6 @@
  */
 
 #include "types.h"
-#include "libco/libco.h"
 
 static struct stack *current_stack;	/* Current stack */
 static struct stack *free_stacks;	/* Free stacks */
@@ -15,9 +14,8 @@ static struct stack *free_stacks;	/* Free stacks */
 /* Execute function and resume calling co-routine */
 
 static int rtval;
-static int stackcount = 0;
 
-static void call_it(void)
+static void call_it()
 {
 	for (;;) {
 		Coroutine *t;
@@ -36,15 +34,17 @@ static void call_it(void)
 		current_stack->next = free_stacks;
 		free_stacks = current_stack;
 		current_stack = t->stack;
-		co_switch(t->cothread);
+		coro_transfer(&free_stacks->cothread, &t->stack->cothread);
 	}
 }
 
 /* Allocate a stack */
 
-static struct stack *mkstack(void)
+static struct stack *mkstack()
 {
 	struct stack *stack;
+	struct coro_stack stkparams;
+	
 	if (free_stacks) {
 		stack = free_stacks;
 		free_stacks = stack->next;
@@ -52,21 +52,15 @@ static struct stack *mkstack(void)
 		stack->chain = 0;
 		return stack;
 	}
+	
 	stack = (struct stack *)malloc(sizeof(struct stack));
 	stack->caller = 0;
 	stack->chain = 0;
-	stack->cothread = co_create(STACK_SIZE, call_it);
-	stackcount++;
+	
+	coro_stack_alloc(&stkparams, STACK_SIZE);
+	coro_create(&stack->cothread, call_it, NULL, stkparams.sptr, stkparams.ssze);
+	
 	return stack;
-}
-
-void debug_stacks(BW* bw)
-{
-	unsigned char tmp[128];
-
-	sprintf(tmp, "coroutine.c: Allocated %d stack%s\n", stackcount, stackcount == 1 ? "" : "s");
-	binss(bw->cursor, tmp);
-	pnextl(bw->cursor);
 }
 
 /* Suspend current co-routine and return to caller */
@@ -97,8 +91,7 @@ int co_yield(Coroutine *t, int val)
 		rtval = val;
 
 	/* Switch */
-	t->cothread = co_active();
-	co_switch(n->cothread);
+	coro_transfer(&t->stack->cothread, &n->stack->cothread);
 
 	/* Somebody continued us... */
 	set_obj_stack(t->saved_obj_stack);
@@ -137,8 +130,7 @@ int co_resume(Coroutine *t,int val)
 		rtval = val;
 
 	/* Switch */
-	self->cothread = co_active();
-	co_switch(t->cothread);
+	coro_transfer(&self->stack->cothread, &t->stack->cothread);
 
 	/* Somebody continued us... */
 	set_obj_stack(self->saved_obj_stack);
@@ -173,8 +165,7 @@ int co_suspend(Coroutine *t,int val)
 	rtval = val;
 
 	/* Switch */
-	t->cothread = co_active();
-	co_switch(n->cothread);
+	coro_transfer(&t->stack->cothread, &n->stack->cothread);
 
 	/* Somebody continued us... */
 	set_obj_stack(t->saved_obj_stack);
@@ -235,8 +226,7 @@ int co_query_suspend(Coroutine *u,int val)
 	rtval = val;
 
 	/* Switch */
-	self->cothread = co_active();
-	co_switch(t->cothread);
+	coro_transfer(&self->stack->cothread, &t->stack->cothread);
 
 	/* Somebody continued us... */
 	set_obj_stack(self->saved_obj_stack);
@@ -259,6 +249,7 @@ int co_call(int (*func)(va_list args), ...)
 		current_stack = (struct stack *)malloc(sizeof(struct stack));
 		current_stack->caller = 0;
 		current_stack->chain = 0;
+		coro_create(&current_stack->cothread, NULL, NULL, NULL, 0);
 	}
 
 	/* Save current stack */
@@ -282,8 +273,7 @@ int co_call(int (*func)(va_list args), ...)
 	current_stack->caller = self;
 
 	/* Switch */
-	self->cothread = co_active();
-	co_switch(current_stack->cothread);
+	coro_transfer(&self->stack->cothread, &current_stack->cothread);
 
 	/* Somebody continued us... */
 	/* Free object stack we created above, restore original. */

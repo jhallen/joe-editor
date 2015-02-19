@@ -54,6 +54,7 @@
     <ClInclude Include="$(JoeExternalSrcDir)\i18n.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\kbd.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\lattr.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\libcoro.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\macro.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\main.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\menu.h" />
@@ -88,8 +89,6 @@
     <ClInclude Include="$(JoeExternalSrcDir)\utils.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\vfile.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\w.h" />
-    <ClInclude Include="$(JoeSrcDir)\libco\choose.h" />
-    <ClInclude Include="$(JoeSrcDir)\libco\libco.h" />
     <ClInclude Include="$(JoeSrcDir)\autoconf.h" />
     <ClInclude Include="$(JoeSrcDir)\builtin.h" />
     <ClInclude Include="$(JoeSrcDir)\bupdates.h" />
@@ -109,6 +108,7 @@
     <ClCompile Include="$(JoeExternalSrcDir)\help.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\kbd.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\lattr.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\libcoro.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\macro.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\main.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\menu.c" />
@@ -141,9 +141,6 @@
     <ClCompile Include="$(JoeExternalSrcDir)\utils.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\vfile.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\w.c" />
-    <ClCompile Include="$(JoeSrcDir)\libco\amd64.c" />
-    <ClCompile Include="$(JoeSrcDir)\libco\fiber.c" />
-    <ClCompile Include="$(JoeSrcDir)\libco\x86.c" />
     <ClCompile Include="$(JoeSrcDir)\builtin.c" />
     <ClCompile Include="$(JoeSrcDir)\bupdates.c" />
     <ClCompile Include="$(JoeSrcDir)\i18n.c" />

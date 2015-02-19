@@ -189,7 +189,6 @@ int udebug_joe(BW *bw)
 			pnextl(bw->cursor);
 		}
 	}
-	debug_stacks(bw);
 #ifdef JOEWIN
 	{
 		const char *jwQueueMemory();

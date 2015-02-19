@@ -63,6 +63,9 @@
     <ClInclude Include="$(JoeExternalSrcDir)\lattr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\libcoro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(JoeExternalSrcDir)\macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -165,12 +168,6 @@
     <ClInclude Include="$(JoeExternalSrcDir)\w.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(JoeSrcDir)\libco\choose.h">
-      <Filter>JoeWin Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(JoeSrcDir)\libco\libco.h">
-      <Filter>JoeWin Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(JoeSrcDir)\bupdates.h">
       <Filter>JoeWin Files</Filter>
     </ClInclude>
@@ -219,6 +216,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeExternalSrcDir)\lattr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\libcoro.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeExternalSrcDir)\macro.c">
@@ -336,15 +336,6 @@
       <Filter>JoeWin Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeSrcDir)\tty.c">
-      <Filter>JoeWin Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(JoeSrcDir)\libco\amd64.c">
-      <Filter>JoeWin Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(JoeSrcDir)\libco\fiber.c">
-      <Filter>JoeWin Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(JoeSrcDir)\libco\x86.c">
       <Filter>JoeWin Files</Filter>
     </ClCompile>
   </ItemGroup>

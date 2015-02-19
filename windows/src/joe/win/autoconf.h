@@ -342,3 +342,6 @@
 
 /* Define as `fork' if `vfork' does not work. */
 /* #undef vfork */
+
+/* libcoro: Use fibers for coroutines (grr).  It's broken on x64 otherwise. */
+#define CORO_FIBER 1
