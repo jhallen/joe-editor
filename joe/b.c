@@ -24,7 +24,6 @@ extern int errno;
 #define EXTRA_FILE_FLAGS ""
 #else
 /* All files need to be opened in binary mode in Windows */
-#define EXTRA_FILE_FLAGS "b"
 #include <assert.h>
 #endif
 
@@ -2433,12 +2432,12 @@ B *bload(unsigned char *s)
 		b = bmk(NULL);
 		goto empty;
 	} else {
-		fi = fopen((char *)dequote(n), "r+" EXTRA_FILE_FLAGS);
+		fi = fopen((char *)dequote(n), "r+");
 		if (!fi)
 			nowrite = 1;
 		else
 			fclose(fi);
-		fi = fopen((char *)dequote(n), "r" EXTRA_FILE_FLAGS);
+		fi = fopen((char *)dequote(n), "r");
 		if (!fi)
 			nowrite = 0;
 		if (fi) {
@@ -2810,7 +2809,7 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 #endif
 	if (s[0] == '>' && s[1] == '>') {
 		filename = (char *)dequote(s + 2);
-		f = fopen(filename, "a" EXTRA_FILE_FLAGS);
+		f = fopen(filename, "a");
 	} else if (!zcmp(s, USTR "-")) {
 		nescape(maint->t);
 		ttclsn();
@@ -2818,7 +2817,7 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 		filename = NULL;
 	} else if (skip || amnt != MAXLONG) {
 		filename = (char *)dequote(s);
-		f = fopen(filename, "r+" EXTRA_FILE_FLAGS);
+		f = fopen(filename, "r+");
 	} else {
 		have_stat = !stat((char *)dequote(s), &sbuf);
 		if (!have_stat)
@@ -2863,7 +2862,7 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 		}
 
 		filename = (char *)dequote(s);
-		f = fopen((char *)dequote(s), "w" EXTRA_FILE_FLAGS);
+		f = fopen((char *)dequote(s), "w");
 		norm = 1;
 	}
 	joesep(s);

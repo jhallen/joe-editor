@@ -141,6 +141,7 @@ FILE *glue_fopen(const char *filename, const char *mode)
 		return NULL;
 	}
 
+	wcscat(wmode, L"b");
 	return _wfopen(wfilename, wmode);
 }
 

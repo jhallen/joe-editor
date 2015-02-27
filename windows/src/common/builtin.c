@@ -80,7 +80,13 @@ JFILE *jwfopen(wchar_t *name, wchar_t *mode)
 
 		return 0;
 	} else {
-		FILE *f = _wfopen(name, mode);
+		FILE *f;
+		wchar_t mymode[20];
+
+		wcscpy(mymode, mode);
+		wcscat(mymode, L"b");
+		f = _wfopen(name, mymode);
+
 		if (f) {
 			JFILE *j = (JFILE *)malloc(sizeof(JFILE));
 			j->f = f;

@@ -142,6 +142,9 @@ static int joe_mouse_event(BW *bw)
 	return 0;
 }
 
+#ifdef JOEWIN
+/* TODO: Remove this once PuTTY version is upgraded and supports better mouse mode. */
+
 static int readextmousecoord()
 {
 	struct utf8_sm state;
@@ -158,6 +161,8 @@ static int readextmousecoord()
 
 	return max(c, 0);
 }
+
+#endif
 
 int uxtmouse(BW *bw)
 {
