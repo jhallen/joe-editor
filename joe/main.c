@@ -84,6 +84,23 @@ void nungetc(int c)
 	}
 }
 
+/* Execute a macro every nn seconds */
+
+time_t last_timer_time = 0;
+time_t cur_time;
+time_t timer_macro_delay;
+MACRO *timer_macro;
+
+MACRO *timer_play()
+{
+	cur_time = time(NULL);
+	if (timer_macro && timer_macro_delay && cur_time >= last_timer_time + timer_macro_delay) {
+		last_timer_time = cur_time;
+		return timer_macro;
+	}
+	return 0;
+}
+
 int edloop(int flg)
 {
 	int term = 0;
@@ -122,6 +139,8 @@ int edloop(int flg)
 			if (x)
 				maint->curwin->main->kbd->seq[x - 1] = maint->curwin->kbd->seq[x - 1];
 		}
+		if (!m)
+			m = timer_play();
 		if (m)
 			ret = exemac(m);
 	}
