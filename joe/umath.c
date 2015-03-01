@@ -853,7 +853,11 @@ static int domath(BW *bw, unsigned char *s, void *object, int *notify)
 	}
 	vsrm(s);
 	if (mode_hex)
+#ifdef HAVE_LONG_LONG
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%llX", (long long)result);
+#else
 		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%lX", (long)result);
+#endif
 	else if (mode_eng)
 		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
 	else

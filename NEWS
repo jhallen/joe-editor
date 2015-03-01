@@ -1,3 +1,5 @@
+- Convert double to long long (if we have it) when printing hexadecimal.
+
 - Fix bug where undo was acting strangly in shell windows.
 
 - Fix crash when hitting -----------.. wordwrap bug.

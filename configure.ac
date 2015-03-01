@@ -86,6 +86,7 @@ AC_C_CONST
 if test "$cross_compiling" = "yes" ; then
 	AC_MSG_WARN(cross compiling so assuming defaults for most 32 bit machines)
 fi
+AC_CHECK_TYPES([long long])
 AC_CHECK_SIZEOF(char, 1)
 AC_CHECK_SIZEOF(short, 2)
 AC_CHECK_SIZEOF(int, 4)
