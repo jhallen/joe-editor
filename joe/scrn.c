@@ -767,6 +767,10 @@ SCRN *nopen(CAP *cap)
 		t->insdel = 0;
 	}
 
+/* Send out li linefeeds so that scroll-back history is not lost */
+	for (y = 0; y != t->li; ++y)
+		ttputc(10);
+
 /* Send out terminal initialization string */
 	if (t->ti)
 		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
