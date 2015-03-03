@@ -768,7 +768,7 @@ SCRN *nopen(CAP *cap)
 	}
 
 /* Send out li linefeeds so that scroll-back history is not lost */
-	for (y = 0; y != t->li; ++y)
+	for (y = 1; y < t->li; ++y)
 		ttputc(10);
 
 /* Send out terminal initialization string */
