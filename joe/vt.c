@@ -21,11 +21,16 @@ VT *mkvt(B *b, int top, int height, int width)
 
 void vt_resize(VT *vt, int height, int width)
 {
+	int flag = 0;
+	if (vt->regn_bot == vt->height)
+		flag = 1;
 	vt->height = height;
 	vt->width = width;
 	if (vt->regn_top > height)
 		vt->regn_top = height;
 	if (vt->regn_bot > height)
+		vt->regn_bot = height;
+	if (flag)
 		vt->regn_bot = height;
 	if (vt->vtcur->line >= vt->top + height)
 		vt->top = vt->vtcur->line - height + 1;

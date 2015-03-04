@@ -16,7 +16,7 @@ It would be nice if ^G was goto instead of ESC space
 Think through grep and compile.. maybe parse has to be progressive.
 
 Think more about keeping cursor in sync: from shell window, edit file, ^C,
-we're back in shell window but cursor is in wrong place.
+we're back in shell window but cursor is in the wrong place.
 
 Context help for shell window?
 
