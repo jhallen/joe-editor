@@ -49,7 +49,7 @@ static void fake_key(int c)
 
 /* Translate mouse coordinates */
 
-int mcoord(int x)
+static int mcoord(int x)
 {
 	if (x>=33 && x<=240)
 		return x - 33 + 1;
@@ -61,21 +61,8 @@ int mcoord(int x)
 		return 0; /* This should not happen */
 }
 
-int uxtmouse(BW *bw)
+static int mouse_event(BW *bw)
 {
-	Cb = ttgetc()-32;
-	if (Cb < 0)
-		return -1;
-	Cx = ttgetc();
-	if (Cx < 32)
-		return -1;
-	Cy = ttgetc();
-	if (Cy < 32)
-		return -1;
-
-	Cx = mcoord(Cx);
-	Cy = mcoord(Cy);
-
 	if ((Cb & 0x41) == 0x40) {
 		fake_key(KEY_MWUP);
 		return 0;
@@ -101,6 +88,51 @@ int uxtmouse(BW *bw)
 	          joexterm && (Cb & 3) == 1)		/* Paste */
 		ttputs(USTR "\33]52;;?\33\\");
 	return 0;
+}
+
+/* Parse old style mouse event parameters. */
+
+int uxtmouse(BW *bw)
+{
+	Cb = ttgetc()-32;
+	if (Cb < 0)
+		return -1;
+	Cx = ttgetc();
+	if (Cx < 32)
+		return -1;
+	Cy = ttgetc();
+	if (Cy < 32)
+		return -1;
+
+	Cx = mcoord(Cx);
+	Cy = mcoord(Cy);
+	return mouse_event(bw);
+}
+
+/* Parse xterm extended 1006 mode mouse event parameters. */
+
+int uextmouse(BW *bw)
+{
+	int c;
+	Cb = Cx = Cy = 0;
+	while ((c = ttgetc()) != ';') {
+		if (c < '0' || c > '9')
+			return -1;
+		Cb = 10 * Cb + c - '0';
+	}
+	while ((c = ttgetc()) != ';') {
+		if (c < '0' || c > '9')
+			return -1;
+		Cx = 10 * Cx + c - '0';
+	}
+	while ((c = ttgetc()) != 'M' && c != 'm') {
+		if (c < '0' || c > '9')
+			return -1;
+		Cy = 10 * Cy + c - '0';
+	}
+	if (c == 'm')
+		Cb |= 3;
+	return mouse_event(bw);
 }
 
 int mnow()
@@ -683,6 +715,7 @@ void mouseopen()
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
 		ttputs(USTR "\33[?1002h");
+		ttputs(USTR "\33[?1006h");
 		if (joexterm)
 			ttputs(USTR "\33[?2007h");
 		ttflsh();
@@ -696,6 +729,7 @@ void mouseclose()
 	if (usexmouse) {
 		if (joexterm)
 			ttputs(USTR "\33[?2007l");
+		ttputs(USTR "\33[?1006l");
 		ttputs(USTR "\33[?1002l");
 		ttflsh();
 	}

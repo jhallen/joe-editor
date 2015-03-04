@@ -19,6 +19,7 @@ int *attr_buf = 0;
 int attr_size = 0;
 
 int stack_count = 0;
+static int state_count = 0; /* Max transitions possible without cycling */
 
 struct high_syntax ansi_syntax[1] = { NULL, "ansi" };
 
@@ -144,6 +145,12 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	int mark2;	/* offset to mark end from current pos */
 	int mark_en;	/* set if marking */
 	int recolor_delimiter_or_keyword;
+	
+	/* Nothing should reference 'h' above here. */
+	if (h_state.state < 0) {
+		/* Indicates a previous error -- highlighting disabled */
+		return h_state;
+	}
 
 	if (syntax == ansi_syntax)
 		return ansi_parse(line, h_state);
@@ -164,6 +171,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd, *kw_cmd;
+		int iters = -8; /* +8 extra iterations before cycle detect. */
 		int x;
 
 		/* Hack so we can have UTF-8 characters without crashing */
@@ -189,6 +197,12 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 		/* Loop while noeat */
 		do {
+			/* Guard against infinite loops from buggy syntaxes */
+			if (iters++ > state_count) {
+				invalidate_state(&h_state);
+				return h_state;
+			}
+			
 			/* Color with current state */
 			attr[-1] = h->color;
 
@@ -362,6 +376,7 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 			state->cmd[y] = &syntax->default_cmd;
 		state->delim = 0;
 		htadd(syntax->ht_states, state->name, state);
+		++state_count;
 	}
 	return state;
 }
@@ -566,7 +581,7 @@ struct high_syntax *load_syntax_subr(unsigned char *name,unsigned char *subr,str
 
 /* Parse options */
 
-void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
+int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
 {
 	unsigned char buf[1024];
 	unsigned char bf[256];
@@ -638,7 +653,7 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 									cmd->keywords = htmk(64);
 								htadd(cmd->keywords,zdup(bf),kw_cmd);
 							}
-							parse_options(syntax,kw_cmd,f,p,1,name,line);
+							line = parse_options(syntax,kw_cmd,f,p,1,name,line);
 						} else
 							i_printf_2((char *)joe_gettext(_("%s %d: Missing state name\n")),name,line);
 					} else
@@ -655,6 +670,7 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 			cmd->recolor_mark = 1;
 		} else
 			i_printf_2((char *)joe_gettext(_("%s %d: Unknown option\n")),name,line);
+	return line;
 }
 
 struct ifstack {
@@ -835,7 +851,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 					if(!parse_ident(&p,bf,sizeof(bf))) {
 						int z;
 						cmd->new_state = find_state(syntax,bf);
-						parse_options(syntax,cmd,f,p,0,name,line);
+						line = parse_options(syntax,cmd,f,p,0,name,line);
 
 						/* Install command */
 						if (delim)

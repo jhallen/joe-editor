@@ -240,6 +240,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 	P *start;
 	P *end;
 	int x;
+	int flag = 0;
 
 	pattern = srch->pattern;
 	start = pdup(p, USTR "searchf");
@@ -257,13 +258,14 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 		if (srch->wrap_flag && start->byte>=srch->wrap_p->byte)
 			break;
 		if (pmatch(srch->pieces, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) {
-			if (end->byte == srch->last_repl) {
-				/* Stuck? */
+			if (end->byte == srch->last_repl && !flag) {
+				/* Stuck on zero-width regex? */
 				pattern = srch->pattern;
 				pset(start, p);
 				if (pgetc(start) == NO_MORE_DATA)
 					break;
 				pset(end, start);
+				++flag; /* Try repeating, but only one time */
 				goto try_again;
 			} else {
 				srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
@@ -271,6 +273,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 				pset(p, end);
 				prm(start);
 				prm(end);
+				srch->last_repl = p->byte; /* Prevent getting stuck with zero-length regex */
 				return p;
 			}
 		}
@@ -309,6 +312,7 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 	P *start;
 	P *end;
 	int x;
+	int flag = 0;
 
 	start = pdup(p, USTR "searchb");
 	end = pdup(p, USTR "searchb");
@@ -327,13 +331,14 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 		if (srch->wrap_flag && start->byte<srch->wrap_p->byte)
 			break;
 		if (pmatch(srch->pieces, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) {
-			if (start->byte == srch->last_repl) {
+			if (start->byte == srch->last_repl && !flag) {
 				/* Stuck? */
 				pattern = srch->pattern;
 				pset(start, p);
 				if (prgetc(start) == NO_MORE_DATA)
 					break;
 				pset(end, start);
+				++flag;
 				goto try_again;
 			} else {
 				srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));

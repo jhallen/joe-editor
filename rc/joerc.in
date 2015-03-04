@@ -18,7 +18,7 @@
  Put each color override you want in the first column.
 
  Valid colors:
-   bold inverse blink dim underline
+   bold inverse blink dim underline italic
    white cyan magenta blue yellow green red black
    bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
 
@@ -238,6 +238,7 @@
   \b  Bold
   \d  Dim
   \f  Blink
+  \l  Italic
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M %x
 -rmsg  %S Row %r Col %c %t  Ctrl-K H for help
@@ -441,7 +442,7 @@ mode,"cpp_comment",rtn	% % ^G ignores //... %Zcpp_comment%
 mode,"pound_comment",rtn	% % ^G ignores #... %Zpound_comment%
 mode,"vhdl_comment",rtn	% % ^G ignores --... %Zvhdl_comment%
 mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
-mode,"tex_comment",rtn % % ^G ignores %... %Ztex_comment%
+mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
 mode,"text_delimiters",rtn % % Text delimiters %Ztext_delimiters%
 
 :defmenu search
@@ -503,6 +504,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Use \b to turn on/off bold
  Use \d to turn on/off dim
  Use \f to turn on/off flash
+ Use \l to turn on/off italic
 
  Use \| to insert a spring: all springs in a given line are set to the same
  width such that the entire line exactly fits in the width of the screen (if
@@ -753,8 +755,10 @@ defm3up		M3UP
 defm3drag	M3DRAG		Select a region of lines
 
 xtmouse		^[ [ M		Introduces an xterm mouse event
+extmouse	^[ [ <		Introduces an extended xterm mouse event
 
-if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
+ Sample if/then/else macro
+ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
 :main			Text editing window
 :inherit windows
@@ -796,7 +800,8 @@ aspellword	^[ n
  sequences or which are frequently wrong.  Note that if the termcap entry is
  correct, it will override these later on.
 
-paste			^[ ] 5 2 ;		Bracketed paste
+paste			^[ ] 5 2 ;		Base64 paste (obsolete)
+brpaste			^[ [ 2 0 0 ~		Bracketed paste
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

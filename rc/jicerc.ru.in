@@ -20,7 +20,7 @@
 
  Допустимые цвета
    bold (яркость) inverse (инверсия) blink (мерцание) 
-   dim (полуяркость) underline (подчеркивание)
+   dim (полуяркость) underline (подчеркивание) italic (?????)
    white (белый) cyan (бирюзовый) magenta (фиолетовый) blue (синий) 
    yellow (желтый) green (зеленый) red (красный) black (черный)
  для фона
@@ -237,6 +237,7 @@
   \b  Повышенная яркость
   \d  Пониженная яркость
   \f  Мерцание
+  \l  ?????
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M %x
 -rmsg  %S Стр %r Поз %c %t  Подсказка - по F1
@@ -442,7 +443,7 @@ mode,"cpp_comment",rtn	% % ^G ignores //... %Zcpp_comment%
 mode,"pound_comment",rtn	% % ^G ignores #... %Zpound_comment%
 mode,"vhdl_comment",rtn	% % ^G ignores --... %Zvhdl_comment%
 mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
-mode,"tex_comment",rtn % % ^G ignores %... %Ztex_comment%
+mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
 mode,"text_delimiters",rtn % % Text delimiters %Ztext_delimiters%
 
 :defmenu search
@@ -504,6 +505,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Используйте \b для вкл/выкл повышенной яркости
  Используйте \d для вкл/выкл пониженной яркости
  Используйте \f для вкл/выкл мерцания
+ Используйте \l для вкл/выкл ?????
  Используйте \| для вставки пружинки: все пружинки в строке устанавливаются 
  на одинаковую ширину, чтобы строка растягивалась на всю ширину экрана (если
  кратность не получается и остается N пробелов, то каждая из N пружинок справа
@@ -760,6 +762,7 @@ defm3up		M3UP
 defm3drag	M3DRAG		Отметить последовательность строк
 
 xtmouse		^[ [ M		Начало обработки событий мыши в xterm
+extmouse	^[ [ <		Introduces an extended xterm mouse event (TODO: translate to Russian)
 
 if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
@@ -787,7 +790,8 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
 :def grep_find scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
 
-paste			^[ [ 2 0 2 ~		Bracketed paste
+paste			^[ [ 2 0 2 ~		Base64 paste (obsolete) ???
+brpaste			^[ [ 2 0 0 ~		Bracketed paste
 rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm
 rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right Gnome-terminal
  rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw

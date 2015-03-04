@@ -7,6 +7,9 @@
  */
 #include "types.h"
 
+#define HEX_RESTORE_UTF8	2
+#define HEX_RESTORE_CRLF	4
+
 /* Commands which just type in variable values */
 
 int ucharset(BW *bw)
@@ -239,10 +242,20 @@ void lazy_opts(B *b, OPTIONS *o)
 		o->charmap = locale_map;
 	if (!o->language)
 		o->language = zdup(locale_msgs);
-	/* Hex not allowed with UTF-8 */
-	if (o->hex && o->charmap->type) {
-		o->charmap = find_charmap(USTR "c");
+	if (o->hex) {
+		/* Hex not allowed with UTF-8 */
+		if (o->charmap->type) {
+			o->charmap = find_charmap(USTR "c");
+			o->hex |= HEX_RESTORE_UTF8;
+		}
+		
+		/* Hex not allowed with CRLF */
+		if (o->crlf) {
+			o->crlf = 0;
+			o->hex |= HEX_RESTORE_CRLF;
+		}
 	}
+	
 }
 
 /* Set local options depending on file name and contents */
@@ -925,37 +938,71 @@ void add_menu_entry(struct rc_menu *menu, unsigned char *entry_name, MACRO *m)
 	menu->entries[menu->size - 1] = e;
 }
 
+static int applyopt(BW *bw, void *optp, int y, int flg)
+{
+	int oldval, newval;
+	
+	oldval = *(int *)optp;
+	if (flg == 0) {
+		/* Return pressed: toggle */
+		newval = !oldval;
+	} else if (flg == 1) {
+		/* '1' pressed */
+		newval = oldval ? oldval : 1; /* Keep oldval if already 'on' */
+	} else {
+		/* '0' or backspace or something else */
+		newval = 0;
+	}
+
+	*(int *)optp = newval;
+	msgnw(bw->parent, newval ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
+	
+	return oldval;
+}
+
 static int olddoopt(BW *bw, int y, int flg, int *notify)
 {
-	int *xx;
+	int *xx, oldval;
 	unsigned char buf[OPT_BUF_SIZE];
 
 	if (y >= 0) {
 		switch (glopts[y].type) {
 		case 0:
-			if (!flg)
-				*(int *)glopts[y].set = !*(int *)glopts[y].set;
-			else if (flg == 1)
-				*(int *)glopts[y].set = 1;
-			else
-				*(int *)glopts[y].set = 0;
-			msgnw(bw->parent, *(int *)glopts[y].set ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
+			applyopt(bw, glopts[y].set, y, flg);
 			break;
 		case 4:
-			if (!flg)
-				*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = !*(int *) ((unsigned char *) &bw->o + glopts[y].ofst);
-			else if (flg == 1)
-				*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = 1;
-			else
-				*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = 0;
-			msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
+			oldval = applyopt(bw, (unsigned char *) &bw->o + glopts[y].ofst, y, flg);
+			
+			/* Propagate readonly bit to B */
 			if (glopts[y].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
 				bw->b->rdonly = bw->o.readonly;
-			/* Kill UTF-8 mode if we switch to hex display */
-			if (glopts[y].ofst == (unsigned char *) &fdefault.hex - (unsigned char *) &fdefault &&
-			    bw->o.hex &&
-			    bw->b->o.charmap->type) {
-				doencoding(bw, vsncpy(NULL, 0, sc("C")), NULL, NULL);
+			
+			/* Kill UTF-8 and CRLF modes if we switch to hex display */
+			if (glopts[y].ofst == (unsigned char *) &fdefault.hex - (unsigned char *) &fdefault) {
+				if (bw->o.hex && !oldval) {
+					bw->o.hex = 1;
+					if (bw->b->o.charmap->type) {
+						/* Switch out of UTF-8 mode */
+						doencoding(bw, vsncpy(NULL, 0, sc("C")), NULL, NULL);
+						bw->o.hex |= HEX_RESTORE_UTF8;
+					}
+					
+					if (bw->o.crlf) {
+						/* Switch out of CRLF mode */
+						bw->o.crlf = 0;
+						bw->o.hex |= HEX_RESTORE_CRLF;
+					}
+				} else if (!bw->o.hex && oldval) {
+					if ((oldval & HEX_RESTORE_UTF8) && !zcmp(bw->b->o.charmap->name, USTR "ascii")) {
+						/* Switch back into UTF-8 */
+						doencoding(bw, vsncpy(NULL, 0, sc("UTF-8")), NULL, NULL);
+					}
+					
+					if (oldval & HEX_RESTORE_CRLF) {
+						/* Turn CRLF back on */
+						bw->o.crlf = 1;
+					}
+				}
 			}
 			break;
 		case 6:

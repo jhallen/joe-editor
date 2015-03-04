@@ -86,6 +86,7 @@ AC_C_CONST
 if test "$cross_compiling" = "yes" ; then
 	AC_MSG_WARN(cross compiling so assuming defaults for most 32 bit machines)
 fi
+AC_CHECK_TYPES([long long])
 AC_CHECK_SIZEOF(char, 1)
 AC_CHECK_SIZEOF(short, 2)
 AC_CHECK_SIZEOF(int, 4)
@@ -182,14 +183,17 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
 AC_CONFIG_FILES([Makefile joe/Makefile rc/Makefile man/Makefile man/ru/Makefile
-syntax/Makefile po/Makefile
-syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf syntax/sh.jsf syntax/python.jsf
-syntax/conf.jsf syntax/php.jsf syntax/mail.jsf syntax/pascal.jsf syntax/html.jsf
-syntax/vhdl.jsf syntax/fortran.jsf syntax/java.jsf syntax/xml.jsf syntax/tcl.jsf
-charmaps/klingon syntax/lisp.jsf syntax/csh.jsf syntax/mason.jsf syntax/diff.jsf
-syntax/asm.jsf syntax/css.jsf syntax/tex.jsf syntax/ocaml.jsf syntax/4gl.jsf
-syntax/sml.jsf syntax/sql.jsf syntax/awk.jsf syntax/cobol.jsf syntax/sed.jsf
-syntax/ps.jsf syntax/ada.jsf syntax/troff.jsf syntax/haskell.jsf
-syntax/rexx.jsf syntax/skill.jsf syntax/lua.jsf syntax/ruby.jsf syntax/m4.jsf
-syntax/joerc.jsf syntax/spec.jsf syntax/matlab.jsf syntax/jsf.jsf syntax/jsf_check.jsf])
+syntax/Makefile po/Makefile charmaps/klingon
+syntax/4gl.jsf syntax/ada.jsf syntax/asm.jsf syntax/awk.jsf syntax/batch.jsf
+syntax/c.jsf syntax/cobol.jsf syntax/conf.jsf syntax/csharp.jsf
+syntax/csh.jsf syntax/css.jsf syntax/diff.jsf syntax/fortran.jsf
+syntax/go.jsf syntax/haskell.jsf syntax/html.jsf syntax/ini.jsf
+syntax/java.jsf syntax/javascript.jsf syntax/joerc.jsf syntax/jsf_check.jsf
+syntax/jsf.jsf syntax/lisp.jsf syntax/lua.jsf syntax/m4.jsf syntax/mail.jsf
+syntax/mason.jsf syntax/matlab.jsf syntax/ocaml.jsf syntax/pascal.jsf
+syntax/perl.jsf syntax/php.jsf syntax/ps.jsf syntax/python.jsf
+syntax/rexx.jsf syntax/ruby.jsf syntax/sed.jsf syntax/sh.jsf
+syntax/skill.jsf syntax/sml.jsf syntax/spec.jsf syntax/sql.jsf
+syntax/tcl.jsf syntax/tex.jsf syntax/troff.jsf syntax/typescript.jsf
+syntax/verilog.jsf syntax/vhdl.jsf syntax/xml.jsf])
 AC_OUTPUT

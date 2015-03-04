@@ -598,8 +598,11 @@ void mpxdied(MPX *m);
 
 long last_time;
 
+extern MACRO *timer_play();
+
 int ttgetc(void)
 {
+        MACRO *m;
 	int stat;
 	long new_time;
 	int flg;
@@ -623,6 +626,12 @@ int ttgetc(void)
 		flg = 1;
 	}
 	ttflsh();
+	m = timer_play();
+	if (m) {
+	        exemac(m);
+	        edupd(1);
+	        ttflsh();
+	}
 	while (winched) {
 		winched = 0;
 		dostaupd = 1;

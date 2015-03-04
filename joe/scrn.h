@@ -42,6 +42,8 @@ struct scrn {
 				   init. string */
 	unsigned char	*cd;		/* Clear to end of screen */
 	unsigned char	*te;		/* Restoration string */
+	unsigned char	*brp;		/* Bracketed paste mode */
+	unsigned char	*bre;		/* Stop bracketed paste */
 
 	int	haz;		/* Terminal can't print ~s */
 	int	os;		/* Terminal overstrikes */
@@ -64,6 +66,9 @@ struct scrn {
 	unsigned char	*mh;		/* Enter dim mode */
 	unsigned char	*mr;		/* Enter inverse mode */
 	unsigned char	*me;		/* Exit above modes */
+
+	unsigned char	*ZH;		/* Enter italic mode */
+	unsigned char	*ZR;		/* Exit italic mode */
 
 	unsigned char	*Sb;		/* Set background color */
 	unsigned char	*Sf;		/* Set foregrond color */
@@ -212,6 +217,7 @@ void utf8_putc PARAMS((int c));
 #define BOLD 4
 #define BLINK 8
 #define DIM 16
+#define ITALIC 32
 extern unsigned atab[];
 
 #define outatr(t,scrn,attr,x,y,c,a) do { \
@@ -223,12 +229,13 @@ extern unsigned atab[];
 
 #else
 
+#define ITALIC		 128
 #define INVERSE		 256
 #define UNDERLINE	 512
 #define BOLD		1024
 #define BLINK		2048
 #define DIM		4096
-#define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM)
+#define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM+ITALIC)
 
 #define BG_SHIFT	13
 #define BG_VALUE	(255<<BG_SHIFT)

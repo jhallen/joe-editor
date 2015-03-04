@@ -393,6 +393,18 @@
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
 -cpara >#!;*/%
 
+*.hh
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
  Verilog file
 *.v
 -autoindent
@@ -466,7 +478,16 @@
  Javascript
 *.js
 -autoindent
--syntax java
+-syntax javascript
+-smarthome
+-smartbacks
+-purify
+-cpara >#!;*/%
+
+ Typescript
+*.ts
+-autoindent
+-syntax typescript
 -smarthome
 -smartbacks
 -purify
@@ -678,6 +699,28 @@
 -autoindent
 -syntax tcl
 
+ Go language
+*.go
+-autoindent
+-syntax go
+-smarthome
+-smartbacks
+
+ CSharp
+*.cs
+-autoindent
+-syntax csharp
+-smarthome
+-smartbacks
+-purify
+-cpara >#!;*/%
+-text_delimiters #region=#endregion:#if=#elif=#else=#endif
+
+ RESX/.NET resource files
+*.resx
+-autoindent
+-syntax xml
+
  Joe Syntax File
 *.jsf
 -autoindent
@@ -718,6 +761,22 @@
  System RC file
 *rc
 -syntax conf
+
+ Windows batch files
+*.bat
+-autoindent
+-syntax batch
+
+*.cmd
+-autoindent
+-syntax batch
+
+ Windows configuration files
+*.ini
+-syntax ini
+
+*.inf
+-syntax ini
 
  JOERC file
 *ftyperc
