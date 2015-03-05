@@ -32,12 +32,35 @@ static void cdone_parse(B *b)
 	parserrb(b);
 }
 
+/* Set up for shell mode in each window with the buffer */
+
+static void ansiall(B *b)
+{
+	W *w;
+	if ((w = maint->topwin) != NULL) {
+		do {
+	 		if (w->watom->what & TYPETW) {
+	 			BW *bw = (BW *)w->object;
+		 		if (bw->b == b) {
+		 			bw->o.ansi = bw->b->o.ansi;
+		 			bw->o.syntax = bw->b->o.syntax;
+		 		}
+			}
+		w = w->link.next;
+	 	} while (w != maint->topwin);
+	 }
+}
+
 /* Executed for each chunk of data we get from the shell */
 
 static void cready(B *b,long byte)
 {
 	W *w;
-	 if ((w = maint->topwin) != NULL) {
+	if (b->oldcur && b->oldcur->byte == byte)
+		b->shell_flag = 1;
+	else
+		b->shell_flag = 0;
+	if ((w = maint->topwin) != NULL) {
 	 	do {
 	 		if (w->watom->what & TYPETW) {
 	 			BW *bw = (BW *)w->object;
@@ -49,13 +72,18 @@ static void cready(B *b,long byte)
 			}
 		w = w->link.next;
 	 	} while (w != maint->topwin);
-	 }
+	}
 }
 
 static void cfollow(B *b)
 {
 	W *w;
-	 if ((w = maint->topwin) != NULL) {
+	if (b->oldcur && b->shell_flag) {
+		b->shell_flag = 0;
+		pgoto(b->oldcur, b->vt->vtcur->byte);
+		b->oldcur->xcol = piscol(b->oldcur);
+	}
+	if ((w = maint->topwin) != NULL) {
 	 	do {
 	 		if (w->watom->what & TYPETW) {
 	 			BW *bw = (BW *)w->object;
@@ -68,7 +96,7 @@ static void cfollow(B *b)
 			}
 		w = w->link.next;
 	 	} while (w != maint->topwin);
-	 }
+	}
 }
 
 void vt_scrdn()
@@ -91,15 +119,17 @@ void vt_scrdn()
 
 static void cdata(B *b, unsigned char *dat, int siz)
 {
+	MACRO *m;
 /*	P *q = pdup(b->eof, USTR "cdata");
 	P *r = pdup(b->eof, USTR "cdata");
 	long byte = q->byte;
 	unsigned char bf[1024];
 	int x, y;
 */
-	cready(b, b->vt->vtcur->byte);
+	do {
+		cready(b, b->vt->vtcur->byte);
 
-	vt_data(b->vt, dat, siz);
+		m = vt_data(b->vt, &dat, &siz);
 
 /*
 	for (x = y = 0; x != siz; ++x) {
@@ -126,12 +156,20 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	prm(r);
 	prm(q);
 */
-	cfollow(b);
-	undomark();
+		cfollow(b);
+		undomark();
+		if (m) {
+			/* FIXME: should only do this if cursor is on window */
+			exmacro(m, 1);
+			edupd(1);
+			rmmacro(m);
+		}
+	} while (m);
 }
 
 int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only, unsigned char *first_command)
 {
+	BW *master;
 #ifdef __MSDOS__
 	if (notify) {
 		*notify = 1;
@@ -150,13 +188,19 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		varm(s);
 		return -1;
 	}
-	bw->b->vt = mkvt(bw->b, bw->top->line, bw->h, bw->w);
-	bw->o.ansi = 1;
+	master = vtmaster(bw->parent->t, bw->b); /* In case of multiple BWs on one B, pick one to be the master */
+	if (!master) master = bw; /* Should never happen */
+	bw->b->vt = mkvt(bw->b, master->top->line, master->h, master->w);
+
 	bw->b->o.ansi = 1;
-	bw->o.syntax = bw->b->o.syntax = load_syntax("ansi");
+	bw->b->o.syntax = load_syntax("ansi");
+
+	/* Turn on shell mode for each window */
+	ansiall(bw->b);
+
 	/* p_goto_eof(bw->cursor); */
 
-	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, bw->w, bw->h))) {
+	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, master->w, master->h))) {
 		varm(s);
 		msgnw(bw->parent, joe_gettext(_("No ptys available")));
 		return -1;

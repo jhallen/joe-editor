@@ -38,6 +38,6 @@ struct vt_context {
 VT *mkvt(B *b, int top, int height, int width);
 void vtrm(VT *vt);
 
-void vt_data(VT *vt, unsigned char *dat, int siz);
+MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz);
 
-void vt_resize(VT *vt, int height, int width);
+void vt_resize(VT *vt, int top, int height, int width);

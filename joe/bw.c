@@ -1164,8 +1164,8 @@ void bwresz(BW *w, int wi, int he)
 	}
 	w->w = wi;
 	w->h = he;
-	if (w->b->vt && w->cursor->byte == w->b->vt->vtcur->byte && w->b->pid) {
-		vt_resize(w->b->vt, he, wi);
+	if (w->b->vt && w->b->pid && w == vtmaster(w->parent->t, w->b)) {
+		vt_resize(w->b->vt, w->top->line, he, wi);
 		ttstsz(w->b->out, wi, he);
 	}
 }
@@ -1313,6 +1313,24 @@ void set_file_pos_all(Screen *t)
 	} while(w != t->topwin);
 	/* Set through orphaned buffers */
 	set_file_pos_orphaned();
+}
+
+/* Return master BW for a B.  It's the last window on the screen with the B.  If the B has a VT, then
+ * it's the last window on the screen with the B and where the cursor matches the VT cursor. */
+
+BW *vtmaster(Screen *t, B *b)
+{
+	W *w = t->topwin;
+	BW *m = 0;
+	do {
+		if (w->watom == &watomtw) {
+			BW *bw = w->object;
+			if (w->y != -1 && bw->b == b && (!b->vt || b->vt->vtcur->byte == bw->cursor->byte))
+				m = bw;
+		}
+		w = w->link.next;
+	} while (w != t->topwin);
+	return m;
 }
 
 void bwrm(BW *w)

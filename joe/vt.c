@@ -19,13 +19,14 @@ VT *mkvt(B *b, int top, int height, int width)
 	return vt;
 }
 
-void vt_resize(VT *vt, int height, int width)
+void vt_resize(VT *vt, int top, int height, int width)
 {
 	int flag = 0;
 	if (vt->regn_bot == vt->height)
 		flag = 1;
 	vt->height = height;
 	vt->width = width;
+	vt->top = top;
 	if (vt->regn_top > height)
 		vt->regn_top = height;
 	if (vt->regn_bot > height)
@@ -479,8 +480,10 @@ int vt_arg(VT *vt, int argn, int dflt)
 	return vt->argv[argn];
 }
 
-void vt_data(VT *vt, unsigned char *dat, int siz)
+MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 {
+	unsigned char *dat = *indat;
+	int siz = *insiz;
 	while (siz--) {
 		unsigned char c = *dat++;
 		switch (vt->state) {
@@ -616,6 +619,10 @@ void vt_data(VT *vt, unsigned char *dat, int siz)
 						/* printf("Got command '%s'\r\n", vt->buf); */
 						m = mparse(NULL, vt->buf, &rtn);
 						if (rtn >= 0) {
+							*insiz = siz;
+							*indat = dat;
+							vt->state = vt_idle;
+							return m;
 							/* FIXME should only do this if cursor is on window */
 							exmacro(m, 1);
 							edupd(1);
@@ -769,4 +776,5 @@ void vt_data(VT *vt, unsigned char *dat, int siz)
 			}
 		}
 	}
+	return 0;
 }
