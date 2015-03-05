@@ -461,7 +461,7 @@ struct high_syntax *load_syntax_subr(unsigned char *name,unsigned char *subr,str
 
 /* Parse options */
 
-int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
+int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
 {
 	unsigned char buf[1024];
 	unsigned char bf[256];
@@ -511,7 +511,7 @@ int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsign
 		} else if(!parsing_strings && (!zcmp(bf,USTR "strings") || !zcmp(bf,USTR "istrings"))) {
 			if (bf[0]=='i')
 				cmd->ignore = 1;
-			while(fgets((char *)buf,1023,f)) {
+			while(jfgets((char *)buf,1023,f)) {
 				++line;
 				p = buf;
 				parse_ws(&p,'#');
@@ -571,7 +571,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	int clist[256];
 	unsigned char *p;
 	int c;
-	FILE *f = 0;
+	JFILE *f = 0;
 	struct ifstack *stack=0;
 	struct high_state *state=0;	/* Current state */
 	struct high_state *first=0;	/* First state */
@@ -583,19 +583,23 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	p = (unsigned char *)getenv("HOME");
 	if (p) {
 		joe_snprintf_2(name,sizeof(name),"%s/.joe/syntax/%s.jsf",p,syntax->name);
-		f = fopen((char *)name,"r");
+		f = jfopen((char *)name,"r");
 	}
 
 	if (!f) {
 		joe_snprintf_2(name,sizeof(name),"%ssyntax/%s.jsf",JOEDATA,syntax->name);
-		f = fopen((char *)name,"r");
+		f = jfopen((char *)name,"r");
 	}
-	if(!f) {
+	if (!f) {
+		joe_snprintf_1(name,sizeof(name),"*%s.jsf",syntax->name);
+		f = jfopen((char *)name,"r");
+	}
+	if (!f) {
 		return 0;
 	}
 
 	/* Parse file */
-	while(fgets((char *)buf,1023,f)) {
+	while(jfgets((char *)buf,1023,f)) {
 		++line;
 		p = buf;
 		c = parse_ws(&p,'#');
@@ -755,7 +759,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 		joe_free(st);
 	}
 
-	fclose(f);
+	jfclose(f);
 
 	return first;
 }

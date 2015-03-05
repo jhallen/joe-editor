@@ -539,7 +539,7 @@ unsigned char *builtins[]=
 		"type		^@ TO ÿ\n"
 		":querysr		Search & replace query window\n"
 		"type		^@ TO ÿ\n"
-,	USTR "c.jsf.in",
+,	USTR "c.jsf",
 		USTR "=Idle\n"
 		"=Bad		bold red\n"
 		"=Preproc 	blue\n"

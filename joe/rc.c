@@ -767,51 +767,65 @@ static int syntaxcmplt(BW *bw)
 	if (!syntaxes) {
 		unsigned char *oldpwd = pwd();
 		unsigned char **t;
+		unsigned char **syntmp = NULL;
 		unsigned char *p;
 		int x, y;
-
-		if (chpwd(USTR (JOEDATA "syntax")))
-			return -1;
-		t = rexpnd(USTR "*.jsf");
-		if (!t) {
-			chpwd(oldpwd);
-			return -1;
-		}
-		if (!aLEN(t)) {
+		
+		/* Load first from global (NOTE: Order here does not matter.) */
+		if (!chpwd(USTR (JOEDATA "syntax")) && (t = rexpnd(USTR "*.jsf"))) {
+			for (x = 0; x != aLEN(t); ++x) {
+				unsigned char *r = vsncpy(NULL,0,t[x],(unsigned char *)strrchr((char *)(t[x]),'.')-t[x]);
+				syntmp = vaadd(syntmp,r);
+			}
+			
 			varm(t);
-			chpwd(oldpwd);
-			return -1;
 		}
-
-		for (x = 0; x != aLEN(t); ++x) {
-			unsigned char *r = vsncpy(NULL,0,t[x],(unsigned char *)strrchr((char *)(t[x]),'.')-t[x]);
-			syntaxes = vaadd(syntaxes,r);
-		}
-		varm(t);
-
+		
+		/* Load from home directory. */
 		p = (unsigned char *)getenv("HOME");
 		if (p) {
 			unsigned char buf[1024];
 			joe_snprintf_1(buf,sizeof(buf),"%s/.joe/syntax",p);
+			
 			if (!chpwd(buf) && (t = rexpnd(USTR "*.jsf"))) {
 				for (x = 0; x != aLEN(t); ++x)
 					*strrchr((char *)t[x],'.') = 0;
 				for (x = 0; x != aLEN(t); ++x) {
-					for (y = 0; y != aLEN(syntaxes); ++y)
-						if (!zcmp(t[x],syntaxes[y]))
+					for (y = 0; y != aLEN(syntmp); ++y)
+						if (!zcmp(t[x],syntmp[y]))
 							break;
-					if (y == aLEN(syntaxes)) {
+					if (y == aLEN(syntmp)) {
 						unsigned char *r = vsncpy(NULL,0,sv(t[x]));
-						syntaxes = vaadd(syntaxes,r);
+						syntmp = vaadd(syntmp,r);
 					}
 				}
 				varm(t);
 			}
 		}
+		
+		/* Load from builtins. */
+		t = jgetbuiltins(USTR ".jsf");
+		for (x = 0; x != aLEN(t); ++x) {
+			*strrchr((char *)t[x], '.') = 0;
+			for (y = 0; y != aLEN(syntmp); ++y)
+				if (!zcmp(t[x], syntmp[y]))
+					break;
+			if (y == aLEN(syntmp)) {
+				unsigned char *r = vsncpy(NULL, 0, sv(t[x]));
+				syntmp = vaadd(syntmp, r);
+			}
+		}
+		
+		varm(t);
+		
+		if (aLEN(syntmp)) {
+			vasort(av(syntmp));
+			syntaxes = syntmp;
+		}
 
-		vasort(av(syntaxes));
 		chpwd(oldpwd);
 	}
+	
 	return simple_cmplt(bw,syntaxes);
 }
 
