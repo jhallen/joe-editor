@@ -791,10 +791,10 @@ aspellword	^[ n
 
  Shell windows
 
-:def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,bknd!,eof
-:def shell2 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 2 *",rtn,bknd!,eof
-:def shell3 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 3 *",rtn,bknd!,eof
-:def shell4 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 4 *",rtn,bknd!,eof
+:def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,vtbknd!,eof
+:def shell2 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 2 *",rtn,vtbknd!,eof
+:def shell3 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 3 *",rtn,vtbknd!,eof
+:def shell4 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 4 *",rtn,vtbknd!,eof
 
  Here we guess some common key sequences which either do not have termcap
  sequences or which are frequently wrong.  Note that if the termcap entry is
@@ -1176,6 +1176,15 @@ type		^@ TO ÿ
 type		^@ TO ÿ
 
 :shell			Input to shell windows
+:inherit main
+""		^C		Abort
+""		^D		Eof
+"	"	^I		Tab
+""		^H		Backspace
+""		^M		Return
+""		^?		Backspace
+
+:vtshell		Input to ANSI shell windows
 :inherit main
 "[A"		 [ A
 "[A"		.ku

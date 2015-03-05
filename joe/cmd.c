@@ -205,6 +205,7 @@ CMD cmds[] = {
 	{USTR "upper", TYPETW + TYPEPW + EMOD + EBLOCK, uupper, NULL, 0, NULL},
 	{USTR "upslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, uupslide, NULL, 1, USTR "dnslide"},
 	{USTR "upslidemenu", TYPEMENU, umscrup, NULL, 1, USTR "dnslidemenu"},
+	{USTR "vtbknd", TYPETW, uvtbknd, NULL, 0, NULL},
 	{USTR "xtmouse", TYPETW+TYPEPW+TYPEMENU+TYPEQW, uxtmouse, 0, 0, 0 },
 	{USTR "yank", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyank, NULL, 1, NULL},
 	{USTR "yapp", TYPETW + TYPEPW + EKILL, uyapp, NULL, 0, NULL},
@@ -374,9 +375,9 @@ int execmd(CMD *cmd, int k)
 	/* Warning: bw is a BW * only if maint->curwin->watom->what &
 	    (TYPETW|TYPEPW) */
 
-#ifdef junk
+#if junk
 	/* Send data to shell window: this is broken ^K ^H (help) sends its ^H to shell */
-	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && (piseof(bw->cursor) || bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte) &&
+	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor) &&
 	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype /* && k>=32 && k<256 */))) {
 		unsigned char c = k;
 		joe_write(bw->b->out, &c, 1);

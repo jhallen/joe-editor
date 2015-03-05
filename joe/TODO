@@ -1,21 +1,9 @@
+abort a window and shell window replaces it:
+  cursor is wrong. we need EFFIXCOL on abort.. any others?
+
 clean up macro execute for magic shell commands:
   only execute shell_ ones...
   only execute if window is on screen...
-
-nbuf/pbuf do not call resize, so swapping in a shell window is not properly resized.
- [seems to be fixed, but not sure where resize is getting called..]
-
-multiple windows open on one shell window is kind of broken (you get
-conflicting resize events from each of them).  There should be a concept
-of the master window.
- [fixed, we use the last one]
-
-Even then, a window should only be a master if the cursor matches the vt
-cursor.  This helps with the problem of closing a window and switching to
-another where cursor is far away.
-
-  - using vtmaster to pick one to be the master...
-     - how to switch it (for example if a window is closed)? maybe overall screen refresh has to watch for this?
 
 Mode to start joe with shell window.
 
@@ -33,10 +21,6 @@ Add magic joe command: append list of buffers.
 It would be nice if ^G was goto instead of ESC space
 
 Think through grep and compile.. maybe parse has to be progressive.
-
-Think more about keeping cursor in sync: from shell window, edit file, ^C,
-we're back in shell window but cursor is in the wrong place.
- [fixed- we were not keeping cursor up to date in orphan windows]
 
 Context help for shell window?
 
@@ -58,10 +42,7 @@ attributes that already exist.
 Pgetc() does not now always return a character... how to fix?
 	Ugh...
 
-Need raw mode which works the old way.. (mostly for debugging joe..)
-
 Hex mode probably doesn't mix correctly with vt
-
 
 When you use grep in a buffer, you can parserr.. but grep output can be
 highlighted with escape sequences.. parserr includes them in the file names.
@@ -76,6 +57,38 @@ Who owns keyboard, application or joe?
 		it mean quote only if it's the first thing in the read buffer)
 	(done- but check other rc files...)
 
+Need ^K ' to make a new window... (how to go to it? Have one for grep?
+Compile?)
+	We have F1 - F4
+		If you exit shell and hit F2 again it messes up... (need
+better way to detect it's a shell window- filename compare, perhaps).
+
+- - - -
+Note: termcap emulation functions are gone from curses..
+	No, ncurses-devel was missing on ubuntu..
+
+Think more about keeping cursor in sync: from shell window, edit file, ^C,
+we're back in shell window but cursor is in the wrong place.
+ [fixed- we were not keeping cursor up to date in orphan windows]
+
+nbuf/pbuf do not call resize, so swapping in a shell window is not properly resized.
+ [seems to be fixed, but not sure where resize is getting called..]
+
+multiple windows open on one shell window is kind of broken (you get
+conflicting resize events from each of them).  There should be a concept
+of the master window.
+ [fixed, we use the last one]
+
+Even then, a window should only be a master if the cursor matches the vt
+cursor.  This helps with the problem of closing a window and switching to
+another where cursor is far away.
+
+  - using vtmaster to pick one to be the master...
+     - how to switch it (for example if a window is closed)? maybe overall screen refresh has to watch for this?
+
+Need raw mode which works the old way.. (mostly for debugging joe..)
+  [done]
+
 Resize needs more testing.  Resize with 'man ls' not quite working.
 Weird things will happen with multiple window with synchronized cursors.
    [fixed- was due to scrolling region not being resized]
@@ -84,17 +97,7 @@ Resize not working when you kill other window?
  [seems to be ok]
 
 ^K V should jump to vt cursor... (done)
-
-Need ^K ' to make a new window... (how to go to it? Have one for grep?
-Compile?)
-	We have F1 - F4
-		If you exit shell and hit F2 again it messes up... (need
-better way to detect it's a shell window- filename compare, perhaps).
-
-Note: termcap emulation functions are gone from curses..
-	No, ncurses-devel was missing on ubuntu..
-
-
+- - - -
 
 For JOE-3.6
 

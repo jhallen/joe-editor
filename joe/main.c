@@ -103,6 +103,8 @@ MACRO *timer_play()
 	return 0;
 }
 
+KBD *shell_kbd;
+
 int edloop(int flg)
 {
 	int term = 0;
@@ -141,7 +143,9 @@ int edloop(int flg)
 
 		/* Use special kbd if we're handing data to a shell window */
 		bw = (BW *)maint->curwin->object;
-		if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->cursor->byte == bw->b->vt->vtcur->byte)
+		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseol(bw->cursor))
+			m = dokey(shell_kbd, c);
+		else if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)
 			m = dokey(bw->b->vt->kbd, c);
 		else
 			m = dokey(maint->curwin->kbd, c);
@@ -442,6 +446,8 @@ int main(int argc, char **real_argv, char **envv)
 		type_backtick = mparse(0, buf, &x);
 	}
 
+	shell_kbd = mkkbd(kmap_getcontext("shell"));
+
 	if (!isatty(fileno(stdin)))
 		idleout = 0;
 
@@ -609,7 +615,7 @@ int main(int argc, char **real_argv, char **envv)
 			cmd = vsncpy(NULL, 0, sc("/bin/cat"));
 			a = vaadd(a, cmd);
 			
-			cstart (maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1, NULL);
+			cstart (maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1, NULL, 0);
 		}
 	}
 

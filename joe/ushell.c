@@ -53,7 +53,9 @@ static void ansiall(B *b)
 
 /* Executed for each chunk of data we get from the shell */
 
-static void cready(B *b,long byte)
+/* Mark each window which needs to follow the shell output */
+
+static void cready(B *b, off_t byte)
 {
 	W *w;
 	if (b->oldcur && b->oldcur->byte == byte)
@@ -75,12 +77,12 @@ static void cready(B *b,long byte)
 	}
 }
 
-static void cfollow(B *b)
+static void cfollow(B *b, off_t byte)
 {
 	W *w;
 	if (b->oldcur && b->shell_flag) {
 		b->shell_flag = 0;
-		pgoto(b->oldcur, b->vt->vtcur->byte);
+		pgoto(b->oldcur, byte);
 		b->oldcur->xcol = piscol(b->oldcur);
 	}
 	if ((w = maint->topwin) != NULL) {
@@ -89,7 +91,7 @@ static void cfollow(B *b)
 	 			BW *bw = (BW *)w->object;
 	 			if (bw->shell_flag) {
 	 				bw->shell_flag = 0;
-	 				pgoto(bw->cursor, b->vt->vtcur->byte);
+	 				pgoto(bw->cursor, byte);
 	 				bw->cursor->xcol = piscol(bw->cursor);
 	 				dofollows();
 	 			}
@@ -119,57 +121,59 @@ void vt_scrdn()
 
 static void cdata(B *b, unsigned char *dat, int siz)
 {
-	MACRO *m;
-/*	P *q = pdup(b->eof, USTR "cdata");
-	P *r = pdup(b->eof, USTR "cdata");
-	long byte = q->byte;
-	unsigned char bf[1024];
-	int x, y;
-*/
-	do {
-		cready(b, b->vt->vtcur->byte);
+	if (b->vt) { /* ANSI terminal emulator */
+		MACRO *m;
+		do {
+			cready(b, b->vt->vtcur->byte);
 
-		m = vt_data(b->vt, &dat, &siz);
+			m = vt_data(b->vt, &dat, &siz);
 
-/*
-	for (x = y = 0; x != siz; ++x) {
-		if (dat[x] == 13 || dat[x] == 0) {
-			;
-		} else if (dat[x] == 8 || dat[x] == 127) {
-			if (y) {
-				--y;
-			} else {
-				pset(q, r);
-				prgetc(q);
-				bdel(q, r);
-				--byte;
+			cfollow(b, b->vt->vtcur->byte);
+			undomark();
+			if (m) {
+				/* FIXME: should only do this if cursor is on window */
+				exmacro(m, 1);
+				edupd(1);
+				rmmacro(m);
 			}
-		} else if (dat[x] == 7) {
-			ttputc(7);
-		} else {
-			bf[y++] = dat[x];
+		} while (m);
+	} else { /* Dumb terminal */
+		P *q = pdup(b->eof, USTR "cdata");
+		P *r = pdup(b->eof, USTR "cdata");
+		off_t byte = q->byte;
+		unsigned char bf[1024];
+		int x, y;
+		cready(b, byte);
+		for (x = y = 0; x != siz; ++x) {
+			if (dat[x] == 13 || dat[x] == 0) {
+				;
+			} else if (dat[x] == 8 || dat[x] == 127) {
+				if (y) {
+					--y;
+				} else {
+					pset(q, r);
+					prgetc(q);
+					bdel(q, r);
+					--byte;
+				}
+			} else if (dat[x] == 7) {
+				ttputc(7);
+			} else {
+				bf[y++] = dat[x];
+			}
 		}
-	}
-	if (y) {
-		binsm(r, bf, y);
-	}
-	prm(r);
-	prm(q);
-*/
-		cfollow(b);
+		if (y) {
+			binsm(r, bf, y);
+		}
+		prm(r);
+		prm(q);
+		cfollow(b, b->eof->byte);
 		undomark();
-		if (m) {
-			/* FIXME: should only do this if cursor is on window */
-			exmacro(m, 1);
-			edupd(1);
-			rmmacro(m);
-		}
-	} while (m);
+	}
 }
 
-int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only, unsigned char *first_command)
+int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only, unsigned char *first_command, int vt)
 {
-	BW *master;
 #ifdef __MSDOS__
 	if (notify) {
 		*notify = 1;
@@ -179,41 +183,53 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 	return -1;
 #else
 	MPX *m;
+	int shell_w = -1, shell_h = -1;
+
 
 	if (notify) {
 		*notify = 1;
 	}
 	if (bw->b->pid) {
-/*		msgnw(bw->parent, joe_gettext(_("Program already running in this window"))); */
+		if (!vt) { /* Don't complain if shell already running.. makes F-key switching nicer */
+			/* Keep old behavior for dumb terminal */
+			msgnw(bw->parent, joe_gettext(_("Program already running in this window")));
+		}
 		varm(s);
 		return -1;
 	}
-	master = vtmaster(bw->parent->t, bw->b); /* In case of multiple BWs on one B, pick one to be the master */
-	if (!master) master = bw; /* Should never happen */
-	bw->b->vt = mkvt(bw->b, master->top->line, master->h, master->w);
 
-	bw->b->o.ansi = 1;
-	bw->b->o.syntax = load_syntax("ansi");
+	if (vt) {
+		BW *master = vtmaster(bw->parent->t, bw->b); /* In case of multiple BWs on one B, pick one to be the master */
+		if (!master) master = bw; /* Should never happen */
+		shell_w = master->w;
+		shell_h = master->h;
+		bw->b->vt = mkvt(bw->b, master->top->line, master->h, master->w);
 
-	/* Turn on shell mode for each window */
-	ansiall(bw->b);
+		bw->b->o.ansi = 1;
+		bw->b->o.syntax = load_syntax("ansi");
+
+		/* Turn on shell mode for each window */
+		ansiall(bw->b);
+	}
 
 	/* p_goto_eof(bw->cursor); */
 
-	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, master->w, master->h))) {
+	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, shell_w, shell_h))) {
 		varm(s);
 		msgnw(bw->parent, joe_gettext(_("No ptys available")));
 		return -1;
 	} else {
 		bw->b->pid = m->pid;
+/*
 		if (first_command)
 			write(bw->b->out, (char *)first_command, zlen(first_command));
+*/
 	}
 	return 0;
 #endif
 }
 
-int ubknd(BW *bw)
+static int dobknd(BW *bw, int vt)
 {
 	unsigned char **a;
 	unsigned char *s;
@@ -240,7 +256,21 @@ int ubknd(BW *bw)
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL, 0, 0, zstr(sh, "csh") ? start_csh : start_sh);
+	return cstart(bw, sh, a, NULL, NULL, 0, 0, zstr(sh, "csh") ? start_csh : start_sh, vt);
+}
+
+/* Start ANSI shell */
+
+int uvtbknd(BW *bw)
+{
+	return dobknd(bw, 1);
+}
+
+/* Start dumb shell */
+
+int ubknd(BW *bw)
+{
+	return dobknd(bw, 0);
 }
 
 /* Run a program in a window */
@@ -260,7 +290,7 @@ static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 0, 0, NULL);
+	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 0, 0, NULL, 0);
 }
 
 B *runhist = NULL;
@@ -283,7 +313,7 @@ static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 1, 0, NULL);
+	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 1, 0, NULL, 0);
 }
 
 B *buildhist = NULL;

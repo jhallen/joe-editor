@@ -15,7 +15,7 @@ VT *mkvt(B *b, int top, int height, int width)
 	vt->width = width;
 	vt->argc = 0;
 	vt->xn = 0;
-	vt->kbd = mkkbd(kmap_getcontext("shell"));
+	vt->kbd = mkkbd(kmap_getcontext("vtshell"));
 	return vt;
 }
 
