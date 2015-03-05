@@ -1,48 +1,57 @@
-abort a window and shell window replaces it:
-  cursor is wrong. we need EFFIXCOL on abort.. any others?
 
-clean up macro execute for magic shell commands:
-  only execute shell_ ones...
-  only execute if window is on screen...
+Improvements:
 
-Mode to start joe with shell window.
+ Not sure about switching to orphan mode.. but how can we have F1.F4 without it?
 
-Save per-shell window current directory in joe state file?
+   If we keep orphan mode, make it more like regular joe:
+    Do better when hitting ^C.. pop back to previous buffer in window?  Keep
+    history list for this?
 
-Do better when hitting ^C.. pop back to previous buffer in window?  Keep
-history list for this?
-
-Trouble when we switch to orphan mode:
+    Trouble when we switch to orphan mode:
 	^K I does not put orphaned buffers on screen...
 	Have to get users used to ^[ u and ^[ v
 
-Add magic joe command: append list of buffers.
+ It would be nice if ^G was goto instead of ESC space
+ Think through grep and compile.. maybe parse has to be progressive.
+ Maybe ^G parses just the line it's on and we give up on next-error /
+ previous-error?
 
-It would be nice if ^G was goto instead of ESC space
+ Mode to start joe with shell window.
 
-Think through grep and compile.. maybe parse has to be progressive.
+ Save per-shell window current directory in joe state file?
 
-Context help for shell window?
+ Add magic joe command: append list of buffers.
 
-Joe-specific shell aliases:
-	How to fix security hole?
-		Allow only: shell_ macros.
-		But also allow: "string" and rtn for arguments.
+ Context help for shell window?
 
-        Would be nice if there was history for each virtual console.
-		BASH HISTFILE.
+ 'joe' in a shell window should edit a file.
 
-	Need per-shell window current directory.
-	Logbuf?  Sometimes?
+ Would be nice if there was history for each virtual console.
+  BASH HISTFILE.
 
-Esc sequences could be optimized out: delete one if it results in same
-attributes that already exist.
+ Need per-shell window current directory.
+  Logbuf?  Sometimes?
+
+ Esc sequences could be optimized out: delete one if it results in same
+ attributes that already exist.
 	Ugh...
+
+Bugs:
+
+ abort a window and shell window replaces it:
+   cursor is wrong. we need EFFIXCOL on abort.. any others?
+
+ clean up macro execute for magic shell commands:
+   only execute shell_ ones...
+   only execute if window is on screen...
 
 Pgetc() does not now always return a character... how to fix?
-	Ugh...
+	Ugh... (what bugs does is cause?)
 
 Hex mode probably doesn't mix correctly with vt
+
+
+- - - -
 
 When you use grep in a buffer, you can parserr.. but grep output can be
 highlighted with escape sequences.. parserr includes them in the file names.
@@ -63,7 +72,6 @@ Compile?)
 		If you exit shell and hit F2 again it messes up... (need
 better way to detect it's a shell window- filename compare, perhaps).
 
-- - - -
 Note: termcap emulation functions are gone from curses..
 	No, ncurses-devel was missing on ubuntu..
 

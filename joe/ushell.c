@@ -220,10 +220,8 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		return -1;
 	} else {
 		bw->b->pid = m->pid;
-/*
 		if (first_command)
 			write(bw->b->out, (char *)first_command, zlen(first_command));
-*/
 	}
 	return 0;
 #endif
@@ -256,7 +254,7 @@ static int dobknd(BW *bw, int vt)
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL, 0, 0, zstr(sh, "csh") ? start_csh : start_sh, vt);
+	return cstart(bw, sh, a, NULL, NULL, 0, 0, (vt ? (zstr(sh, "csh") ? start_csh : start_sh) : NULL), vt);
 }
 
 /* Start ANSI shell */
