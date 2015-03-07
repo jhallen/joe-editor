@@ -206,7 +206,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		bw->b->vt = mkvt(bw->b, master->top->line, master->h, master->w);
 
 		bw->b->o.ansi = 1;
-		bw->b->o.syntax = load_syntax("ansi");
+		bw->b->o.syntax = load_syntax(USTR "ansi");
 
 		/* Turn on shell mode for each window */
 		ansiall(bw->b);
@@ -254,7 +254,7 @@ static int dobknd(BW *bw, int vt)
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL, 0, 0, (vt ? (zstr(sh, "csh") ? start_csh : start_sh) : NULL), vt);
+	return cstart(bw, sh, a, NULL, NULL, 0, 0, (vt ? (zstr(sh, USTR "csh") ? start_csh : start_sh) : NULL), vt);
 }
 
 /* Start ANSI shell */

@@ -1731,7 +1731,7 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 
 	/* Send data to shell window */
 	if (bw->b->pid && !bw->b->vt && piseof(bw->cursor) ||
-	    bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte) {
+	   ( bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)) {
 		unsigned char c = k;
 		joe_write(bw->b->out, &c, 1);
 		return 0;

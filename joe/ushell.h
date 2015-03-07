@@ -19,4 +19,6 @@ extern B *runhist; /* Shell command history */
 extern B *buildhist; /* Build command history */
 extern B *grephist; /* Grep command history */
 
+void vt_scrdn();
+
 #endif

@@ -11,7 +11,7 @@ struct vt_context {
 	enum vt_state state;
 
 	/* Record attribute sequence */
-	char buf[100];
+	unsigned char buf[100];
 	int bufx;
 
 	/* Implement xn glitch */

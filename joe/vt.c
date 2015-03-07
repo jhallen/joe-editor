@@ -15,7 +15,7 @@ VT *mkvt(B *b, int top, int height, int width)
 	vt->width = width;
 	vt->argc = 0;
 	vt->xn = 0;
-	vt->kbd = mkkbd(kmap_getcontext("vtshell"));
+	vt->kbd = mkkbd(kmap_getcontext(USTR "vtshell"));
 	return vt;
 }
 
@@ -100,7 +100,6 @@ void vt_lf(VT *bw)
 			prm(q);
 			prm(p);
 		} else {
-			W *w;
 			/* Save top line in buffer */
 			++bw->top;
 			vt_scrdn();
@@ -617,7 +616,7 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 						int rtn;
 						vt->buf[vt->bufx] = 0;
 						/* printf("Got command '%s'\r\n", vt->buf); */
-						m = mparse(NULL, vt->buf, &rtn);
+ 						m = mparse(NULL, vt->buf, &rtn);
 						if (rtn >= 0) {
 							*insiz = siz;
 							*indat = dat;
@@ -646,7 +645,6 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 				} else if (c == '?') {
 					/* Options */
 				} else {
-					int x;
 					vt->state = vt_idle;
 					if (vt->argc < MAXARGS) {
 						++vt->argc;

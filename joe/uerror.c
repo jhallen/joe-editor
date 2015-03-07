@@ -398,7 +398,7 @@ void kill_ansi(unsigned char *s)
 	unsigned char *d = s;
 	while (*s)
 		if (*s == 27) {
-			while (*s && (*s == 27 || *s == '[' || *s >= '0' && *s <= '9' || *s == ';'))
+			while (*s && (*s == 27 || *s == '[' || (*s >= '0' && *s <= '9') || *s == ';'))
 				++s;
 			if (*s)
 				++s;
