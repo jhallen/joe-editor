@@ -62,11 +62,11 @@ void genexmsgmulti(BW *bw, int saved, int skipped)
 {
 	if (saved)
 		if (skipped)
-			joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Some files have not been saved.")));
+			zlcpy(msgbuf, sizeof(msgbuf), joe_gettext(_("Some files have not been saved.")));
 		else
-			joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("All modified files have been saved.")));
+			zlcpy(msgbuf, sizeof(msgbuf), joe_gettext(_("All modified files have been saved.")));
 	else
-		joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("No modified files, so no updates needed.")));
+		zlcpy(msgbuf, sizeof(msgbuf), joe_gettext(_("No modified files, so no updates needed.")));
 
 	msgnw(bw->parent, msgbuf);
 
@@ -181,7 +181,7 @@ static int backup(BW *bw)
 		if (backpath) {
 			unsigned char *t = vsncpy(NULL,0,sz(backpath));
 			t = canonical(t);
-			joe_snprintf_2(name, sizeof(name), "%s/%s", t, namepart(tmp, bw->b->name));
+			joe_snprintf_2(name, sizeof(name), "%s/%s", t, namepart(tmp, sizeof(tmp), bw->b->name));
 			vsrm(t);
 		} else {
 			joe_snprintf_1(name, sizeof(name), "%s", bw->b->name);
@@ -194,7 +194,7 @@ static int backup(BW *bw)
 			}
 		}
 
-		zcpy(name + x, USTR ".bak");
+		zlcpy(name + x, sizeof(name) - x, USTR ".bak");
 
 #else
 
@@ -207,7 +207,7 @@ static int backup(BW *bw)
 		if (backpath) {
 			unsigned char *t = vsncpy(NULL, 0, sz(backpath));
 			t = canonical(t);
-			joe_snprintf_3(name, sizeof(name), "%s/%s%s", t, namepart(tmp, dequote(bw->b->name)), simple_backup_suffix);
+			joe_snprintf_3(name, sizeof(name), "%s/%s%s", t, namepart(tmp, sizeof(tmp), dequote(bw->b->name)), simple_backup_suffix);
 			vsrm(t);
 		} else {
 			joe_snprintf_2(name, sizeof(name), "%s%s", dequote(bw->b->name), simple_backup_suffix);

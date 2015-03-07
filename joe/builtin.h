@@ -8,5 +8,6 @@ struct jfile {
 JFILE *jfopen(unsigned char *name, char *mode);
 unsigned char *jfgets(unsigned char *buf,int len,JFILE *f);
 int jfclose(JFILE *f);
+unsigned char **jgetbuiltins(unsigned char *suffix);
 
 extern unsigned char *builtins[];

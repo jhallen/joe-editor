@@ -206,7 +206,7 @@ unsigned char *builtins[]=
 		"\\i \\i \\|\\i \\i\n"
 		"}\n"
 		":windows		Bindings common to all windows\n"
-		"type		^@ TO ÿ		Type a character\n"
+		"type		^@ TO \xFF		Type a character\n"
 		"abort		^C		Abort window\n"
 		"abort		^K Q\n"
 		"abort		^K ^Q\n"
@@ -536,10 +536,10 @@ unsigned char *builtins[]=
 		":query			Single-key query window\n"
 		":inherit windows\n"
 		":querya			Single-key query window for quoting\n"
-		"type		^@ TO ÿ\n"
+		"type		^@ TO \xFF\n"
 		":querysr		Search & replace query window\n"
-		"type		^@ TO ÿ\n"
-,	USTR "c.jsf.in",
+		"type		^@ TO \xFF\n"
+,	USTR "c.jsf",
 		USTR "=Idle\n"
 		"=Bad		bold red\n"
 		"=Preproc 	blue\n"

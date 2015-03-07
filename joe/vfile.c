@@ -179,8 +179,10 @@ unsigned char *vlock(VFILE *vfile, off_t addr)
 				pp->next = vp->next;
 				goto gotit;
 			}
-	write(2, (char *)sz(joe_gettext(_("vfile: out of memory\n"))));
-	exit(1);
+	if (-1 == write(2, sz(joe_gettext(_("vfile: out of memory\n")))))
+		exit(2);
+	else
+		exit(1);
 
       gotit:
 	vp->addr = addr;

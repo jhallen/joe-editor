@@ -61,3 +61,24 @@ unsigned char *jfgets(unsigned char *buf,int len,JFILE *f)
 			return 0;
 	}
 }
+
+unsigned char **jgetbuiltins(unsigned char *suffix)
+{
+	int x;
+	int sflen = 0;
+	unsigned char **result = NULL;
+	
+	if (suffix)
+		sflen = zlen(suffix);
+	
+	for (x = 0; builtins[x]; x += 2) {
+		unsigned char *name = builtins[x];
+		int nlen = zlen(name);
+		
+		if (!suffix || (sflen <= nlen && !zcmp(suffix, &name[nlen - sflen]))) {
+			result = vaadd(result, vsncpy(NULL, 0, sz(name)));
+		}
+	}
+	
+	return result;
+}

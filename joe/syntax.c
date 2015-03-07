@@ -214,10 +214,10 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Lowerize strings for case-insensitive matching */
 			if (cmd->ignore) {
-				zcpy(lbuf,buf);
+				zlcpy(lbuf, sizeof(lbuf), buf);
 				lowerize(lbuf);
 				if (cmd->delim) {
-					zcpy(lsaved_s,h_state.saved_s);
+					zlcpy(lsaved_s, sizeof(lsaved_s), h_state.saved_s);
 					lowerize(lsaved_s);
 				}
 			}
@@ -285,7 +285,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Save string? */
 			if (cmd->save_s)
-				zcpy(h_state.saved_s,buf);
+				zlcpy(h_state.saved_s, sizeof(h_state.saved_s), buf);
 
 			/* Save character? */
 			if (cmd->save_c) {
@@ -481,12 +481,12 @@ void dump_syntax(BW *bw)
 		joe_snprintf_3(buf, sizeof(buf), "Syntax name=%s, subr=%s, nstates=%d\n",syntax->name,syntax->subr,syntax->nstates);
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
-		zcpy(buf, USTR "params=(");
+		zlcpy(buf, sizeof(buf), USTR "params=(");
 		for(params = syntax->params; params; params = params->next) {
-			zcat(buf, USTR " ");
-			zcat(buf, params->name);
+			zlcat(buf, sizeof(buf), USTR " ");
+			zlcat(buf, sizeof(buf), params->name);
 		}
-		zcat(buf, USTR " )\n");
+		zlcat(buf, sizeof(buf), USTR " )\n");
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		for(x=0;x!=syntax->nstates;++x) {
@@ -581,7 +581,7 @@ struct high_syntax *load_syntax_subr(unsigned char *name,unsigned char *subr,str
 
 /* Parse options */
 
-int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
+int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,unsigned char *p,int parsing_strings,unsigned char *name,int line)
 {
 	unsigned char buf[1024];
 	unsigned char bf[256];
@@ -609,7 +609,7 @@ int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsign
 			if(!parse_char(&p,'=')) {
 				parse_ws(&p,'#');
 				if (!parse_char(&p,'.')) {
-					zcpy(bf,syntax->name);
+					zlcpy(bf, sizeof(bf), syntax->name);
 					goto subr;
 				} else if (parse_ident(&p,bf,sizeof(bf)))
 					i_printf_2((char *)joe_gettext(_("%s %d: Missing value for option\n")),name,line);
@@ -631,7 +631,7 @@ int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsign
 		} else if(!parsing_strings && (!zcmp(bf,USTR "strings") || !zcmp(bf,USTR "istrings"))) {
 			if (bf[0]=='i')
 				cmd->ignore = 1;
-			while(fgets((char *)buf,1023,f)) {
+			while(jfgets(buf,1023,f)) {
 				++line;
 				p = buf;
 				parse_ws(&p,'#');
@@ -691,7 +691,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	int clist[256];
 	unsigned char *p;
 	int c;
-	FILE *f = 0;
+	JFILE *f = 0;
 	struct ifstack *stack=0;
 	struct high_state *state=0;	/* Current state */
 	struct high_state *first=0;	/* First state */
@@ -703,19 +703,23 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	p = (unsigned char *)getenv("HOME");
 	if (p) {
 		joe_snprintf_2(name,sizeof(name),"%s/.joe/syntax/%s.jsf",p,syntax->name);
-		f = fopen((char *)name,"r");
+		f = jfopen(name,"r");
 	}
 
 	if (!f) {
 		joe_snprintf_2(name,sizeof(name),"%ssyntax/%s.jsf",JOEDATA,syntax->name);
-		f = fopen((char *)name,"r");
+		f = jfopen(name,"r");
 	}
-	if(!f) {
+	if (!f) {
+		joe_snprintf_1(name,sizeof(name),"*%s.jsf",syntax->name);
+		f = jfopen(name,"r");
+	}
+	if (!f) {
 		return 0;
 	}
 
 	/* Parse file */
-	while(fgets((char *)buf,1023,f)) {
+	while(jfgets(buf,1023,f)) {
 		++line;
 		p = buf;
 		c = parse_ws(&p,'#');
@@ -875,7 +879,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 		joe_free(st);
 	}
 
-	fclose(f);
+	jfclose(f);
 
 	return first;
 }

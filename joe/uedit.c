@@ -2300,7 +2300,7 @@ static int domsg(BASE *b, unsigned char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	zcpy(msgbuf, s);
+	zlcpy(msgbuf, sizeof(msgbuf), s);
 	vsrm(s);
 	msgnw(b->parent, msgbuf);
 	return 0;
@@ -2446,7 +2446,7 @@ int upaste(BW  *bw, int k)
 
 int ubrpaste(BW *bw, int k)
 {
-	const unsigned char *terminator = "\033[201~";
+	const unsigned char *terminator = USTR "\033[201~";
 	int tidx = 0;
 	int c;
 	int saved_ww = bw->o.wordwrap;

@@ -498,11 +498,11 @@ int from_utf8(struct charmap *map,unsigned char *s)
 #endif
 }
 
-void my_iconv(unsigned char *dest,struct charmap *dest_map,
-              unsigned char *src,struct charmap *src_map)
+void my_iconv(unsigned char *dest, size_t destsiz, struct charmap *dest_map,
+              unsigned char *src, struct charmap *src_map)
 {
 	if (dest_map == src_map) {
-		zcpy (dest, src);
+		zlcpy (dest, destsiz, src);
 		return;
 	}
 
@@ -510,10 +510,11 @@ void my_iconv(unsigned char *dest,struct charmap *dest_map,
 		/* src is UTF-8 */
 		if (dest_map->type) {
 			/* UTF-8 to UTF-8? */
-			zcpy (dest, src);
+			zlcpy (dest, destsiz, src);
 		} else {
+			--destsiz;
 			/* UTF-8 to non-UTF-8 */
-			while (*src) {
+			while (*src && destsiz) {
 				int len = -1;
 				int c = utf8_decode_fwrd(&src, &len);
 				if (c >= 0) {
@@ -524,6 +525,7 @@ void my_iconv(unsigned char *dest,struct charmap *dest_map,
 						*dest++ = '?';
 				} else
 					*dest++ = 'X';
+				--destsiz;
 			}
 			*dest = 0;
 		}
@@ -531,7 +533,8 @@ void my_iconv(unsigned char *dest,struct charmap *dest_map,
 		/* src is not UTF-8 */
 		if (!dest_map->type) {
 			/* Non UTF-8 to non-UTF-8 */
-			while (*src) {
+			--destsiz;
+			while (*src && destsiz) {
 				int c = to_uni(src_map, *src++);
 				int d;
 				if (c >= 0) {
@@ -542,16 +545,22 @@ void my_iconv(unsigned char *dest,struct charmap *dest_map,
 						*dest++ = '?';
 				} else
 					*dest++ = '?';
+				--destsiz;
 			}
 			*dest = 0;
 		} else {
 			/* Non-UTF-8 to UTF-8 */
-			while (*src) {
+			--destsiz;
+			while (*src && destsiz >= 6) {
 				int c = to_uni(src_map, *src++);
-				if (c >= 0)
-					dest += utf8_encode(dest, c);
-				else
+				if (c >= 0) {
+					int l = utf8_encode(dest, c);
+					destsiz -= l;
+					dest += l;
+				} else {
 					*dest++ = '?';
+					--destsiz;
+				}
 			}
 			*dest = 0;
 		}

@@ -327,7 +327,7 @@ int parserrb(B *b)
 	if (n)
 		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
 	else
-		joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("No messages found")));
+		zlcpy(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
@@ -341,7 +341,7 @@ int uparserr(BW *bw)
 	if (n)
 		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
 	else
-		joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("No messages found")));
+		zlcpy(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }

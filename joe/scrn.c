@@ -742,7 +742,7 @@ SCRN *nopen(CAP *cap)
 	signrm();
         fprintf(stderr,"cm=%p ch=%p cv=%p ho=%p lf=%p DO=%p ll=%p up=%p UP=%p cr=%p\n",
                        t->cm, t->ch, t->cv, t->ho, t->lf, t->DO, t->ll, t->up, t->UP, t->cr);
-	fprintf(stderr,(char *)joe_gettext(_("Sorry, your terminal can't do absolute cursor positioning.\nIt's broken\n")));
+	fputs((char *)joe_gettext(_("Sorry, your terminal can't do absolute cursor positioning.\nIt's broken\n")), stderr);
 	return NULL;
       ok:
 
