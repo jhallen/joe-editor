@@ -18,7 +18,6 @@
  */
 
 #include "types.h"
-#include <assert.h>
 
 JFILE *jfopen(unsigned char *filename, const char *mode)
 {

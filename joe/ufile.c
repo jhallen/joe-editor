@@ -19,12 +19,6 @@
 int copy_security_context(const char *from_file, const char *to_file);
 #endif
 
-#ifdef JOEWIN
-//// Needed for copy (with security attributes)
-//#include <shellapi.h>
-#include <assert.h>
-#endif
-
 int orphan;
 unsigned char *backpath = NULL;		/* Place to store backup files */
 B *filehist = NULL;	/* History of file names */

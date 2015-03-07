@@ -15,17 +15,18 @@
 #include <stdarg.h>
 
 #ifdef JOEWIN
-// Windows header
+/* Windows header */
 #define WIN32_LEAN_AND_MEAN
 #include "jwwin.h"
 
-// Things defined in windows.h that we don't want...
+/* Things defined in windows.h that we don't want... */
 #undef HTSIZE
 #undef ERROR
 #undef small
 
-// Other headers
+/* Other headers */
 #include <io.h>
+#include <assert.h>
 #endif
 
 #ifdef HAVE_SYS_TYPES_H

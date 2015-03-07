@@ -934,40 +934,72 @@ static int checkmark(BW *bw)
 	}
 }
 
-int ufilt(BW *bw)
+/* ufilt helper functions */
+
+static void filtread(BW *bw, int fr, int flg)
 {
-#if defined(__MSDOS__) || defined(JOEWIN)
-	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
-	return -1;
-#else
+	if (square) {
+		B *tmp;
+		long width = markk->xcol - markb->xcol;
+		long height;
+		int usetabs = ptabrect(markb,
+					markk->line - markb->line + 1,
+					markk->xcol);
+
+		tmp = bread(fr, MAXLONG);
+		if (piscol(tmp->eof))
+			height = tmp->eof->line + 1;
+		else
+			height = tmp->eof->line;
+		if (bw->o.overtype) {
+			pclrrect(markb, markk->line - markb->line + 1, markk->xcol, usetabs);
+			pdelrect(markb, long_max(height, markk->line - markb->line + 1), width + markb->xcol);
+		} else
+			pdelrect(markb, markk->line - markb->line + 1, markk->xcol);
+		pinsrect(markb, tmp, width, usetabs);
+		pdupown(markb, &markk, USTR "filtread");
+		markk->xcol = markb->xcol;
+		if (height) {
+			pline(markk, markk->line + height - 1);
+			pcol(markk, markb->xcol + width);
+			markk->xcol = markb->xcol + width;
+		}
+		if (lightoff)
+			unmark(bw);
+		brm(tmp);
+		updall();
+	} else {
+		P *p = pdup(markk, USTR "filtread");
+		if (!flg)
+			prgetc(p);
+		bdel(markb, p);
+		binsb(p, bread(fr, MAXLONG));
+		if (!flg) {
+			pset(p,markk);
+			prgetc(p);
+			bdel(p,markk);
+		}
+		prm(p);
+		if (lightoff)
+			unmark(bw);
+	}
+
+	close(fr);
+}
+
+static void postfilt(BW *bw)
+{
+	if (filtflg)
+		unmark(bw);
+	bw->cursor->xcol = piscol(bw->cursor);
+}
+
+#ifndef JOEWIN
+
+static int dofilt(BW *bw, unsigned char *cmd, int empty)
+{
 	int fr[2];
 	int fw[2];
-	int flg = 0;
-	unsigned char *s;
-	switch (checkmark(bw)) {
-		case 0:
-			s = joe_gettext(_("Command to filter block through (^C to abort): "));
-			break;
-		case 1:
-			s = joe_gettext(_("Command to filter file through (^C to abort): "));
-			break;
-		default:
-			msgnw(bw->parent, joe_gettext(_("No block")));
-			return -1;
-	}
-	s = ask(bw->parent, s, &filthist, NULL, utypebw, locale_map, 0, 0, NULL);
-
-	if (!s)
-		return -1;
-	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte) {
-		flg = 1; /* Empty block */
-		goto ok;
-	}
-	if (!markv(1)) {
-		msgnw(bw->parent, joe_gettext(_("No block")));
-		return -1;
-	}
-	ok:
 
 	pipe(fr);
 	pipe(fw);
@@ -1001,7 +1033,7 @@ int ufilt(BW *bw)
 		fname = vsncpy(sv(fname), name, len);
 		putenv((char *)fname);
 #endif
-		execl("/bin/sh", "/bin/sh", "-c", s, NULL);
+		execl("/bin/sh", "/bin/sh", "-c", cmd, NULL);
 		_exit(0);
 	}
 	close(fr[1]);
@@ -1012,52 +1044,7 @@ int ufilt(BW *bw)
 	if (vfork()) { /* For AMIGA only */
 #endif
 		close(fw[1]);
-		if (square) {
-			B *tmp;
-			long width = markk->xcol - markb->xcol;
-			long height;
-			int usetabs = ptabrect(markb,
-					       markk->line - markb->line + 1,
-					       markk->xcol);
-
-			tmp = bread(fr[0], MAXLONG);
-			if (piscol(tmp->eof))
-				height = tmp->eof->line + 1;
-			else
-				height = tmp->eof->line;
-			if (bw->o.overtype) {
-				pclrrect(markb, markk->line - markb->line + 1, markk->xcol, usetabs);
-				pdelrect(markb, long_max(height, markk->line - markb->line + 1), width + markb->xcol);
-			} else
-				pdelrect(markb, markk->line - markb->line + 1, markk->xcol);
-			pinsrect(markb, tmp, width, usetabs);
-			pdupown(markb, &markk, USTR "dofilt");
-			markk->xcol = markb->xcol;
-			if (height) {
-				pline(markk, markk->line + height - 1);
-				pcol(markk, markb->xcol + width);
-				markk->xcol = markb->xcol + width;
-			}
-			if (lightoff)
-				unmark(bw);
-			brm(tmp);
-			updall();
-		} else {
-			P *p = pdup(markk, USTR "dofilt");
-			if (!flg)
-				prgetc(p);
-			bdel(markb, p);
-			binsb(p, bread(fr[0], MAXLONG));
-			if (!flg) {
-				pset(p,markk);
-				prgetc(p);
-				bdel(p,markk);
-			}
-			prm(p);
-			if (lightoff)
-				unmark(bw);
-		}
-		close(fr[0]);
+		filtread(bw, fr[0], empty);
 		wait(NULL);
 		wait(NULL);
 	} else {
@@ -1073,10 +1060,150 @@ int ufilt(BW *bw)
 		_exit(0);
 	}
 	ttopnn();
-	if (filtflg)
-		unmark(bw);
-	bw->cursor->xcol = piscol(bw->cursor);
+	postfilt(bw);
 	return 0;
+}
+
+#else //JOEWIN
+
+struct writerinfo {
+	HANDLE	pipe;
+	B	*b;
+};
+
+static DWORD WINAPI writerthread(LPVOID threadParam)
+{
+	struct writerinfo *wi = (struct writerinfo *)threadParam;
+	int fd = _open_osfhandle((intptr_t)wi->pipe, 0);
+
+	bsavefd(wi->b->bof, fd, wi->b->eof->byte);
+	_close(fd);
+
+	return 0;
+}
+
+static int dofilt(BW *bw, unsigned char *cmd, int empty)
+{
+	HANDLE prr, prw, pwr, pww, hthread;
+	DWORD tid;
+	SECURITY_ATTRIBUTES sa;
+	PROCESS_INFORMATION pinf;
+	STARTUPINFOW si;
+	wchar_t wcmd[1024], cmdexe[MAX_PATH];
+	BOOL res;
+
+	/* Setup commandline */
+	wcscpy(wcmd, L"/C ");
+
+	if (utf8towcs(&wcmd[3], cmd, sizeof(wcmd) - 3)) {
+		assert(0);
+		return -1;
+	}
+
+	if (!GetEnvironmentVariableW(L"ComSpec", cmdexe, MAX_PATH)) {
+		assert(0);
+		wcscpy(cmdexe, L"C:\\Windows\\System32\\cmd.exe");
+	}
+
+	/* Setup pipes */
+	ZeroMemory(&sa, sizeof(SECURITY_ATTRIBUTES));
+	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+
+	if (!CreatePipe(&prr, &prw, &sa, 0) || !SetHandleInformation(prw, HANDLE_FLAG_INHERIT, 0)) {
+		assert(0);
+		return -1;
+	}
+
+	if (!CreatePipe(&pwr, &pww, &sa, 0) || !SetHandleInformation(pwr, HANDLE_FLAG_INHERIT, 0)) {
+		assert(0);
+		return -1;
+	}
+
+	/* Create child */
+	ZeroMemory(&si, sizeof(STARTUPINFOW));
+	si.cb = sizeof(STARTUPINFOW);
+	si.hStdInput = prr;
+	si.hStdOutput = pww;
+	si.hStdError = pww;
+	si.dwFlags = STARTF_USESTDHANDLES;
+
+	res = CreateProcessW(cmdexe, wcmd, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pinf);
+
+	CloseHandle(pww);
+	CloseHandle(prr);
+
+	if (res) {
+		/* Copy input */
+		B *tmp;
+		struct writerinfo wi;
+
+		tmp = square ? pextrect(markb, markk->line - markb->line + 1, markk->xcol) : bcpy(markb, markk);
+		wi.b = tmp;
+		wi.pipe = prw;
+
+		/* Start writer thread */
+		hthread = CreateThread(NULL, 0, writerthread, (LPVOID)&wi, 0, &tid);
+
+		/* TODO: Send process handle to frontend. If it goes AWOL user should be able to kill it */
+
+		/* Read results */
+		filtread(bw, _open_osfhandle((intptr_t)pwr, 0), empty);
+
+		/* Clean up */
+		WaitForSingleObject(pinf.hProcess, INFINITE);
+		CloseHandle(pinf.hProcess);
+		CloseHandle(pinf.hThread);
+
+		WaitForSingleObject(hthread, INFINITE);
+		CloseHandle(hthread);
+
+		brm(tmp);
+	} else {
+		DWORD dw = GetLastError();
+
+		CloseHandle(prw);
+		CloseHandle(pwr);
+	}
+
+	postfilt(bw);
+	return res ? 0 : -1;
+}
+
+#endif
+
+int ufilt(BW *bw)
+{
+#if defined(__MSDOS__)
+	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
+	return -1;
+#else
+	unsigned char *s;
+	switch (checkmark(bw)) {
+		case 0:
+			s = joe_gettext(_("Command to filter block through (^C to abort): "));
+			break;
+		case 1:
+			s = joe_gettext(_("Command to filter file through (^C to abort): "));
+			break;
+		default:
+			msgnw(bw->parent, joe_gettext(_("No block")));
+			return -1;
+	}
+	s = ask(bw->parent, s, &filthist, NULL, utypebw, locale_map, 0, 0, NULL);
+
+	if (!s)
+		return -1;
+	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte) {
+		return dofilt(bw, s, 1 /* Empty block */);
+	}
+	if (!markv(1)) {
+		msgnw(bw->parent, joe_gettext(_("No block")));
+		return -1;
+	}
+
+	return dofilt(bw, s, 0);
 #endif
 }
 

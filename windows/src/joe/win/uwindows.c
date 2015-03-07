@@ -18,8 +18,6 @@
  */
 
 #include "types.h"
-
-#include <assert.h>
 #include "jwcomm.h"
 
 /* Copy block contents to the Windows clipboard */

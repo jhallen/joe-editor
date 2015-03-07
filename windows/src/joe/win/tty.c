@@ -19,7 +19,6 @@
 
 #include "types.h"
 #include "jwcomm.h"
-#include <assert.h>
 
 int idleout = 1;
 

@@ -21,8 +21,6 @@
 
 #ifndef JOEWIN
 extern int errno;
-#else
-#include <assert.h>
 #endif
 
 

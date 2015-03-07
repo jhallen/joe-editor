@@ -958,8 +958,6 @@ static struct builtin_charmap builtin_charmaps[]=
 
 #else //JOEWIN
 
-#include <assert.h>
-
 /*
 ** Use Windows code pages rather than bake them in for JOEWIN.
 */

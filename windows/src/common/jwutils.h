@@ -33,9 +33,9 @@ extern DWORD jw_wc_flags;
 
 /********************************************************** UTF-16/UTF-8 conversion macros */
 
-#define utf8towcs(out,in,sz)	(!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, (in), -1, (out), (sz)))
-#define wcstoutf8(out,in,sz)	(!WideCharToMultiByte(CP_UTF8, JW_GET_WC_FLAGS, (in), -1, (out), (sz), NULL, NULL))
-#define utf8towcslen(s)		(MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, (s), -1, NULL, 0))
+#define utf8towcs(out,in,sz)	(!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, ((LPCSTR)(in)), -1, (out), (sz)))
+#define wcstoutf8(out,in,sz)	(!WideCharToMultiByte(CP_UTF8, JW_GET_WC_FLAGS, ((LPCSTR)(in)), -1, (out), (sz), NULL, NULL))
+#define utf8towcslen(s)		(MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, ((LPCSTR)(s)), -1, NULL, 0))
 #define wcstoutf8len(s)		(WideCharToMultiByte(CP_UTF8, JW_GET_WC_FLAGS, (s), -1, NULL, 0, NULL, NULL))
 
 #endif

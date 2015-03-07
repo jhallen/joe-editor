@@ -19,7 +19,6 @@
 
 #include <direct.h>
 #include "types.h"
-#include <assert.h>
 
 void *opendir(unsigned char *path)
 {
