@@ -21,7 +21,7 @@ int attr_size = 0;
 int stack_count = 0;
 static int state_count = 0; /* Max transitions possible without cycling */
 
-struct high_syntax ansi_syntax[1] = { NULL, "ansi" };
+struct high_syntax ansi_syntax[1] = { { NULL, USTR "ansi" } };
 
 /* ANSI highlighter */
 

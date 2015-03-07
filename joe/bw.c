@@ -356,7 +356,7 @@ struct ansi_sm
 int ansi_decode(struct ansi_sm *sm, int bc)
 {
 	if (sm->state) {
-		if (bc >= 'a' && bc <= 'z' || bc >= 'A' && bc <= 'Z')
+		if ((bc >= 'a' && bc <= 'z') || (bc >= 'A' && bc <= 'Z'))
 			sm->state = 0;
 		return -1;
 	} else if (bc == '\033') {

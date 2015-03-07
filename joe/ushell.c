@@ -221,7 +221,8 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 	} else {
 		bw->b->pid = m->pid;
 		if (first_command)
-			write(bw->b->out, (char *)first_command, zlen(first_command));
+			if (-1 == write(bw->b->out, first_command, zlen(first_command)))
+				msgnw(bw->parent, joe_gettext(_("Write failed when writing first command to shell")));
 	}
 	return 0;
 #endif

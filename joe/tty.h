@@ -205,4 +205,6 @@ void tickon PARAMS((void));
 extern long last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */
 
+void ttstsz(int fd, int w, int h); /* Set window size */
+
 #endif

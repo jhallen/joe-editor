@@ -176,13 +176,13 @@ int edloop(int flg)
 			ret = exemac(m);
 
 		/* trailing part of backtick hack... */
-		while (!leave && (!flg || !term) && m && (m == type_backtick || m->cmd && (m->cmd->func == utype || m->cmd->func == urtn)) && ttcheck() && havec == '`') {
+		while (!leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck() && havec == '`') {
 			ttgetc();
 			ret = exemac(type_backtick);
 		}
 
 		/* trailing part of disabled autoindent */
-		if (!leave && (!flg || !term) && m && (m == type_backtick || m->cmd && (m->cmd->func == utype || m->cmd->func == urtn)) && ttcheck()) {
+		if (!leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck()) {
 			c = ttgetc();
 			goto more_no_auto;
 		}
@@ -443,11 +443,11 @@ int main(int argc, char **real_argv, char **envv)
 	{
 		unsigned char buf[10];
 		int x;
-		zcpy(buf, USTR "\"`\"	`  ");
+		zlcpy(buf, sizeof(buf), USTR "\"`\"	`  ");
 		type_backtick = mparse(0, buf, &x);
 	}
 
-	shell_kbd = mkkbd(kmap_getcontext("shell"));
+	shell_kbd = mkkbd(kmap_getcontext(USTR "shell"));
 
 	if (!isatty(fileno(stdin)))
 		idleout = 0;

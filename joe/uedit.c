@@ -1730,7 +1730,7 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 	struct charmap *map=bw->b->o.charmap;
 
 	/* Send data to shell window */
-	if (bw->b->pid && !bw->b->vt && piseof(bw->cursor) ||
+	if ((bw->b->pid && !bw->b->vt && piseof(bw->cursor)) ||
 	   ( bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)) {
 		unsigned char c = k;
 		joe_write(bw->b->out, &c, 1);

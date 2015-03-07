@@ -732,7 +732,7 @@ int pgetc(P *p)
 
                 if (p->b->o.ansi && c == '\033') { /* Hide ansi */
                         while ((d = pgetb(p)) != NO_MORE_DATA)
-                                if (d >= 'A' && d <= 'Z' || d >= 'a' && d <= 'z')
+                                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z'))
                                         break;
                         p->valcol = val;
                         return c;
@@ -813,7 +813,7 @@ int pgetc(P *p)
                         int d;
                         int v = p->valcol;
                         while ((d = pgetb(p)) != NO_MORE_DATA)
-                                if (d >= 'A' && d <= 'Z' || d >= 'a' && d <= 'z')
+                                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z'))
                                         break;
                         p->valcol = v;
 		} else if (p->b->o.crlf && c == '\r') {
