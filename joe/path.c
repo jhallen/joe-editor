@@ -97,7 +97,7 @@ unsigned char *namprt(unsigned char *path)
 	return vsncpy(NULL, 0, sz(z));
 }
 /********************************************************************/
-unsigned char *namepart(unsigned char *tmp, unsigned char *path)
+unsigned char *namepart(unsigned char *tmp, size_t tmpsiz, unsigned char *path)
 {
 	unsigned char *z;
 
@@ -105,7 +105,7 @@ unsigned char *namepart(unsigned char *tmp, unsigned char *path)
 	z = path + zlen(path);
 	while ((z != path) && (z[-1] != '/'))
 		--z;
-	return zcpy(tmp, z);
+	return zlcpy(tmp, tmpsiz, z);
 }
 /********************************************************************/
 unsigned char *dirprt(unsigned char *path)
@@ -327,7 +327,7 @@ struct direct *readdir()
 		dirstate = 1;
 	}
 
-	zcpy(direc.d_name, ffblk.ff_name);
+	zlcpy(direc.d_name, sizeof(direc.d_name), ffblk.ff_name);
 	for (x = 0; direc.d_name[x]; ++x)
 		direc.d_name[x] = tolower(direc.d_name[x]);
 	return &direc;
@@ -381,7 +381,7 @@ int chpwd(unsigned char *path)
 	}
 	if (!path[0])
 		return 0;
-	zcpy(buf, path);
+	zlcpy(buf, sizeof(buf), path);
 	x = zlen(buf);
 	while (x > 1) {
 		--x;

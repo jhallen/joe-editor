@@ -2181,6 +2181,11 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 {
 	unsigned char *n = vsncpy(NULL, 0, sz(s));
 	int x;
+#ifdef HAVE_LONG_LONG
+	unsigned long long skipr;
+#else
+	unsigned long skipr;
+#endif
 
 	*skip = 0;
 	*amnt = MAXLONG;
@@ -2190,50 +2195,52 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 		if (n[x] == ',' && x && n[x-1] != '\\') {
 			n[x] = 0;
 
-#if SIZEOF_LONG_LONG && SIZEOF_OFF_T == SIZEOF_LONG_LONG
+#if HAVE_LONG_LONG
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf((char *)(n + x + 2), "%llx", skip);
+				sscanf((char *)(n + x + 2), "%llx", &skipr);
 			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf((char *)(n + x + 3), "%llx", skip);
+				sscanf((char *)(n + x + 3), "%llx", &skipr);
 			else if (n[x + 1] == '0')
-				sscanf((char *)(n + x + 1), "%llo", skip);
+				sscanf((char *)(n + x + 1), "%llo", &skipr);
 			else
-				sscanf((char *)(n + x + 1), "%lld", skip);
+				sscanf((char *)(n + x + 1), "%llu", &skipr);
 #else
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf((char *)(n + x + 2), "%lx", skip);
+				sscanf((char *)(n + x + 2), "%lx", &skipr);
 			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf((char *)(n + x + 3), "%lx", skip);
+				sscanf((char *)(n + x + 3), "%lx", &skipr);
 			else if (n[x + 1] == '0')
-				sscanf((char *)(n + x + 1), "%lo", skip);
+				sscanf((char *)(n + x + 1), "%lo", &skipr);
 			else
-				sscanf((char *)(n + x + 1), "%ld", skip);
+				sscanf((char *)(n + x + 1), "%lu", &skipr);
 #endif
+			*skip = (signed)skipr;
 			--x;
 			if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 				for (; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 				if (n[x] == ',' && x && n[x-1]!='\\') {
 					n[x] = 0;
 					*amnt = *skip;
-#if SIZEOF_LONG_LONG && SIZEOF_OFF_T == SIZEOF_LONG_LONG
+#ifdef HAVE_LONG_LONG
 					if (n[x + 1] == 'x' || n[x + 1] == 'X')
-						sscanf((char *)(n + x + 2), "%llx", skip);
+						sscanf((char *)(n + x + 2), "%llx", &skipr);
 					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-						sscanf((char *)(n + x + 3), "%llx", skip);
+						sscanf((char *)(n + x + 3), "%llx", &skipr);
 					else if (n[x + 1] == '0')
-						sscanf((char *)(n + x + 1), "%llo", skip);
+						sscanf((char *)(n + x + 1), "%llo", &skipr);
 					else
-						sscanf((char *)(n + x + 1), "%lld", skip);
+						sscanf((char *)(n + x + 1), "%llu", &skipr);
 #else
 					if (n[x + 1] == 'x' || n[x + 1] == 'X')
-						sscanf((char *)(n + x + 2), "%lx", skip);
+						sscanf((char *)(n + x + 2), "%lx", &skipr);
 					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-						sscanf((char *)(n + x + 3), "%lx", skip);
+						sscanf((char *)(n + x + 3), "%lx", &skipr);
 					else if (n[x + 1] == '0')
-						sscanf((char *)(n + x + 1), "%lo", skip);
+						sscanf((char *)(n + x + 1), "%lo", &skipr);
 					else
-						sscanf((char *)(n + x + 1), "%ld", skip);
+						sscanf((char *)(n + x + 1), "%lu", &skipr);
 #endif
+					*skip = (signed)skipr;
 				}
 			}
 		}
@@ -3003,7 +3010,7 @@ RETSIGTYPE ttsig(int sig)
 			if (b->name)
 				fprintf(ttsig_f, (char *)joe_gettext(_("\n*** File \'%s\'\n")), b->name);
 			else
-				fprintf(ttsig_f, (char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")));
+				fputs((char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")), ttsig_f);
 			fflush(ttsig_f);
 			bsavefd(b->bof, fileno(ttsig_f), b->eof->byte);
 		}

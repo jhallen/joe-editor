@@ -195,7 +195,7 @@ int main(int argc, char **real_argv, char **envv)
 
 #ifdef __MSDOS__
 	_fmode = O_BINARY;
-	zcpy(stdbuf, argv[0]);
+	zlcpy(stdbuf, sizeof(stdbuf), argv[0]);
 	joesep(stdbuf);
 	run = namprt(stdbuf);
 	rundir = dirprt(stdbuf);
@@ -223,7 +223,7 @@ int main(int argc, char **real_argv, char **envv)
 
 #ifndef __MSDOS__
 	if (!(cap = my_getcap(NULL, 9600, NULL, NULL))) {
-		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
+		fputs((char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")), stderr);
 		return 1;
 	}
 #endif
@@ -314,7 +314,8 @@ int main(int argc, char **real_argv, char **envv)
 				fprintf(stderr,(char *)joe_gettext(_("You should update or delete %s\n")),s);
 				fprintf(stderr,(char *)joe_gettext(_("Hit enter to continue with %s ")),t);
 				fflush(stderr);
-				fgets((char *)buf, 8, stdin);
+				if (!fgets((char *)buf, sizeof(buf), stdin))
+					exit(1);
 				goto use_sys;
 			}
 		}
@@ -327,11 +328,11 @@ int main(int argc, char **real_argv, char **envv)
 		if (c == 1) {
 			fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
 			fflush(stderr);
-			fgets((char *)buf, 8, stdin);
-			if (ynchecks(yes_key, buf)) {
-				vsrm(t);
-				goto donerc;
-			}
+			if (fgets((char *)buf, sizeof(buf), stdin))
+				if (ynchecks(yes_key, buf)) {
+					vsrm(t);
+					goto donerc;
+				}
 		}
 	}
 
@@ -346,9 +347,9 @@ int main(int argc, char **real_argv, char **envv)
 
 		fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
 		fflush(stderr);
-		fgets((char *)buf, 8, stdin);
-		if (ynchecks(yes_key, buf))
-			goto donerc;
+		if (fgets((char *)buf, sizeof(buf), stdin))
+			if (ynchecks(yes_key, buf))
+				goto donerc;
 	}
 
 	/* Try built-in joerc */
@@ -369,9 +370,9 @@ int main(int argc, char **real_argv, char **envv)
 
 		fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
 		fflush(stderr);
-		fgets((char *)buf, 8, stdin);
-		if (ynchecks(yes_key, buf))
-			goto donerc;
+ 		if (fgets((char *)buf, sizeof(buf), stdin))
+ 			if (ynchecks(yes_key, buf))
+				goto donerc;
 	}
 #endif
 
@@ -381,7 +382,7 @@ int main(int argc, char **real_argv, char **envv)
 	donerc:
 
 	if (validate_rc()) {
-		fprintf(stderr,(char *)joe_gettext(_("rc file has no :main key binding section or no bindings.  Bye.\n")));
+		fputs((char *)joe_gettext(_("rc file has no :main key binding section or no bindings.  Bye.\n")), stderr);
 		return 1;
 	}
 

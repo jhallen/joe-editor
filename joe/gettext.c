@@ -93,7 +93,7 @@ int load_po(FILE *f)
 			}
 			if (msgid[0] && msgstr[0]) {
 				/* Convert to locale character map */
-				my_iconv(bf,locale_map,msgstr,po_map);
+				my_iconv(bf, sizeof(bf), locale_map,msgstr,po_map);
 				/* Add to hash table */
 				htadd(gettext_ht, zdup(msgid), zdup(bf));
 			} else if (!msgid[0] && msgstr[0]) {

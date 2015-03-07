@@ -299,7 +299,7 @@ P *p_goto_start_of_path(P *p)
 	while (c != NO_MORE_DATA && c != ' ' && c != '\n');
 	
 	if (c == ' ') {
-		P *q = pdup(p, "p_goto_start_of_path");
+		P *q = pdup(p, USTR "p_goto_start_of_path");
 		
 		do
 			c = prgetc(q);

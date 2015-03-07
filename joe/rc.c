@@ -1134,7 +1134,7 @@ int display_menu(BW *bw, struct rc_menu *menu, int *notify)
 				case 9:
 				case 13:
 				case 6:
-					zcpy(s[x], joe_gettext(glopts[y].menu));
+					zlcpy(s[x], sizeof(OPT_BUF_SIZE), joe_gettext(glopts[y].menu));
 					break;
 				case 4:
 					joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%s", joe_gettext(glopts[y].menu), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF");
@@ -1550,9 +1550,9 @@ int procrc(CAP *cap, unsigned char *name)
 
 	/* Print proper ending string */
 	if (err)
-		fprintf(stderr, (char *)joe_gettext(_("\ndone\n")));
+		fputs((char *)joe_gettext(_("\ndone\n")), stderr);
 	else
-		fprintf(stderr, (char *)joe_gettext(_("done\n")));
+		fputs((char *)joe_gettext(_("done\n")), stderr);
 
 	return err;		/* 0 for success, 1 for syntax error */
 }

@@ -69,13 +69,13 @@ unsigned char **jgetbuiltins(unsigned char *suffix)
 	unsigned char **result = NULL;
 	
 	if (suffix)
-		sflen = strlen(suffix);
+		sflen = zlen(suffix);
 	
 	for (x = 0; builtins[x]; x += 2) {
 		unsigned char *name = builtins[x];
-		int nlen = strlen(name);
+		int nlen = zlen(name);
 		
-		if (!suffix || (sflen <= nlen && !strcmp(suffix, &name[nlen - sflen]))) {
+		if (!suffix || (sflen <= nlen && !zcmp(suffix, &name[nlen - sflen]))) {
 			result = vaadd(result, vsncpy(NULL, 0, sz(name)));
 		}
 	}

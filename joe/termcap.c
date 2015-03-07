@@ -214,7 +214,7 @@ CAP *my_getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned cha
  joe_free(cap);
  return 0;
 */
-		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap entry.  Using ansi default\n")));
+		fputs((char *)joe_gettext(_("Couldn't load termcap entry.  Using ansi default\n")), stderr);
 		ti = 0;
 		cap->tbuf = vsncpy(cap->tbuf, 0, sc(defentry));
 		goto checktc;
@@ -489,12 +489,14 @@ static unsigned char escape1(unsigned char **s)
 		return c;
 }
 
+#ifdef TERMINFO
 static CAP *outcap;
 static int outout(int c)
 {
 	outcap->out(outcap->outptr, c);
 	return(c);	/* act like putchar() - return written char */
 }
+#endif
 
 void texec(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3)
 {

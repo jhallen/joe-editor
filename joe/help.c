@@ -59,7 +59,7 @@ int help_init(JFILE *fd,unsigned char *bf,int line)
 				}
 				hlpbsz += bfl + 1024;
 			}
-			zcpy(tmp->text + hlpsiz, buf);
+			mcpy(tmp->text + hlpsiz, buf, bfl);
 			hlpsiz += bfl;
 			++tmp->lines;
 		}
