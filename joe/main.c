@@ -683,7 +683,7 @@ int main(int argc, char **real_argv, char **envv)
 
 #ifdef JOEWIN
 	/* Rendezvous.  Wait until the UI end is ready before we get going. */
-	jwRendezvous(JW_SIDE_EDITOR);
+	jwRendezvous(JW_TO_EDITOR, JW_TO_UI);
 #endif
 
 	/* Run the editor */

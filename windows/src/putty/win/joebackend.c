@@ -136,7 +136,7 @@ static void joe_reconfig(void *handle, Config *cfg)
 
 static int joe_send(void *handle, char *buf, int len)
 {
-	jwWriteIO(JW_SIDE_UI, buf, len);
+	jwWriteIO(JW_FROM_UI, buf, len);
 	return 0;
 }
 
@@ -148,7 +148,7 @@ static int joe_sendbuffer(void *handle)
 
 static void joe_size(void *handle, int width, int height)
 {
-	jwSendComm2(JW_SIDE_UI, COMM_WINRESIZE, width, height);
+	jwSendComm2(JW_FROM_UI, COMM_WINRESIZE, width, height);
 }
 
 static void joe_special(void *handle, Telnet_Special code)

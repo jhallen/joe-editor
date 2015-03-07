@@ -147,7 +147,7 @@ int ttflsh(void)
 {
 	/* Flush output */
 	if (obufp) {
-		jwWriteIO(JW_SIDE_EDITOR, obuf, obufp);
+		jwWriteIO(JW_FROM_EDITOR, obuf, obufp);
 		obufp = 0;
 	}
 
@@ -223,11 +223,12 @@ int ttgetc(void)
 		have = 0;
 	} else {
 		struct CommMessage *m;
+		int qd = JW_TO_EDITOR;
 
 		/* If there is something in the input buffer, have and havec should be set! */
 		assert(ibufp == ibufsiz);
 
-		m = jwWaitForEditorComm(timeout);
+		m = jwWaitForComm(&qd, 1, timeout, NULL);
 
 		if (!m)
 		{
@@ -240,7 +241,7 @@ int ttgetc(void)
 		{
 			/* IO */
 			ibufsiz = jwReadIO(m, ibuf);
-			jwReleaseComm(JW_SIDE_EDITOR, m);
+			jwReleaseComm(JW_TO_EDITOR, m);
 
 			assert(ibufsiz > 0);
 			havec = ibuf[0];
@@ -253,7 +254,7 @@ int ttgetc(void)
 				return -1;
 			}
 
-			jwReleaseComm(JW_SIDE_EDITOR, m);
+			jwReleaseComm(JW_TO_EDITOR, m);
 			goto loop;
 		}
 	}
@@ -296,6 +297,7 @@ int handlejwcontrol(struct CommMessage *m)
 		struct CommMessage *n = m;
 		unsigned char **files = vamk(m->arg3);
 		int x = m->arg1, y = m->arg2;
+		int qd = JW_TO_EDITOR;
 
 		/* We will be sent a packet with count=0 to denote no more files */
 		while (n && n->arg3 > 0)
@@ -304,17 +306,17 @@ int handlejwcontrol(struct CommMessage *m)
 
 			if (n != m)
 			{
-				jwReleaseComm(JW_SIDE_EDITOR, n);
+				jwReleaseComm(JW_TO_EDITOR, n);
 			}
 
-			n = jwWaitForEditorComm(INFINITE);
+			n = jwWaitForComm(&qd, 1, INFINITE, NULL);
 			assert(n);
 			assert(n->msg == COMM_DROPFILES);
 		}
 
 		if (n != m)
 		{
-			jwReleaseComm(JW_SIDE_EDITOR, n);
+			jwReleaseComm(JW_TO_EDITOR, n);
 		}
 
 		co_call(dodropfiles, files, x, y);
@@ -376,7 +378,7 @@ int handlejwcontrol(struct CommMessage *m)
 		execmd(c, 0);
 
 		/* Recycle this message first because we're about to... */
-		jwReleaseComm(JW_SIDE_EDITOR, m);
+		jwReleaseComm(JW_TO_EDITOR, m);
 
 		/* ...exit the thread */
 		return 1;

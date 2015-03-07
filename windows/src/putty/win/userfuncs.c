@@ -66,17 +66,17 @@ void jwSendFiles(HDROP hdrop, int x, int y)
 		DragQueryFileW(hdrop, i, wpath, MAX_PATH);
 		if (!wcstoutf8(path, wpath, MAX_PATH * 3))
 		{
-			jwSendComm3s(JW_SIDE_UI, COMM_DROPFILES, x, y, count, path);
+			jwSendComm3s(JW_FROM_UI, COMM_DROPFILES, x, y, count, path);
 		}
 	}
 
-	jwSendComm3(JW_SIDE_UI, COMM_DROPFILES, x, y, 0);
+	jwSendComm3(JW_FROM_UI, COMM_DROPFILES, x, y, 0);
 }
 
 void jwSendJoeColor(void *colorp)
 {
 	struct jwcolors *colors = dupcolorscheme((struct jwcolors*)colorp);
-	jwSendComm0p(JW_SIDE_UI, COMM_COLORSCHEME, colors);
+	jwSendComm0p(JW_FROM_UI, COMM_COLORSCHEME, colors);
 }
 
 static void UpdateWindowTitle()
@@ -186,5 +186,5 @@ int jwAnyModified()
 
 void jwUIExit()
 {
-	jwSendComm0(JW_SIDE_UI, COMM_EXIT);
+	jwSendComm0(JW_FROM_UI, COMM_EXIT);
 }

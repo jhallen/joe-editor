@@ -246,7 +246,7 @@ void jwexit(int code)
 	assert(GetCurrentThreadId() == jw_threadid);
 
 	// Tell the client we want to exit.
-	jwSendComm1(JW_SIDE_EDITOR, COMM_EXIT, code);
+	jwSendComm1(JW_FROM_EDITOR, COMM_EXIT, code);
 
 	ExitThread(code);
 }

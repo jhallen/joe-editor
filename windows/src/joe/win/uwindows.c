@@ -300,6 +300,6 @@ int uwinblkcpy(BW *bw)
 int uwincontext(BW *bw)
 {
 	int hasblock = markv(1);
-	jwSendComm1(JW_SIDE_EDITOR, COMM_CONTEXTMENU, hasblock);
+	jwSendComm1(JW_FROM_EDITOR, COMM_CONTEXTMENU, hasblock);
 	return 0;
 }

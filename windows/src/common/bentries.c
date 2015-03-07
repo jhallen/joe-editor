@@ -111,7 +111,7 @@ void send_buffer_update(struct buffer_update *bu)
 
 	if (!fnamelen)
 	{
-		jwSendComm(JW_SIDE_EDITOR,
+		jwSendComm(JW_FROM_EDITOR,
 			    COMM_UPDATEBUFFER,
 			    bu->change_flags,
 			    bu->entry.flags, 0, 0,
@@ -119,7 +119,7 @@ void send_buffer_update(struct buffer_update *bu)
 	}
 	else
 	{
-		jwSendComm(JW_SIDE_EDITOR,
+		jwSendComm(JW_FROM_EDITOR,
 			    COMM_UPDATEBUFFER,
 			    bu->change_flags,
 			    bu->entry.flags, 0, 0,
@@ -131,7 +131,7 @@ void send_buffer_update(struct buffer_update *bu)
 
 void finish_buffer_updates()
 {
-	jwSendComm0(JW_SIDE_EDITOR, COMM_DONEBUFFERUPDATE);
+	jwSendComm0(JW_FROM_EDITOR, COMM_DONEBUFFERUPDATE);
 }
 
 void unmarshal_buffer_update(struct CommMessage *msg, struct buffer_update *bu)

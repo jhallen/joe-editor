@@ -83,6 +83,7 @@ struct CommQueue
 
 	int			bufferallocs;
 	int			msgallocs;
+	int			hwake;
 };
 
 static struct CommQueue *CreateCommQueue(int buffersize);
@@ -95,6 +96,13 @@ static void ReleaseCommMessage(struct CommQueue *queue, struct CommMessage *m);
 
 /************************* Queue globals */
 
+static struct CommQueue **queues = NULL;
+static int qlen = 0;
+
+static HANDLE *qhandles = NULL;
+static int nqhandles = 0;
+
+/*
 static struct CommQueue *editorToUi, *uiToEditor;
 
 static HANDLE editorWaitHandle, uiWaitHandle;
@@ -103,7 +111,7 @@ static HANDLE editorWaitHandle, uiWaitHandle;
 #define SideQW(s) ((s) == JW_SIDE_EDITOR ? editorToUi : uiToEditor)
 #define SideES(s) ((s) == JW_SIDE_EDITOR ? uiWaitHandle : editorWaitHandle)
 #define SideEW(s) ((s) == JW_SIDE_EDITOR ? editorWaitHandle : uiWaitHandle)
-
+*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////   Thread-safe queue implementation	  //////////////////////////////
@@ -191,7 +199,7 @@ static void *TSDequeue(Q *queue)
 ///////////////////////////   Communication Queue implementation   /////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-static struct CommQueue *CreateCommQueue(int buffersize)
+static struct CommQueue *CreateCommQueue(int buffersize, int hwake)
 {
 	struct CommQueue *result = (struct CommQueue *)malloc(sizeof(struct CommQueue));
 
@@ -202,6 +210,7 @@ static struct CommQueue *CreateCommQueue(int buffersize)
 	result->returnqueue = CreateTSQueue();
 	result->bufferallocs = 0;
 	result->msgallocs = 0;
+	result->hwake = hwake;
 	
 	return result;
 }
@@ -335,8 +344,12 @@ static void ReleaseCommMessage(struct CommQueue *queue, struct CommMessage *m)
 const char *jwQueueMemory()
 {
 	static char memreport[256];
+	struct CommQueue *uiToEditor, *editorToUi;
 	int uenodes, uesz;
 	int eunodes, eusz;
+
+	editorToUi = queues[0];
+	uiToEditor = queues[1];
 
 	uenodes = uiToEditor->queue->nodeallocs + uiToEditor->returnqueue->nodeallocs;
 	uesz = sizeof(N) * uenodes;
@@ -363,62 +376,149 @@ const char *jwQueueMemory()
 /////////////////////////////	JoeWin communication interface	 ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-HANDLE jwInitializeComm()
+int jwCreateWake(void)
 {
-	/* Create two auto reset events */
-	editorWaitHandle = CreateEvent(NULL, FALSE, FALSE, NULL);
-	uiWaitHandle = CreateEvent(NULL, FALSE, FALSE, NULL);
-	
-	editorToUi = CreateCommQueue(EDITOR_TO_UI_BUFSZ);
-	uiToEditor = CreateCommQueue(UI_TO_EDITOR_BUFSZ);
+	HANDLE ev = CreateEvent(NULL, FALSE, FALSE, NULL);
+	int i;
 
-	/* UI side is calling this, give it the UI handle.
-	** The editor always goes through jwWaitForEditorComm() */
-	return uiWaitHandle;
+	for (i = 0; i < nqhandles; i++) {
+		if (!qhandles[i]) {
+			qhandles[i] = ev;
+			return i;
+		}
+	}
+
+	nqhandles = max(4, nqhandles * 2);
+	qhandles = (HANDLE*)realloc(qhandles, nqhandles * sizeof(HANDLE));
+	ZeroMemory(&qhandles[i], (nqhandles - i) * sizeof(HANDLE));
+
+	qhandles[i] = ev;
+	return i;
 }
 
-void jwShutdownComm()
+int jwCreateQueue(int bufsz, int hwake)
 {
-	if (editorToUi)
-	{
-		struct CommQueue *eu, *ue;
-		HANDLE he, hu;
-		
-		eu = editorToUi;
-		ue = uiToEditor;
-		he = editorWaitHandle;
-		hu = uiWaitHandle;
-		editorToUi = NULL;
-		uiToEditor = NULL;
-		editorWaitHandle = NULL;
-		uiWaitHandle = NULL;
+	int i;
 
-		CloseHandle(hu);
-		CloseHandle(he);
-		DeleteCommQueue(eu);
-		DeleteCommQueue(ue);
+	for (i = 0; i < qlen; i++) {
+		if (!queues[i]) {
+			queues[i] = CreateCommQueue(bufsz, hwake);
+			return i;
+		}
+	}
+
+	qlen = max(4, qlen * 2);
+	queues = (struct CommQueue**)realloc(queues, qlen * sizeof(struct CommQueue*));
+	ZeroMemory(&queues[i], (qlen - i) * sizeof(struct CommQueue*));
+
+	queues[i] = CreateCommQueue(bufsz, hwake);
+	return i;
+}
+
+void jwCloseQueue(int qd)
+{
+	if (queues && queues[qd]) {
+		int hwake = queues[qd]->hwake;
+		int i;
+
+		DeleteCommQueue(queues[qd]);
+		queues[qd] = NULL;
+
+		for (i = 0; i < qlen; i++) {
+			if (queues[i] && queues[i]->hwake == hwake)
+				break;
+		}
+
+		if (i == qlen) {
+			/* Handle no longer used. */
+			CloseHandle(qhandles[hwake]);
+			qhandles[hwake] = 0;
+		}
 	}
 }
 
-static struct CommMessage *jwWaitForComm(int side, DWORD timeout)
+HANDLE jwInitializeComm(void)
+{
+	jwCreateQueue(EDITOR_TO_UI_BUFSZ, jwCreateWake()); /* 0 */
+	jwCreateQueue(UI_TO_EDITOR_BUFSZ, jwCreateWake()); /* 1 */
+
+	/* UI side is calling this, give it the UI handle.
+	** The editor always goes through jwWaitForEditorComm() */
+	return qhandles[0];
+}
+
+void jwShutdownComm(void)
 {
 	int i;
-	for (i = 0; i < 3; i++)
-	{
-		struct CommMessage *m = DequeueCommMessage(SideQR(side));
-		DWORD result;
-		
-		if (m)
-		{
-			return m;
+
+	for (i = 0; i < qlen; i++) {
+		if (queues[i])
+			DeleteCommQueue(queues[i]);
+	}
+
+	for (i = 0; i < nqhandles; i++) {
+		if (qhandles[i])
+			CloseHandle(qhandles[i]);
+	}
+
+	qhandles = NULL;
+	queues = NULL;
+	qlen = 0;
+	nqhandles = 0;
+}
+
+struct CommMessage *jwWaitForComm(int *qds, int nqds, int timeout, int *outqueue)
+{
+	int i;
+	int n = 0;
+	int t;
+	HANDLE *hobjs = NULL;
+
+	if (!queues)
+		return NULL;
+
+	/* Map handles */
+	if (nqds > 1) {
+		hobjs = (HANDLE*)malloc(sizeof(HANDLE*) * nqds);
+		ZeroMemory(hobjs, sizeof(HANDLE*) * nqds);
+		for (i = 0; i < nqds; i++) {
+			HANDLE qhandle = qhandles[queues[i]->hwake];
+
+			for (t = 0; t < n; t++) {
+				if (hobjs[t] == qhandle)
+					break;
+			}
+
+			if (t == n) {
+				hobjs[n++] = qhandle;
+			}
 		}
-		
+	}
+
+	for (i = 0; i < 3; i++) {
+		DWORD result;
+
+		for (t = 0; t < nqds; t++) {
+			struct CommMessage *m = DequeueCommMessage(queues[qds[t]]);
+			if (m) {
+				if (outqueue) *outqueue = qds[t];
+				if (hobjs) free(hobjs);
+				return m;
+			}
+		}
+
 		/* Note: pass in the same timeout each iteration, as this will */
 		/* probably return immediately the first time */
-		result = WaitForSingleObject(SideEW(side), timeout);
-		if (result)
+		if (hobjs) {
+			result = WaitForMultipleObjects(n, hobjs, FALSE, (DWORD)timeout);
+		} else {
+			result = WaitForSingleObject(qhandles[queues[*qds]->hwake], (DWORD)timeout);
+		}
+
+		if (result == WAIT_TIMEOUT || result == WAIT_FAILED)
 		{
 			/* Timeout or error */
+			if (hobjs) free(hobjs);
 			return NULL;
 		}
 		
@@ -434,26 +534,26 @@ static struct CommMessage *jwWaitForComm(int side, DWORD timeout)
 	/* Probably, TSDequeue is broken */
 	assert(0);
 
+	if (hobjs) free(hobjs);
 	return NULL;
 }
 
-struct CommMessage *jwWaitForEditorComm(DWORD timeout)
+struct CommMessage *jwRecvComm(int qd)
 {
-	return jwWaitForComm(JW_SIDE_EDITOR, timeout);
+	return queues ? DequeueCommMessage(queues[qd]) : NULL;
 }
 
-struct CommMessage *jwRecvComm(int side)
-{
-	return DequeueCommMessage(SideQR(side));
-}
-
-void jwSendComm(int side, int msg, int arg1, int arg2, int arg3, int arg4, void *ptr, int sz, const char *data)
+void jwSendComm(int qd, int msg, int arg1, int arg2, int arg3, int arg4, void *ptr, int sz, const char *data)
 {
 	struct CommMessage *m;
 	struct CommQueue *q;
 	int buffer;
 	
-	q = SideQW(side);
+	if (!queues) {
+		return;
+	}
+
+	q = queues[qd];
 	buffer = data ? 1 : 0;
 	
 	m = CreateCommMessage(q, buffer);
@@ -488,21 +588,23 @@ void jwSendComm(int side, int msg, int arg1, int arg2, int arg3, int arg4, void 
 	}
 	
 	EnqueueCommMessage(q, m);
-	SetEvent(SideES(side));
+	SetEvent(qhandles[q->hwake]);
 }
 
-void jwReleaseComm(int side, struct CommMessage *msg)
+void jwReleaseComm(int qd, struct CommMessage *msg)
 {
-	ReleaseCommMessage(SideQR(side), msg);
+	if (queues && queues[qd]) {
+		ReleaseCommMessage(queues[qd], msg);
+	}
 }
 
-int jwRendezvous(int side)
+int jwRendezvous(int readqd, int writeqd)
 {
-	jwSendComm0(side, COMM_RENDEZVOUS);
+	jwSendComm0(writeqd, COMM_RENDEZVOUS);
 
 	for (;;)
 	{
-		struct CommMessage *m = jwWaitForComm(side, INFINITE);
+		struct CommMessage *m = jwWaitForComm(&readqd, 1, INFINITE, NULL);
 		int msg = m->msg;
 		
 		assert(msg == COMM_RENDEZVOUS);
@@ -510,7 +612,7 @@ int jwRendezvous(int side)
 			return 1;
 		}
 
-		jwReleaseComm(side, m);
+		jwReleaseComm(readqd, m);
 
 		if (msg == COMM_RENDEZVOUS)
 			return 0;
@@ -522,10 +624,10 @@ int jwRendezvous(int side)
 ////////////////////////////////////////   JoeWin IO   /////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-void jwWriteIO(int side, const char *data, int size)
+void jwWriteIO(int qd, const char *data, int size)
 {
 	int i;
-	int maxdata = JW_PACKIOSZ + SideQW(side)->buffersize;
+	int maxdata = JW_PACKIOSZ + queues[qd]->buffersize;
 
 	for (i = 0; i < size; i += maxdata)
 	{
@@ -556,11 +658,11 @@ void jwWriteIO(int side, const char *data, int size)
 
 		if (!bufsz)
 		{
-			jwSendComm(side, COMM_IO_1 + packsz - 1, arg1, arg2, arg3, arg4, NULL, 0, NULL);
+			jwSendComm(qd, COMM_IO_1 + packsz - 1, arg1, arg2, arg3, arg4, NULL, 0, NULL);
 		}
 		else
 		{
-			jwSendComm(side, COMM_IO_N, arg1, arg2, arg3, arg4, NULL, bufsz, &data[JW_PACKIOSZ + i]);
+			jwSendComm(qd, COMM_IO_N, arg1, arg2, arg3, arg4, NULL, bufsz, &data[JW_PACKIOSZ + i]);
 		}
 	}
 }

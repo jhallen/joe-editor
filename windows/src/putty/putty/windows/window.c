@@ -934,7 +934,7 @@ int PuttyWinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show)
 
 #ifdef JOEWIN
     /* Accept messages */
-    if (jwRendezvous(JW_SIDE_UI)) {
+    if (jwRendezvous(JW_TO_UI, JW_TO_EDITOR)) {
 	    /* Error, probably premature exit. */
 	    return 1;
     }
@@ -1350,13 +1350,13 @@ static void enact_pending_netevent(void)
 	/* Make sure the event gets reset. */
 	ResetEvent(commQueueEvent);
 
-	while ((m = jwRecvComm(JW_SIDE_UI)))
+	while ((m = jwRecvComm(JW_TO_UI)))
 	{
 	    if (JWISIO(m))
 	    {
 		char buffer[EDITOR_TO_UI_IOSZ];
 		int sz = jwReadIO(m, buffer);
-		jwReleaseComm(JW_SIDE_UI, m);
+		jwReleaseComm(JW_TO_UI, m);
 		from_backend(NULL, 0, buffer, sz);
 	    }
 	    else
@@ -1364,7 +1364,7 @@ static void enact_pending_netevent(void)
 		jwUIProcessPacket(backhandle, m);
 		if (m->msg != COMM_EXIT)
 		{
-		    jwReleaseComm(JW_SIDE_UI, m);
+		    jwReleaseComm(JW_TO_UI, m);
 		}
 	    }
 
@@ -2708,11 +2708,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 	    break;
 
 	case IDM_PASTE:
-	    jwSendComm0p(JW_SIDE_UI, COMM_EXEC, "winpaste");
+	    jwSendComm0p(JW_FROM_UI, COMM_EXEC, "winpaste");
 	    break;
 
 	case IDM_COPY:
-	    jwSendComm0p(JW_SIDE_UI, COMM_EXEC, "wincopy");
+	    jwSendComm0p(JW_FROM_UI, COMM_EXEC, "wincopy");
 	    break;
 
 #endif

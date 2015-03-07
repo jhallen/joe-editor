@@ -20,8 +20,10 @@
 #ifndef _JOEWIN_JWCOMM_H
 #define _JOEWIN_JWCOMM_H
 
-#define JW_SIDE_UI		0
-#define JW_SIDE_EDITOR		1
+#define JW_FROM_EDITOR		0
+#define JW_TO_UI		0
+#define JW_FROM_UI		1
+#define JW_TO_EDITOR		1
 
 #define EDITOR_TO_UI_BUFSZ	1024
 #define UI_TO_EDITOR_BUFSZ	1024
@@ -82,15 +84,18 @@ struct CommMessage
     struct CommBuffer   *buffer;
 };
 
-HANDLE jwInitializeComm();
-void jwShutdownComm();
-struct CommMessage *jwWaitForEditorComm(DWORD timeout);
-struct CommMessage *jwRecvComm(int side);
-void jwSendComm(int side, int msg, int arg1, int arg2, int arg3, int arg4, void *ptr, int sz, const char *data);
-void jwReleaseComm(int side, struct CommMessage *msg);
+int jwCreateWake(void);
+int jwCreateQueue(int bufsz, int hwake);
+void jwCloseQueue(int qd);
+HANDLE jwInitializeComm(void);
+void jwShutdownComm(void);
+struct CommMessage *jwWaitForComm(int *qds, int nqds, int timeout, int *outqueue);
+struct CommMessage *jwRecvComm(int qd);
+void jwSendComm(int qd, int msg, int arg1, int arg2, int arg3, int arg4, void *ptr, int sz, const char *data);
+void jwReleaseComm(int qd, struct CommMessage *msg);
 
-int jwRendezvous(int side);
-void jwWriteIO(int side, void *data, int size);
+int jwRendezvous(int readqd, int writeqd);
+void jwWriteIO(int qd, void *data, int size);
 int jwReadIO(struct CommMessage *m, void *data);
 
 #define jwSendComm0(side,op)			(jwSendComm((side),(op),0,0,0,0,0,0,0))
