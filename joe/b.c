@@ -21,9 +21,7 @@
 
 #ifndef JOEWIN
 extern int errno;
-#define EXTRA_FILE_FLAGS ""
 #else
-/* All files need to be opened in binary mode in Windows */
 #include <assert.h>
 #endif
 

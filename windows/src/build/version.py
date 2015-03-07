@@ -41,17 +41,17 @@ def main(version, outfile_h, outfile_wxi, designation):
     if svnrev:
     	revstr = "svn rev %s, " % svnrev
     	revnum = cleansvnrev(svnrev)
-    	rev = svnrev
+    	rev = '-' + svnrev
     else:
         hgrev = gethgrev()
+        revnum = getdatebld()
         if hgrev:
             revid, branch = hgrev
-            revnum = getdatebld()
-            rev = revid
+            rev = '-' + revid
             revstr = "hg %s rev %s, " % (branch, revid)
         else:
             revstr = ""
-            rev = '0'
+            rev = ''
     
     if officialbuild:
         if vparts[-1] == '0': vparts[-1] = getdatebld()
@@ -63,11 +63,11 @@ def main(version, outfile_h, outfile_wxi, designation):
     elif nightlybuild:
         if vparts[-1] == '0': vparts[-1] = revnum
         desc = version + ' Nightly build (%s%s)' % (revstr, datetime.datetime.now().strftime('%d %b %Y'))
-        shortdesc = version + '-nightly-%s' % rev
+        shortdesc = version + '-nightly' + rev
     else:
         if vparts[-1] == '0': vparts[-1] = revnum
         desc = version + ' Developer build (%s%s)' % (revstr, datetime.datetime.now().strftime('%d %b %Y'))
-        shortdesc = version + '-dev-%s' % rev
+        shortdesc = version + '-dev' + rev
     
     year = datetime.datetime.now().year
     
