@@ -118,7 +118,7 @@ int joe_ioctl(int fd, int req, void *ptr)
 {
 	int rt;
 	do {
-		rt = ioctl(fd, req, ptr);
+		rt = ioctl(fd, req, ptr); /* 2nd arg is unsigned long in linux */
 	} while (rt == -1 && errno == EINTR);
 	return rt;
 }
@@ -132,7 +132,7 @@ int joe_ioctl(int fd, int req, void *ptr)
 struct mcheck {
 	struct mcheck *next;
 	int state;		/* 0=malloced, 1=free */
-	int size;		/* size in bytes */
+	size_t size;		/* size in bytes */
 	int magic;
 };
 
@@ -299,7 +299,7 @@ int zncmp(unsigned char *a, unsigned char *b, size_t len)
 
 unsigned char *zdup(unsigned char *bf)
 {
-	int size = zlen(bf);
+	size_t size = zlen(bf);
 	unsigned char *p = (unsigned char *)joe_malloc(size+1);
 	memcpy(p,bf,size+1);
 	return p;
@@ -378,7 +378,7 @@ unsigned char *zrchr(unsigned char *s, int c)
 
 #ifdef junk
 
-void *replenish(void **list,int size)
+void *replenish(void **list,size_t size)
 {
 	unsigned char *i = joe_malloc(size*16);
 	int x;
@@ -432,7 +432,7 @@ void rm_zs(ZS z)
 	joe_free(z.s);
 }
 
-ZS raw_mk_zs(GC **gc,unsigned char *s,int len)
+ZS raw_mk_zs(GC **gc,unsigned char *s,size_t len)
 {
 	ZS zs;
 	zs.s = (unsigned char *)joe_malloc(len+1);
@@ -494,7 +494,7 @@ int parse_ws(unsigned char **pp,int cmt)
 
 /* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len-1 chars. */
 
-int parse_ident(unsigned char **pp, unsigned char *buf, int len)
+int parse_ident(unsigned char **pp, unsigned char *buf, size_t len)
 {
 	unsigned char *p = *pp;
 	if (joe_isalpha_(locale_map,*p)) {
@@ -611,7 +611,7 @@ int parse_long(unsigned char **pp, long *buf)
  * -1 if there is no string or if the input ended before the terminating ".
  */
 
-int parse_string(unsigned char **pp, unsigned char *buf, int len)
+ssize_t parse_string(unsigned char **pp, unsigned char *buf, size_t len)
 {
 	unsigned char *start = buf;
 	unsigned char *p= *pp;
@@ -620,7 +620,7 @@ int parse_string(unsigned char **pp, unsigned char *buf, int len)
 		while(len > 1 && *p && *p!='\"') {
 			int x = 50;
 			int c = escape(0, &p, &x);
-			*buf++ = c;
+			*buf++ = (unsigned char)c; /* escape() can not return unicode when utf8 flag == 0 */
 			--len;
 		}
 		*buf = 0;
@@ -643,7 +643,7 @@ int parse_string(unsigned char **pp, unsigned char *buf, int len)
 
 /* Used originally for printing macros */
 
-void emit_string(FILE *f,unsigned char *s,int len)
+void emit_string(FILE *f,unsigned char *s,size_t len)
 {
 	unsigned char buf[8];
 	unsigned char *p, *q;
@@ -660,7 +660,7 @@ void emit_string(FILE *f,unsigned char *s,int len)
 
 /* Emit a string */
 
-void emit_string(FILE *f,unsigned char *s,int len)
+void emit_string(FILE *f,unsigned char *s,size_t len)
 {
 	fputc('"',f);
 	while(len) {

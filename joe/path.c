@@ -116,7 +116,7 @@ unsigned char *dirprt(unsigned char *path)
 	skip_drive_letter(b);
 	while ((z != b) && (z[-1] != '/'))
 		--z;
-	return vsncpy(NULL, 0, path, z - path);
+	return vsncpy(NULL, 0, path, (size_t)(z - path));
 }
 /********************************************************************/
 unsigned char *begprt(unsigned char *path)
@@ -132,7 +132,7 @@ unsigned char *begprt(unsigned char *path)
 	else {
 		while ((z != path + drv) && (z[-1] != '/'))
 			--z;
-		return vsncpy(NULL, 0, path, z - path);
+		return vsncpy(NULL, 0, path, (size_t)(z - path));
 	}
 }
 /********************************************************************/
@@ -165,7 +165,7 @@ int mkpath(unsigned char *path)
 	}
 
 	while (path[0]) {
-		int c;
+		unsigned char c;
 
 		for (s = path; (*s) && (*s != '/'); s++) ;
 		c = *s;
@@ -194,7 +194,7 @@ unsigned char *mktmp(unsigned char *where)
 #endif
 	unsigned char *name;
 	int fd;
-	unsigned namesize;
+	size_t namesize;
 
 	if (!where)
 		where = (unsigned char *)getenv("TEMP");

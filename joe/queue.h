@@ -145,7 +145,7 @@ struct stditem {
 
 /* Allocate an item */
 
-void *alitem PARAMS((void *list, int itemsize));
+void *alitem PARAMS((void *list, size_t itemsize));
 
 /* Free an item */
 

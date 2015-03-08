@@ -13,9 +13,9 @@ static HENTRY *freentry = NULL;
 
 #define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
 
-unsigned long hash(unsigned char *s)
+size_t hash(unsigned char *s)
 {
-	unsigned long accu = 0;
+	size_t accu = 0;
 
 	while (*s) {
 		accu = hnext(accu, *s++);
@@ -25,7 +25,7 @@ unsigned long hash(unsigned char *s)
 
 /* Create hash table */
 
-HASH *htmk(int len)
+HASH *htmk(size_t len)
 {
 	HASH *t = (HASH *) joe_malloc(sizeof(HASH));
 	t->nentries = 0;
@@ -55,9 +55,9 @@ void htrm(HASH *ht)
 
 void htexpand(HASH *h)
 {
-	unsigned x;
+	size_t x;
 	/* Allocate new table */
-	unsigned new_size = h->len * 2;
+	size_t new_size = h->len * 2;
 	HENTRY **new_table = (HENTRY **)joe_calloc(new_size, sizeof(HENTRY *));
 	/* Copy entries from old table to new */
 	for (x = 0; x != h->len; ++x) {
@@ -80,10 +80,10 @@ void htexpand(HASH *h)
 
 void *htadd(HASH *ht, unsigned char *name, void *val)
 {
-	unsigned hval = hash(name);
-	unsigned idx = hval & (ht->len - 1);
+	size_t hval = hash(name);
+	size_t idx = hval & (ht->len - 1);
 	HENTRY *entry;
-	int x;
+	size_t x;
 
 	if (!freentry) {
 		entry = (HENTRY *) joe_malloc(sizeof(HENTRY) * 64);

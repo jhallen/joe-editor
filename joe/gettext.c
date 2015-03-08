@@ -54,13 +54,13 @@ int load_po(FILE *f)
 		p = buf;
 		parse_ws(&p, '#');
 		if (!parse_field(&p, USTR "msgid")) {
-			int ofst = 0;
-			int len;
+			size_t ofst = 0;
+			ssize_t len;
 			msgid[0] = 0;
 			parse_ws(&p, '#');
 			while ((len = parse_string(&p, msgid + ofst, sizeof(msgid)-ofst)) >= 0) {
 				preload_flag = 0;
-				ofst += len;
+				ofst += (size_t)len;
 				parse_ws(&p, '#');
 				if (!*p) {
 					if (fgets((char *)buf,sizeof(buf) - 1,f)) {
@@ -73,13 +73,13 @@ int load_po(FILE *f)
 				}
 			}
 		} else if (!parse_field(&p, USTR "msgstr")) {
-			int ofst = 0;
-			int len;
+			size_t ofst = 0;
+			ssize_t len;
 			msgstr[0] = 0;
 			parse_ws(&p, '#');
 			while ((len = parse_string(&p, msgstr + ofst, sizeof(msgstr)-ofst)) >= 0) {
 				preload_flag = 0;
-				ofst += len;
+				ofst += (size_t)len;
 				parse_ws(&p, '#');
 				if (!*p) {
 					if (fgets((char *)buf,sizeof(buf) - 1,f)) {
