@@ -78,7 +78,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 
 int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build, int out_only)
 {
-#if defined(__MSDOS__)
+#if defined(__MSDOS__) || defined(JOEWIN)
 	varm(s);
 	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
