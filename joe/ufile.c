@@ -182,15 +182,6 @@ static int cp(unsigned char *from, unsigned char *to)
 	}
 
 	return cpresult;
-
-	//SHFILEOPSTRUCT fop;
-
-	//fop.hwnd = NULL;
-	//fop.wFunc = FO_COPY;
-	//fop.pFrom = from;
-	//fop.pTo = to;
-	//fop.fFlags = FOF_NOCONFIRMATION | FOF_NO_UI | FOF_NOERRORUI;
-	//return SHFileOperation(&fop);
 #else
 	int f, g, amnt;
 	struct stat sbuf;

@@ -368,7 +368,7 @@ int execmd(CMD *cmd, int k)
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && piseof(bw->cursor) &&
 	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype && k>=32 && k<256))) {
 		unsigned char c = k;
-		joe_write(bw->b->out, &c, 1);
+		writempx(bw->b->out, &c, 1);
 		return 0;
 	}
 

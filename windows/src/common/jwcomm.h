@@ -27,6 +27,7 @@
 
 #define EDITOR_TO_UI_BUFSZ	1024
 #define UI_TO_EDITOR_BUFSZ	1024
+#define MPX_BUFSZ		1024
 
 #if UI_TO_EDITOR_BUFSZ < PATH_MAX || EDITOR_TO_UI_BUFSZ < PATH_MAX
 #error ERROR: Buffers are not large enough for file names
@@ -41,6 +42,8 @@
 #define COMM_RENDEZVOUS		7
 #define COMM_CONTEXTMENU	8
 #define COMM_EXEC		9
+#define COMM_ACK		10
+#define COMM_MPXDATA		11
 
 #define COMM_IO_1		0x80
 #define COMM_IO_2		0x81
@@ -102,6 +105,7 @@ int jwReadIO(struct CommMessage *m, void *data);
 #define jwSendComm0s(side,op,s)			(jwSendComm((side),(op),0,0,0,0,0,strlen(s)+1,(s)))
 #define jwSendComm0p(side,op,p)			(jwSendComm((side),(op),0,0,0,0,(p),0,0))
 #define jwSendComm0d(side,op,d,s)		(jwSendComm((side),(op),0,0,0,0,0,(s),(d)))
+#define jwSendComm0pd(side,op,p,d,s)		(jwSendComm((side),(op),0,0,0,0,(p),(s),(d)))
 #define jwSendComm1(side,op,a1)			(jwSendComm((side),(op),(a1),0,0,0,0,0,0))
 #define jwSendComm2(side,op,a1,a2)		(jwSendComm((side),(op),(a1),(a2),0,0,0,0,0))
 #define jwSendComm3s(side,op,a1,a2,a3,s)	(jwSendComm((side),(op),(a1),(a2),(a3),0,0,strlen(s) + 1,(s)))

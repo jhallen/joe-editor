@@ -50,7 +50,7 @@ int ureload_all(BW *bw);
 
 #ifdef JOEWIN
 
-int dodropfiles(va_list);
+int dodropfiles PARAMS((va_list));
 
 #endif
 

@@ -482,7 +482,7 @@ struct CommMessage *jwWaitForComm(int *qds, int nqds, int timeout, int *outqueue
 		hobjs = (HANDLE*)malloc(sizeof(HANDLE*) * nqds);
 		ZeroMemory(hobjs, sizeof(HANDLE*) * nqds);
 		for (i = 0; i < nqds; i++) {
-			HANDLE qhandle = qhandles[queues[i]->hwake];
+			HANDLE qhandle = qhandles[queues[qds[i]]->hwake];
 
 			for (t = 0; t < n; t++) {
 				if (hobjs[t] == qhandle)

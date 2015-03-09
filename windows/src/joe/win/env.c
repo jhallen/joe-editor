@@ -28,36 +28,27 @@
 
 char* glue_getenv(const char* env)
 {
-	static char *lang = NULL, *temp = NULL;
+	static char *lang = NULL, *temp = NULL, *shell = NULL;
 
-	if (!strcmp(env, "HOME"))
-	{
+	if (!strcmp(env, "HOME")) {
 		return (char*)jw_home;
-	}
-	else if (!strcmp(env, "TERM"))
-	{
+	} else if (!strcmp(env, "TERM")) {
 		return "putty";
-	}
-	else if (!strcmp(env, "LANG"))
-	{
-		if (!lang)
-		{
+	} else if (!strcmp(env, "LANG")) {
+		if (!lang) {
 			char langtmp[LOCALE_NAME_MAX_LENGTH];
 			
-			if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, langtmp, LOCALE_NAME_MAX_LENGTH))
-			{
+			if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, langtmp, LOCALE_NAME_MAX_LENGTH)) {
 				int len = strlen(langtmp);
 
 				langtmp[len++] = '_';
-				if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, &langtmp[len], LOCALE_NAME_MAX_LENGTH - len))
-				{
+				if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, &langtmp[len], LOCALE_NAME_MAX_LENGTH - len)) {
 					strcat(langtmp, ".UTF-8");
 					lang = strdup(langtmp);
 				}
 			}
 
-			if (!lang)
-			{
+			if (!lang) {
 				/* On error, default to English :-( */
 				assert(FALSE);
 				lang = "en_US.UTF-8";
@@ -65,11 +56,8 @@ char* glue_getenv(const char* env)
 		}
 
 		return lang;
-	}
-	else if (!strcmp(env, "TEMP"))
-	{
-		if (!temp)
-		{
+	} else if (!strcmp(env, "TEMP")) {
+		if (!temp) {
 			wchar_t wtemp[MAX_PATH];
 			int sz;
 
@@ -77,14 +65,29 @@ char* glue_getenv(const char* env)
 			sz = wcstoutf8len(wtemp) + 1;
 			temp = (char *)malloc(sz);
 
-			if (wcstoutf8(temp, wtemp, sz))
-			{
+			if (wcstoutf8(temp, wtemp, sz)) {
 				assert(0);
 				return NULL;
 			}
 		}
 
 		return temp;
+	} else if (!strcmp(env, "SHELL")) {
+		if (!shell) {
+			wchar_t wshell[MAX_PATH];
+			int sz;
+
+			GetEnvironmentVariableW(L"ComSpec", wshell, MAX_PATH);
+			sz = wcstoutf8len(wshell) + 1;
+			shell = (char *)malloc(sz);
+
+			if (wcstoutf8(shell, wshell, sz)) {
+				assert(0);
+				return NULL;
+			}
+		}
+
+		return shell;
 	}
 
 	return NULL;

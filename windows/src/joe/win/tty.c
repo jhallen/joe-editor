@@ -57,6 +57,14 @@ static int ttysig = 0;
 /* Current window size */
 static int winwidth = 0, winheight = 0;
 
+/* Stuff for shell windows */
+static int nmpx = 0;
+static int acceptch = NO_MORE_DATA;
+
+MPX asyncs[NPROC];
+
+static void mpxdied(MPX *m);
+
 /* Open terminal and set signals */
 
 void ttopen(void)
@@ -175,6 +183,7 @@ int ttgetc(void)
 	int flg;
 	int set_tick = 0;
 	DWORD timeout = 1000; // milliseconds
+	int qds[1 + NPROC];
 
 	set_tick = 1;
 
@@ -223,38 +232,61 @@ int ttgetc(void)
 		have = 0;
 	} else {
 		struct CommMessage *m;
-		int qd = JW_TO_EDITOR;
+		int i, n;
+		int qd;
 
 		/* If there is something in the input buffer, have and havec should be set! */
 		assert(ibufp == ibufsiz);
 
-		m = jwWaitForComm(&qd, 1, timeout, NULL);
+		qds[0] = JW_TO_EDITOR;
+		n = 1;
 
-		if (!m)
-		{
+		if (nmpx) {
+			for (i = 0; i < NPROC; i++) {
+				if (asyncs[i].func) {
+					qds[n++] = asyncs[i].dataqd;
+				}
+			}
+		}
+
+		m = jwWaitForComm(qds, n, timeout, &qd);
+
+		if (!m) {
 			/* Timeout */
 			ticked = 1;
 			goto loop;
 		}
 
-		if (JWISIO(m))
-		{
-			/* IO */
-			ibufsiz = jwReadIO(m, ibuf);
-			jwReleaseComm(JW_TO_EDITOR, m);
+		if (qd == JW_TO_EDITOR) {
+			if (JWISIO(m)) {
+				/* IO */
+				ibufsiz = jwReadIO(m, ibuf);
+				jwReleaseComm(JW_TO_EDITOR, m);
 
-			assert(ibufsiz > 0);
-			havec = ibuf[0];
-			ibufp = 1;
-		}
-		else
-		{
-			if (handlejwcontrol(m))
-			{
-				return -1;
+				assert(ibufsiz > 0);
+				havec = ibuf[0];
+				ibufp = 1;
+			} else {
+				if (handlejwcontrol(m)) {
+					return -1;
+				}
+
+				jwReleaseComm(qd, m);
+				goto loop;
+			}
+		} else {
+			MPX *mpx = (MPX*)m->ptr;
+
+			if (m->msg == COMM_MPXDATA) {
+				jwSendComm0(mpx->ackfd, COMM_ACK);
+
+				mpx->func(mpx->object, USTR m->buffer->buffer, m->buffer->size);
+				edupd(1);
+			} else if (m->msg == COMM_EXIT) {
+				mpxdied(mpx);
 			}
 
-			jwReleaseComm(JW_TO_EDITOR, m);
+			jwReleaseComm(qd, m);
 			goto loop;
 		}
 	}
@@ -283,29 +315,23 @@ void ttgtsz(int *x, int *y)
 
 int handlejwcontrol(struct CommMessage *m)
 {
-	if (m->msg == COMM_WINRESIZE)
-	{
-		if (winwidth != m->arg1 || winheight != m->arg2)
-		{
+	if (m->msg == COMM_WINRESIZE) {
+		if (winwidth != m->arg1 || winheight != m->arg2) {
 			winwidth = m->arg1;
 			winheight = m->arg2;
 			winched = 1;
 		}
-	}
-	else if (m->msg == COMM_DROPFILES)
-	{
+	} else if (m->msg == COMM_DROPFILES) {
 		struct CommMessage *n = m;
 		unsigned char **files = vamk(m->arg3);
 		int x = m->arg1, y = m->arg2;
 		int qd = JW_TO_EDITOR;
 
 		/* We will be sent a packet with count=0 to denote no more files */
-		while (n && n->arg3 > 0)
-		{
+		while (n && n->arg3 > 0) {
 			files = vaadd(files, vsdupz(USTR n->buffer->buffer));
 
-			if (n != m)
-			{
+			if (n != m) {
 				jwReleaseComm(JW_TO_EDITOR, n);
 			}
 
@@ -314,8 +340,7 @@ int handlejwcontrol(struct CommMessage *m)
 			assert(n->msg == COMM_DROPFILES);
 		}
 
-		if (n != m)
-		{
+		if (n != m) {
 			jwReleaseComm(JW_TO_EDITOR, n);
 		}
 
@@ -323,9 +348,7 @@ int handlejwcontrol(struct CommMessage *m)
 
 		varm(files);
 		edupd(1);
-	}
-	else if (m->msg == COMM_COLORSCHEME)
-	{
+	} else if (m->msg == COMM_COLORSCHEME) {
 		static CMD *retype = NULL;
 		struct jwcolors *colors = (struct jwcolors *)m->ptr;
 		W *w = maint->topwin;
@@ -333,16 +356,13 @@ int handlejwcontrol(struct CommMessage *m)
 		applyscheme(colors);
 
 		/* Redraw screen */
-		if (!retype)
-		{
+		if (!retype) {
 			retype = findcmd(USTR "retype");
 		}
 
 		execmd(retype, 0);
 		edupd(1);
-	}
-	else if (m->msg == COMM_EXEC)
-	{
+	} else if (m->msg == COMM_EXEC) {
 		/* Called with either a buffer attached or a pointer to a const string */
 
 		char *data;
@@ -370,9 +390,7 @@ int handlejwcontrol(struct CommMessage *m)
 			if (dealloc) free(dealloc);
 			edupd(1);
 		}
-	}
-	else if (m->msg == COMM_EXIT)
-	{
+	} else if (m->msg == COMM_EXIT) {
 		/* Shut down and exit */
 		CMD *c = findcmd(USTR "killjoe");
 		execmd(c, 0);
@@ -436,3 +454,218 @@ void signrm(void)
 	SetUnhandledExceptionFilter(NULL);
 }
 
+/* Subprocess stuff */
+
+static DWORD WINAPI mpxreadthread(LPVOID arg)
+{
+	char buf[MPX_BUFSZ];
+	int credits = 2;
+	MPX *m = (MPX*)arg;
+	DWORD amount;
+	struct CommMessage *msg;
+	int ackqd, dataqd;
+	HANDLE hReadPipe;
+
+	/* Can't assume this pointer will always be valid. */
+	ackqd = m->ackfd;
+	dataqd = m->dataqd;
+	hReadPipe = m->hReadPipe;
+
+	for (;;) {
+		while (!credits) {
+			msg = jwWaitForComm(&ackqd, 1, INFINITE, NULL);
+			if (msg->msg == COMM_ACK) {
+				credits++;
+			} else {
+				assert(0);
+			}
+
+			jwReleaseComm(ackqd, msg);
+		}
+
+		if (!ReadFile(hReadPipe, (LPVOID)buf, MPX_BUFSZ, &amount, NULL)) {
+			/* Shut it down */
+			CloseHandle(hReadPipe);
+			jwSendComm0p(dataqd, COMM_EXIT, m);
+			return 0;
+		}
+
+		jwSendComm0pd(dataqd, COMM_MPXDATA, m, buf, amount);
+		--credits;
+	}
+}
+
+MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (void*), void *dieobj, int out_only)
+{
+	HANDLE prr, prw, pwr, pww, hthread, hconsole;
+	SECURITY_ATTRIBUTES sa;
+	PROCESS_INFORMATION pinf;
+	STARTUPINFOW si;
+	unsigned char *allargs = 0;
+	wchar_t *wargs = NULL, *wcmd = NULL;
+	MPX *m = NULL;
+	DWORD res;
+	int i;
+
+	if (!nmpx) {
+		ZeroMemory(asyncs, sizeof(asyncs));
+	}
+
+	for (i = 0; i < NPROC; i++) {
+		if (!asyncs[i].func) {
+			m = &asyncs[i];
+			break;
+		}
+	}
+
+	if (i == NPROC) {
+		return NULL;
+	}
+
+	nmpx++;
+
+	/* Remember callback function */
+	m->func = func;
+	m->object = object;
+	m->die = die;
+	m->dieobj = dieobj;
+
+	/* Setup arguments */
+	for (i = 0; i < valen(args); i++) {
+		if (allargs)
+			allargs = vscatz(allargs, USTR " ");
+
+		allargs = vscat(allargs, args[i], vslen(args[i]));
+	}
+
+	i = utf8towcslen(allargs);
+	wargs = (wchar_t*)malloc((i + 1) * sizeof(wchar_t));
+
+	if (utf8towcs(wargs, allargs, i)) {
+		assert(0);
+		goto fail;
+	}
+
+	i = utf8towcslen(cmd);
+	wcmd = (wchar_t*)malloc((i + 1) * sizeof(wchar_t));
+
+	if (utf8towcs(wcmd, cmd, i)) {
+		assert(0);
+		goto fail;
+	}
+
+	/* Setup pipes */
+	ZeroMemory(&sa, sizeof(SECURITY_ATTRIBUTES));
+	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+
+	if (!CreatePipe(&prr, &prw, &sa, 0) || !SetHandleInformation(prw, HANDLE_FLAG_INHERIT, 0)) {
+		assert(0);
+		goto fail;
+	}
+
+	if (!CreatePipe(&pwr, &pww, &sa, 0) || !SetHandleInformation(pwr, HANDLE_FLAG_INHERIT, 0)) {
+		assert(0);
+		CloseHandle(prr);
+		CloseHandle(prw);
+		goto fail;
+	}
+
+	/* Create child */
+	ZeroMemory(&si, sizeof(STARTUPINFOW));
+	si.cb = sizeof(STARTUPINFOW);
+	si.hStdInput = prr;
+	si.hStdOutput = pww;
+	si.hStdError = pww;
+	si.dwFlags = STARTF_USESTDHANDLES;
+
+	res = CreateProcessW(wcmd, wargs, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pinf);
+
+	CloseHandle(pww);
+	CloseHandle(prr);
+
+	free(wcmd);
+	free(wargs);
+	wcmd = wargs = NULL;
+
+	if (res) {
+		/* Finish setting up MPX */
+		m->ackfd = jwCreateQueue(32, jwCreateWake());
+		m->dataqd = jwCreateQueue(MPX_BUFSZ, JW_TO_EDITOR);
+
+		m->hReadPipe = pwr;
+		m->ptyfd = *ptyfd = _open_osfhandle((intptr_t)prw, 0);
+
+		/* Create thread */
+		m->hReadThread = CreateThread(NULL, 0, mpxreadthread, m, 0, 0);
+		m->hProcess = pinf.hProcess;
+		m->pid = pinf.dwProcessId;
+
+		CloseHandle(pinf.hThread);
+
+		return m;
+	} else {
+		CloseHandle(pwr);
+		CloseHandle(prw);
+	}
+
+fail:
+	if (wargs) free(wargs);
+	if (wcmd) free(wcmd);
+	--nmpx;
+	ZeroMemory(m, sizeof(MPX));
+	return NULL;
+}
+
+static void mpxdied(MPX *m)
+{
+	CloseHandle(m->hReadThread);
+	CloseHandle(m->hProcess);
+
+	if (m->die) {
+		/* This should close the process's stdin fd */
+		m->die(m->dieobj);
+	}
+
+	jwCloseQueue(m->ackfd);
+	jwCloseQueue(m->dataqd);
+
+	ZeroMemory(m, sizeof(MPX));
+
+	edupd(1);
+}
+
+void killmpx(int pid, int sig)
+{
+	int i;
+
+	for (i = 0; i < NPROC; i++) {
+		if (asyncs[i].pid == pid) {
+			TerminateProcess(asyncs[i].hProcess, 0);
+			/* Reader thread should notice, and go through the normal course of mpxdied. */
+			return;
+		}
+	}
+}
+
+int writempx(int fd, void *data, size_t amt)
+{
+	int i;
+
+	/* See if we can find it, first */
+	for (i = 0; i < NPROC; i++) {
+		if (asyncs[i].func && asyncs[i].ptyfd == fd) {
+			/* This is one of our shell windows, process as necessary. */
+			unsigned char *str = USTR data;
+			
+			/* TODO: This will change, but for now this is only ever called with a single character. */
+			if (str[0] == '\r') {
+				joe_write(fd, "\r\n", 2);
+				return 1;
+			}
+		}
+	}
+
+	return joe_write(fd, data, amt);
+}

@@ -180,6 +180,9 @@
     <ClInclude Include="$(JoeSrcDir)\joedata.h">
       <Filter>JoeWin Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(JoeSrcDir)\builtin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(JoeSrcDir)\joedata.c">

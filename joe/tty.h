@@ -12,10 +12,18 @@ struct mpx {
 	int	ackfd;		/* Packetizer response descriptor */
 	int	kpid;		/* Packetizer process id */
 	int	pid;		/* Client process id */
-	void	(*func) ();	/* Function to call when read occures */
+	void	(*func) (void*, unsigned char*, int);	/* Function to call when read occures */
 	void	*object;	/* First arg to pass to function */
-	void	(*die) ();	/* Function: call when client dies or closes */
+	void	(*die) (void*);	/* Function: call when client dies or closes */
 	void	*dieobj;
+
+#ifdef JOEWIN
+	int	dataqd;		/* Queue descriptor for stdout/stderr */
+	int	ptyfd;		/* File descriptor for process stdin */
+	HANDLE	hProcess;	/* Subprocess handle */
+	HANDLE	hReadThread;	/* Read thread handle */
+	HANDLE	hReadPipe;	/* Handle for stdout pipe */
+#endif
 };
 
 /* void ttopen(void);  Open the tty (attached to stdin) for use inside of JOE
@@ -185,7 +193,11 @@ void signrm PARAMS((void));
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only));
+MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (void*), void *dieobj, int out_only));
+
+void killmpx PARAMS((int pid, int sig));
+
+int writempx PARAMS((int fd, void *data, size_t amt));
 
 /* int subshell(int *ptyfd);
  * Execute a subshell.  Returns 'pid' of shell or zero if there was a
