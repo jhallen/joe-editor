@@ -23,6 +23,8 @@ struct mpx {
 	HANDLE	hProcess;	/* Subprocess handle */
 	HANDLE	hReadThread;	/* Read thread handle */
 	HANDLE	hReadPipe;	/* Handle for stdout pipe */
+	B	*linebuf;	/* Buffer for current line of input */
+	int	droplf;		/* Track what to do with LFs */
 #endif
 };
 

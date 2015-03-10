@@ -78,7 +78,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 
 int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build, int out_only)
 {
-#if defined(__MSDOS__) || defined(JOEWIN)
+#if defined(__MSDOS__)
 	varm(s);
 	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
@@ -129,6 +129,9 @@ int ubknd(BW *bw)
 	a = vaadd(a, s);
 #ifndef JOEWIN
 	s = vsncpy(NULL, 0, sc("-i"));
+	a = vaadd(a, s);
+#else
+	s = vsncpy(NULL, 0, sc("/Q"));
 	a = vaadd(a, s);
 #endif
 	return cstart(bw, sh, a, NULL, 0, 0);
