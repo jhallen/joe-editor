@@ -733,6 +733,20 @@ int uswitch(BW *bw)
 	}
 }
 
+void wpush(BW *bw)
+{
+	struct bstack *e;
+	e = (struct bstack *)malloc(sizeof(struct bstack));
+	e->b = bw->b;
+	++bw->b->count;
+	e->cursor = 0;
+	e->top = 0;
+	pdupown(bw->cursor, &e->cursor, USTR "wpush");
+	pdupown(bw->top, &e->top, USTR "wpush");
+	e->next = bw->parent->bstack;
+	bw->parent->bstack = e;
+}
+
 int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 {
 	int ret = 0;
@@ -747,8 +761,12 @@ int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 
 	b = bfind_scratch(s);
 	er = berror;
-	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
-		if (orphan) {
+
+	if (!bw->b->scratch)
+		wpush(bw);
+
+	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) { /* Last reference on dirty buffer */
+		if (orphan || bw->b->scratch) {
 			orphit(bw);
 		} else {
 			if (uduptw(bw)) {

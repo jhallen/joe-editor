@@ -629,6 +629,21 @@ static int naborttw1(BW *bw, int k, void *object, int *notify)
 	return abortit(bw);
 }
 
+B *wpop(BW *bw)
+{
+	B *b;
+	struct bstack *e = bw->parent->bstack;
+	b = e->b;
+	if (b->oldcur) prm(b->oldcur);
+	if (b->oldtop) prm(b->oldtop);
+	b->oldcur = e->cursor;
+	b->oldtop = e->top;
+	bw->parent->bstack = e->next;
+	free(e);
+	--b->count;
+	return b;
+}
+
 /* k is last character types which lead to uabort.  If k is -1, it means uabort
    was called internally, and not by the user: which means uabort will not send
    Ctrl-C to process */
@@ -636,6 +651,10 @@ int uabort(BW *bw, int k)
 {
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
+	if (bw->parent->bstack) {
+		B *b = wpop(bw);
+		return get_buffer_in_window(bw, b);
+	}
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)

@@ -1407,7 +1407,7 @@ int ucrawll(BW *bw)
 
 void orphit(BW *bw)
 {
-	++bw->b->count; /* Assumes bwrm() is abour to be called */
+	++bw->b->count; /* Assumes bwrm() is about to be called */
 	bw->b->orphan = 1;
 	pdupown(bw->cursor, &bw->b->oldcur, USTR "orphit");
 	pdupown(bw->top, &bw->b->oldtop, USTR "orphit");

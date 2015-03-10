@@ -108,7 +108,7 @@
 
  -noxon		Attempt to turn off ^S/^Q processing
 
--orphan		Put extra files given on command line in orphaned buffers
+ -orphan	Put extra files given on command line in orphaned buffers
 		instead of in windows
 
  -dopadding	Output pad characters (for when there is no tty handshaking)
@@ -791,10 +791,16 @@ aspellword	^[ n
 
  Shell windows
 
-:def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,vtbknd!,eof
-:def shell2 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 2 *",rtn,vtbknd!,eof
-:def shell3 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 3 *",rtn,vtbknd!,eof
-:def shell4 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 4 *",rtn,vtbknd!,eof
+:def shell1 scratch,"* Shell 1 *",rtn,vtbknd!,eof
+:def shell2 scratch,"* Shell 2 *",rtn,vtbknd!,eof
+:def shell3 scratch,"* Shell 3 *",rtn,vtbknd!,eof
+:def shell4 scratch,"* Shell 4 *",rtn,vtbknd!,eof
+
+ Split window version
+ :def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,vtbknd!,eof
+ :def shell2 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 2 *",rtn,vtbknd!,eof
+ :def shell3 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 3 *",rtn,vtbknd!,eof
+ :def shell4 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 4 *",rtn,vtbknd!,eof
 
  Here we guess some common key sequences which either do not have termcap
  sequences or which are frequently wrong.  Note that if the termcap entry is
