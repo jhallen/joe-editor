@@ -6,6 +6,8 @@ alias math "echo \{math,"\\\"\!\*\\\"",rtn}; echo \{rtn,math,"\\\""ans:ins"\\\
 
 alias edit "echo \{edit,"\\\"\!\*\\\"",rtn}"
 
+alias joe "echo \{edit,"\\\"\!\*\\\"",rtn}"
+
 alias cd "cd "\!\*"; echo \{cd,dellin\\!,"\\\"`pwd`/\\\"",rtn}"
 
 clear

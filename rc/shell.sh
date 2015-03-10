@@ -31,6 +31,7 @@ joe_cd () {
 alias clear=joe_clear
 alias math=joe_math
 alias edit=joe_edit
+alias joe=joe_edit
 alias cd=joe_cd
 
 joe_clear
