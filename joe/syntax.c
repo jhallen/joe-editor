@@ -100,9 +100,9 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 					} else if (accu == 7) {
 						new_attr |= INVERSE;
 					} else if (accu >= 30 && accu <= 37) {
-						new_attr = ((new_attr & ~FG_MASK) | ((accu - 30) << FG_SHIFT));
+						new_attr = ((new_attr & ~FG_MASK) | FG_NOT_DEFAULT | ((accu - 30) << FG_SHIFT));
 					} else if (accu >= 40 && accu <= 47) {
-						new_attr = ((new_attr & ~BG_MASK) | ((accu - 40) << BG_SHIFT));
+						new_attr = ((new_attr & ~BG_MASK) | BG_NOT_DEFAULT | ((accu - 40) << BG_SHIFT));
 					}
 					if (c == ';') {
 						state = AFTER_BRACK;
