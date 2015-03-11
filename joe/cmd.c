@@ -446,7 +446,7 @@ int execmd(CMD *cmd, int k)
 
 	/* Make dislayed cursor column equal the actual cursor column
 	 * for commands which arn't simple vertical movements */
-	if (cmd->flag & EFIXXCOL)
+	if ((cmd->flag & EFIXXCOL) && (maint->curwin->watom->what & (TYPETW | TYPEPW)))
 		bw->cursor->xcol = piscol(bw->cursor);
 
 	/* Recenter cursor to middle of screen */

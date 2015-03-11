@@ -595,6 +595,8 @@ int abortit(BW *bw)
 			w->object = (void *) (bw = bwmk(w, b, 0));
 			wredraw(bw->parent);
 			bw->object = object;
+			bw = (BW *)w->object;
+			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		}
 	bwrm(bw);
@@ -652,8 +654,13 @@ int uabort(BW *bw, int k)
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
 	if (bw->parent->bstack) {
+		int rtn;
 		B *b = wpop(bw);
-		return get_buffer_in_window(bw, b);
+		W *w = bw->parent;
+		rtn = get_buffer_in_window(bw, b);
+		bw = (BW *)w->object;
+		bw->cursor->xcol = piscol(bw->cursor);
+		return rtn;
 	}
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
