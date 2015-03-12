@@ -28,6 +28,9 @@ Improvements:
 
 Bugs:
 
+ color on status line gets messed up when shell text is colored.. how can
+this even happen?
+
  check querysave and nbuf/pbuf interactions with new buffer stack
 
  clean up macro execute for magic shell commands:
