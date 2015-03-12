@@ -1,3 +1,32 @@
+- Support italic text (on some terminal emulators) with "\l" (patch by
+  Egmont Koblinger)
+
+- Support bracketed paste (patch by Egmont Koblinger)
+
+- Fix line number in syntax highlighter error output 
+
+- Prevent infinite loops caused by buggy syntax definitions.
+
+- New and improved syntax definitions for:
+    Go: contributed by Matthias S. Benkmann
+    C#
+    Batch files
+    Python
+    ...
+
+- Syntax definition fixes for: C, Python, Java, Lua, sh
+
+- Save/restore utf-8 and crlf modes when changing in/out of hex edit for
+  better display
+
+- Fix autocomplete for paths containing spaces
+
+- Accept mouse events beyond column 208 (patch by Egmont Kobligner)
+
+- Adjust guess_indent behavior based on user feedback
+
+- Fix infinite loop in search and replace
+
 - Add a new command 'timer' which executes a macro every n seconds.  I use
   this for periodically injecting a command into a shell window for
   overnight testing of some device.
