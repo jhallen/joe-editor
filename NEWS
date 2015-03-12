@@ -8,13 +8,30 @@
 - Prevent infinite loops caused by buggy syntax definitions.
 
 - New and improved syntax definitions for:
+    Ant: contributed by Christian Nicolai
+    Batch files: contributed by John Jordan
+    C#: contributed by John Jordan
+    Debian apt sources.list: contributed by Christian Nicolai
+    Elixir: contributed by Andrew Lisin
+    Erlang: contributed by Christian Nicolai, Jonas Rosling, Andrew Lisin
+    git-commit messages: contributed by Christian Nicolai
     Go: contributed by Matthias S. Benkmann
-    C#
-    Batch files
-    Python
-    ...
+    HAML: contributed by Christian Nicolai
+    INI: contributed by Christian Nicolai
+    iptables: contributed by Christian Nicolai
+    Javascript: contributed by Rebecca Turner, Christian Nicolai
+    json: contributed by Rebecca Turner
+    Markdown: contributed by Christian Nicolai, Jonas Rosling
+    Powershell: contributed by Oskar Liljeblad
+    Prolog: contributed by Christian Nicolai
+    Puppet: contributed by Christian Nicolai, Eric Eisenhart
+    Sieve: contributed by Christian Nicolai
+    YAML: contributed by Christian Nicolai
+    
+    (from github.com/cmur2/joe-syntax)
 
-- Syntax definition fixes for: C, Python, Java, Lua, sh
+- Syntax definition fixes for: C, Python, Java, Lua, sh, Ruby, PHP, TeX,
+  CSS, and XML
 
 - Save/restore utf-8 and crlf modes when changing in/out of hex edit for
   better display
