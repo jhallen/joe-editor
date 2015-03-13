@@ -32,6 +32,8 @@ struct vt_context {
 	B *b;
 
 	KBD *kbd;
+
+	int attr; /* Current attributes */
 };
 
 

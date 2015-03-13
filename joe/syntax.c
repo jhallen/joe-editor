@@ -39,7 +39,7 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	int state = h_state.saved_s[0];
 	int accu = h_state.saved_s[1];
 	int current_attr = h_state.state;
-	int new_attr = *(int *)(h_state.saved_s + 8);
+	// int new_attr = *(int *)(h_state.saved_s + 8);
 
 	while ((c = pgetb(line)) != NO_MORE_DATA) {
 		if (c < 0 || c > 255)
@@ -66,7 +66,7 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 			} case AFTER_ESC: {
 				if (c == '[') {
 					state = AFTER_BRACK;
-					new_attr = (current_attr & (FG_MASK | BG_MASK));
+					// new_attr = (current_attr & (FG_MASK | BG_MASK));
 				} else {
 					state = IDLE;
 				}
@@ -74,7 +74,7 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 			} case AFTER_BRACK: {
 				if (c == ';') {
 					/* RESET */
-					new_attr = 0;
+					current_attr = 0;
 					/* but stay in this state */
 				} else if (c >= '0' && c <= '9') {
 					accu = c - '0';
@@ -90,24 +90,24 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 			} case IN_NUMBER: {
 				if (c == ';' || c == 'm') {
 					if (accu == 0) {
-						new_attr = 0;
+						current_attr = 0;
 					} else if (accu == 1) {
-						new_attr |= BOLD;
+						current_attr |= BOLD;
 					} else if (accu == 4) {
-						new_attr |= UNDERLINE;
+						current_attr |= UNDERLINE;
 					} else if (accu == 5) {
-						new_attr |= BLINK;
+						current_attr |= BLINK;
 					} else if (accu == 7) {
-						new_attr |= INVERSE;
+						current_attr |= INVERSE;
 					} else if (accu >= 30 && accu <= 37) {
-						new_attr = ((new_attr & ~FG_MASK) | FG_NOT_DEFAULT | ((accu - 30) << FG_SHIFT));
+						current_attr = ((current_attr & ~FG_MASK) | FG_NOT_DEFAULT | ((accu - 30) << FG_SHIFT));
 					} else if (accu >= 40 && accu <= 47) {
-						new_attr = ((new_attr & ~BG_MASK) | BG_NOT_DEFAULT | ((accu - 40) << BG_SHIFT));
+						current_attr = ((current_attr & ~BG_MASK) | BG_NOT_DEFAULT | ((accu - 40) << BG_SHIFT));
 					}
 					if (c == ';') {
-						state = AFTER_BRACK;
+						accu = 0;
+						state = IN_NUMBER;
 					} else if (c == 'm') {
-						current_attr = new_attr;
 						state = IDLE;
 					}
 				} else if (c >= '0' && c <= '9') {
@@ -123,7 +123,7 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	h_state.saved_s[0] = state;
 	h_state.saved_s[1] = accu;
 	h_state.state = current_attr;
-	*(int *)(h_state.saved_s + 8) = new_attr;
+//	*(int *)(h_state.saved_s + 8) = new_attr;
 	return h_state;
 }
 

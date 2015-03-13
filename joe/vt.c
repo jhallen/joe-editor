@@ -16,6 +16,7 @@ VT *mkvt(B *b, P *top, int height, int width)
 	vt->argc = 0;
 	vt->xn = 0;
 	vt->kbd = mkkbd(kmap_getcontext(USTR "vtshell"));
+	vt->attr = 0;
 	return vt;
 }
 
@@ -53,21 +54,128 @@ void vt_beep(VT *bw)
 	bw->xn = 0;
 }
 
+int pcurattr(P *p)
+{
+	int attr = 0;
+	int state = 0;
+	int arg = 0;
+	P *q = pdup(p, USTR "pcurattr");
+	p_goto_bol(q);
+	while (q->byte != p->byte) {
+		int c = pgetb(q);
+		switch (state) {
+			case 0:
+				if (c == 27)
+					state = 1;
+				break;
+			case 1:
+				if (c == 0x5B) {
+					state = 2;
+					arg = 0;
+				} else
+					state = 0;
+				break;
+			case 2:
+				if (c >= '0' && c <= '9')
+					arg = arg * 10 + c - '0';
+				else {
+					if (c == 'm') {
+						if (arg == 0)
+							attr = 0;
+						else if (arg == 1)
+							attr |= BOLD;
+						else if (arg == 4)
+							attr |= UNDERLINE;
+						else if (arg == 7)
+							attr |= INVERSE;
+						else if (arg >= 30 && arg <= 37)
+							attr = (attr & ~FG_MASK) | (FG_NOT_DEFAULT | (arg - 30) << FG_SHIFT);
+						else if (arg >= 40 && arg <= 47)
+							attr = (attr & ~BG_MASK) | (BG_NOT_DEFAULT | (arg - 40) << BG_SHIFT);
+					}
+					state = 0;
+				}
+				break;
+				
+		}
+	}
+	prm(q);
+	return attr;
+}
+
+void psetattr(P *p, int attr, int cur, int adv)
+{
+	int e = ((AT_MASK|FG_NOT_DEFAULT|BG_NOT_DEFAULT)&cur & ~attr);
+	if (!adv)
+		p = pdup(p, USTR "psetattr");
+	if (e) {
+		binss(p, "\033[m"); pfwrd(p, 3);
+		cur = 0;
+	}
+	e = (attr & ~cur);
+	if (e & INVERSE) {
+		binss(p, "\033[7m"); pfwrd(p, 4);
+	}
+	if (e & BOLD) {
+		binss(p, "\033[1m"); pfwrd(p, 4);
+	}
+	if (e & UNDERLINE) {
+		binss(p, "\033[4m"); pfwrd(p, 4);
+	}
+	if ((cur & FG_MASK) != (attr & FG_MASK)) {
+		int color = ((attr & FG_VALUE) >> FG_SHIFT);
+		if (color >= 0 && color <= 7) {
+			unsigned char bf[10];
+			joe_snprintf_1(bf, sizeof(bf), "\033[%dm", color + 30);
+			binss(p, bf);
+			pfwrd(p, zlen(bf));
+		}
+	}
+	if ((cur & BG_MASK) != (attr & BG_MASK)) {
+		int color = ((attr & BG_VALUE) >> BG_SHIFT);
+		if (color >= 0 && color <= 7) {
+			unsigned char bf[10];
+			joe_snprintf_1(bf, sizeof(bf), "\033[%dm", color + 40);
+			binss(p, bf);
+			pfwrd(p, zlen(bf));
+		}
+	}
+	if (!adv)
+		prm(p);
+}
+
 void vt_type(VT *bw, int c)
 {
 	int col;
 	bw->xn = 0;
+	int cur_attr, org_attr;
+
+	cur_attr = pcurattr(bw->vtcur);
+
 	if (piseol(bw->vtcur)) {
+		if  (bw->attr != cur_attr) {
+			psetattr(bw->vtcur, bw->attr, cur_attr, 1);
+			cur_attr = bw->attr;
+		}
 		binsc(bw->vtcur, c);
 		pgetc(bw->vtcur);
+		if (cur_attr) {
+			binss(bw->vtcur, "\033[m");
+		}
 	} else {
 		P *q = pdup(bw->vtcur, USTR "vt_type");
 		int col = piscol(q);
 		pcol(q, col + 1);
+		org_attr = pcurattr(q);
 		bdel(bw->vtcur, q);
 		prm(q);
+		if (bw->attr != cur_attr) {
+			psetattr(bw->vtcur, bw->attr, cur_attr, 1);
+			cur_attr = bw->attr;
+		}
 		binsc(bw->vtcur, c);
 		pgetc(bw->vtcur);
+		psetattr(bw->vtcur, org_attr, cur_attr, 0);
 	}
 	col = piscol(bw->vtcur);
 	if (col >= bw->width) {
@@ -748,11 +856,36 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 									vt100 ansi.sys: default=understrike,bold,inverse off
 									ansi.sys: 30 - 37: foreground color
 									ansi.sys: 40 - 47: background color */
-							int x;
-							for (x = 0; x != vt->bufx; ++x) {
+							int x, y;
+							/* for (x = 0; x != vt->bufx; ++x) {
 								binsc(vt->vtcur, vt->buf[x]);
 								pgetb(vt->vtcur);
 								vt->vtcur->valcol = 0;
+							} */
+							for (y = 0; y != vt->argc; ++y) {
+								x = vt_arg(vt, y, 0);
+								if (x == 0)
+									vt->attr = 0;
+								else if (x == 1)
+									vt->attr |= BOLD;
+								else if (x == 21)
+									vt->attr &= ~BOLD;
+								else if (x == 4)
+									vt->attr |= UNDERLINE;
+								else if (x == 24)
+									vt->attr &= ~UNDERLINE;
+								else if (x == 7)
+									vt->attr |= INVERSE;
+								else if (x == 27)
+									vt->attr &= ~INVERSE;
+								else if (x >= 30 && x <= 37)
+									vt->attr = (vt->attr & ~FG_MASK) | (FG_NOT_DEFAULT | (x - 30) << FG_SHIFT);
+								else if (x == 39)
+									vt->attr &= ~FG_MASK;
+								else if (x == 49)
+									vt->attr &= ~BG_MASK;
+								else if (x >= 40 && x <= 47)
+									vt->attr = (vt->attr & ~BG_MASK) | (BG_NOT_DEFAULT | (x - 40) << BG_SHIFT);
 							}
 							break;
 						} case 'n': { /* 6: send cursor position as ESC [ row ; col R */
