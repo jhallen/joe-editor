@@ -2,13 +2,13 @@
 
 #include "types.h"
 
-VT *mkvt(B *b, int top, int height, int width)
+VT *mkvt(B *b, P *top, int height, int width)
 {
 	VT *vt = joe_malloc(sizeof(VT));
 	vt->b = b;
 	vt->vtcur = pdup(b->eof, USTR "vt");
 	vt->state = vt_idle;
-	vt->top = top;
+	vt->top = pdup(top, USTR("mkvt"));
 	vt->regn_top = 0;
 	vt->regn_bot = height;
 	vt->height = height;
@@ -19,28 +19,30 @@ VT *mkvt(B *b, int top, int height, int width)
 	return vt;
 }
 
-void vt_resize(VT *vt, int top, int height, int width)
+void vt_resize(VT *vt, P *top, int height, int width)
 {
 	int flag = 0;
 	if (vt->regn_bot == vt->height)
 		flag = 1;
 	vt->height = height;
 	vt->width = width;
-	vt->top = top;
+	pset(vt->top, top);
 	if (vt->regn_top > height)
 		vt->regn_top = height;
 	if (vt->regn_bot > height)
 		vt->regn_bot = height;
 	if (flag)
 		vt->regn_bot = height;
-	if (vt->vtcur->line >= vt->top + height)
-		vt->top = vt->vtcur->line - height + 1;
+	if (vt->vtcur->line >= vt->top->line + height)
+		pline(vt->top, vt->vtcur->line - height + 1);
 }
 
 void vtrm(VT *vt)
 {
 	if (vt->vtcur)
 		prm(vt->vtcur);
+	if (vt->top)
+		prm(vt->top);
 	rmkbd(vt->kbd);
 	joe_free(vt);
 }
@@ -88,12 +90,12 @@ void vt_lf(VT *bw)
 		return;
 	}
 	col = piscol(bw->vtcur);
-	if (bw->vtcur->line == bw->top + bw->regn_bot - 1) {
+	if (bw->vtcur->line == bw->top->line + bw->regn_bot - 1) {
 		if (bw->regn_top != 0) {
 			/* Delete top line */
 			P *p = pdup(bw->vtcur, USTR "vt_lf");
 			P *q;
-			pline(p, bw->top + bw->regn_top);
+			pline(p, bw->top->line + bw->regn_top);
 			q = pdup(p, USTR "vt_lf");
 			pnextl(q);
 			bdel(p, q);
@@ -101,7 +103,7 @@ void vt_lf(VT *bw)
 			prm(p);
 		} else {
 			/* Save top line in buffer */
-			++bw->top;
+			pnextl(bw->top);
 			vt_scrdn();
 		}
 		/* Move to next line: add line if we are at end */
@@ -121,8 +123,8 @@ void vt_lf(VT *bw)
 	}
 	pcol(bw->vtcur, col);
 	pfill(bw->vtcur, col, ' ');
-	if (bw->vtcur->line >= bw->top + bw->height)
-		bw->top = bw->vtcur->line - bw->height + 1;
+	if (bw->vtcur->line >= bw->top->line + bw->height)
+		pline(bw->top, bw->vtcur->line - bw->height + 1);
 }
 
 void vt_insert_spaces(VT *bw, int n)
@@ -181,8 +183,8 @@ void vt_up(VT *bw, int n)
 	int col = piscol(bw->vtcur);
 	bw->xn = 0;
 	line -= n;
-	if (line < bw->top) {
-		line = bw->top;
+	if (line < bw->top->line) {
+		line = bw->top->line;
 	}
 	pline(bw->vtcur, line);
 	pcol(bw->vtcur, col);
@@ -192,17 +194,17 @@ void vt_up(VT *bw, int n)
 void vt_reverse_lf(VT *bw)
 {
 	bw->xn = 0;
-	if (bw->vtcur->line >= bw->top) {
-		if (bw->vtcur->line != bw->top + bw->regn_top)
+	if (bw->vtcur->line >= bw->top->line) {
+		if (bw->vtcur->line != bw->top->line + bw->regn_top)
 			vt_up(bw, 1);
 		else {
 			int col;
 
 			/* Delete last line */
-			if (bw->vtcur->b->eof->line >= bw->top + bw->regn_bot - 1) {
+			if (bw->vtcur->b->eof->line >= bw->top->line + bw->regn_bot - 1) {
 				P *q = pdup(bw->vtcur, USTR "vt_reverse_lf");
 				P *r;
-				pline(q, bw->top + bw->regn_bot - 1);
+				pline(q, bw->top->line + bw->regn_bot - 1);
 				r = pdup(q, USTR "vt_reverse_lf1");
 				pnextl(r);
 				bdel(q, r);
@@ -226,8 +228,8 @@ void vt_down(VT *bw, int n)
 	int col = piscol(bw->vtcur);
 	bw->xn = 0;
 	line += n;
-	if (line >= bw->top + bw->height)
-		line = bw->top + bw->height - 1;
+	if (line >= bw->top->line + bw->height)
+		line = bw->top->line + bw->height - 1;
 	while (line > bw->b->eof->line) {
 		p_goto_eof(bw->vtcur);
 		binsc(bw->vtcur, '\n');
@@ -248,10 +250,10 @@ void vt_col(VT *bw, int col)
 void vt_row(VT *bw, int row)
 {
 	int col = piscol(bw->vtcur);
-	long line = bw->top + row;
+	long line = bw->top->line + row;
 	bw->xn = 0;
-	if (line >= bw->top + bw->height)
-		line = bw->top + bw->height - 1;
+	if (line >= bw->top->line + bw->height)
+		line = bw->top->line + bw->height - 1;
 	while (line > bw->b->eof->line) {
 		p_goto_eof(bw->vtcur);
 		binsc(bw->vtcur, '\n');
@@ -279,7 +281,7 @@ void vt_erase_screen(VT *bw)
 	long li = bw->vtcur->line;
 	int col = piscol(bw->vtcur);
 	bw->xn = 0;
-	pline(bw->vtcur, bw->top);
+	pline(bw->vtcur, bw->top->line);
 	bdel(bw->vtcur, bw->b->eof);
 	while (bw->vtcur->line < li) {
 		binsc(bw->vtcur, '\n');
@@ -324,13 +326,13 @@ void vt_erase_eol(VT *bw)
 void vt_insert_lines(VT *bw, int n)
 {
 	bw->xn = 0;
-	if (bw->vtcur->line < bw->top + bw->regn_bot)
+	if (bw->vtcur->line < bw->top->line + bw->regn_bot)
 		while (n--) {
 			P *p = pdup(bw->vtcur, USTR "vt_insert_lines");
 			p_goto_bol(p);
 			binsc(p, '\n');
-			pline(p, bw->top + bw->regn_bot);
-			if (p->line == bw->top + bw->regn_bot) {
+			pline(p, bw->top->line + bw->regn_bot);
+			if (p->line == bw->top->line + bw->regn_bot) {
 				P *q = pdup(p, USTR "vt_insert_lines");
 				if (pnextl(q)) {
 					bdel(p, q);
@@ -344,14 +346,14 @@ void vt_insert_lines(VT *bw, int n)
 void vt_delete_lines(VT *bw, int n)
 {
 	bw->xn = 0;
-	if (bw->vtcur->line < bw->top + bw->regn_bot)
+	if (bw->vtcur->line < bw->top->line + bw->regn_bot)
 		while (n--) {
 			int col = piscol(bw->vtcur);
 			P *a = pdup(bw->vtcur, USTR "vt_delete_lines");
 			P *p;
 			P *q;
-			pline(a, bw->top + bw->regn_bot);
-			if (a->line == bw->top + bw->regn_bot) {
+			pline(a, bw->top->line + bw->regn_bot);
+			if (a->line == bw->top->line + bw->regn_bot) {
 				binsc(a, '\n');
 			}
 			prm(a);

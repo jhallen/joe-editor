@@ -1165,7 +1165,7 @@ void bwresz(BW *w, int wi, int he)
 	w->w = wi;
 	w->h = he;
 	if (w->b->vt && w->b->pid && w == vtmaster(w->parent->t, w->b)) {
-		vt_resize(w->b->vt, w->top->line, he, wi);
+		vt_resize(w->b->vt, w->top, he, wi);
 		ttstsz(w->b->out, wi, he);
 	}
 }
@@ -1325,7 +1325,7 @@ BW *vtmaster(Screen *t, B *b)
 	do {
 		if (w->watom == &watomtw) {
 			BW *bw = w->object;
-			if (w->y != -1 && bw->b == b && (!b->vt || b->vt->vtcur->byte == bw->cursor->byte))
+			if (bw && w->y != -1 && bw->b == b && (!b->vt || b->vt->vtcur->byte == bw->cursor->byte))
 				m = bw;
 		}
 		w = w->link.next;
@@ -1362,7 +1362,7 @@ int ustat(BW *bw)
 #endif
 
 	if (bw->b->vt)
-		joe_snprintf_2(buf, sizeof(buf), joe_gettext(_("cursor=%ld vt=%ld")), (long)bw->cursor->byte, (long)bw->b->vt->vtcur->byte);
+		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("cursor=%ld vt=%ld vttop=%d bwtop=%ld")), (long)bw->cursor->byte, (long)bw->b->vt->vtcur->byte, bw->b->vt->top->line, bw->top->line);
 	else if (c == NO_MORE_DATA)
 		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2);
 	else

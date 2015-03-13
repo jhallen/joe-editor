@@ -77,7 +77,7 @@ static void cready(B *b, off_t byte)
 	}
 }
 
-static void cfollow(B *b, off_t byte)
+static void cfollow(B *b, VT *vt, off_t byte)
 {
 	W *w;
 	if (b->oldcur && b->shell_flag) {
@@ -93,6 +93,8 @@ static void cfollow(B *b, off_t byte)
 	 				bw->shell_flag = 0;
 	 				pgoto(bw->cursor, byte);
 	 				bw->cursor->xcol = piscol(bw->cursor);
+	 				if (vt && bw->top->line != vt->top->line && (1 + vt->vtcur->line - vt->top->line) <= bw->h)
+	 					pline(bw->top, vt->top->line);
 	 				dofollows();
 	 			}
 			}
@@ -128,7 +130,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 
 			m = vt_data(b->vt, &dat, &siz);
 
-			cfollow(b, b->vt->vtcur->byte);
+			cfollow(b, b->vt, b->vt->vtcur->byte);
 			undomark();
 			if (m) {
 				/* FIXME: should only do this if cursor is on window */
@@ -167,7 +169,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 		}
 		prm(r);
 		prm(q);
-		cfollow(b, b->eof->byte);
+		cfollow(b, NULL, b->eof->byte);
 		undomark();
 	}
 }
@@ -203,7 +205,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		if (!master) master = bw; /* Should never happen */
 		shell_w = master->w;
 		shell_h = master->h;
-		bw->b->vt = mkvt(bw->b, master->top->line, master->h, master->w);
+		bw->b->vt = mkvt(bw->b, master->top, master->h, master->w);
 
 		bw->b->o.ansi = 1;
 		bw->b->o.syntax = load_syntax(USTR "ansi");

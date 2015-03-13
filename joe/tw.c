@@ -410,7 +410,10 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'S':
 				if (bw->b->pid)
-					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("*SHELL*"))));
+					if (bw == vtmaster(maint, bw->b))
+						stalin = vsncpy(sv(stalin), sz(joe_gettext(_("*SHELLM*"))));
+					else
+						stalin = vsncpy(sv(stalin), sz(joe_gettext(_("*SHELL*"))));
 				break;
 			case 'M':
 				if (recmac) {
@@ -506,7 +509,7 @@ int usplitw(BW *bw)
 	new = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL, NULL);
 	if (!new)
 		return -1;
-	wfit(new->t);
+//	wfit(new->t);
 	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
 	++bw->b->count;
 	newbw->offset = bw->offset;
@@ -516,6 +519,7 @@ int usplitw(BW *bw)
 	pset(newbw->cursor, bw->cursor);
 	newbw->cursor->xcol = bw->cursor->xcol;
 	new->t->curwin = new;
+	wfit(new->t);
 	return 0;
 }
 

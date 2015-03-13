@@ -21,7 +21,7 @@ struct vt_context {
 	int argv[MAXARGS + 1];
 	int argc;
 
-	int top;
+	P *top;
 	int height;
 	int width;
 
@@ -35,9 +35,9 @@ struct vt_context {
 };
 
 
-VT *mkvt(B *b, int top, int height, int width);
+VT *mkvt(B *b, P *top, int height, int width);
 void vtrm(VT *vt);
 
 MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz);
 
-void vt_resize(VT *vt, int top, int height, int width);
+void vt_resize(VT *vt, P *top, int height, int width);
