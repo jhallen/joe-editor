@@ -865,6 +865,8 @@ static int doencoding(BW *bw, unsigned char *s, int *xx, int *notify)
 
 	vsrm(s);
 	bw->b->o = bw->o;
+	bw->cursor->valcol = 0;
+	bw->cursor->xcol = piscol(bw->cursor);
 	updall();
 	if (notify)
 		*notify = 1;
