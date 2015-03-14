@@ -104,6 +104,8 @@
 
  -nonotice	Disable copyright notice
 
+ -noexmsg	Disable exiting message ("File not changed so no updated needed")
+
  -noxon		Attempt to turn off ^S/^Q processing
 
  -orphan	Put extra files given on command line in orphaned buffers
@@ -123,6 +125,9 @@
 
 -notite         Don't send terminal initialization and termination strings: prevents
                 restoration of screen on exit.
+
+ -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
+                emulator's scroll-back buffer.
 
  -usetabs       Use tabs to help optimize screen update.
 

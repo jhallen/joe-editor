@@ -74,7 +74,7 @@ int help_init(JFILE *fd,unsigned char *bf,int line)
 		if (buf[0] == '}') {		/* set new help screen as actual one */
 			++line;
 		} else {
-			fprintf(stderr, (char *)joe_gettext(_("\n%d: EOF before end of help text\n")),line);
+			logerror_1((char *)joe_gettext(_("\n%d: EOF before end of help text\n")), line);
 		}
 	}
 	return line;

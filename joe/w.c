@@ -192,7 +192,7 @@ void scrins(B *b, long l, long n, int flg)
 {
 	W *w;
 
-	if ((w = scr->topwin) != NULL) {
+	if (scr && (w = scr->topwin) != NULL) {
 		do {
 			if (w->y >= 0) {
 				if (w->object && w->watom->ins)

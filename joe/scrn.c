@@ -12,6 +12,7 @@ int skiptop = 0;
 int lines = 0;
 int columns = 0;
 int notite = 0;
+int nolinefeeds = 0;
 int usetabs = 0;
 int assume_color = 0;
 int assume_256color = 0;
@@ -805,8 +806,10 @@ SCRN *nopen(CAP *cap)
 	}
 
 /* Send out li linefeeds so that scroll-back history is not lost */
-	for (y = 1; y < t->li; ++y)
-		ttputc(10);
+	if (notite && !nolinefeeds) {
+		for (y = 1; y < li; ++y)
+			ttputc(10);
+	}
 
 /* Send out terminal initialization string */
 	if (t->ti)

@@ -389,6 +389,7 @@ struct glopts {
 	{USTR "floatmouse",	0, &floatmouse, 0, USTR _("Clicking can move the cursor past end of line"), USTR _("Clicking past end of line moves cursor to the end"), USTR _("  Click past end ") },
 	{USTR "rtbutton",	0, &rtbutton, 0, USTR _("Mouse action is done with the right button"), USTR _("Mouse action is done with the left button"), USTR _("  Right button ") },
 	{USTR "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
+	{USTR "noexmsg",	0, &noexmsg, NULL, 0, 0, 0 },
 	{USTR "help_is_utf8",	0, &help_is_utf8, NULL, 0, 0, 0 },
 	{USTR "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{USTR "orphan",	0, &orphan, NULL, 0, 0, 0 },
@@ -399,6 +400,7 @@ struct glopts {
 	{USTR "columns",	1, &columns, NULL, 0, 0, 0, 0, 2, 1024 },
 	{USTR "skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
 	{USTR "notite",	0, &notite, NULL, 0, 0, 0 },
+	{USTR "nolinefeeds",	0, &nolinefeeds, NULL, 0, 0, 0 },
 	{USTR "mouse",	0, &xmouse, NULL, 0, 0, 0 },
 	{USTR "usetabs",	0, &usetabs, NULL, 0, 0, 0 },
 	{USTR "assume_color", 0, &assume_color, NULL, 0, 0, 0 },
@@ -1316,8 +1318,7 @@ int procrc(CAP *cap, unsigned char *name)
 	if (!fd)
 		return -1;	/* Return if we couldn't open the rc file */
 
-	fprintf(stderr,(char *)joe_gettext(_("Processing '%s'...")), name);
-	fflush(stderr);
+	logmessage_1((char *)joe_gettext(_("Processing '%s'...\n")), name);
 
 	while (jfgets(buf, sizeof(buf), fd)) {
 		line++;
@@ -1372,7 +1373,7 @@ int procrc(CAP *cap, unsigned char *name)
 				buf[x] = 0;
 				if (!glopt(opt, arg, o, 2)) {
 					err = 1;
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Unknown option %s")), name, line, opt);
+					logerror_3((char *)joe_gettext(_("%s %d: Unknown option %s\n")), name, line, opt);
 				}
 			}
 			break;
@@ -1405,11 +1406,11 @@ int procrc(CAP *cap, unsigned char *name)
 								addcmd(buf + x, m);
 							else {
 								err = 1;
-								fprintf(stderr, (char *)joe_gettext(_("\n%s %d: macro missing from :def")), name, line);
+								logerror_2((char *)joe_gettext(_("%s %d: macro missing from :def\n")), name, line);
 							}
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: command name missing from :def")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: command name missing from :def\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "inherit")) {
 						if (context) {
@@ -1420,11 +1421,11 @@ int procrc(CAP *cap, unsigned char *name)
 								kcpy(context, kmap_getcontext(buf + x));
 							else {
 								err = 1;
-								fprintf(stderr, (char *)joe_gettext(_("\n%s %d: context name missing from :inherit")), name, line);
+								logerror_2((char *)joe_gettext(_("%s %d: context name missing from :inherit\n")), name, line);
 							}
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: No context selected for :inherit")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: No context selected for :inherit\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "include")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
@@ -1452,7 +1453,7 @@ int procrc(CAP *cap, unsigned char *name)
 								err = 1;
 								break;
 							case -1:
-								fprintf(stderr, (char *)joe_gettext(_("\n%s %d: Couldn't open %s")), name, line, bf);
+								logerror_3((char *)joe_gettext(_("%s %d: Couldn't open %s\n")), name, line, bf);
 								err = 1;
 								break;
 							}
@@ -1460,7 +1461,7 @@ int procrc(CAP *cap, unsigned char *name)
 							o = &fdefault;
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: :include missing file name")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: :include missing file name\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "delete")) {
 						if (context) {
@@ -1473,7 +1474,7 @@ int procrc(CAP *cap, unsigned char *name)
 							kdel(context, buf + x);
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: No context selected for :delete")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: No context selected for :delete\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "defmap")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
@@ -1484,7 +1485,7 @@ int procrc(CAP *cap, unsigned char *name)
 							current_menu = 0;
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: :defmap missing name")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: :defmap missing name\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "defmenu")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
@@ -1496,11 +1497,11 @@ int procrc(CAP *cap, unsigned char *name)
 						context = kmap_getcontext(buf + 1);
 						current_menu = 0;
 						/* err = 1;
-						fprintf(stderr, (char *)joe_gettext(_("\n%s %d: unknown :command")), name, line);*/
+						logerror_2((char *)joe_gettext(_("%s %d: unknown :command\n")), name, line);*/
 					}
 				else {
 					err = 1;
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Invalid context name")), name, line);
+					logerror_2((char *)joe_gettext(_("%s %d: Invalid context name\n")), name, line);
 				}
 			}
 			break;
@@ -1511,7 +1512,7 @@ int procrc(CAP *cap, unsigned char *name)
 
 				if (!context && !current_menu) {
 					err = 1;
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: No context selected for macro to key-sequence binding")), name, line);
+					logerror_2((char *)joe_gettext(_("%s %d: No context selected for macro to key-sequence binding\n")), name, line);
 					break;
 				}
 
@@ -1520,7 +1521,7 @@ int procrc(CAP *cap, unsigned char *name)
 				m = mparse(m, buf, &x);
 				if (x == -1) {
 					err = 1;
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Unknown command in macro")), name, line);
+					logerror_2((char *)joe_gettext(_("%s %d: Unknown command in macro\n")), name, line);
 					break;
 				} else if (x == -2) {
 					jfgets(buf, 1024, fd);
@@ -1540,7 +1541,7 @@ int procrc(CAP *cap, unsigned char *name)
 				} else {
 					/* Add binding to context */
 					if (kadd(cap, context, buf + x, m) == -1) {
-						fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Bad key sequence '%s'")), name, line, buf + x);
+						logerror_3((char *)joe_gettext(_("%s %d: Bad key sequence '%s'\n")), name, line, buf + x);
 						err = 1;
 					}
 				}
@@ -1551,10 +1552,7 @@ int procrc(CAP *cap, unsigned char *name)
 	jfclose(fd);		/* Close rc file */
 
 	/* Print proper ending string */
-	if (err)
-		fputs((char *)joe_gettext(_("\ndone\n")), stderr);
-	else
-		fputs((char *)joe_gettext(_("done\n")), stderr);
+	logmessage_1((char *)joe_gettext(_("Finished processing %s\n")), name);
 
 	return err;		/* 0 for success, 1 for syntax error */
 }

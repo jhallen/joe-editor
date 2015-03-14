@@ -355,6 +355,7 @@ int fmtpos PARAMS((unsigned char *s, int goal));
 extern int bg_text;
 extern int columns;
 extern int notite;
+extern int nolinefeeds;
 extern int usetabs;
 extern int assume_color;
 extern int assume_256color;

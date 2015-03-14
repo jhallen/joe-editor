@@ -113,6 +113,8 @@
 
 -nonotice	Не выводить copyright
 
+ -noexmsg	Disable exiting message ("File not changed so no updated needed")
+
  -noxon		Выключить обработку ^S/^Q
 
  -orphan	Положить дополнительные файлы, указанные в ком.строке,
@@ -133,6 +135,9 @@
 
 -notite         Не посылать строки инициализации и терминации терминала:
 		предотвращает восстановление экрана при выходе.
+
+ -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
+                emulator's scroll-back buffer.
 
  -usetabs       Использовать табуляторы для оптимизации экранного вывода
 

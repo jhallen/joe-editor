@@ -62,11 +62,11 @@ void genexmsgmulti(BW *bw, int saved, int skipped)
 {
 	if (saved)
 		if (skipped)
-			zlcpy(msgbuf, sizeof(msgbuf), joe_gettext(_("Some files have not been saved.")));
+			joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("Some files have not been saved.")));
 		else
-			zlcpy(msgbuf, sizeof(msgbuf), joe_gettext(_("All modified files have been saved.")));
+			joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("All modified files have been saved.")));
 	else
-		zlcpy(msgbuf, sizeof(msgbuf), joe_gettext(_("No modified files, so no updates needed.")));
+		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No modified files, so no updates needed.")));
 
 	msgnw(bw->parent, msgbuf);
 
