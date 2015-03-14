@@ -41,7 +41,10 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	int current_attr = h_state.state;
 	// int new_attr = *(int *)(h_state.saved_s + 8);
 
-	while ((c = pgetb(line)) != NO_MORE_DATA) {
+	int ansi_mode = line->b->o.ansi;
+	line->b->o.ansi = 0;
+
+	while ((c = pgetc(line)) != NO_MORE_DATA) {
 		if (c < 0 || c > 255)
 			c = 0x1F;
 		if (attr == attr_end) {
@@ -120,6 +123,7 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 		if (c == '\n')
 			break;
 	}
+	line->b->o.ansi = ansi_mode;
 	h_state.saved_s[0] = state;
 	h_state.saved_s[1] = accu;
 	h_state.state = current_attr;

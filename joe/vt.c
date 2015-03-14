@@ -17,6 +17,7 @@ VT *mkvt(B *b, P *top, int height, int width)
 	vt->xn = 0;
 	vt->kbd = mkkbd(kmap_getcontext(USTR "vtshell"));
 	vt->attr = 0;
+	utf8_init(&vt->utf8_sm);
 	return vt;
 }
 
@@ -672,10 +673,30 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 					} case 0x9F: { /* Same as ESC _ */
 						break;
 					} default: { /* Type regular character */
-						if (c >= 32 && c <= 126)
-							vt_type(vt, c);
+						if (locale_map->type) {
+							int ch = utf8_decode(&vt->utf8_sm, c);
+							if (ch >= 0) {
+								vt_type(vt, ch);
+							} else if (ch == -1) {
+								vt->state = vt_utf;
+							}
+						} else {
+							if (c >= 32 && c <= 255)
+								vt_type(vt, c);
+						}
 						break;
 					}
+				}
+				break;
+			} case vt_utf: {
+				int ch = utf8_decode(&vt->utf8_sm, c);
+				if (ch >= 0) {
+					vt_type(vt, ch);
+					vt->state = vt_idle;
+				} else if (ch == -1) {
+					vt->state = vt_utf;
+				} else if (ch == -2 || ch == -3) {
+					vt->state = vt_idle;
 				}
 				break;
 			} case vt_esc: {

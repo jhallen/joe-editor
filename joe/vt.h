@@ -4,7 +4,8 @@ enum vt_state {
 	vt_idle,
 	vt_esc,
 	vt_args,
-	vt_cmd
+	vt_cmd,
+	vt_utf
 };
 
 struct vt_context {
@@ -34,6 +35,8 @@ struct vt_context {
 	KBD *kbd;
 
 	int attr; /* Current attributes */
+
+	struct utf8_sm utf8_sm;
 };
 
 
