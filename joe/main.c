@@ -143,7 +143,7 @@ int edloop(int flg)
 
 		/* Use special kbd if we're handing data to a shell window */
 		bw = (BW *)maint->curwin->object;
-		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseol(bw->cursor))
+		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor))
 			m = dokey(shell_kbd, c);
 		else if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)
 			m = dokey(bw->b->vt->kbd, c);
