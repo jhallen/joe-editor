@@ -1,3 +1,6 @@
+- Use 80th column if terminal has xn capability (patch by pts and Egmont
+  Koblinger).
+
 - Support italic text (on some terminal emulators) with "\l" (patch by
   Egmont Koblinger)
 

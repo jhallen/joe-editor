@@ -161,12 +161,12 @@ extern int skiptop;
  */
 SCRN *nopen PARAMS((CAP *cap));
 
-/* void nresize(SCRN *t,int w,int h);
+/* int nresize(SCRN *t,int w,int h);
  *
  * Change size of screen.  For example, call this when you find out that
  * the Xterm changed size.
  */
-void nresize PARAMS((SCRN *t, int w, int h));
+int nresize PARAMS((SCRN *t, int w, int h));
 
 /* void nredraw(SCRN *t);
  *

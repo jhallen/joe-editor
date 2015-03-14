@@ -154,7 +154,7 @@ static int mlines(unsigned char **s, int w)
 			width = d;
 	}
 	nitems = x;
-	if (width > w)
+	if (width > w - 1)
 		width = w - 1;
 	perline = w / (width + 1);
 
@@ -177,7 +177,7 @@ static void mconfig(MENU *m)
 				m->width = d;
 		}
 		m->nitems = x;
-		if (m->width > m->w)
+		if (m->width > m->w - 1)
 			m->width = m->w - 1;
 
 		m->fitline = m->w / (m->width + 1);
@@ -604,7 +604,7 @@ MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*ab
 		h = 1;
 	
 	if (s) {
-		lines = mlines(s,w->t->w-1);
+		lines = mlines(s, w->t->w);
 		if (lines < h)
 			h = lines;
 	}

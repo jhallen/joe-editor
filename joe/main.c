@@ -46,8 +46,7 @@ void edupd(int flg)
 		dostaupd = 0;
 	}
 	ttgtsz(&wid, &hei);
-	if ((wid >= 2 && wid != maint->w) || (hei >= 1 && hei != maint->h)) {
-		nresize(maint->t, wid, hei);
+	if (nresize(maint->t, wid, hei)) {
 		sresize(maint);
 #ifdef MOUSE_GPM
 		gpm_mx = wid;

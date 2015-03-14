@@ -166,15 +166,15 @@ void help_display(Screen *t)
 			}
 			str = start;
 			/* Now calculate span width */
-			if (width >= t->w - 1 || nspans==0) {
+			if (width >= t->w || nspans==0) {
 				spanwidth = 0;
 				spanextra = nspans;
 			} else {
-				spanwidth = ((t->w - 1) - width)/nspans;
-				spanextra = nspans - ((t->w - 1) - width - nspans*spanwidth);
+				spanwidth = (t->w - width)/nspans;
+				spanextra = nspans - (t->w - width - nspans*spanwidth);
 			}
 			/* Second pass: display text */
-			for (x = 0; x != t->w - 1; ++x) {
+			for (x = 0; x != t->w; ++x) {
 				if (*str == '\n' || !*str) {
 					if (eraeol(t->t, x, y, BG_COLOR(bg_help))) {
 						return;

@@ -172,7 +172,7 @@ void sresize(Screen *t)
 	w = t->topwin;
 	do {
 		w->y = -1;
-		w->w = t->w - 1;
+		w->w = t->w;
 		w = w->link.next;
 	} while (w != t->topwin);
 	wfit(t);
@@ -575,7 +575,7 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height
 	new = (W *) joe_malloc(sizeof(W));
 	new->notify = notify;
 	new->t = t;
-	new->w = t->w - 1;
+	new->w = t->w;
 	seth(new, height);
 	new->h = new->reqh;
 	new->y = -1;
@@ -712,10 +712,10 @@ static void mdisp(SCRN *t, int y, unsigned char *s)
 	int len;
 
 	len = fmtlen(s);
-	if (len <= (t->co - 1))
+	if (len <= (t->co))
 		ofst = 0;
 	else
-		ofst = len - (t->co - 1);
+		ofst = len - (t->co);
 	genfmt(t, 0, y, ofst, s, BG_COLOR(bg_msg), 1);
 	t->updtab[y] = 1;
 }
