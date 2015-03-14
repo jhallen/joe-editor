@@ -420,7 +420,7 @@ int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,unsigned char *se
 	unsigned char *last_of_set = USTR "";
 	unsigned char buf[MAX_WORD_SIZE+1];
 	int len;
-	int query_highlighter = bw->o.highlighter_context && bw->o.syntax;
+	int query_highlighter = bw->o.highlighter_context && bw->o.syntax && bw->db;
 	int initial_context = 0;
 	int col = 0;
 	int cnt = 0;	/* No. levels of delimiters we're in */
