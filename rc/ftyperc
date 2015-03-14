@@ -253,6 +253,7 @@
 *.y
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -266,6 +267,7 @@
 *.l
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -278,6 +280,7 @@
 *.lex
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -344,6 +347,7 @@
 *.c
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -356,6 +360,7 @@
 *.cpp
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -368,6 +373,7 @@
 *.cc
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -380,6 +386,7 @@
 *.c++
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -393,6 +400,7 @@
 *.h
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -405,6 +413,7 @@
 *.h.in
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -417,6 +426,7 @@
 *.hpp
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -429,6 +439,7 @@
 *.h++
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -580,16 +591,22 @@
 +#!\+\[ 	]\+\[a-z/]\+\[ 	]python\+\[0-9]\>
 -autoindent
 -syntax python
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
+-single_quoted
+-pound_comment
 
 *.py
 -autoindent
 -syntax python
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
+-single_quoted
+-pound_comment
 
  CSH
 *
@@ -635,18 +652,21 @@
 +#!\+\[ 	]\+\[a-z/]/sh\>
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.sh
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *profile
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
@@ -655,30 +675,35 @@
 +#!\+\[ 	]\+\[a-z/]/bash\>
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.bash
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.bashrc
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.bash_login
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.bash_logout
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
@@ -703,12 +728,14 @@
 +#!\+\[ 	]\+\[a-z/]/ksh\>
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.ksh
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 

@@ -1,3 +1,8 @@
+- Jump to matching delimiter (Ctrl-G) has been improved.  It can now use the
+  syntax files to parse the document in order to identify strings and
+  comments which should be skipped during the matching delimiter search.
+  (patch by Charles Tabony).
+
 - When 'notite' mode is enabled, JOE now emits linefeeds to preserve the
   screen contents in the terminal emulator's scrollback buffer.  This can be
   suppressed with a new flag: nolinefeeds.

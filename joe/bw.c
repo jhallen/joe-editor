@@ -408,7 +408,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				ungetit = -1;
 			}
 			if(st.state!=-1) {
-				atr = syn[idx++];
+				atr = syn[idx++] & ~CONTEXT_MASK;
 				if (!((atr & BG_VALUE) >> BG_SHIFT))
 					atr |= BG_COLOR(bg_text);
 			}
@@ -527,7 +527,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				ungetit = -1;
 			}
 			if(st.state!=-1) {
-				atr = syn[idx++];
+				atr = syn[idx++] & ~CONTEXT_MASK;
 				if (!(atr & BG_MASK))
 					atr |= BG_COLOR(bg_text);
 			}

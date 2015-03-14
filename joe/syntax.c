@@ -691,6 +691,15 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 						state->color=0;
 						logerror_2((char *)joe_gettext(_("%s %d: Unknown class\n")),name,line);
 					}
+					while(parse_ws(&p, '#'), !parse_ident(&p, bf, sizeof(bf))) {
+						if(!zcmp(bf, USTR "comment")) {
+							state->color |= CONTEXT_COMMENT;
+						} else if(!zcmp(bf, USTR "string")) {
+							state->color |= CONTEXT_STRING;
+						} else {
+							logerror_2((char *)joe_gettext(_("%s %d: Unknown context\n")),name,line);
+						}
+					}
 				} else
 					logerror_2((char *)joe_gettext(_("%s %d: Missing color for state definition\n")),name,line);
 			} else

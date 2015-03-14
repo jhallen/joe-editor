@@ -229,6 +229,10 @@ extern unsigned atab[];
 
 #else
 
+#define CONTEXT_COMMENT	1
+#define CONTEXT_STRING	2
+#define CONTEXT_MASK	(CONTEXT_COMMENT+CONTEXT_STRING)
+
 #define ITALIC		 128
 #define INVERSE		 256
 #define UNDERLINE	 512
