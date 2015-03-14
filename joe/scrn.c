@@ -12,6 +12,7 @@ int skiptop = 0;
 int lines = 0;
 int columns = 0;
 int notite = 0;
+int nolinefeeds = 0;
 int usetabs = 0;
 int assume_color = 0;
 int assume_256color = 0;
@@ -114,6 +115,39 @@ unsigned xlata[256] = {
 	INVERSE, INVERSE, INVERSE, INVERSE,			/* 252 */
 	INVERSE, INVERSE, INVERSE, INVERSE + UNDERLINE		/* 256 */
 };
+
+/* For terminals with the "xn" capability, which includes all popular
+ * graphical terminal emulators: When a character is printed in the last
+ * (let's say 80th) column, the cursor enters a special state. If a letter is
+ * printed next (which shouldn't happen in joe) then it wraps to the next
+ * line. However, if the cursor is moved, it behaves as if it still stood in
+ * the 80th column, rather than in the invisible 81st as joe thinks. Some
+ * terminal emulators (e.g. xterm) display this cursor in the 80th (rightmost)
+ * column, some others (e.g. gnome-terminal) don't show it at all, yet some
+ * others (e.g. konsole) show it at the beginning of the next line. This is a
+ * state at which we never want to settle in joe, it's just a necessary
+ * transient state while printing in the rightmost column. This method makes
+ * sure that the cursor is not in this strange state, moving it out of there
+ * if necessary.
+ *
+ * For terminal without "xn": In nresize() just revert to not using the
+ * rightmost column. Another possibility would be to do a character insertion
+ * to push an already printed character to the right, as implemented in pts's
+ * fork of joe at http://pts-mini-gpl.googlecode.com/svn/trunk/joe-p37/ but
+ * it's quite complicated (especially with CJK) and probably not worth the
+ * trouble.
+ *
+ * More information:
+ * https://www.gnu.org/software/termutils/manual/termcap-1.3/html_chapter/termcap_4.html#SEC27
+ */
+
+static void fixupcursor(register SCRN *t)
+{
+	if (t->x == t->co) {
+		texec(t->cap, t->cr, 1, 0, 0, 0, 0);
+		t->x = 0;
+	}
+}
 
 /* Set attributes */
 
@@ -342,6 +376,8 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c
 				--wid;
 			}
 		}
+/* At this point, t->x might equal t->co.  Fixupcursor() will be called by next call
+   to cpos to deal with this. */
 }
 
 /* Set scrolling region */
@@ -388,7 +424,7 @@ int clrins(SCRN *t)
 int eraeol(SCRN *t, int x, int y, int atr)
 {
 	int *s, *ss, *a, *aa;
-	int w = t->co - x - 1;	/* Don't worry about last column */
+	int w = t->co - x;
 
 	if (w <= 0)
 		return 0;
@@ -406,13 +442,14 @@ int eraeol(SCRN *t, int x, int y, int atr)
 			break;
 		}
 	} while (ss != s);
-	if ((ss - s > 3 || s[w] != ' ' || a[w] != atr) && t->ce) {
+	if (t->ce) {
 		cpos(t, x, y);
 		if(t->attrib != atr)
 			set_attr(t, atr); 
 		texec(t->cap, t->ce, 1, 0, 0, 0, 0);
 		msetI(s, ' ', w);
 		msetI(a, atr, w);
+	/* TODO: move computation of ss & aa here */
 	} else if (s != ss) {
 		if (t->ins)
 			clrins(t);
@@ -458,7 +495,7 @@ static void out(unsigned char *t, unsigned char c)
 SCRN *nopen(CAP *cap)
 {
 	SCRN *t = (SCRN *) joe_malloc(sizeof(SCRN));
-	int x, y;
+	int x, y, co, li;
 	int ansiish;
 
 	ttopen();
@@ -466,18 +503,19 @@ SCRN *nopen(CAP *cap)
 	t->cap = cap;
 	setcap(cap, baud, out, NULL);
 
-	t->li = getnum(t->cap,USTR "li");
-	if (t->li < 1)
-		t->li = 24;
-	t->co = getnum(t->cap,USTR "co");
-	if (t->co < 2)
-		t->co = 80;
+	li = getnum(t->cap,USTR "li");
+	if (li < 1)
+		li = 24;
+	co = getnum(t->cap,USTR "co");
+	if (co < 2)
+		co = 80;
 	x = y = 0;
 	ttgtsz(&x, &y);
 	if (x > 7 && y > 3) {
-		t->li = y;
-		t->co = x;
+		li = y;
+		co = x;
 	}
+	t->co = t->li = -1;  /* will be set by nresize() below */
 
 	t->haz = getflag(t->cap,USTR "hz");
 	t->os = getflag(t->cap,USTR "os");
@@ -768,8 +806,10 @@ SCRN *nopen(CAP *cap)
 	}
 
 /* Send out li linefeeds so that scroll-back history is not lost */
-	for (y = 1; y < t->li; ++y)
-		ttputc(10);
+	if (notite && !nolinefeeds) {
+		for (y = 1; y < li; ++y)
+			ttputc(10);
+	}
 
 /* Send out terminal initialization string */
 	if (t->ti)
@@ -789,7 +829,7 @@ SCRN *nopen(CAP *cap)
 	t->ary = NULL;
 	t->htab = (struct hentry *) joe_malloc(256 * sizeof(struct hentry));
 
-	nresize(t, t->co, t->li);
+	nresize(t, co, li);
 
 /* Initialize mouse */
 	mouseopen();
@@ -797,14 +837,18 @@ SCRN *nopen(CAP *cap)
 	return t;
 }
 
-/* Change size of screen */
+/* Change size of screen. Decrease width by 1 if printing in the last column is not supported */
 
-void nresize(SCRN *t, int w, int h)
+int nresize(SCRN *t, int w, int h)
 {
 	if (h < 4)
 		h = 4;
 	if (w < 8)
 		w = 8;
+	if (!t->xn)
+		w--;  /* Don't write to the last column if terminal lacks xn capability */
+	if (h == t->li && w == t->co)
+		return 0;
 	t->li = h;
 	t->co = w;
 	if (t->sary)
@@ -830,6 +874,7 @@ void nresize(SCRN *t, int w, int h)
 	t->ary = (struct hentry *) joe_malloc(t->co * sizeof(struct hentry));
 
 	nredraw(t);
+	return 1;
 }
 
 /* Calculate cost of positioning the cursor using only relative cursor
@@ -981,6 +1026,8 @@ static void cposs(register SCRN *t, register int x, register int y)
 	int bestway;
 	int hy;
 	int hl;
+
+	fixupcursor(t);
 
 /* Home y position is usually 0, but it is 'top' if we have scrolling region
  * relative addressing
@@ -1338,7 +1385,7 @@ static void doinschr(SCRN *t, int x, int y, int *s, int *as, int n)
 		as -= x;
 		x = 0;
 	}
-	if (x >= t->co - 1 || n <= 0)
+	if (x >= t->co || n <= 0)
 		return;
 	if (t->im || t->ic || t->IC) {
 		cpos(t, x, y);
@@ -1370,7 +1417,7 @@ static void dodelchr(SCRN *t, int x, int y, int n)
 
 	if (x < 0)
 		x = 0;
-	if (!n || x >= t->co - 1)
+	if (!n || x >= t->co)
 		return;
 	if (t->dc || t->DC) {
 		cpos(t, x, y);
@@ -1405,7 +1452,7 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 	msetI(ofst, 0, t->co);
 
 /* Build hash table */
-	for (x = 0; x != t->co - 1; ++x) {
+	for (x = 0; x != t->co; ++x) {
 		t->ary[aryx].next = htab[cs[x] & 255].next;
 		t->ary[aryx].loc = x;
 		++htab[cs[x] & 255].loc;
@@ -1413,9 +1460,9 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 	}
 
 /* Build offset table */
-	for (x = 0; x < t->co - 1;)
+	for (x = 0; x < t->co;)
 		if (htab[s[x] & 255].loc >= 15)
-			ofst[x++] = t->co - 1;
+			ofst[x++] = t->co;
 		else {
 			int aryy;
 			int maxaryy = 0;
@@ -1430,7 +1477,7 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 				int cst = -abs(tsfo);
 				int pre = 32;
 
-				for (amnt = 0; x + amnt < t->co - 1 && x + tsfo + amnt < t->co - 1; ++amnt) {
+				for (amnt = 0; x + amnt < t->co && x + tsfo + amnt < t->co; ++amnt) {
 					if (cs[x + tsfo + amnt] != s[x + amnt])
 						break;
 					else if ((s[x + amnt] & 255) != 32 || pre != 32)
@@ -1453,11 +1500,11 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 				}
 			}
 			if (!maxlen) {
-				ofst[x] = t->co - 1;
+				ofst[x] = t->co;
 				maxlen = 1;
 			} else if (best < 2)
 				for (z = 0; z != maxlen; ++z)
-					ofst[x + z] = t->co - 1;
+					ofst[x + z] = t->co;
 			else
 				for (z = 0; z != maxlen - bestback; ++z)
 					ofst[x + z + bestback] = t->ary[maxaryy].loc - x;
@@ -1466,30 +1513,30 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 
 /* Apply scrolling commands */
 
-	for (x = 0; x != t->co - 1; ++x) {
+	for (x = 0; x != t->co; ++x) {
 		int q = ofst[x];
 
-		if (q && q != t->co - 1) {
+		if (q && q != t->co) {
 			if (q > 0) {
 				int z, fu;
 
-				for (z = x; z != t->co - 1 && ofst[z] == q; ++z) ;
+				for (z = x; z != t->co && ofst[z] == q; ++z) ;
 				while (s[x] == cs[x] && x < placex)
 					++x;
 				dodelchr(t, x, y, q);
-				for (fu = x; fu != t->co - 1; ++fu)
-					if (ofst[fu] != t->co - 1)
+				for (fu = x; fu != t->co; ++fu)
+					if (ofst[fu] != t->co)
 						ofst[fu] -= q;
 				x = z - 1;
 			} else {
 				int z, fu;
 
-				for (z = x; z != t->co - 1 && ofst[z] == q; ++z) ;
+				for (z = x; z != t->co && ofst[z] == q; ++z) ;
 				while (s[x + q] == cs[x + q] && x - q < placex)
 					++x;
 				doinschr(t, x + q, y, s + x + q, a + x + q, -q);
-				for (fu = x; fu != t->co - 1; ++fu)
-					if (ofst[fu] != t->co - 1)
+				for (fu = x; fu != t->co; ++fu)
+					if (ofst[fu] != t->co)
 						ofst[fu] -= q;
 				x = z - 1;
 			}
