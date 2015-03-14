@@ -148,6 +148,7 @@ OPTIONS pdefault = {
 	0,		/* Smart backspace key */
 	0,		/* Purify indentation */
 	0,		/* Picture mode */
+	0,		/* highlighter_context */
 	0,		/* single_quoted */
 	0,		/* no_double_quoted */
 	0,		/* c_comment */
@@ -206,6 +207,7 @@ OPTIONS fdefault = {
 	0,		/* Smart backspace key */
 	0,		/* Purity indentation */
 	0,		/* Picture mode */
+	0,		/* highlighter_context */
 	0,		/* single_quoted */
 	0,		/* no_double_quoted */
 	0,		/* c_comment */
@@ -378,6 +380,7 @@ struct glopts {
 	{USTR "backpath",	2, &backpath, NULL, USTR _("Backup files stored in (%s): "), 0, USTR _("  Path to backup files ") },
 	{USTR "syntax",	9, NULL, NULL, USTR _("Select syntax (^C to abort): "), 0, USTR _("Y Syntax") },
 	{USTR "encoding",13, NULL, NULL, USTR _("Select file character set (^C to abort): "), 0, USTR _("E Encoding ") },
+	{USTR "highlighter_context",	4, NULL, (unsigned char *) &fdefault.highlighter_context, USTR _("Highlighter context enabled"), USTR _("Highlighter context disabled"), USTR _("  ^G uses highlighter context ") },
 	{USTR "single_quoted",	4, NULL, (unsigned char *) &fdefault.single_quoted, USTR _("Single quoting enabled"), USTR _("Single quoting disabled"), USTR _("  ^G ignores '... ' ") },
 	{USTR "no_double_quoted",4, NULL, (unsigned char *) &fdefault.no_double_quoted, USTR _("Double quoting disabled"), USTR _("Double quoting enabled"), USTR _("  ^G ignores \"... \" ") },
 	{USTR "c_comment",	4, NULL, (unsigned char *) &fdefault.c_comment, USTR _("/* comments enabled"), USTR _("/* comments disabled"), USTR _("  ^G ignores /*...*/ ") },

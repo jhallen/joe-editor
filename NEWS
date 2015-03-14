@@ -1,11 +1,16 @@
-- When tite mode is enabled ('notite' flag not given), JOE now emits
-  linefeeds to preserve the screen contents in the terminal emulator's
-  scrollback buffer.  This can be suppressed with a new flag: nolinefeeds.
+- Jump to matching delimiter (Ctrl-G) has been improved.  It can now use the
+  syntax files to parse the document in order to identify strings and
+  comments which should be skipped during the matching delimiter search.
+  (patch by Charles Tabony).
+
+- When 'notite' mode is enabled, JOE now emits linefeeds to preserve the
+  screen contents in the terminal emulator's scrollback buffer.  This can be
+  suppressed with a new flag: nolinefeeds.
 
 - JOE now starts up quiet (prints no extra messages when starting). 
   Messages are collected in a startup log (view with ESC x showlog).
 
-- There is a new flag 'noexmsg' which when set makes JOE quiet when it shuts
+- There is a new flag 'noexmsg' which, when set, makes JOE quiet when it shuts
   down (suppresses "File not changed so no update needed" message).
 
 - Use 80th column if terminal has xn capability (patch by pts and Egmont

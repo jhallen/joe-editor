@@ -32,7 +32,7 @@
 	*		decorator
 	" (\t\r\n"	idle		noeat
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	# might be TODO label
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
@@ -175,7 +175,7 @@ done
 .subr string
 
 .ifdef docstring	# Long strings
-:string Docstring
+:string Docstring string
 	*		string
 	"BFHNTX"	string		noeat call=.comment_todo_docstr()
 .ifdef raw
@@ -194,7 +194,7 @@ done
 
 .else			# Short strings
 
-:string Constant
+:string Constant string
 	*		string
 	"\n"		string return
 .ifdef raw
