@@ -971,13 +971,13 @@ upslide,upslide,upslide,upslide		MWUP
 abort		^C
 complete	^I
 dnarw,eol	.kd		Go down
-dnarw,eol	^N
+dnarw,eol	^X
 dnarw,eol	^[ O B
 dnarw,eol	^[ [ B
  dnarw,eol	^# B
 uparw,eol	.ku		Go up
  uparw,eol	^# A
-uparw,eol	^P
+uparw,eol	^E
 uparw,eol	^[ O A
 uparw,eol	^[ [ A
 
