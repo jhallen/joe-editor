@@ -219,7 +219,7 @@ OPTIONS fdefault = {
 	0,		/* hex */
 	0,		/* hide ansi */
 	NULL,		/* text_delimiters */
-	USTR ">;!#%/*-",	/* Characters which can indent paragraphs */
+	USTR ">;!#%/",	/* Characters which can indent paragraphs */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
