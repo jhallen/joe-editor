@@ -555,6 +555,7 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 	void *object;
 	W *w;
 	B *b;
+	unsigned char *current_dir;
 	if (c == YES_CODE || yncheck(yes_key, c)) {
 		/* Reload from file */
 
@@ -564,6 +565,7 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 
 		b = bfind_reload(s);
 		er = berror;
+		current_dir = vsdup(bw->b->current_dir);
 		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 			if (orphan) {
 				orphit(bw);
@@ -585,6 +587,11 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		w = bw->parent;
 		bwrm(bw);
 		w->object = (void *) (bw = bwmk(w, b, 0));
+		/* Propogate current directory to newly loaded buffer */
+		if (!b->current_dir)
+			b->current_dir = current_dir;
+		else
+			vsrm(current_dir);
 		wredraw(bw->parent);
 		bw->object = object;
 		vsrm(s);
@@ -683,7 +690,7 @@ int dosetcd(BW *bw, unsigned char *s, void *obj, int *notify)
 		*notify = 1;
 	}
 	if (s[0])
-		set_current_dir(s, 1);
+		set_current_dir(bw, s, 1);
 	joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Directory prefix set to %s")), s);
 	msgnw(bw->parent, msgbuf);
 	vsrm(s);
@@ -817,6 +824,7 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	int er;
 	W *w = bw->parent;
 	B *b;
+	unsigned char *current_dir = vsdup(bw->b->current_dir);
 
 	if (notify) {
 		*notify = 1;
@@ -834,6 +842,11 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	}
 	bwrm(bw);
 	w->object = (void *) (bw = bwmk(w, b, 0));
+	/* Propogate current directory into new buffer */
+	if (!b->current_dir)
+		b->current_dir = current_dir;
+	else
+		vsrm(current_dir);
 	wredraw(bw->parent);
 	bw->object = object;
 	vsrm(s);

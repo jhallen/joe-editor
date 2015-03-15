@@ -10,17 +10,17 @@ Improvements:
 
  Mode to start joe with shell window.
 
- Save per-shell window current directory in joe state file?
+ Save per-shell window current directory in joe state file and
+ restore it next time?
+
+ Would be nice if there was history for each virtual console.
+    Can be done with environement variable HISTFILE.
+    We need an argument to be passed to shell.sh for this: maybe vtbknd
+    asks for an argument?
 
  Add magic joe command: append list of buffers.
 
  Context help for shell window?
-
- Would be nice if there was history for each virtual console.
-  BASH HISTFILE.
-
- Need per-shell window current directory.
-  Logbuf?  Sometimes?
 
  Esc sequences could be optimized out: delete one if it results in same
  attributes that already exist.
@@ -28,14 +28,13 @@ Improvements:
 
 Bugs:
 
- color on status line gets messed up when shell text is colored.. how can
-this even happen?
-
- check querysave and nbuf/pbuf interactions with new buffer stack
-
  clean up macro execute for magic shell commands:
    only execute shell_ ones...
    only execute if window is on screen...
+
+ check for n^2 algorithms
+
+ check querysave and nbuf/pbuf interactions with new buffer stack
 
 Pgetc() does not now always return a character... how to fix?
 	Ugh... (what bugs does is cause?)
@@ -44,6 +43,14 @@ Hex mode probably doesn't mix correctly with vt
 
 
 - - - -
+
+ Need per-shell window current directory.
+  Logbuf?  Sometimes?
+ [done: the buffer records the current directory]
+
+ color on status line gets messed up when shell text is colored.. how can
+this even happen?
+ [fixed] 
 
  cursor in wrong position when I abort a window and shell window gets pulled
 on.. need EFIXXCOL, but joe crashes when I enable it for abort command.

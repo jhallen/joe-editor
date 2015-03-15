@@ -121,6 +121,7 @@ struct buffer {
 	OPTIONS	o;		/* Options */
 	P	*oldcur;	/* Last cursor position before orphaning */
 	P	*oldtop;	/* Last top screen position before orphaning */
+	unsigned char *current_dir;
 	int shell_flag;		/* Set if last cursor position is same as vt cursor: if it is we keep it up to date */
 	int	rdonly;		/* Set for read-only */
 	int	internal;	/* Set for internal buffers */

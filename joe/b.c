@@ -225,7 +225,8 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->rdonly = 0;
 	b->orphan = 0;
 	b->oldcur = NULL;
-	b->oldtop = NULL;
+ 	b->oldtop = NULL;
+ 	b->current_dir = NULL;
 	b->shell_flag = 0;
 	b->backup = 1;
 	b->internal = 1;
@@ -302,6 +303,7 @@ void brm(B *b)
 			joe_free(b->name);
 		if (b->db)
 			rm_all_lattr_db(b->db);
+		vsrm(b->current_dir);
 		demote(B, link, &frebufs, b);
 	}
 }
