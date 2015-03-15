@@ -70,6 +70,8 @@
 
  -nobackups	If you don't want backup files to be created
 
+ -nodeadjoe	If you don't want DEADJOE files to be created
+
  -break_hardlinks
 		Delete file before writing, to break hard links
 		(but don't break symbolic links).
@@ -451,6 +453,7 @@ mode,"nobackup",rtn	% % No backup %Znobackup%
 :defmenu global
 mode,"nolocks",rtn	% % Disable locks %Znolocks%
 mode,"nobackups",rtn	% % Disable backups %Znobackups%
+mode,"nodeadjoe",rtn	% % Disable DEADJOE %Znodeadjoe%
 mode,"nomodcheck",rtn	% % Disable mtime check %Znomodcheck%
 mode,"nocurdir",rtn	% % Disable current dir %Znocurdir%
 mode,"exask",rtn	% % Exit ask %Zexask%

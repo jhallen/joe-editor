@@ -35,6 +35,8 @@ int berror;
 int force = 0;
 VFILE *vmem;
 
+int nodeadjoe = 0;
+
 unsigned char *msgs[] = {
 	USTR _("No error"),
 	USTR _("New File"),
@@ -2962,18 +2964,24 @@ unsigned char *brzs(P *p, unsigned char *buf, int size)
 
 /* Save edit buffers when editor dies */
 
-FILE *ttsig_f = 0;
+static int ttsig_handled = 0;
 
 RETSIGTYPE ttsig(int sig)
 {
+        FILE *ttsig_f = 0;
 	time_t tim = time(NULL);
 	B *b;
 	int tmpfd;
 	struct stat sbuf;
 
 	/* Do not allow double-fault */
-	if (ttsig_f)
+	if (ttsig_handled)
 		_exit(1);
+        
+        ttsig_handled = 1;
+        
+        if (nodeadjoe)
+                goto skipfile;
 
 	if ((tmpfd = open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
 		if (lstat("DEADJOE", &sbuf) < 0)
@@ -3014,14 +3022,27 @@ RETSIGTYPE ttsig(int sig)
 			fflush(ttsig_f);
 			bsavefd(b->bof, fileno(ttsig_f), b->eof->byte);
 		}
+
+skipfile:
 	if (sig)
 		ttclsn();
-	if (sig == -2)
+	if (sig == -2) {
 		fprintf(stderr,"\n*** JOE was aborted due to swap file I/O error\n");
-	else if (sig == -1)
-		fprintf(stderr,"\n*** JOE was aborted due to malloc returning NULL.  Buffers saved in DEADJOE\n");
-	else if (sig)
-		fprintf(stderr,"\n*** JOE was aborted by UNIX signal %d.  Buffers saved in DEADJOE\n", sig);
+	} else if (sig == -1) {
+		fprintf(stderr,"\n*** JOE was aborted due to malloc returning NULL.");
+		if (nodeadjoe) {
+		        fprintf(stderr, "\n");
+		} else {
+		        fprintf(stderr, "  Buffers saved in DEADJOE\n");
+		}
+	} else if (sig) {
+		fprintf(stderr,"\n*** JOE was aborted by UNIX signal %d.", sig);
+		if (nodeadjoe) {
+		        fprintf(stderr, "\n");
+		} else {
+		        fprintf(stderr, "  Buffers saved in DEADJOE\n");
+		}
+	}
 	_exit(1);
 }
 
