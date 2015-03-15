@@ -133,9 +133,11 @@ static void cdata(B *b, unsigned char *dat, int siz)
 			cfollow(b, b->vt, b->vt->vtcur->byte);
 			undomark();
 			if (m) {
-				/* FIXME: should only do this if cursor is on window */
-				exmacro(m, 1);
-				edupd(1);
+				/* only do this if cursor is on window */
+				if ((maint->curwin->watom->what & TYPETW) && ((BW *)maint->curwin->object)->b == b) {
+					exmacro(m, 1);
+					edupd(1);
+				}
 				rmmacro(m);
 			}
 		} while (m);

@@ -445,7 +445,7 @@ int main(int argc, char **real_argv, char **envv)
 		unsigned char buf[10];
 		int x;
 		zlcpy(buf, sizeof(buf), USTR "\"`\"	`  ");
-		type_backtick = mparse(0, buf, &x);
+		type_backtick = mparse(0, buf, &x, 0);
 	}
 
 	shell_kbd = mkkbd(kmap_getcontext(USTR "shell"));

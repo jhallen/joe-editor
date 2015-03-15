@@ -96,7 +96,7 @@ static double expr(int prec, int en,struct var **rtv)
 				} else
 					*q++ = 0;
 				if (en) {
-					m = mparse(NULL,ptr,&sta);
+					m = mparse(NULL,ptr,&sta,0);
 					ptr = q;
 					if (m) {
 						x = !exmacro(m,1);

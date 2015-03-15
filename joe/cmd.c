@@ -173,6 +173,7 @@ CMD cmds[] = {
 	{USTR "save", TYPETW + TYPEPW, usave, NULL, 0, NULL},
 	{USTR "savenow", TYPETW + TYPEPW, usavenow, NULL, 0, NULL},
 	{USTR "scratch", TYPETW + TYPEPW, uscratch, NULL, 0, NULL},
+	{USTR "secure_type", TYPEPW + TYPEQW + TYPEMENU + EMINOR + EMOD, utype, NULL, 1, USTR "backs"},
 	{USTR "select", TYPETW + TYPEPW, uselect, NULL, 0, NULL},
 	{USTR "setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},
 	{USTR "shell", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ushell, NULL, 0, NULL},
@@ -548,7 +549,7 @@ static int docmd(BW *bw, unsigned char *s, void *object, int *notify)
 	MACRO *mac;
 	int ret = -1;
 
-	mac = mparse(NULL, s, &ret);
+	mac = mparse(NULL, s, &ret,0);
 	if (ret < 0) {
 		msgnw(bw->parent,joe_gettext(_("No such command")));
 	} else {

@@ -1,6 +1,9 @@
 
 Improvements:
 
+ when we 'edit' in a shell window, it should pop before loading the new one.
+  otherwise we get a bunch of copies of the shell window I think
+
  'parserr' leaving many copies of buffer?
 
  It would be nice if ^G was goto instead of ESC space
@@ -28,10 +31,6 @@ Improvements:
 
 Bugs:
 
- clean up macro execute for magic shell commands:
-   only execute shell_ ones...
-   only execute if window is on screen...
-
  check for n^2 algorithms
 
  check querysave and nbuf/pbuf interactions with new buffer stack
@@ -43,6 +42,13 @@ Hex mode probably doesn't mix correctly with vt
 
 
 - - - -
+
+ clean up macro execute for magic shell commands:
+   only execute shell_ ones...
+   only execute if window is on screen...
+   how do we allow "file"?  it should only be allowed in prompts, and not
+   allowed to be typed into the shell.
+ [done]
 
  Need per-shell window current directory.
   Logbuf?  Sometimes?

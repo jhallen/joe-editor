@@ -747,15 +747,12 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 						int rtn;
 						vt->buf[vt->bufx] = 0;
 						/* printf("Got command '%s'\r\n", vt->buf); */
- 						m = mparse(NULL, vt->buf, &rtn);
+ 						m = mparse(NULL, vt->buf, &rtn, 1);
 						if (rtn >= 0) {
 							*insiz = siz;
 							*indat = dat;
 							vt->state = vt_idle;
 							return m;
-							/* FIXME should only do this if cursor is on window */
-							exmacro(m, 1);
-							edupd(1);
 						}
 						rmmacro(m);
 					}

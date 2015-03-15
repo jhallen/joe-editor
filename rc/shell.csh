@@ -1,13 +1,13 @@
 # Aliases for csh/tcsh in JOE shell window
 
-alias clear "echo \{psh,bof,markb,eof,markk,blkdel}"
+alias clear "echo \{shell_clear}"
 
-alias math "echo \{math,"\\\"\!\*\\\"",rtn}; echo \{rtn,math,"\\\""ans:ins"\\\"",rtn}"
+alias math "echo \{shell_math,"\\\"\!\*\\\"",shell_rtn}; echo \{shell_rtn,shell_math,"\\\""ans:ins"\\\"",shell_rtn}"
 
-alias edit "echo \{edit,"\\\"\!\*\\\"",rtn}"
+alias edit "echo \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
 
-alias joe "echo \{edit,"\\\"\!\*\\\"",rtn}"
+alias joe "echo \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
 
-alias cd "cd "\!\*"; echo \{cd,dellin\\!,"\\\"`pwd`/\\\"",rtn}"
+alias cd "cd "\!\*"; echo \{shell_cd,shell_dellin\\!,"\\\"`pwd`/\\\"",shell_rtn}"
 
 clear

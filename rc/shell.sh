@@ -1,16 +1,16 @@
 # Aliases for sh/dash/ash/bash/ksh/zsh in JOE shell window
 
 joe_clear () {
-	echo '{'psh,bof,markb,eof,markk,blkdel'}'
+	echo '{'shell_clear'}'
 }
 
 joe_math () {
-	echo '{'math,'"'$1'"',rtn'}'
-	echo '{'rtn,math,'"'ans:ins'"',rtn'}'
+	echo '{'shell_math,'"'$1'"',shell_rtn'}'
+	echo '{'shell_rtn,shell_math,'"'ans:ins'"',shell_rtn'}'
 }
 
 joe_edit () {
-	echo '{'edit,'"'$1'"',rtn'}'
+	echo '{'shell_edit,'"'$1'"',shell_rtn'}'
 }
 
 unalias cd 2>/dev/null
@@ -25,7 +25,7 @@ joe_cd () {
 		cd "$1"
 	fi
 	# Tell JOE our new directory
-	echo '{'cd,dellin!,'"'`pwd`/'"',rtn'}'
+	echo '{'shell_cd,shell_dellin!,'"'`pwd`/'"',shell_rtn'}'
 }
 
 alias clear=joe_clear

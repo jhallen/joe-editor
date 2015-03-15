@@ -807,6 +807,15 @@ aspellword	^[ n
 :def shell3 scratch,"* Shell 3 *",rtn,vtbknd!,eof
 :def shell4 scratch,"* Shell 4 *",rtn,vtbknd!,eof
 
+ Macros allowed in shell window commands
+:def shell_clear psh,bof,markb,eof,markk,blkdel
+:def shell_math math
+:def shell_rtn rtn
+:def shell_edit edit
+:def shell_dellin dellin
+:def shell_cd cd
+
+
  Split window version
  :def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,vtbknd!,eof
  :def shell2 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 2 *",rtn,vtbknd!,eof

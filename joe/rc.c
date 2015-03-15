@@ -593,7 +593,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				int sta;
 
 				if (options)
-					options->mnew = mparse(NULL, arg, &sta);
+					options->mnew = mparse(NULL, arg, &sta, 0);
 				ret = 2;
 			} else
 				ret = 1;
@@ -602,7 +602,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				int sta;
 
 				if (options)
-					options->mfirst = mparse(NULL, arg, &sta);
+					options->mfirst = mparse(NULL, arg, &sta, 0);
 				ret = 2;
 			} else
 				ret = 1;
@@ -611,7 +611,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				int sta;
 
 				if (options)
-					options->mold = mparse(NULL, arg, &sta);
+					options->mold = mparse(NULL, arg, &sta, 0);
 				ret = 2;
 			} else
 				ret = 1;
@@ -620,7 +620,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				int sta;
 
 				if (options)
-					options->msnew = mparse(NULL, arg, &sta);
+					options->msnew = mparse(NULL, arg, &sta, 0);
 				ret = 2;
 			} else
 				ret = 1;
@@ -629,7 +629,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				int sta;
 
 				if (options)
-					options->msold = mparse(NULL, arg, &sta);
+					options->msold = mparse(NULL, arg, &sta, 0);
 				ret = 2;
 			} else
 				ret = 1;
@@ -1409,7 +1409,7 @@ int procrc(CAP *cap, unsigned char *name)
 							MACRO *m;
 
 							if (joe_isblank(locale_map,c)
-							    && (m = mparse(NULL, buf + y + 1, &sta)))
+							    && (m = mparse(NULL, buf + y + 1, &sta, 0)))
 								addcmd(buf + x, m);
 							else {
 								err = 1;
@@ -1525,7 +1525,7 @@ int procrc(CAP *cap, unsigned char *name)
 
 				m = 0;
 			      macroloop:
-				m = mparse(m, buf, &x);
+				m = mparse(m, buf, &x, 0);
 				if (x == -1) {
 					err = 1;
 					logerror_2((char *)joe_gettext(_("%s %d: Unknown command in macro\n")), name, line);
