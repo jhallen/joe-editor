@@ -1,3 +1,5 @@
+- Added option to suppress DEADJOE file
+
 - Jump to matching delimiter (Ctrl-G) has been improved.  It can now use the
   syntax files to parse the document in order to identify strings and
   comments which should be skipped during the matching delimiter search.

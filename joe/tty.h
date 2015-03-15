@@ -206,5 +206,6 @@ extern long last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */
 
 void ttstsz(int fd, int w, int h); /* Set window size */
+extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */
 
 #endif
