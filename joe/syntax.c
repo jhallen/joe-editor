@@ -594,7 +594,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 		f = jfopen(name,"r");
 	}
 	if (!f) {
-		joe_snprintf_1(name,sizeof(name),"*%s.jsf",syntax->name);
+		name = vsfmt(name, 0, USTR "*%s.jsf",syntax->name);
 		f = jfopen(name,"r");
 	}
 	if (!f) {
