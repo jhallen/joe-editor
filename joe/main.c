@@ -238,10 +238,6 @@ int joerc()
 	unsigned char *rundir;
 #endif
 	
-	vmem = vtmp();
-	startup_log = bfind_scratch(USTR "* Startup Log *");
-	startup_log->internal = 1;
-
 	/* Figure out name editor was invoked under */
 
 #ifdef __MSDOS__
@@ -596,6 +592,13 @@ int main(int argc, char **real_argv, char **envv)
 	fdefault.charmap = locale_map;
 	pdefault.charmap = locale_map;
 
+	/* Setup software virtual memory */
+	vmem = vtmp();
+	
+	/* Create startup log buffer */
+	startup_log = bfind_scratch(USTR "* Startup Log *");
+	startup_log->internal = 1;
+
 	/* Copy some environment variables to global variables */
 	process_env();
 
@@ -603,13 +606,13 @@ int main(int argc, char **real_argv, char **envv)
 #ifndef __MSDOS__
 	if (!(cap = getcap(NULL, 9600, NULL, NULL))) {
 		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
-		return 1;
+		goto exit_errors;
 	}
 #endif
 
 	/* Process JOERC file */
-	if (joerc())
-		return 1;
+	if (joerc()) 
+		goto exit_errors;
 
 	/* Is somebody piping something into JOE, or is stdin the tty? */
 	if (!isatty(fileno(stdin)))
@@ -626,17 +629,10 @@ int main(int argc, char **real_argv, char **envv)
 
 	/* Setup tty handler (sets cbreak mode, turns off cooked) */
 	if (!(main_scrn = nopen(cap)))
-		return 1;
+		goto exit_errors;
 
 	/* Initialize windowing system */
 	maint = screate(main_scrn);
-
-	/* Setup software virtual memory */
-	vmem = vtmp();
-
-	/* Create startup log buffer */
-	startup_log = bfind_scratch(USTR "* Startup Log *");
-	startup_log->internal = 1;
 
 	/* Read in ~/.joe_state file */
 	load_state();
