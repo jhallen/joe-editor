@@ -20,7 +20,7 @@
 
  Допустимые цвета
    bold (яркость) inverse (инверсия) blink (мерцание) 
-   dim (полуяркость) underline (подчеркивание)
+   dim (полуяркость) underline (подчеркивание) italic (?????)
    white (белый) cyan (бирюзовый) magenta (фиолетовый) blue (синий) 
    yellow (желтый) green (зеленый) red (красный) black (черный)
  для фона
@@ -77,6 +77,8 @@
 
  -nobackups	Если не желаете, чтобы создавались резервные файлы
 
+ -nodeadjoe	If you don't want DEADJOE files to be created
+
  -break_hardlinks
 		Удалять файл перед записью, для разрыва жестких ссылок
 		(but don't break symbolic links).
@@ -113,6 +115,8 @@
 
 -nonotice	Не выводить copyright
 
+ -noexmsg	Disable exiting message ("File not changed so no updated needed")
+
  -noxon		Выключить обработку ^S/^Q
 
  -orphan	Положить дополнительные файлы, указанные в ком.строке,
@@ -133,6 +137,9 @@
 
 -notite         Не посылать строки инициализации и терминации терминала:
 		предотвращает восстановление экрана при выходе.
+
+ -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
+                emulator's scroll-back buffer.
 
  -usetabs       Использовать табуляторы для оптимизации экранного вывода
 
@@ -237,6 +244,7 @@
   \b  Повышенная яркость
   \d  Пониженная яркость
   \f  Мерцание
+  \l  ?????
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M %x
 -rmsg  %S Стр %r Поз %c %t  Подсказка - по F1
@@ -349,6 +357,8 @@
 
 	These define the language syntax for ^G (goto matching delimiter):
 
+	-highlighter_context	Use the highlighter context for ^G
+
 	-single_quoted		Текст внутри '  ' следует игнорировать (это не
 				очень хорошо для обычного текста, т.к. ' в нем
 				может использоваться в качестве апострофа)
@@ -435,6 +445,7 @@ mode,"menu_jump",rtn	% % Jump into menu %Zmenu_jump%
 mode,"transpose",rtn	% % Transpose menus %Ztranspose%
 
 :defmenu ^G
+mode,"highlighter_context",rtn	% % ^G uses highlighter context %Zhighlighter_context%
 mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
 mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
 mode,"c_comment",rtn	% % ^G ignores /*...*/ %Zc_comment%
@@ -442,7 +453,7 @@ mode,"cpp_comment",rtn	% % ^G ignores //... %Zcpp_comment%
 mode,"pound_comment",rtn	% % ^G ignores #... %Zpound_comment%
 mode,"vhdl_comment",rtn	% % ^G ignores --... %Zvhdl_comment%
 mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
-mode,"tex_comment",rtn % % ^G ignores %... %Ztex_comment%
+mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
 mode,"text_delimiters",rtn % % Text delimiters %Ztext_delimiters%
 
 :defmenu search
@@ -468,6 +479,7 @@ mode,"nobackup",rtn	% % No backup %Znobackup%
 :defmenu global
 mode,"nolocks",rtn	% % Disable locks %Znolocks%
 mode,"nobackups",rtn	% % Disable backups %Znobackups%
+mode,"nodeadjoe",rtn	% % Disable DEADJOE %Znodeadjoe%
 mode,"nomodcheck",rtn	% % Disable mtime check %Znomodcheck%
 mode,"nocurdir",rtn	% % Disable current dir %Znocurdir%
 mode,"exask",rtn	% % Exit ask %Zexask%
@@ -504,6 +516,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Используйте \b для вкл/выкл повышенной яркости
  Используйте \d для вкл/выкл пониженной яркости
  Используйте \f для вкл/выкл мерцания
+ Используйте \l для вкл/выкл ?????
  Используйте \| для вставки пружинки: все пружинки в строке устанавливаются 
  на одинаковую ширину, чтобы строка растягивалась на всю ширину экрана (если
  кратность не получается и остается N пробелов, то каждая из N пружинок справа

@@ -51,6 +51,7 @@ int ustop PARAMS((void));
 int urecord PARAMS((BW *bw, int c));
 int uquery PARAMS((BW *bw));
 int umacros PARAMS((BW *bw));
+int utimer PARAMS((BW *bw));
 
 /* Repeat prefix user command */
 int uarg PARAMS((BW *bw));

@@ -317,7 +317,7 @@ void ttopnn(void)
 
 	if (!termin) {
 		if (idleout ? (!(termin = stdin) || !(termout = stdout)) : (!(termin = fopen("/dev/tty", "r")) || !(termout = fopen("/dev/tty", "w")))) {
-			fprintf(stderr, (char *)joe_gettext(_("Couldn\'t open /dev/tty\n")));
+			fputs((char *)joe_gettext(_("Couldn\'t open /dev/tty\n")), stderr);
 			exit(1);
 		} else {
 #ifdef SIGWINCH
@@ -582,8 +582,11 @@ void mpxdied(MPX *m);
 
 long last_time;
 
+extern MACRO *timer_play();
+
 int ttgetc(void)
 {
+        MACRO *m;
 	int stat;
 	long new_time;
 	int flg;
@@ -607,6 +610,12 @@ int ttgetc(void)
 		flg = 1;
 	}
 	ttflsh();
+	m = timer_play();
+	if (m) {
+	        co_call(exemac, m);
+	        edupd(1);
+	        ttflsh();
+	}
 	while (winched) {
 		winched = 0;
 		dostaupd = 1;
@@ -735,7 +744,7 @@ int ttshell(unsigned char *cmd)
 		if (cmd)
 			execl((char *)s, (char *)s, "-c", cmd, NULL);
 		else {
-			fprintf(stderr, (char *)joe_gettext(_("You are at the command shell.  Type 'exit' to return\n")));
+			fputs((char *)joe_gettext(_("You are at the command shell.  Type 'exit' to return\n")), stderr);
 			execl((char *)s, (char *)s, NULL);
 		}
 		_exit(0);
@@ -745,10 +754,11 @@ int ttshell(unsigned char *cmd)
 
 /* Create keyboard task */
 
-static void mpxresume(void)
+static int mpxresume(void)
 {
 	int fds[2];
-	pipe(fds);
+	if (-1 == pipe(fds))
+		return -1;
 	acceptch = NO_MORE_DATA;
 	have = 0;
 	if (!(kbdpid = fork())) {
@@ -770,6 +780,7 @@ static void mpxresume(void)
 	}
 	close(fds[0]);
 	ackkbd = fds[1];
+	return 0;
 }
 
 /* Kill keyboard task */
@@ -799,7 +810,7 @@ void ttsusp(void)
 	omode = ttymode;
 	mpxsusp();
 	ttclsn();
-	fprintf(stderr, (char *)joe_gettext(_("You have suspended the program.  Type 'fg' to return\n")));
+	fputs((char *)joe_gettext(_("You have suspended the program.  Type 'fg' to return\n")), stderr);
 	kill(0, SIGTSTP);
 #ifdef junk
 	/* Hmmm... this should not have been necessary */
@@ -823,13 +834,14 @@ void ttsusp(void)
    written to the same pipe don't get interleaved, but you can reasonable
    rely on it with small packets. */
 
-static void mpxstart(void)
+static int mpxstart(void)
 {
 	int fds[2];
-	pipe(fds);
+	if (-1 == pipe(fds))
+		return -1;
 	mpxfd = fds[0];
 	mpxsfd = fds[1];
-	mpxresume();
+	return mpxresume();
 }
 
 static void mpxend(void)
@@ -933,23 +945,23 @@ static unsigned char *getpty(int *ptyfd)
 
 	if (ptys)
 		for (fd = 0; ptys[fd]; ++fd) {
-			zcpy(ttyname, ptydir);
-			zcat(ttyname, ptys[fd]);
+			zlcpy(ttyname, sizeof(ttyname), ptydir);
+			zlcat(ttyname, sizeof(ttyname), ptys[fd]);
 			if ((*ptyfd = open((char *)ttyname, O_RDWR)) >= 0) {
 				ptys[fd][0] = 't';
-				zcpy(ttyname, ttydir);
-				zcat(ttyname, ptys[fd]);
+				zlcpy(ttyname, sizeof(ttyname), ttydir);
+				zlcat(ttyname, sizeof(ttyname), ptys[fd]);
 				ptys[fd][0] = 'p';
 				x = open((char *)ttyname, O_RDWR);
 				if (x >= 0) {
 					close(x);
 					close(*ptyfd);
-					zcpy(ttyname, ptydir);
-					zcat(ttyname, ptys[fd]);
+					zlcpy(ttyname, sizeof(ttyname), ptydir);
+					zlcat(ttyname, sizeof(ttyname), ptys[fd]);
 					*ptyfd = open((char *)ttyname, O_RDWR);
 					ptys[fd][0] = 't';
-					zcpy(ttyname, ttydir);
-					zcat(ttyname, ptys[fd]);
+					zlcpy(ttyname, sizeof(ttyname), ttydir);
+					zlcat(ttyname, sizeof(ttyname), ptys[fd]);
 					ptys[fd][0] = 'p';
 					return ttyname;
 				} else
@@ -1039,12 +1051,10 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 	/* Flush output */
 	ttflsh();
 
-	/* Bump no. current async inputs to joe */
-	++nmpx;
-
 	/* Start input multiplexer */
 	if (ackkbd == -1)
-		mpxstart();
+		if (mpxstart())
+			return NULL;
 
 	/* Remember callback function */
 	m->func = func;
@@ -1053,11 +1063,16 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 	m->dieobj = dieobj;
 
 	/* Acknowledgement pipe */
-	pipe(fds);
+	if (-1 == pipe(fds))
+		return NULL;
 	m->ackfd = fds[1];
 
 	/* PID number pipe */
-	pipe(comm);
+	if (-1 == pipe(comm))
+		return NULL;
+
+	/* Bump no. current async inputs to joe */
+	++nmpx;
 
 
 	/* Create processes... */
@@ -1151,21 +1166,23 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 					/* If shell didn't execute */
 					joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Couldn't execute shell '%s'\n")),cmd);
-					write(1,(char *)buf,zlen(buf));
-					sleep(1);
+					if (-1 == write(1,buf,zlen(buf)))
+						sleep(2);
+					else
+						sleep(1);
 
 				} else {
 					unsigned char buf[1024];
 					int len;
-					dup(x); /* Standard error */
-					
-					for (;;) {
-						len = read(0, buf, sizeof(buf));
-						if (len > 0)
-							write(1, buf, len);
-						else
-							break;
-					}
+					if (-1 != dup(x)) /* Standard error */
+						for (;;) {
+							len = read(0, buf, sizeof(buf));
+							if (len > 0) {
+								if (-1 == write(1, buf, len))
+									break;
+							} else
+								break;
+						}
 				}
 
 

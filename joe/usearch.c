@@ -240,6 +240,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 	P *start;
 	P *end;
 	int x;
+	int flag = 0;
 
 	pattern = srch->pattern;
 	start = pdup(p, USTR "searchf");
@@ -257,13 +258,14 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 		if (srch->wrap_flag && start->byte>=srch->wrap_p->byte)
 			break;
 		if (pmatch(srch->pieces, pattern + x, vslen(pattern) - x, end, 0, srch->ignore)) {
-			if (end->byte == srch->last_repl) {
-				/* Stuck? */
+			if (end->byte == srch->last_repl && !flag) {
+				/* Stuck on zero-width regex? */
 				pattern = srch->pattern;
 				pset(start, p);
 				if (pgetc(start) == NO_MORE_DATA)
 					break;
 				pset(end, start);
+				++flag; /* Try repeating, but only one time */
 				goto try_again;
 			} else {
 				srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
@@ -272,6 +274,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 				pset(p, end);
 				prm(start);
 				prm(end);
+				srch->last_repl = p->byte; /* Prevent getting stuck with zero-length regex */
 				return p;
 			}
 		}
@@ -310,6 +313,7 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 	P *start;
 	P *end;
 	int x;
+	int flag = 0;
 
 	start = pdup(p, USTR "searchb");
 	end = pdup(p, USTR "searchb");
@@ -328,13 +332,14 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 		if (srch->wrap_flag && start->byte<srch->wrap_p->byte)
 			break;
 		if (pmatch(srch->pieces, pattern + x, vslen(pattern) - x, end, 0, srch->ignore)) {
-			if (start->byte == srch->last_repl) {
+			if (start->byte == srch->last_repl && !flag) {
 				/* Stuck? */
 				pattern = srch->pattern;
 				pset(start, p);
 				if (prgetc(start) == NO_MORE_DATA)
 					break;
 				pset(end, start);
+				++flag;
 				goto try_again;
 			} else {
 				srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
@@ -658,7 +663,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 				/* if (pico && globalsrch && globalsrch->replacement) {
 					joe_snprintf_1(bf1,30,"%s",globalsrch->replacement);
 					if (zlen(globalsrch->replacement)>29)
-						zcat(bf1,USTR "$");
+						zlcat(bf1, sizeof(bf1), USTR "$");
 					joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Replace with (^C to abort) [%s]: ")),bf1);
 				} else
 					zcpy(buf, joe_gettext(_("Replace with (^C to abort): "))); */

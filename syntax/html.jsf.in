@@ -29,9 +29,9 @@
 =Background
 =Text
 =TagEdge	green
-=TagName	cyan
-=TagParam	green
-=TagDelim	bold green
+=TagName	green #cyan
+=TagParam	#green
+=TagDelim	#bold green
 =TagValue	cyan
 =TagEntity	bold blue
 =SGMLtag	magenta
@@ -81,10 +81,17 @@
 .else
 	"?"			xml_pi recolor=-2
 .endif
+.ifdef erb
+	"%"			maybe_erb_eq
+.endif
 
 # this state allows php and perl to recolor the ?> %> or &> properly.
 :rtn_php TagEdge
 	*			idle noeat
+
+:maybe_erb_eq TagEdge
+	*			rtn_php noeat call=ruby.ruby(erb)
+	"="			rtn_php call=ruby.ruby(erb)
 
 :tag_name_first Mystery
 	*			tag_idle noeat
@@ -165,9 +172,9 @@ done
 
 :stag_end TagEdge
 .ifdef php
-	*	tag_begin	call=php.php(script)
+	*	tag_begin	call=js.js(php)
 .else
-	*	tag_begin	call=javascript.javascript(script)
+	*	tag_begin	call=js.js(html)
 .endif
 
 :stag_done TagEdge
@@ -204,7 +211,11 @@ done
 	"-A-Za-z0-9._:"		ytag_value
 
 :ytag_end TagEdge
+.ifdef php
+	*	tag_begin	call=css.css(php)
+.else
 	*	tag_begin	call=css.css()
+.endif
 
 :ytag_done TagEdge
 	*	tag_name_first	buffer noeat

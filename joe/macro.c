@@ -578,6 +578,52 @@ int urecord(BW *bw, int c)
 	return 0;
 }
 
+extern time_t timer_macro_delay;
+extern MACRO *timer_macro;
+
+int utimer(BW *bw)
+{
+	unsigned char *s;
+	int c;
+	
+	timer_macro_delay = 0;
+	if (timer_macro) {
+		rmmacro(timer_macro);
+		timer_macro = 0;
+	}
+	
+	c = query(bw->parent, sz(joe_gettext(_("Macro to play (0-9 or ^C to abort): "))), 0);
+	if (c < '0' || c > '9') {
+		return -1;
+	}
+	
+	c -= '0';
+	if (!kbdmacro[c]) {
+		return -1;
+	}
+	
+	if (timer_macro) {
+		rmmacro(timer_macro);
+	}
+	
+	timer_macro = dupmacro(kbdmacro[c]);
+	timer_macro_delay = 0;
+	
+	s = ask(bw->parent, joe_gettext(_("Delay in seconds between macro invocation (^C to abort): ")), NULL, NULL, utypebw, locale_map, 0, 0, NULL);
+	if (s) {
+		long num = calc(bw, s);
+		if (merr) {
+			msgnw(bw->parent, merr);
+			return -1;
+		}
+		
+		timer_macro_delay = num;
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
 int ustop(void)
 {
 	unmac();

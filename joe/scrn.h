@@ -67,6 +67,9 @@ struct scrn {
 	unsigned char	*mr;		/* Enter inverse mode */
 	unsigned char	*me;		/* Exit above modes */
 
+	unsigned char	*ZH;		/* Enter italic mode */
+	unsigned char	*ZR;		/* Exit italic mode */
+
 	unsigned char	*Sb;		/* Set background color */
 	unsigned char	*Sf;		/* Set foregrond color */
 	int	Co;			/* No. of colors */
@@ -158,12 +161,12 @@ extern int skiptop;
  */
 SCRN *nopen PARAMS((CAP *cap));
 
-/* void nresize(SCRN *t,int w,int h);
+/* int nresize(SCRN *t,int w,int h);
  *
  * Change size of screen.  For example, call this when you find out that
  * the Xterm changed size.
  */
-void nresize PARAMS((SCRN *t, int w, int h));
+int nresize PARAMS((SCRN *t, int w, int h));
 
 /* void nredraw(SCRN *t);
  *
@@ -214,6 +217,7 @@ void utf8_putc PARAMS((int c));
 #define BOLD 4
 #define BLINK 8
 #define DIM 16
+#define ITALIC 32
 extern unsigned atab[];
 
 #define outatr(t,scrn,attr,x,y,c,a) do { \
@@ -225,12 +229,17 @@ extern unsigned atab[];
 
 #else
 
+#define CONTEXT_COMMENT	1
+#define CONTEXT_STRING	2
+#define CONTEXT_MASK	(CONTEXT_COMMENT+CONTEXT_STRING)
+
+#define ITALIC		 128
 #define INVERSE		 256
 #define UNDERLINE	 512
 #define BOLD		1024
 #define BLINK		2048
 #define DIM		4096
-#define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM)
+#define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM+ITALIC)
 
 #define BG_SHIFT	13
 #define BG_VALUE	(255<<BG_SHIFT)
@@ -358,6 +367,7 @@ int fmtpos PARAMS((unsigned char *s, int goal));
 extern int bg_text;
 extern int columns;
 extern int notite;
+extern int nolinefeeds;
 extern int usetabs;
 extern int assume_color;
 extern int assume_256color;

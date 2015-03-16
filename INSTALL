@@ -59,6 +59,12 @@ Installation procedure
 
   JOE uses the GNU Automake and Autoconf suites to build itself.
 
+  Usually you want JOE to use the terminfo database. JOE needs
+  a termcap emulation library to do this.  In modern versions of
+  UNIX, this library is part of ncurses so you need the ncurses
+  library:
+	apt-get install ncurses-dev
+
   Run configure script, type one of these:
 
 	./configure --prefix=/usr --sysconfdir=/etc

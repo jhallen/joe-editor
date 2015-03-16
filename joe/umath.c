@@ -872,7 +872,11 @@ int umath(BW *bw)
 			return -1;
 		}
 		if (mode_hex)
+#ifdef HAVE_LONG_LONG
+			joe_snprintf_1(buf, sizeof(buf), "0x%llX", (long long)result);
+#else
 			joe_snprintf_1(buf, sizeof(buf), "0x%lX", (long)result);
+#endif
 		else if (mode_eng)
 			joe_snprintf_1(buf, sizeof(buf), "%.16G", result);
 		else
