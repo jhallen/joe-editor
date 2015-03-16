@@ -29,8 +29,6 @@ Improvements:
  attributes that already exist.
 	Ugh...
 
-Bugs:
-
  check for n^2 algorithms
 
  check querysave and nbuf/pbuf interactions with new buffer stack
@@ -39,7 +37,6 @@ Pgetc() does not now always return a character... how to fix?
 	Ugh... (what bugs does is cause?)
 
 Hex mode probably doesn't mix correctly with vt
-
 
 - - - -
 

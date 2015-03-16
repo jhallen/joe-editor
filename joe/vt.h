@@ -15,9 +15,6 @@ struct vt_context {
 	unsigned char buf[100];
 	int bufx;
 
-	/* Implement xn glitch */
-	int xn;
-
 	/* Numeric arguments */
 	int argv[MAXARGS + 1];
 	int argc;

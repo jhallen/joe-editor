@@ -80,10 +80,17 @@ static void cready(B *b, off_t byte)
 static void cfollow(B *b, VT *vt, off_t byte)
 {
 	W *w;
+	int xn;
+	if (piscol(vt->vtcur) >= vt->width)
+		xn = 1; /* xn glitch: cursor is past end of line */
+	else
+		xn = 0;
 	if (b->oldcur && b->shell_flag) {
 		b->shell_flag = 0;
 		pgoto(b->oldcur, byte);
 		b->oldcur->xcol = piscol(b->oldcur);
+		if (xn)
+			b->oldcur->xcol = vt->width - 1;
 	}
 	if ((w = maint->topwin) != NULL) {
 	 	do {
@@ -93,6 +100,8 @@ static void cfollow(B *b, VT *vt, off_t byte)
 	 				bw->shell_flag = 0;
 	 				pgoto(bw->cursor, byte);
 	 				bw->cursor->xcol = piscol(bw->cursor);
+					if (xn)
+						bw->cursor->xcol = vt->width - 1;
 	 				if (vt && bw->top->line != vt->top->line && (1 + vt->vtcur->line - vt->top->line) <= bw->h)
 	 					pline(bw->top, vt->top->line);
 	 				dofollows();

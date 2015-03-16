@@ -42,6 +42,9 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	// int new_attr = *(int *)(h_state.saved_s + 8);
 
 	int ansi_mode = line->b->o.ansi;
+
+	current_attr = 0; /* Do not let attributes cross lines - simplifies vt.c */
+
 	line->b->o.ansi = 0;
 
 	while ((c = pgetc(line)) != NO_MORE_DATA) {

@@ -14,7 +14,6 @@ VT *mkvt(B *b, P *top, int height, int width)
 	vt->height = height;
 	vt->width = width;
 	vt->argc = 0;
-	vt->xn = 0;
 	vt->kbd = mkkbd(kmap_getcontext(USTR "vtshell"));
 	vt->attr = 0;
 	utf8_init(&vt->utf8_sm);
@@ -52,7 +51,6 @@ void vtrm(VT *vt)
 void vt_beep(VT *bw)
 {
 	ttputc(7);
-	bw->xn = 0;
 }
 
 int pcurattr(P *p)
@@ -148,8 +146,18 @@ void psetattr(P *p, int attr, int cur, int adv)
 void vt_type(VT *bw, int c)
 {
 	int col;
-	bw->xn = 0;
 	int cur_attr, org_attr;
+
+	col = piscol(bw->vtcur);
+	if (col >= bw->width) {
+		if (bw->b->eof->line != bw->vtcur->line) {
+			pnextl(bw->vtcur);
+		} else {
+			pnextl(bw->vtcur);
+			binsc(bw->vtcur, '\n');
+			pgetc(bw->vtcur);
+		}
+	}
 
 	cur_attr = pcurattr(bw->vtcur);
 
@@ -160,9 +168,9 @@ void vt_type(VT *bw, int c)
 		}
 		binsc(bw->vtcur, c);
 		pgetc(bw->vtcur);
-		if (cur_attr) {
+		/* if (cur_attr) {
 			binss(bw->vtcur, "\033[m");
-		}
+		} */
 	} else {
 		P *q = pdup(bw->vtcur, USTR "vt_type");
 		int col = piscol(q);
@@ -178,26 +186,11 @@ void vt_type(VT *bw, int c)
 		pgetc(bw->vtcur);
 		psetattr(bw->vtcur, org_attr, cur_attr, 0);
 	}
-	col = piscol(bw->vtcur);
-	if (col >= bw->width) {
-		if (bw->b->eof->line != bw->vtcur->line) {
-			pnextl(bw->vtcur);
-		} else {
-			pnextl(bw->vtcur);
-			binsc(bw->vtcur, '\n');
-			pgetc(bw->vtcur);
-		}
-		bw->xn = 1; /* Ignore next newline */
-	}
 }
 
 void vt_lf(VT *bw)
 {
 	int col;
-	if (bw->xn) {
-		bw->xn = 0;
-		return;
-	}
 	col = piscol(bw->vtcur);
 	if (bw->vtcur->line == bw->top->line + bw->regn_bot - 1) {
 		if (bw->regn_top != 0) {
@@ -238,20 +231,17 @@ void vt_lf(VT *bw)
 
 void vt_insert_spaces(VT *bw, int n)
 {
-	bw->xn = 0;
 	while (n--)
 		binsc(bw->vtcur, ' ');
 }
 
 void vt_cr(VT *bw)
 {
-	/* Note: No bw->xn = 0; Here. */
 	p_goto_bol(bw->vtcur);
 }
 
 void vt_tab(VT *bw)
 {
-	bw->xn = 0;
 	if (piseol(bw->vtcur)) {
 		binsc(bw->vtcur, '\t');
 		pgetc(bw->vtcur);
@@ -266,7 +256,6 @@ void vt_tab(VT *bw)
 void vt_left(VT *bw, int n)
 {
 	int col = piscol(bw->vtcur);
-	bw->xn = 0;
 	if (n > col)
 		col = 0;
 	else
@@ -278,7 +267,6 @@ void vt_left(VT *bw, int n)
 void vt_right(VT *bw, int n)
 {
 	int col = piscol(bw->vtcur);
-	bw->xn = 0;
 	col += n;
 	if (col >= bw->width)
 		col = bw->width - 1;
@@ -290,7 +278,6 @@ void vt_up(VT *bw, int n)
 {
 	long line = bw->vtcur->line;
 	int col = piscol(bw->vtcur);
-	bw->xn = 0;
 	line -= n;
 	if (line < bw->top->line) {
 		line = bw->top->line;
@@ -302,7 +289,6 @@ void vt_up(VT *bw, int n)
 
 void vt_reverse_lf(VT *bw)
 {
-	bw->xn = 0;
 	if (bw->vtcur->line >= bw->top->line) {
 		if (bw->vtcur->line != bw->top->line + bw->regn_top)
 			vt_up(bw, 1);
@@ -335,7 +321,6 @@ void vt_down(VT *bw, int n)
 {
 	long line = bw->vtcur->line;
 	int col = piscol(bw->vtcur);
-	bw->xn = 0;
 	line += n;
 	if (line >= bw->top->line + bw->height)
 		line = bw->top->line + bw->height - 1;
@@ -351,7 +336,6 @@ void vt_down(VT *bw, int n)
 
 void vt_col(VT *bw, int col)
 {
-	bw->xn = 0;
 	pcol(bw->vtcur, col);
 	pfill(bw->vtcur, col, ' ');
 }
@@ -360,7 +344,6 @@ void vt_row(VT *bw, int row)
 {
 	int col = piscol(bw->vtcur);
 	long line = bw->top->line + row;
-	bw->xn = 0;
 	if (line >= bw->top->line + bw->height)
 		line = bw->top->line + bw->height - 1;
 	while (line > bw->b->eof->line) {
@@ -376,7 +359,6 @@ void vt_row(VT *bw, int row)
 void vt_erase_eos(VT *bw)
 {
 	P *p = pdup(bw->b->eof, USTR "vt_erase_line");
-	bw->xn = 0;
 	bdel(bw->vtcur, p);
 	prm(p);
 }
@@ -389,7 +371,6 @@ void vt_erase_screen(VT *bw)
 {
 	long li = bw->vtcur->line;
 	int col = piscol(bw->vtcur);
-	bw->xn = 0;
 	pline(bw->vtcur, bw->top->line);
 	bdel(bw->vtcur, bw->b->eof);
 	while (bw->vtcur->line < li) {
@@ -404,7 +385,6 @@ void vt_erase_line(VT *bw)
 {
 	P *p = pdup(bw->vtcur, USTR "vt_erase_line");
 	int col = piscol(bw->vtcur);
-	bw->xn = 0;
 	p_goto_bol(bw->vtcur);
 	pnextl(p);
 	if (bw->vtcur->byte == p->byte) {
@@ -424,7 +404,6 @@ void vt_erase_bol(VT *bw)
 void vt_erase_eol(VT *bw)
 {
 	P *p = p_goto_eol(pdup(bw->vtcur, USTR "vt_erase_eol"));
-	bw->xn = 0;
 	if (bw->vtcur->byte == p->byte) {
 		/* Do nothing */
 	} else
@@ -434,7 +413,6 @@ void vt_erase_eol(VT *bw)
 
 void vt_insert_lines(VT *bw, int n)
 {
-	bw->xn = 0;
 	if (bw->vtcur->line < bw->top->line + bw->regn_bot)
 		while (n--) {
 			P *p = pdup(bw->vtcur, USTR "vt_insert_lines");
@@ -454,7 +432,6 @@ void vt_insert_lines(VT *bw, int n)
 
 void vt_delete_lines(VT *bw, int n)
 {
-	bw->xn = 0;
 	if (bw->vtcur->line < bw->top->line + bw->regn_bot)
 		while (n--) {
 			int col = piscol(bw->vtcur);
@@ -480,7 +457,6 @@ void vt_delete_lines(VT *bw, int n)
 
 void vt_delete_chars(VT *bw, int n)
 {
-	bw->xn = 0;
 	while (n && !piseol(bw->vtcur)) {
 		P *q = pdup(bw->vtcur, USTR "vt_delete_chars");
 		pgetc(q);
@@ -504,7 +480,6 @@ void vt_erase_chars(VT *bw, int n)
 
 void vt_set_region(VT *bw, int top, int bot)
 {
-	bw->xn = 0;
 	if (top < bw->height && bot < bw->height && top <= bot) {
 		bw->regn_top = top;
 		bw->regn_bot = bot + 1;
