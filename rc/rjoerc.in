@@ -386,12 +386,12 @@ mode,"wordwrap",rtn	W Word wrap %Zwordwrap%
 mode,"tab",rtn	D Tab width %Ztab%
 mode,"lmargin",rtn	L Left margin %Zlmargin%
 mode,"rmargin",rtn	R Right margin %Zrmargin%
-mode,"square",rtn	X Rectangle mode %Zsquare%
+mode,"square",rtn	X Column mode %Zsquare%
 mode,"indentc",rtn	% % Indent char %Zindentc%
 mode,"istep",rtn	% % Indent step %Zistep%
 menu,"indent",rtn	= Indent select
 mode,"highlight",rtn	H Highlighting %Zhighlight%
-mode,"crlf",rtn	Z CR-LF (MS-DOS) %Zcrlf%
+mode,"crlf",rtn	Z CR-LF/MS-DOS %Zcrlf%
 mode,"linums",rtn	N Line numbers %Zlinums%
 mode,"beep",rtn	B Beep %Zbeep%
 mode,"rdonly",rtn	O Read only %Zrdonly%
