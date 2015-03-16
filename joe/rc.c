@@ -143,6 +143,7 @@ OPTIONS pdefault = {
 	0,		/* Smart backspace key */
 	0,		/* Purify indentation */
 	0,		/* Picture mode */
+	0,		/* highlighter_context */
 	0,		/* single_quoted */
 	0,		/* no_double_quoted */
 	0,		/* c_comment */
@@ -200,6 +201,7 @@ OPTIONS fdefault = {
 	0,		/* Smart backspace key */
 	0,		/* Purity indentation */
 	0,		/* Picture mode */
+	0,		/* highlighter_context */
 	0,		/* single_quoted */
 	0,		/* no_double_quoted */
 	0,		/* c_comment */
@@ -210,7 +212,7 @@ OPTIONS fdefault = {
 	0,		/* tex_comment */
 	0,		/* hex */
 	NULL,		/* text_delimiters */
-	USTR ">;!#%/*-",	/* Characters which can indent paragraphs */
+	USTR ">;!#%/",	/* Characters which can indent paragraphs */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -347,6 +349,7 @@ struct glopts {
 	{USTR "joe_state",0, &joe_state, NULL, USTR _("~/.joe_state file will be updated"), USTR _("~/.joe_state file will not be updated"), USTR _("  Joe_state file ") },
 	{USTR "nobackup",	4, NULL, (unsigned char *) &fdefault.nobackup, USTR _("Nobackup enabled"), USTR _("Nobackup disabled"), USTR _("  No backup ") },
 	{USTR "nobackups",	0, &nobackups, NULL, USTR _("Backup files will not be made"), USTR _("Backup files will be made"), USTR _("  Disable backups ") },
+	{USTR "nodeadjoe",	0, &nodeadjoe, NULL, USTR _("DEADJOE files will not be made"), USTR _("DEADJOE files will be made"), USTR _("  Disable DEADJOE ") },
 	{USTR "nolocks",	0, &nolocks, NULL, USTR _("Files will not be locked"), USTR _("Files will be locked"), USTR _("  Disable locks ") },
 	{USTR "nomodcheck",	0, &nomodcheck, NULL, USTR _("No file modification time check"), USTR _("File modification time checking enabled"), USTR _("  Disable mtime check ") },
 	{USTR "nocurdir",	0, &nocurdir, NULL, USTR _("No current dir"), USTR _("Current dir enabled"), USTR _("  Disable current dir ") },
@@ -369,6 +372,7 @@ struct glopts {
 	{USTR "backpath",	2, &backpath, NULL, USTR _("Backup files stored in (%s): "), 0, USTR _("  Path to backup files ") },
 	{USTR "syntax",	9, NULL, NULL, USTR _("Select syntax (^C to abort): "), 0, USTR _("Y Syntax") },
 	{USTR "encoding",13, NULL, NULL, USTR _("Select file character set (^C to abort): "), 0, USTR _("E Encoding ") },
+	{USTR "highlighter_context",	4, NULL, (unsigned char *) &fdefault.highlighter_context, USTR _("Highlighter context enabled"), USTR _("Highlighter context disabled"), USTR _("  ^G uses highlighter context ") },
 	{USTR "single_quoted",	4, NULL, (unsigned char *) &fdefault.single_quoted, USTR _("Single quoting enabled"), USTR _("Single quoting disabled"), USTR _("  ^G ignores '... ' ") },
 	{USTR "no_double_quoted",4, NULL, (unsigned char *) &fdefault.no_double_quoted, USTR _("Double quoting disabled"), USTR _("Double quoting enabled"), USTR _("  ^G ignores \"... \" ") },
 	{USTR "c_comment",	4, NULL, (unsigned char *) &fdefault.c_comment, USTR _("/* comments enabled"), USTR _("/* comments disabled"), USTR _("  ^G ignores /*...*/ ") },
@@ -383,6 +387,7 @@ struct glopts {
 	{USTR "floatmouse",	0, &floatmouse, 0, USTR _("Clicking can move the cursor past end of line"), USTR _("Clicking past end of line moves cursor to the end"), USTR _("  Click past end ") },
 	{USTR "rtbutton",	0, &rtbutton, 0, USTR _("Mouse action is done with the right button"), USTR _("Mouse action is done with the left button"), USTR _("  Right button ") },
 	{USTR "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
+	{USTR "noexmsg",	0, &noexmsg, NULL, 0, 0, 0 },
 	{USTR "help_is_utf8",	0, &help_is_utf8, NULL, 0, 0, 0 },
 	{USTR "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{USTR "orphan",	0, &orphan, NULL, 0, 0, 0 },
@@ -393,6 +398,7 @@ struct glopts {
 	{USTR "columns",	1, &columns, NULL, 0, 0, 0, 0, 2, 1024 },
 	{USTR "skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
 	{USTR "notite",	0, &notite, NULL, 0, 0, 0 },
+	{USTR "nolinefeeds",	0, &nolinefeeds, NULL, 0, 0, 0 },
 	{USTR "mouse",	0, &xmouse, NULL, 0, 0, 0 },
 	{USTR "usetabs",	0, &usetabs, NULL, 0, 0, 0 },
 	{USTR "assume_color", 0, &assume_color, NULL, 0, 0, 0 },
@@ -710,7 +716,6 @@ static int syntaxcmplt(BW *bw)
 			}
 		}
 
-#ifdef JOEWIN
 		/* Load from builtins */
 		t = jgetbuiltins(USTR ".jsf");
 		for (x = 0; x != valen(t); ++x) {
@@ -723,7 +728,6 @@ static int syntaxcmplt(BW *bw)
 				syntmp = vaadd(syntmp,r);
 			}
 		}
-#endif
 
 		if (valen(syntmp)) {
 			vaperm(syntmp);
@@ -876,6 +880,7 @@ static int olddoopt(BW *bw, int y, int flg)
 							bw->o.charmap = find_charmap(USTR "c");
 							bw->b->o = bw->o;
 							wfit(bw->parent->t);
+							bw->cursor->xcol = pfcol(bw->cursor)->col;
 							updall();
 						}
 						
@@ -890,6 +895,7 @@ static int olddoopt(BW *bw, int y, int flg)
 							bw->o.charmap = find_charmap(USTR "utf-8");
 							bw->b->o = bw->o;
 							wfit(bw->parent->t);
+							bw->cursor->xcol = pfcol(bw->cursor)->col;
 							updall();
 						}
 						
@@ -1017,7 +1023,11 @@ static int olddoopt(BW *bw, int y, int flg)
 					if (map) {
 						bw->o.charmap = map;
 						msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("%s encoding assumed for this file")), map->name));
-						break;
+						bw->b->o = bw->o;
+						wfit(bw->parent->t);
+						bw->cursor->xcol = pfcol(bw->cursor)->col;
+						updall();
+						return ret;
 					} else {
 						msgnw(bw->parent, joe_gettext(_("Character set not found")));
 						return -1;
@@ -1187,8 +1197,7 @@ int procrc(CAP *cap, unsigned char *name)
 	if (!fd)
 		return -1;	/* Return if we couldn't open the rc file */
 
-	fprintf(stderr,(char *)joe_gettext(_("Processing '%s'...")), name);
-	fflush(stderr);
+	logmessage_1((char *)joe_gettext(_("Processing '%s'...\n")), name);
 
 	while (jfgets(&buf, fd)) {
 		line++;
@@ -1243,7 +1252,7 @@ int procrc(CAP *cap, unsigned char *name)
 				buf[x] = 0;
 				if (!glopt(opt, arg, o, 2)) {
 					err = 1;
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Unknown option %s")), name, line, opt);
+					logerror_3((char *)joe_gettext(_("%s %d: Unknown option %s\n")), name, line, opt);
 				}
 			}
 			break;
@@ -1276,11 +1285,11 @@ int procrc(CAP *cap, unsigned char *name)
 								addcmd(buf + x, m);
 							else {
 								err = 1;
-								fprintf(stderr, (char *)joe_gettext(_("\n%s %d: macro missing from :def")), name, line);
+								logerror_2((char *)joe_gettext(_("%s %d: macro missing from :def\n")), name, line);
 							}
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: command name missing from :def")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: command name missing from :def\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "inherit")) {
 						if (context) {
@@ -1291,11 +1300,11 @@ int procrc(CAP *cap, unsigned char *name)
 								kcpy(context, kmap_getcontext(buf + x));
 							else {
 								err = 1;
-								fprintf(stderr, (char *)joe_gettext(_("\n%s %d: context name missing from :inherit")), name, line);
+								logerror_2((char *)joe_gettext(_("%s %d: context name missing from :inherit\n")), name, line);
 							}
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: No context selected for :inherit")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: No context selected for :inherit\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "include")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
@@ -1330,7 +1339,7 @@ int procrc(CAP *cap, unsigned char *name)
 								err = 1;
 								break;
 							case -1:
-								fprintf(stderr, (char *)joe_gettext(_("\n%s %d: Couldn't open %s")), name, line, bf);
+								logerror_3((char *)joe_gettext(_("%s %d: Couldn't open %s\n")), name, line, bf);
 								err = 1;
 								break;
 							}
@@ -1338,7 +1347,7 @@ int procrc(CAP *cap, unsigned char *name)
 							o = &fdefault;
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: :include missing file name")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: :include missing file name\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "delete")) {
 						if (context) {
@@ -1351,7 +1360,7 @@ int procrc(CAP *cap, unsigned char *name)
 							kdel(context, buf + x);
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: No context selected for :delete")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: No context selected for :delete\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "defmap")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
@@ -1362,7 +1371,7 @@ int procrc(CAP *cap, unsigned char *name)
 							current_menu = 0;
 						} else {
 							err = 1;
-							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: :defmap missing name")), name, line);
+							logerror_2((char *)joe_gettext(_("%s %d: :defmap missing name\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "defmenu")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
@@ -1374,11 +1383,11 @@ int procrc(CAP *cap, unsigned char *name)
 						context = kmap_getcontext(buf + 1);
 						current_menu = 0;
 						/* err = 1;
-						fprintf(stderr, (char *)joe_gettext(_("\n%s %d: unknown :command")), name, line);*/
+						logerror_2((char *)joe_gettext(_("%s %d: unknown :command\n")), name, line);*/
 					}
 				else {
 					err = 1;
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Invalid context name")), name, line);
+					logerror_2((char *)joe_gettext(_("%s %d: Invalid context name\n")), name, line);
 				}
 			}
 			break;
@@ -1389,7 +1398,7 @@ int procrc(CAP *cap, unsigned char *name)
 
 				if (!context && !current_menu) {
 					err = 1;
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: No context selected for macro to key-sequence binding")), name, line);
+					logerror_2((char *)joe_gettext(_("%s %d: No context selected for macro to key-sequence binding\n")), name, line);
 					break;
 				}
 
@@ -1398,7 +1407,7 @@ int procrc(CAP *cap, unsigned char *name)
 				m = mparse(m, buf, &x);
 				if (x == -1) {
 					err = 1;
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Unknown command in macro")), name, line);
+					logerror_2((char *)joe_gettext(_("%s %d: Unknown command in macro\n")), name, line);
 					break;
 				} else if (x == -2) {
 					jfgets(&buf, fd);
@@ -1418,7 +1427,7 @@ int procrc(CAP *cap, unsigned char *name)
 				} else {
 					/* Add binding to context */
 					if (kadd(cap, context, buf + x, m) == -1) {
-						fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Bad key sequence '%s'")), name, line, buf + x);
+						logerror_3((char *)joe_gettext(_("%s %d: Bad key sequence '%s'\n")), name, line, buf + x);
 						err = 1;
 					}
 				}
@@ -1429,10 +1438,7 @@ int procrc(CAP *cap, unsigned char *name)
 	jfclose(fd);		/* Close rc file */
 
 	/* Print proper ending string */
-	if (err)
-		fprintf(stderr, (char *)joe_gettext(_("\ndone\n")));
-	else
-		fprintf(stderr, (char *)joe_gettext(_("done\n")));
+	logmessage_1((char *)joe_gettext(_("Finished processing %s\n")), name);
 
 	return err;		/* 0 for success, 1 for syntax error */
 }

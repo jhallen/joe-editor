@@ -20,6 +20,7 @@ unsigned char *exmsg = NULL;		/* Message to display when exiting the editor */
 int usexmouse=0;
 int xmouse=0;
 int nonotice;
+int noexmsg = 0;
 int help;
 
 Screen *maint;			/* Main edit screen */
@@ -54,8 +55,7 @@ void edupd(int flg)
 	}
 	/* Resize screen if necessary */
 	ttgtsz(&wid, &hei);
-	if ((wid >= 2 && wid != maint->w) || (hei >= 1 && hei != maint->h)) {
-		nresize(maint->t, wid, hei);
+	if (nresize(maint->t, wid, hei)) {
 		sresize(maint);
 #ifdef MOUSE_GPM
 		gpm_mx = wid;
@@ -96,6 +96,23 @@ void nungetc(int c)
 		ungot = 1;
 		ungotc = c;
 	}
+}
+
+/* Execute a macro every nn seconds */
+
+time_t last_timer_time = 0;
+time_t cur_time;
+time_t timer_macro_delay;
+MACRO *timer_macro;
+
+MACRO *timer_play()
+{
+	cur_time = time(NULL);
+	if (timer_macro && timer_macro_delay && cur_time >= last_timer_time + timer_macro_delay) {
+		last_timer_time = cur_time;
+		return timer_macro;
+	}
+	return 0;
 }
 
 /* Main loop */
@@ -142,6 +159,8 @@ int edloop()
 			if (x)
 				maint->curwin->main->kbd->seq[x - 1] = maint->curwin->kbd->seq[x - 1];
 		}
+		if (!m)
+			m = timer_play();
 		/* Execute macro */
 		if (m) {
 			ret = co_call(exemac, m);
@@ -159,7 +178,8 @@ extern int breakflg;
 
 unsigned char **mainenv;
 
-B *startup_log;
+B *startup_log = NULL;
+static int logerrors = 0;
 
 unsigned char i_msg[128];
 
@@ -168,6 +188,42 @@ void internal_msg(unsigned char *s)
 	P *t = pdup(startup_log->eof, USTR "internal_msg");
 	binss(t, s);
 	prm(t);
+}
+
+void setlogerrs(void)
+{
+	logerrors = 1;
+}
+
+/* Opens new bw with startup log */
+int ushowlog(BW *bw)
+{
+	if (startup_log) {
+		B *copied;
+		BW *newbw;
+		void *object;
+		W *w;
+		
+		if (uduptw(bw)) {
+			return -1;
+		}
+		
+		copied = bcpy(startup_log->bof, startup_log->eof);
+		copied->name = zdup(USTR "* Startup Log *");
+		copied->internal = 1;
+		
+		newbw = (BW *) maint->curwin->object;
+		object = newbw->object;
+		w = newbw->parent;
+		bwrm(newbw);
+		w->object = (void *) (newbw = bwmk(w, copied, 0, NULL));
+		wredraw(newbw->parent);
+		newbw->object = object;
+		
+		return 0;
+	}
+	
+	return 1;
 }
 
 /* Determine name editor was invoked as and process <name>rc file */
@@ -186,7 +242,7 @@ int joerc()
 #if defined(__MSDOS__) || defined(JOEWIN)
 	unsigned char *rundir;
 #endif
-
+	
 	/* Figure out name editor was invoked under */
 #if defined(__MSDOS__) || defined(JOEWIN)
 	_fmode = O_BINARY;
@@ -211,13 +267,7 @@ int joerc()
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		unsigned char buf[8];
-
-		fprintf(stderr, (char *)joe_gettext(_("There were errors in '%s'.  Use it anyway?")), s);
-		fflush(stderr);
-		fgets(buf, 8, stdin);
-		if (yn_checks(yes_key, buf))
-			goto donerc;
+		logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 	}
 
 	s = vsncpy(NULL, 0, sv(rundir));
@@ -227,13 +277,7 @@ int joerc()
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		unsigned char buf[8];
-
-		fprintf(stderr, (char *)joe_gettext(_("There were errors in '%s'.  Use it anyway?")), s);
-		fflush(stderr);
-		fgets(buf, 8, stdin);
-		if (yn_checks(yes_key, buf))
-			goto donerc;
+		logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 	}
 #else
 
@@ -286,8 +330,6 @@ int joerc()
 	/* User's joerc file */
 	s = (unsigned char *)getenv("HOME");
 	if (s) {
-		unsigned char buf[8];
-
 		s = vsncpy(NULL, 0, sz(s));
 #ifndef JOEWIN
 		s = vsncpy(sv(s), sc("/."));
@@ -300,12 +342,7 @@ int joerc()
 
 		if (!stat((char *)s,&sbuf)) {
 			if (sbuf.st_mtime < time_rc) {
-				fprintf(stderr,(char *)joe_gettext(_("Warning: %s is newer than your %s.\n")),t,s);
-				fprintf(stderr,(char *)joe_gettext(_("You should update or delete %s\n")),s);
-				fprintf(stderr,(char *)joe_gettext(_("Hit enter to continue with %s ")),t);
-				fflush(stderr);
-				fgets((char *)buf, 8, stdin);
-				goto use_sys;
+				logmessage_2((char *)joe_gettext(_("Warning: %s is newer than your %s.\n")),t,s);
 			}
 		}
 
@@ -314,28 +351,16 @@ int joerc()
 			goto donerc;
 		}
 		if (c == 1) {
-			fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
-			fflush(stderr);
-			fgets((char *)buf, 8, stdin);
-			if (ynchecks(yes_key, buf)) {
-				goto donerc;
-			}
+			logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 		}
 	}
 
-	use_sys:
 	s = t;
 	c = procrc(cap, s);
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		unsigned char buf[8];
-
-		fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
-		fflush(stderr);
-		fgets((char *)buf, 8, stdin);
-		if (ynchecks(yes_key, buf))
-			goto donerc;
+		logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 	}
 
 	/* Try built-in joerc */
@@ -352,23 +377,17 @@ int joerc()
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		unsigned char buf[8];
-
-		fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
-		fflush(stderr);
-		fgets((char *)buf, 8, stdin);
-		if (ynchecks(yes_key, buf))
-			goto donerc;
+		logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 	}
 #endif
 
-	fprintf(stderr,(char *)joe_gettext(_("Couldn't open '%s'\n")), s);
+	logerror_1((char *)joe_gettext(_("Couldn't open '%s'\n")), s);
 	return 1;
 
 	donerc:
 
 	if (validate_rc()) {
-		fprintf(stderr,(char *)joe_gettext(_("rc file has no :main key binding section or no bindings.  Bye.\n")));
+		logerror_0((char *)joe_gettext(_("rc file has no :main key binding section or no bindings.  Bye.\n")));
 		return 1;
 	}
 
@@ -423,7 +442,7 @@ void process_global_options()
 			if (argv[c][1])
 				switch (glopt(argv[c] + 1, argv[c + 1], NULL, 1)) {
 				case 0:
-					fprintf(stderr,(char *)joe_gettext(_("Unknown option '%s'\n")), argv[c]);
+					logerror_1((char *)joe_gettext(_("Unknown option '%s'\n")), argv[c]);
 					break;
 				case 1:
 					break;
@@ -553,15 +572,16 @@ void process_args()
 
 void show_startup_log()
 {
-	if (startup_log->eof->byte) {
-		BW *bw = wmktw(maint, startup_log);
-		startup_log = 0;
+	if (logerrors) {
+		B *copied = bcpy(startup_log->bof, startup_log->eof);
+		BW *bw = wmktw(maint, copied);
+		copied->name = zdup(startup_log->name);
+		copied->internal = 1;
 		maint->curwin = bw->parent;
 #ifdef JOEWIN
 		notify_selection();
 #endif
 		wshowall(maint);
-		uparserr(bw);
 	}
 }
 
@@ -608,18 +628,25 @@ int main(int argc, char **real_argv, char **envv)
 	fdefault.charmap = locale_map;
 	pdefault.charmap = locale_map;
 
+	/* Setup software virtual memory */
+	vmem = vtmp();
+	
+	/* Create startup log buffer */
+	startup_log = bfind_scratch(USTR "* Startup Log *");
+	startup_log->internal = 1;
+
 	/* Copy some environment variables to global variables */
 	process_env();
 
 	/* Try to get termcap entry before we get too far */
 	if (!(cap = getcap(NULL, 9600, NULL, NULL))) {
 		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
-		return 1;
+		goto exit_errors;
 	}
 
 	/* Process JOERC file */
-	if (joerc())
-		return 1;
+	if (joerc()) 
+		goto exit_errors;
 
 #ifndef JOEWIN
 	/* Is somebody piping something into JOE, or is stdin the tty? */
@@ -638,17 +665,10 @@ int main(int argc, char **real_argv, char **envv)
 
 	/* Setup tty handler (sets cbreak mode, turns off cooked) */
 	if (!(main_scrn = nopen(cap)))
-		return 1;
+		goto exit_errors;
 
 	/* Initialize windowing system */
 	maint = screate(main_scrn);
-
-	/* Setup software virtual memory */
-	vmem = vtmp();
-
-	/* Create startup log buffer */
-	startup_log = bfind_scratch(USTR "* Startup Log *");
-	startup_log->internal = 1;
 
 	/* Read in ~/.joe_state file */
 	load_state();
@@ -701,9 +721,19 @@ int main(int argc, char **real_argv, char **envv)
 	/* Close terminal (restores mode) */
 	nclose(main_scrn);
 
-	/* Display exit message */
-	if (exmsg)
+	if (exmsg && !noexmsg) {
 		fprintf(stderr, "\n%s\n", exmsg);
+	} else if (notite) {
+		fprintf(stderr, "\n");
+	}
 
 	return 0;
+
+exit_errors:
+
+	/* Write out error log to console if we are exiting with errors. */
+	if (startup_log && startup_log->eof->byte)
+		bsavefd(startup_log->bof, 2, startup_log->eof->byte);
+	
+	return 1;
 }

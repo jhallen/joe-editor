@@ -10,7 +10,7 @@
 
 # Define colors
 #
-# bold inverse blink dim underline
+# bold inverse blink dim underline italic
 # white cyan magenta blue yellow green red black
 # bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
 
@@ -226,7 +226,7 @@
 	"!--"		comment_start	recolor=-5
 	"![CDATA["	cdata_start	recolor=-10
 done
-	"<"		decl_nest
+#	"<"		decl_nest
 	">"		content
 
 # We allow one level of <...> nesting within declarations

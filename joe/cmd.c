@@ -182,6 +182,7 @@ CMD cmds[] = {
 	{USTR "setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},
 	{USTR "shell", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ushell, NULL, 0, NULL},
 	{USTR "showerr", TYPETW + TYPEPW, ucurrent_msg, NULL, 0, NULL},
+	{USTR "showlog", TYPETW, ushowlog, NULL, 0, NULL},
 	{USTR "shrinkw", TYPETW, ushrnk, NULL, 1, USTR "groww"},
 	{USTR "splitw", TYPETW, usplitw, NULL, 0, NULL},
 	{USTR "stat", TYPETW + TYPEPW, ustat, NULL, 0, NULL},
@@ -193,6 +194,7 @@ CMD cmds[] = {
 	{USTR "tag", TYPETW + TYPEPW, utag, NULL, 0, NULL},
 	{USTR "toggle_marking", TYPETW + TYPEPW, utoggle_marking, NULL, 0, NULL},
 	{USTR "then", TYPEPW+EMOD, urtn, 0, 0, 0 },
+	{USTR "timer", TYPETW + TYPEPW + TYPEMENU + TYPEQW, utimer, NULL, 1, NULL},
 	{USTR "tomarkb", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkb, NULL, 0, NULL},
 	{USTR "tomarkbk", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkbk, NULL, 0, NULL},
 	{USTR "tomarkk", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkk, NULL, 0, NULL},
@@ -250,7 +252,7 @@ int try_lock(BW *bw,B *b)
 			if(bf1[0])
 				joe_snprintf_1(bf,sizeof(bf),joe_gettext(LOCKMSG1),bf1);
 			else
-				joe_snprintf_0(bf,sizeof(bf),joe_gettext(LOCKMSG2));
+				joe_snprintf_0(bf, sizeof(bf), joe_gettext(LOCKMSG2));
 			c = query(bw->parent, sz(bf), QW_NOMACRO); /* This should not take input from macro */
 			if (c == -1)
 				return 0;

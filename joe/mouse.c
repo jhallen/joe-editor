@@ -841,7 +841,7 @@ int udefm3drag(BW *xx)
 	if(reversed)
 		umarkb(bw), markb->xcol = piscol(markb);
 	else
-		umarkk(bw), pnextl(markk), markk->xcol = markk->xcol = piscol(markk);
+		umarkk(bw), pnextl(markk), markk->xcol = piscol(markk);
 	return 0;
 }
 

@@ -79,6 +79,7 @@ struct options {
 	int	smartbacks;	/* Set for smart backspace key */
 	int	purify;		/* Purify indentation */
 	int	picture;	/* Picture mode */
+	int	highlighter_context;	/* Use the context annotations from the highlighter for ^G */
 	int	single_quoted;	/* Ignore '  ' for ^G */
 	int	no_double_quoted; /* Don't ignore " " for ^G */
 	int	c_comment;	/* Ignore text in C comments */

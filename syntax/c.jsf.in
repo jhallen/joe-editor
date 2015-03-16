@@ -5,9 +5,26 @@
 # program could be used to convert a regular expression NFA syntax into this
 # format).
 
-# Each state begins with ':<name> <color-name>'
+# Each state begins with ':<name> <color-name> <context>'
+#
 # <color-name> is the color used for characters eaten by the state
 # (really a symbol for a user definable color).
+#
+# <context> tells JOE if the current character is part of a comment or a string.
+# This allows JOE to skip over comments and strings when matching characters
+# such as parentheses.  To use this feature, the -highlighter_context option
+# must be applied to the files highlighted by the corresponding syntax.  To
+# apply the option, add it to ftyperc for those file entries.
+#
+# The valid contexts are:
+#   comment  This character is part of a comment.  Example:  /* comment */
+#
+#   string   This character is part of a string.  Examples: "string" 'c' 'string'
+#
+# The comment and string delimiters themselves should be marked with the
+# appropriate context.  The context is considered to be part of the color, so
+# the recolor=-N and recolormark options apply the context to previous
+# characters.
 
 # The first state defined is the initial state.
 
@@ -85,15 +102,10 @@
 # and in shell you can say: <<EOS ....... EOS
 
 # New feature: subroutines
-
-# Highlighter state machines can now make subroutine calls.  This works by
-# template instantiation: the called state machine is included in your
-# current state machine, but is modified so that the return address points
-# to the called.  There is still no run-time stack (the state is represented
-# as a single integer plus the saved delimiter string).
-
-# Recursion is allowed, but is self limited to 5 levels.
-
+#
+# Highlighter state machines can now make subroutine calls.  The highlighter has
+# a run-time stack that allows unlimited recursion.
+#
 # To call a subroutine, use the 'call' option:
 #
 #	"\""	fred	call=string(dquote)
@@ -156,7 +168,7 @@
 # color is left out).
 #
 # Attributes:
-#   bold inverse blink dim underline
+#   bold inverse blink dim underline italic
 #
 # Standard colors:
 #
@@ -233,11 +245,11 @@ done
 	"\""		preinc_local	recolor=-1
 	"<"		preinc_system	recolor=-1
 
-:preinc_local IncLocal
+:preinc_local IncLocal string
 	*		preinc_local
 	"\"\n"		reset
 	
-:preinc_system IncSystem
+:preinc_system IncSystem string
 	*		preinc_system
 	">\n"		reset
 
@@ -306,16 +318,16 @@ done
 	"*"		comment		recolor=-2
 	"/"		line_comment	recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"*"		maybe_end_comment
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment
 	"/"		idle
 	"*"		maybe_end_comment
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"\n"		reset
 
@@ -363,66 +375,60 @@ done
 	*		idle	noeat
 	"0-9"		enum
 
-:string	Constant
+:string	Constant string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape Escape
+:string_escape Escape string
 	*		string
-	"x"		string_hex1
+	"x"		string_hex
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_hex1 Escape
+# \x will consume all successive hex digits (ANSI C).
+:string_hex Escape string
 	*		string		noeat
-	"0-9a-fA-F"	string_hex2
+	"0-9a-fA-F"	string_hex
 
-:string_hex2 Escape
-	*		string		noeat
-	"0-9a-fA-F"	string
-
-:string_octal2 Escape
+:string_octal2 Escape string
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 Escape
+:string_octal3 Escape string
 	*		string		noeat
 	"0-7"		string
 
-:string_control Escape
+:string_control Escape string
 	*		string
 	"\""		string noeat
 	"\n"		reset
 	"\\"		string_escape	recolor=-1
 	"0-9.\-+ #hjILtz$"	string_control
 
-:char Constant
+:char Constant string
 	*		char
 	"\n"		reset
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_escape	Escape
+:char_escape	Escape string
 	*		char
-	"x"		char_hex1
+	"x"		char_hex
 	"0-7"		char_octal2
 	"\n"		char		recolor=-2
 
-:char_hex1 Escape
+# \x will consume all successive hex digits (ANSI C).
+:char_hex Escape string
 	*		char		noeat
-	"0-9a-fA-F"	char_hex2
+	"0-9a-fA-F"	char_hex
 
-:char_hex2 Escape
-	*		char		noeat
-	"0-9a-fA-F"	char
-
-:char_octal2 Escape
+:char_octal2 Escape string
 	*		char		noeat
 	"0-7"		char_octal3
 
-:char_octal3 Escape
+:char_octal3 Escape string
 	*		char		noeat
 	"0-7"		char
 

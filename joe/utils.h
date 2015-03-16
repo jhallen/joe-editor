@@ -20,12 +20,15 @@ size_t zlen PARAMS((unsigned char *s));
 int zcmp PARAMS((unsigned char *a, unsigned char *b));
 int zncmp PARAMS((unsigned char *a, unsigned char *b, size_t len));
 unsigned char *zdup PARAMS((unsigned char *s));
-unsigned char *zcpy PARAMS((unsigned char *a, unsigned char *b));
+/* unsigned char *zcpy PARAMS((unsigned char *a, unsigned char *b)); */
+unsigned char *mcpy PARAMS((unsigned char *a, unsigned char *b, size_t len));
 unsigned char *zncpy PARAMS((unsigned char *a, unsigned char *b,size_t len));
+unsigned char *zlcpy PARAMS((unsigned char *a, size_t siz, unsigned char *b));
 unsigned char *zstr PARAMS((unsigned char *a, unsigned char *b));
 unsigned char *zchr PARAMS((unsigned char *s, int c));
 unsigned char *zrchr PARAMS((unsigned char *s, int c));
-unsigned char *zcat PARAMS((unsigned char *a, unsigned char *b));
+/* unsigned char *zcat PARAMS((unsigned char *a, unsigned char *b)); */
+unsigned char *zlcat PARAMS((unsigned char *a, size_t siz, unsigned char *b));
 
 int filecmp PARAMS((unsigned char *a, unsigned char *b));
 int fullfilecmp PARAMS((unsigned char *a, unsigned char *b));

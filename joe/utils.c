@@ -417,11 +417,13 @@ unsigned char *zdup(unsigned char *bf)
 	return p;
 }
 
+#if 0
 unsigned char *zcpy(unsigned char *a, unsigned char *b)
 {
 	strcpy((char *)a,(char *)b);
 	return a;
 }
+#endif
 
 unsigned char *zstr(unsigned char *a, unsigned char *b)
 {
@@ -434,10 +436,46 @@ unsigned char *zncpy(unsigned char *a, unsigned char *b, size_t len)
 	return a;
 }
 
+unsigned char *zlcpy(unsigned char *a, size_t len, unsigned char *b)
+{
+	unsigned char *org = a;
+	if (!len) {
+		fprintf(stderr, "zlcpy called with len == 0\n");
+		exit(1);
+	}
+	--len;
+	while (len && *b) {
+		*a++ = *b++;
+		--len;
+	}
+	*a = 0;
+	return org;
+}
+
+unsigned char *mcpy(unsigned char *a, unsigned char *b, size_t len)
+{
+	if (len)
+		memcpy(a, b, len);
+	return a;
+}
+
+#if 0
 unsigned char *zcat(unsigned char *a, unsigned char *b)
 {
 	strcat((char *)a,(char *)b);
 	return a;
+}
+#endif
+
+unsigned char *zlcat(unsigned char *a, size_t siz, unsigned char *b)
+{
+	unsigned char *org = a;
+	while (*a && siz) {
+		++a;
+		--siz;
+	}
+	zlcpy(a, siz, b);
+	return org;
 }
 
 unsigned char *zchr(unsigned char *s, int c)

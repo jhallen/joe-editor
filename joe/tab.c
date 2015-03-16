@@ -308,15 +308,39 @@ static int tababrt(BW *bw, int cursor, TAB *tab)
 P *p_goto_start_of_path(P *p)
 {
 	int c;
+	
 	do
 		c = prgetc(p);
 #ifndef JOEWIN
-	while (c!=NO_MORE_DATA && c!=' ' && c!='\n');
+	while (c != NO_MORE_DATA && c != ' ' && c != '\n');
 #else
 	while (c!=NO_MORE_DATA && c!='\n');
 #endif
+	
+	if (c == ' ') {
+		P *q = pdup(p, USTR "p_goto_start_of_path");
+		
+		do
+			c = prgetc(q);
+		while (c != NO_MORE_DATA && c != '\n');
+		
+		if (c != NO_MORE_DATA)
+			pgetc(q);
+		
+		if (brch(q) == '!') {
+			/* If piping from a command, then expand path starting past space */
+			prm(q);
+			pgetc(p);
+			return p;
+		} else {
+			/* Otherwise, go to front of line. */
+			pset(p, q);
+			prm(q);
+			return p;
+		}
+	}
 
-	if (c!=NO_MORE_DATA)
+	if (c != NO_MORE_DATA)
 		pgetc(p);
 
 	return p;

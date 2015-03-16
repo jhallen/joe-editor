@@ -3,4 +3,4 @@
 =Idle
 
 :idle Idle
-	*	idle	noeat call=javascript.javascript(typescript)
+	*	idle	noeat call=js.js(typescript)

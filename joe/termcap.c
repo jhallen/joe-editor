@@ -37,6 +37,7 @@ unsigned char defentry[] = "\
 :cd=\\E[J:ce=\\E[K:cl=\\E[H\\E[J:\
 :so=\\E[7m:se=\\E[m:us=\\E[4m:ue=\\E[m:\
 :mb=\\E[5m:md=\\E[1m:mh=\\E[2m:me=\\E[m:\
+:ZH=\\E[3m:ZR=\\E[m:\
 :ku=\\E[A:kd=\\E[B:kl=\\E[D:kr=\\E[C:\
 :al=\\E[L:AL=\\E[%dL:dl=\\E[M:DL=\\E[%dM:\
 :ic=\\E[@:IC=\\E[%d@:dc=\\E[P:DC=\\E[%dP:\
@@ -298,7 +299,7 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
  return 0;
 */
 #endif // !JOEWIN
-		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap entry.  Using ansi default\n")));
+		logmessage_0((char *)joe_gettext(_("Couldn't load termcap entry.  Using ansi default\n")));
 		ti = 0;
 		cap->tbuf = vsncpy(cap->tbuf, 0, sc(defentry));
 #ifndef JOEWIN
@@ -320,7 +321,7 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
 		if (buf.st_mtime > buf1.st_mtime)
 			idx = findidx(f, name);
 		else
-			fprintf(stderr, (char *)joe_gettext(_("%s is out of date\n")), idxname);
+			logmessage_1((char *)joe_gettext(_("termcap: %s is out of date\n")), idxname);
 		fclose(f);
 	}
 	fseek(f1, idx, 0);
@@ -571,12 +572,14 @@ static unsigned char escape1(unsigned char **s)
 		return c;
 }
 
+#ifdef TERMINFO
 static CAP *outcap;
 static int outout(int c)
 {
 	outcap->out(outcap->outptr, c);
 	return(c);	/* act like putchar() - return written char */
 }
+#endif
 
 void texec(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3)
 {

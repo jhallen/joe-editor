@@ -522,7 +522,7 @@ int from_utf8(struct charmap *map,unsigned char *s)
 }
 
 unsigned char *my_iconv(unsigned char *dest,struct charmap *dest_map,
-              unsigned char *src,struct charmap *src_map)
+              unsigned char *src, struct charmap *src_map)
 {
 	if (dest_map == src_map) {
 		return vscpyz(dest, src);

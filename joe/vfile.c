@@ -179,8 +179,10 @@ unsigned char *vlock(VFILE *vfile, off_t addr)
 				pp->next = vp->next;
 				goto gotit;
 			}
-	write(2, (char *)sz(joe_gettext(_("vfile: out of memory\n"))));
-	exit(1);
+	if (-1 == write(2, sz(joe_gettext(_("vfile: out of memory\n")))))
+		exit(2);
+	else
+		exit(1);
 
       gotit:
 	vp->addr = addr;
@@ -268,11 +270,11 @@ void vclose(VFILE *vfile)
 		vunlock(vfile->vpage1);
 	if (vfile->name) {
 		if (vfile->flags) {
-			if (vfile->fd) {
-				/* Unlink fails on some systems if file is open. */
-				close(vfile->fd);
-				vfile->fd = 0;
-			}
+		        if (vfile->fd) {
+		                /* Unlink fails if file is open on some systems. */
+		                close(vfile->fd);
+		                vfile->fd = 0;
+		        }
 			unlink((char *)vfile->name);
 		} else
 			vflshf(vfile);

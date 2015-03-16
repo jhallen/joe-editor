@@ -300,14 +300,22 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'o':
-				joe_snprintf_1(buf, sizeof(buf), "%-4lld", bw->cursor->byte);
+#ifdef HAVE_LONG_LONG
+				joe_snprintf_1(buf, sizeof(buf), "%-4lld", (long long)bw->cursor->byte);
+#else
+				joe_snprintf_1(buf, sizeof(buf), "%-4ld", (long)bw->cursor->byte);
+#endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'O':
-				joe_snprintf_1(buf, sizeof(buf), "%-4llX", bw->cursor->byte);
+#ifdef HAVE_LONG_LONG
+				joe_snprintf_1(buf, sizeof(buf), "%-4llX", (unsigned long long)bw->cursor->byte);
+#else
+				joe_snprintf_1(buf, sizeof(buf), "%-4lX", (unsigned long)bw->cursor->byte);
+#endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -342,9 +350,17 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'p':
 				if (bw->b->eof->byte >= 1024*1024)
-					joe_snprintf_1(buf, sizeof(buf), "%3lld", (bw->cursor->byte >> 10) * 100 / (bw->b->eof->byte >> 10));
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, sizeof(buf), "%3lld", ((long long)bw->cursor->byte >> 10) * 100 / ((long long)bw->b->eof->byte >> 10));
+#else
+					joe_snprintf_1(buf, sizeof(buf), "%3ld", ((long)bw->cursor->byte >> 10) * 100 / ((long)bw->b->eof->byte >> 10));
+#endif
 				else if (bw->b->eof->byte)
-					joe_snprintf_1(buf, sizeof(buf), "%3lld", bw->cursor->byte * 100 / bw->b->eof->byte);
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, sizeof(buf), "%3lld", (long long)bw->cursor->byte * 100 / (long long)bw->b->eof->byte);
+#else
+					joe_snprintf_1(buf, sizeof(buf), "%3ld", (long)bw->cursor->byte * 100 / (long)bw->b->eof->byte);
+#endif
 				else
 					joe_snprintf_0(buf, sizeof(buf), "100");
 				for (x = 0; buf[x]; ++x)

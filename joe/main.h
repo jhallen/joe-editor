@@ -14,15 +14,18 @@ extern Screen *maint;		/* Primary screen */
 extern int usexmouse;		/* Use xterm mouse support? */
 void nungetc PARAMS((int c));
 void dofollows PARAMS((void));
-int edloop(void);
+int edloop PARAMS((void));
 void edupd PARAMS((int flg));
 
 extern volatile int dostaupd;	/* Force status line update */
 extern int nonotice; /* Set to prevent copyright notice */
+extern int noexmsg; /* Set to prevent final message */
 extern int xmouse; /* XTerm mouse mode request by user (only allowed if terminal looks like xterm) */
 extern unsigned char **mainenv; /* Environment variables passed to JOE */
 
 extern unsigned char i_msg[128];
 void internal_msg PARAMS((unsigned char *));
+void setlogerrs PARAMS((void));
+int ushowlog PARAMS((BW *));
 
 #endif

@@ -1001,8 +1001,14 @@ static int dofilt(BW *bw, unsigned char *cmd, int empty)
 	int fr[2];
 	int fw[2];
 
-	pipe(fr);
-	pipe(fw);
+	if (-1 == pipe(fr)) {
+		msgnw(bw->parent, joe_gettext(_("Couldn't create pipe")));
+		return -1;
+	}
+	if (-1 == pipe(fw)) {
+		msgnw(bw->parent, joe_gettext(_("Couldn't create pipe")));
+		return -1;
+	}
 	npartial(bw->parent->t->t);
 	ttclsn();
 #ifdef HAVE_FORK
@@ -1018,9 +1024,9 @@ static int dofilt(BW *bw, unsigned char *cmd, int empty)
 		close(0);
 		close(1);
 		close(2);
-		dup(fw[0]);
-		dup(fr[1]);
-		dup(fr[1]);
+		if (-1 == dup(fw[0])) _exit(1);
+		if (-1 == dup(fr[1])) _exit(1);
+		if (-1 == dup(fr[1])) _exit(1);
 		close(fw[0]);
 		close(fr[1]);
 		close(fw[1]);

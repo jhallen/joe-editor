@@ -1,3 +1,75 @@
+- Added option to suppress DEADJOE file
+
+- Jump to matching delimiter (Ctrl-G) has been improved.  It can now use the
+  syntax files to parse the document in order to identify strings and
+  comments which should be skipped during the matching delimiter search.
+  (patch by Charles Tabony).
+
+- When 'notite' mode is enabled, JOE now emits linefeeds to preserve the
+  screen contents in the terminal emulator's scrollback buffer.  This can be
+  suppressed with a new flag: nolinefeeds.
+
+- JOE now starts up quiet (prints no extra messages when starting). 
+  Messages are collected in a startup log (view with ESC x showlog).
+
+- There is a new flag 'noexmsg' which, when set, makes JOE quiet when it shuts
+  down (suppresses "File not changed so no update needed" message).
+
+- Use 80th column if terminal has xn capability (patch by pts and Egmont
+  Koblinger).
+
+- Support italic text (on some terminal emulators) with "\l" (patch by
+  Egmont Koblinger)
+
+- Support bracketed paste (patch by Egmont Koblinger)
+
+- Fix line number in syntax highlighter error output 
+
+- Prevent infinite loops caused by buggy syntax definitions.
+
+- New and improved syntax definitions for:
+    Ant: contributed by Christian Nicolai
+    Batch files: contributed by John Jordan
+    C#: contributed by John Jordan
+    Debian apt sources.list: contributed by Christian Nicolai
+    Elixir: contributed by Andrew Lisin
+    Erlang: contributed by Christian Nicolai, Jonas Rosling, Andrew Lisin
+    git-commit messages: contributed by Christian Nicolai
+    Go: contributed by Matthias S. Benkmann
+    HAML: contributed by Christian Nicolai
+    INI: contributed by Christian Nicolai
+    iptables: contributed by Christian Nicolai
+    Javascript: contributed by Rebecca Turner, Christian Nicolai
+    json: contributed by Rebecca Turner
+    Markdown: contributed by Christian Nicolai, Jonas Rosling
+    Powershell: contributed by Oskar Liljeblad
+    Prolog: contributed by Christian Nicolai
+    Puppet: contributed by Christian Nicolai, Eric Eisenhart
+    Sieve: contributed by Christian Nicolai
+    YAML: contributed by Christian Nicolai
+    
+    (from github.com/cmur2/joe-syntax)
+
+- Syntax definition fixes for: C, Python, Java, Lua, sh, Ruby, PHP, TeX,
+  CSS, and XML
+
+- Save/restore utf-8 and crlf modes when changing in/out of hex edit for
+  better display
+
+- Fix autocomplete for paths containing spaces
+
+- Accept mouse events beyond column 208 (patch by Egmont Kobligner)
+
+- Adjust guess_indent behavior based on user feedback
+
+- Fix infinite loop in search and replace
+
+- Add a new command 'timer' which executes a macro every n seconds.  I use
+  this for periodically injecting a command into a shell window for
+  overnight testing of some device.
+
+- Convert double to long long (if we have it) when printing hexadecimal.
+
 - Fix bug where undo was acting strangly in shell windows.
 
 - Fix crash when hitting -----------.. wordwrap bug.

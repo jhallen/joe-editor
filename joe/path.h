@@ -19,7 +19,7 @@ unsigned char *joesep PARAMS((unsigned char *path));
  * The name part if "/" is ""
  */
 unsigned char *namprt PARAMS((unsigned char *path));
-unsigned char *namepart PARAMS((unsigned char *tmp, unsigned char *path));
+unsigned char *namepart PARAMS((unsigned char *tmp, size_t tmpsiz, unsigned char *path));
 
 /* char *dirprt(char *path);
  * Return directory and drive part of a path.  I.E., everything to the

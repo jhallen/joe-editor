@@ -416,7 +416,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				ungetit = -1;
 			}
 			if(st.state!=-1) {
-				atr = syn[idx++];
+				atr = syn[idx++] & ~CONTEXT_MASK;
 				if (!((atr & BG_VALUE) >> BG_SHIFT))
 					atr |= BG_COLOR(bg_text);
 			}
@@ -529,7 +529,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				ungetit = -1;
 			}
 			if(st.state!=-1) {
-				atr = syn[idx++];
+				atr = syn[idx++] & ~CONTEXT_MASK;
 				if (!(atr & BG_MASK))
 					atr |= BG_COLOR(bg_text);
 			}
@@ -907,11 +907,10 @@ void bwgenh(BW *w)
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
 		if (!flg) {
-/* Theoretically, this should work, but in windows q->byte still ends up being a long */
-#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T && !defined(JOEWIN)
-			sprintf((char *)bf,"%8llx ",q->byte);
+#if HAVE_LONG_LONG
+			sprintf((char *)bf,"%8llx ",(unsigned long long)q->byte);
 #else
-			sprintf((char *)bf,"%8lx ",q->byte);
+			sprintf((char *)bf,"%8lx ",(unsigned long)q->byte);
 #endif
 			memcpy(txt,bf,9);
 			for (x=0; x!=8; ++x) {

@@ -19,7 +19,7 @@
  Put each color override you want in the first column.
 
  Valid colors:
-   bold inverse blink dim underline
+   bold inverse blink dim underline italic
    white cyan magenta blue yellow green red black
    bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
 
@@ -61,6 +61,7 @@
 		(this checking happens on save even with this option).
  -nocurdir	Do not prompt with current directory
  -nobackups	If you don't want backup files to be created
+ -nodeadjoe	If you don't want DEADJOE files to be created
  -break_hardlinks
 		Delete file before writing, to break hard links
 		(but don't break symbolic links).
@@ -86,6 +87,8 @@
  -floatmouse	Clicking past end of line moves the cursor past the end
  -rtbutton	Use the right mouse button for action, instead of the left
  -nonotice	Disable copyright notice
+ -noexmsg	Disable exiting message ("File not changed so no updated needed")
+
 -noxon		Attempt to turn off ^S/^Q processing
  -orphan	Put extra files given on command line in orphaned buffers
 		instead of in windows
@@ -98,6 +101,9 @@
 
 -notite         Don't send terminal initialization and termination strings: prevents
                 restoration of screen on exit.
+
+ -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
+                emulator's scroll-back buffer.
 
  -usetabs       Use tabs to help optimize screen update.
 
@@ -202,6 +208,7 @@
   \b  Bold
   \d  Dim
   \f  Blink
+  \l  Italic
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M
 -rmsg  %S Row %r Col %c %t  Ctrl-J for help
@@ -303,6 +310,8 @@
 
 	These define the language syntax for ^G (goto matching delimiter):
 
+	-highlighter_context	Use the highlighter context for ^G
+
 	-single_quoted		Text between '  ' should be ignored (this is
 				not good for regular text since ' is
 				normally used alone as an apostrophe)
@@ -388,6 +397,7 @@ mode,"menu_jump",rtn	% % Jump into menu %Zmenu_jump%
 mode,"transpose",rtn	% % Transpose menus %Ztranspose%
 
 :defmenu ^G
+mode,"highlighter_context",rtn	% % ^G uses highlighter context %Zhighlighter_context%
 mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
 mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
 mode,"c_comment",rtn	% % ^G ignores /*...*/ %Zc_comment%
@@ -395,7 +405,7 @@ mode,"cpp_comment",rtn	% % ^G ignores //... %Zcpp_comment%
 mode,"pound_comment",rtn	% % ^G ignores #... %Zpound_comment%
 mode,"vhdl_comment",rtn	% % ^G ignores --... %Zvhdl_comment%
 mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
-mode,"tex_comment",rtn % % ^G ignores %... %Ztex_comment%
+mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
 mode,"text_delimiters",rtn % % Text delimiters %Ztext_delimiters%
 
 :defmenu search
@@ -421,6 +431,7 @@ mode,"nobackup",rtn	% % No backup %Znobackup%
 :defmenu global
 mode,"nolocks",rtn	% % Disable locks %Znolocks%
 mode,"nobackups",rtn	% % Disable backups %Znobackups%
+mode,"nodeadjoe",rtn	% % Disable DEADJOE %Znodeadjoe%
 mode,"nomodcheck",rtn	% % Disable mtime check %Znomodcheck%
 mode,"nocurdir",rtn	% % Disable current dir %Znocurdir%
 mode,"exask",rtn	% % Exit ask %Zexask%
@@ -457,6 +468,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Use \b to turn on/off bold
  Use \d to turn on/off dim
  Use \f to turn on/off flash
+ Use \l to turn on/off italic
 
 {Basic
 \i   Help Screen    \|turn off with ^J     more help with ESC . (^[.)              \i
@@ -959,13 +971,13 @@ upslide,upslide,upslide,upslide		MWUP
 abort		^C
 complete	^I
 dnarw,eol	.kd		Go down
-dnarw,eol	^N
+dnarw,eol	^X
 dnarw,eol	^[ O B
 dnarw,eol	^[ [ B
  dnarw,eol	^# B
 uparw,eol	.ku		Go up
  uparw,eol	^# A
-uparw,eol	^P
+uparw,eol	^E
 uparw,eol	^[ O A
 uparw,eol	^[ [ A
 

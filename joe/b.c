@@ -37,6 +37,8 @@ int berror;
 int force = 0;
 VFILE *vmem;
 
+int nodeadjoe = 0;
+
 unsigned char *msgs[] = {
 	USTR _("No error"),
 	USTR _("New File"),
@@ -2210,6 +2212,11 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 {
 	unsigned char *n = vsncpy(NULL, 0, sz(s));
 	int x;
+#ifdef HAVE_LONG_LONG
+	unsigned long long skipr;
+#else
+	unsigned long skipr;
+#endif
 
 	*skip = 0;
 	*amnt = MAXLONG;
@@ -2218,51 +2225,53 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 		for (x = obj_len(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 		if (n[x] == ',' && x && n[x-1] != '\\') {
 			n[x] = 0;
-#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T
+
+#if HAVE_LONG_LONG
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf((char *)(n + x + 2), "%llx", skip);
+				sscanf((char *)(n + x + 2), "%llx", &skipr);
 			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf((char *)(n + x + 3), "%llx", skip);
+				sscanf((char *)(n + x + 3), "%llx", &skipr);
 			else if (n[x + 1] == '0')
-				sscanf((char *)(n + x + 1), "%llo", skip);
+				sscanf((char *)(n + x + 1), "%llo", &skipr);
 			else
-				sscanf((char *)(n + x + 1), "%lld", skip);
+				sscanf((char *)(n + x + 1), "%llu", &skipr);
 #else
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf((char *)(n + x + 2), "%lx", skip);
+				sscanf((char *)(n + x + 2), "%lx", &skipr);
 			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf((char *)(n + x + 3), "%lx", skip);
+				sscanf((char *)(n + x + 3), "%lx", &skipr);
 			else if (n[x + 1] == '0')
-				sscanf((char *)(n + x + 1), "%lo", skip);
+				sscanf((char *)(n + x + 1), "%lo", &skipr);
 			else
-				sscanf((char *)(n + x + 1), "%ld", skip);
+				sscanf((char *)(n + x + 1), "%lu", &skipr);
 #endif
+			*skip = (signed)skipr;
 			--x;
 			if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 				for (; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 				if (n[x] == ',' && x && n[x-1] != '\\') {
 					n[x] = 0;
 					*amnt = *skip;
-
-#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T
+#ifdef HAVE_LONG_LONG
 					if (n[x + 1] == 'x' || n[x + 1] == 'X')
-						sscanf((char *)(n + x + 2), "%llx", skip);
+						sscanf((char *)(n + x + 2), "%llx", &skipr);
 					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-						sscanf((char *)(n + x + 3), "%llx", skip);
+						sscanf((char *)(n + x + 3), "%llx", &skipr);
 					else if (n[x + 1] == '0')
-						sscanf((char *)(n + x + 1), "%llo", skip);
+						sscanf((char *)(n + x + 1), "%llo", &skipr);
 					else
-						sscanf((char *)(n + x + 1), "%lld", skip);
+						sscanf((char *)(n + x + 1), "%llu", &skipr);
 #else
 					if (n[x + 1] == 'x' || n[x + 1] == 'X')
-						sscanf((char *)(n + x + 2), "%lx", skip);
+						sscanf((char *)(n + x + 2), "%lx", &skipr);
 					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-						sscanf((char *)(n + x + 3), "%lx", skip);
+						sscanf((char *)(n + x + 3), "%lx", &skipr);
 					else if (n[x + 1] == '0')
-						sscanf((char *)(n + x + 1), "%lo", skip);
+						sscanf((char *)(n + x + 1), "%lo", &skipr);
 					else
-						sscanf((char *)(n + x + 1), "%ld", skip);
+						sscanf((char *)(n + x + 1), "%lu", &skipr);
 #endif
+					*skip = (signed)skipr;
 				}
 			}
 		}
@@ -2996,10 +3005,11 @@ unsigned char *brlinevs(unsigned char *buf, P *p)
 
 /* Save edit buffers when editor dies */
 
-FILE *ttsig_f = 0;
+static int ttsig_handled = 0;
 
 RETSIGTYPE ttsig(int sig)
 {
+        FILE *ttsig_f = 0;
 	time_t tim = time(NULL);
 	B *b;
 	int tmpfd;
@@ -3010,8 +3020,13 @@ RETSIGTYPE ttsig(int sig)
 #endif
 
 	/* Do not allow double-fault */
-	if (ttsig_f)
+	if (ttsig_handled)
 		_exit(1);
+        
+        ttsig_handled = 1;
+        
+        if (nodeadjoe)
+                goto skipfile;
 
 	if ((tmpfd = open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
 #ifndef JOEWIN
@@ -3058,18 +3073,31 @@ RETSIGTYPE ttsig(int sig)
 			if (b->name)
 				fprintf(ttsig_f, "\n*** File \'%s\'\n", b->name);
 			else
-				fprintf(ttsig_f, "\n*** File \'(Unnamed)\'\n");
+				fputs((char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")), ttsig_f);
 			fflush(ttsig_f);
 			bsavefd(b->bof, fileno(ttsig_f), b->eof->byte);
 		}
+
+skipfile:
 	if (sig)
 		ttclsn();
-	if (sig == -2)
+	if (sig == -2) {
 		fprintf(stderr,"\n*** JOE was aborted due to swap file I/O error\n");
-	else if (sig == -1)
-		fprintf(stderr,"\n*** JOE was aborted due to malloc returning NULL.  Buffers saved in DEADJOE\n");
-	else if (sig)
-		fprintf(stderr,"\n*** JOE was aborted by UNIX signal %d.  Buffers saved in DEADJOE\n", sig);
+	} else if (sig == -1) {
+		fprintf(stderr,"\n*** JOE was aborted due to malloc returning NULL.");
+		if (nodeadjoe) {
+		        fprintf(stderr, "\n");
+		} else {
+		        fprintf(stderr, "  Buffers saved in DEADJOE\n");
+		}
+	} else if (sig) {
+		fprintf(stderr,"\n*** JOE was aborted by UNIX signal %d.", sig);
+		if (nodeadjoe) {
+		        fprintf(stderr, "\n");
+		} else {
+		        fprintf(stderr, "  Buffers saved in DEADJOE\n");
+		}
+	}
 	_exit(1);
 }
 
