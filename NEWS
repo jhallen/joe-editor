@@ -1,3 +1,7 @@
+- Change default indent from 2 to 4.  Add quick menu to change to common
+  indent values: ^T = (1, 2, 4, or 8).  Switch to + and - for definitively
+  setting or clearing options so that 0 and 1 can be use for quick select.
+
 - Added option to suppress DEADJOE file
 
 - Jump to matching delimiter (Ctrl-G) has been improved.  It can now use the
