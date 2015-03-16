@@ -81,7 +81,7 @@ static void cfollow(B *b, VT *vt, off_t byte)
 {
 	W *w;
 	int xn;
-	if (piscol(vt->vtcur) >= vt->width)
+	if (vt && piscol(vt->vtcur) >= vt->width)
 		xn = 1; /* xn glitch: cursor is past end of line */
 	else
 		xn = 0;
