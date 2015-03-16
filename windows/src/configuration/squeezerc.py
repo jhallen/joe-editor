@@ -38,7 +38,8 @@ flagsettings = [
     'menu_jump', 'mid', 'mouse', 'no_double_quoted', 'nobackup', 'nobackups', 'nocurdir', 'nolocks', 'nomodcheck',
     'nonotice', 'nosta', 'notite', 'noxon', 'orphan', 'overwrite', 'picture', 'pound_comment', 'purify', 'rdonly',
     'restore', 'rtbutton', 'search_prompting', 'semi_comment', 'single_quoted', 'smarthome', 'smartbacks', 'spaces',
-    'square', 'tex_comment', 'transpose', 'usetabs', 'vhdl_comment', 'wordwrap', 'wrap'
+    'square', 'tex_comment', 'transpose', 'usetabs', 'vhdl_comment', 'wordwrap', 'wrap',
+    'nodeadjoe', 'noexmsg', 'nolinefeeds', 'highlighter_context',
 ]
 
 oneparamsettings = [

@@ -296,6 +296,8 @@
 
 #endif
 
+#define HAVE_LONG_LONG 1
+
 /* Define to 1 if you have the ANSI C header files. */
 /* #undef STDC_HEADERS */
 

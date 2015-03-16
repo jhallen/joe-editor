@@ -18,7 +18,7 @@
  Put each color override you want in the first column.
 
  Valid colors:
-   bold inverse blink dim underline
+   bold inverse blink dim underline italic
    white cyan magenta blue yellow green red black
    bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
 
@@ -70,6 +70,8 @@
 
  -nobackups	If you don't want backup files to be created
 
+ -nodeadjoe	If you don't want DEADJOE files to be created
+
  -break_hardlinks
 		Delete file before writing, to break hard links
 		(but don't break symbolic links).
@@ -106,6 +108,8 @@
 
  -nonotice	Disable copyright notice
 
+ -noexmsg	Disable exiting message ("File not changed so no updated needed")
+
  -noxon		Attempt to turn off ^S/^Q processing
 
  -orphan	Put extra files given on command line in orphaned buffers
@@ -125,6 +129,9 @@
 
 -notite         Don't send terminal initialization and termination strings:
                 prevents restoration of screen on exit.
+
+ -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
+                emulator's scroll-back buffer.
 
  -usetabs       Use tabs to help optimize screen update.
 
@@ -236,6 +243,7 @@
   \b  Bold
   \d  Dim
   \f  Blink
+  \l  Italic
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M
 -rmsg  %S Row %r Col %c %t  Ctrl-K H for help
@@ -342,6 +350,8 @@
 
 	These define the language syntax for ^G (goto matching delimiter):
 
+	-highlighter_context	Use the highlighter context for ^G
+
 	-single_quoted		Text between '  ' should be ignored (this is
 				not good for regular text since ' is
 				normally used alone as an apostrophe)
@@ -434,6 +444,7 @@ mode,"menu_jump",rtn	% % Jump into menu %Zmenu_jump%
 mode,"transpose",rtn	% % Transpose menus %Ztranspose%
 
 :defmenu ^G
+mode,"highlighter_context",rtn	% % ^G uses highlighter context %Zhighlighter_context%
 mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
 mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
 mode,"c_comment",rtn	% % ^G ignores /*...*/ %Zc_comment%
@@ -467,6 +478,7 @@ mode,"nobackup",rtn	% % No backup %Znobackup%
 :defmenu global
 mode,"nolocks",rtn	% % Disable locks %Znolocks%
 mode,"nobackups",rtn	% % Disable backups %Znobackups%
+mode,"nodeadjoe",rtn	% % Disable DEADJOE %Znodeadjoe%
 mode,"nomodcheck",rtn	% % Disable mtime check %Znomodcheck%
 mode,"nocurdir",rtn	% % Disable current dir %Znocurdir%
 mode,"exask",rtn	% % Exit ask %Zexask%
@@ -503,6 +515,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Use \b to turn on/off bold
  Use \d to turn on/off dim
  Use \f to turn on/off flash
+ Use \l to turn on/off italic
 
  Use \| to insert a spring: all springs in a given line are set to the same
  width such that the entire line exactly fits in the width of the screen (if
@@ -755,6 +768,10 @@ defmmdrag	MMDRAG		No-op
 defmrdrag	MRDRAG		No-op
 
 xtmouse		^[ [ M		Introduces an xterm mouse event
+extmouse	^[ [ <		Introduces an extended xterm mouse event
+
+ Sample if/then/else macro
+ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
 :main			Text editing window
 :inherit windows
@@ -789,7 +806,8 @@ aspellword	^[ n
  sequences or which are frequently wrong.  Note that if the termcap entry is
  correct, it will override these later on.
 
-paste			^[ ] 5 2 ;		Bracketed paste
+paste			^[ ] 5 2 ;		Base64 paste (obsolete)
+brpaste			^[ [ 2 0 0 ~		Bracketed paste
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

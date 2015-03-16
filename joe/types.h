@@ -126,17 +126,17 @@ typedef int pid_t;
 #define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
 #define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
 
-#define logmessage_0(fmt) (snprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg))
-#define logmessage_1(fmt,a) (snprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg))
-#define logmessage_2(fmt,a,b) (snprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg))
-#define logmessage_3(fmt,a,b,c) (snprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg))
-#define logmessage_4(fmt,a,b,c,d) (snprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
+#define logmessage_0(fmt) (sprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg))
+#define logmessage_1(fmt,a) (sprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg))
+#define logmessage_2(fmt,a,b) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg))
+#define logmessage_3(fmt,a,b,c) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg))
+#define logmessage_4(fmt,a,b,c,d) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
 
-#define logerror_0(fmt) (snprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg), setlogerrs())
-#define logerror_1(fmt,a) (snprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg), setlogerrs())
-#define logerror_2(fmt,a,b) (snprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg), setlogerrs())
-#define logerror_3(fmt,a,b,c) (snprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg), setlogerrs())
-#define logerror_4(fmt,a,b,c,d) (snprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg), setlogerrs())
+#define logerror_0(fmt) (sprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg), setlogerrs())
+#define logerror_1(fmt,a) (sprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg), setlogerrs())
+#define logerror_2(fmt,a,b) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg), setlogerrs())
+#define logerror_3(fmt,a,b,c) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg), setlogerrs())
+#define logerror_4(fmt,a,b,c,d) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg), setlogerrs())
 
 #endif
 

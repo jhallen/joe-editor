@@ -1,6 +1,6 @@
  File Type table.  This is :included by the joerc file.
 
- No '.'?  No clue.  Assume freeform and give best guess.
+ No '.' in file name?  Assume it's a text file and we want wordwrap on.
 *
 -autoindent
 
@@ -54,13 +54,11 @@
 
  TeX
 *.tex
--wordwrap
 -syntax tex
 -tex_comment
 -no_double_quoted
 
 *.sty
--wordwrap
 -syntax tex
 -tex_comment
 -no_double_quoted
@@ -154,11 +152,50 @@
  Ruby
 *.rb
 -autoindent
+-pound_comment
 -syntax ruby
+-text_delimiters do=end
+
+*
++#!\+\[ 	]\+\[a-z/ ]ruby\>
+-autoindent
+-pound_comment
+-syntax ruby
+-text_delimiters do=end
+
+*.gemspec
+-autoindent
+-pound_comment
+-syntax ruby
+-text_delimiters do=end
+
+*Gemfile
+-autoindent
+-pound_comment
+-syntax ruby
+-text_delimiters do=end
+
+*Rakefile
+-autoindent
+-pound_comment
+-syntax ruby
+-text_delimiters do=end
+
+*Guardfile
+-autoindent
+-pound_comment
+-syntax ruby
+-text_delimiters do=end
+
+*.rabl
+-autoindent
+-pound_comment
+-syntax ruby
+-text_delimiters do=end
 
  Perl
 *
-+#!\+\[ 	]\+\[a-z/]/perl\>
++#!\+\[ 	]\+\[a-z/]\[/ ]perl\>
 -autoindent
 -syntax perl
 -smarthome
@@ -175,6 +212,14 @@
 -single_quoted
 
 *.pm
+-autoindent
+-syntax perl
+-smarthome
+-smartbacks
+-pound_comment
+-single_quoted
+
+*.t
 -autoindent
 -syntax perl
 -smarthome
@@ -209,6 +254,7 @@
 *.y
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -222,6 +268,7 @@
 *.l
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -234,6 +281,7 @@
 *.lex
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -300,6 +348,7 @@
 *.c
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -312,6 +361,7 @@
 *.cpp
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -324,6 +374,7 @@
 *.cc
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -336,6 +387,7 @@
 *.c++
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -349,6 +401,7 @@
 *.h
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -361,6 +414,7 @@
 *.h.in
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -373,6 +427,7 @@
 *.hpp
 -autoindent
 -syntax c
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
@@ -383,6 +438,19 @@
 -cpara >#!;*/%
 
 *.h++
+-autoindent
+-syntax c
+-highlighter_context
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+*.hh
 -autoindent
 -syntax c
 -smarthome
@@ -434,13 +502,20 @@
 
  XML
 *.xml
--wordwrap
 -autoindent
 -syntax xml
 
- XML
 *.xsd
--wordwrap
+-autoindent
+-syntax xml
+
+*
++<\?xml
+-autoindent
+-syntax xml
+
+ Apple plists
+*.plist
 -autoindent
 -syntax xml
 
@@ -455,23 +530,43 @@
 -autoindent
 -syntax html
 
- JAVA
+ CSS
+*.css
+-syntax css
+
+ Java
 *.java
 -autoindent
 -syntax java
 -smarthome
 -smartbacks
+-c_comment
+-cpp_comment
 -purify
 -cpara >#!;*/%
+
+ JNLP
+*.jnlp
+-autoindent
+-syntax xml
 
  Javascript
 *.js
 -autoindent
--syntax javascript
+-syntax js
 -smarthome
 -smartbacks
 -purify
+-c_comment
+-cpp_comment
 -cpara >#!;*/%
+
+ JSON
+*.json
+-autoindent
+-syntax json
+-smarthome
+-smartbacks
 
  Typescript
 *.ts
@@ -480,6 +575,8 @@
 -smarthome
 -smartbacks
 -purify
+-c_comment
+-cpp_comment
 -cpara >#!;*/%
 
  Hypertext preprocessor file
@@ -492,19 +589,25 @@
 
  Python
 *
-+#!\+\[ 	]\+\[a-z/]\+\[ 	]python\>
++#!\+\[ 	]\+\[a-z/]\+\[ 	]python\+\[0-9]\>
 -autoindent
 -syntax python
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
+-single_quoted
+-pound_comment
 
 *.py
 -autoindent
 -syntax python
+-highlighter_context
 -smarthome
 -smartbacks
 -purify
+-single_quoted
+-pound_comment
 
  CSH
 *
@@ -517,7 +620,6 @@
 -autoindent
 -syntax csh
 -pound_comment
-
 
 *.login
 -autoindent
@@ -551,18 +653,21 @@
 +#!\+\[ 	]\+\[a-z/]/sh\>
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.sh
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *profile
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
@@ -571,24 +676,35 @@
 +#!\+\[ 	]\+\[a-z/]/bash\>
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.bash
 -autoindent
 -syntax sh
+-highlighter_context
+-pound_comment
+-text_delimiters do=done:if=elif=else=fi:case=esac
+
+*.bashrc
+-autoindent
+-syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.bash_login
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.bash_logout
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
@@ -613,22 +729,34 @@
 +#!\+\[ 	]\+\[a-z/]/ksh\>
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
 *.ksh
 -autoindent
 -syntax sh
+-highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
 
  Makefile
-*akefile
+*Makefile
 -autoindent
 -syntax conf
 -pound_comment
 
-*akefile.in
+*makefile.in
+-autoindent
+-syntax conf
+-pound_comment
+
+*Makefile.in
+-autoindent
+-syntax conf
+-pound_comment
+
+*makefile
 -autoindent
 -syntax conf
 -pound_comment
@@ -660,6 +788,10 @@
 -autoindent
 -syntax fortran
 
+*.f90
+-autoindent
+-syntax fortran
+
 *.for
 -autoindent
 -syntax fortran
@@ -684,12 +816,29 @@
 -autoindent
 -syntax lua
 
+*
++#!\+\[     ]\+\[a-z/ ]lua\>
+-autoindent
+-syntax lua
+
  TCL
 *.tcl
 -autoindent
 -syntax tcl
 
- C#
+ Go language
+*.go
+-autoindent
+-syntax go
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
+ CSharp
 *.cs
 -autoindent
 -syntax csharp
@@ -779,10 +928,6 @@
 *rc
 -syntax conf
 
- Windows configuration file types
-*.ini
--syntax ini
-
 *.inf
 -syntax ini
 
@@ -847,3 +992,153 @@
 
 *jpicorc.in
 -syntax joerc
+
+ Markdown
+*.md
+-syntax md
+
+ YAML
+*.yml
+-autoindent
+-smarthome
+-smartbacks
+-pound_comment
+-syntax yaml
+
+*.yaml
+-autoindent
+-smarthome
+-smartbacks
+-pound_comment
+-syntax yaml
+
+ Debian apt
+*apt/sources.list
+-pound_comment
+-syntax debian
+
+*sources.list.*
+-pound_comment
+-syntax debian
+
+ Ant's build.xml
+*build.xml
+-syntax ant
+
+ Java's .properties
+*.properties
+ this is part of the specification:
+-encoding iso-8859-1
+-pound_comment
+-syntax properties
+
+ INI Files
+*.ini
+-syntax ini
+-pound_comment
+-semi_comment
+
+*.inf
+-syntax ini
+-pound_comment
+-semi_comment
+
+*hgrc
+-pound_comment
+-semi_comment
+-syntax ini
+
+*.gitconfig
+-pound_comment
+-semi_comment
+-syntax ini
+
+*.git/config
+-pound_comment
+-semi_comment
+-syntax ini
+
+ plain ERB
+*.erb
+-syntax erb
+
+ ERB within HTML
+*.html.erb
+-syntax htmlerb
+
+ Haml
+*.haml
+-syntax haml
+-istep 2
+-indentc 32
+-autoindent
+-smarthome
+-smartbacks
+
+ Erlang
+*.erl
+-syntax erlang
+-autoindent
+
+*.eterm
+-syntax erlang
+-autoindent
+
+*.app.src
+-syntax erlang
+-autoindent
+
+*rebar.config
+-syntax erlang
+-autoindent
+
+*.hrl
+-syntax erlang
+-autoindent
+
+*.erlang
+-syntax erlang
+-autoindent
+
+ Sieve (ManageSieve)
+*.sieve
+-syntax sieve
+-autoindent
+
+ Puppet
+*.pp
+-syntax puppet
+-pound_comment
+-autoindent
+
+ ip(6)tables
+*
++# Generated by iptables-save
+-syntax iptables
+-pound_comment
+
+*
++# Generated by ip6tables-save
+-syntax iptables
+-pound_comment
+
+ PowerShell
+*.ps1
+-syntax powershell
+
+ Git COMMIT_EDITMSG
+*COMMIT_EDITMSG
+-syntax git-commit
+
+ Elixir
+*.ex
+-autoindent
+-syntax elixir
+-pound_comment
+-text_delimiters do=end
+
+*.exs
+-autoindent
+-syntax elixir
+-pound_comment
+-text_delimiters do=end

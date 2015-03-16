@@ -154,7 +154,7 @@ const wchar_t *jwnextbuiltin(const wchar_t* prev, const wchar_t* suffix)
 	int slen;
 
 	if (!allbuiltins) {
-		wchar_t tmp[1024];
+		wchar_t tmp[4096];
 		wchar_t *ptr;
 		int i;
 

@@ -173,9 +173,11 @@ int ttflsh(void)
 time_t last_time;
 
 int handlejwcontrol(struct CommMessage *m);
+extern MACRO *timer_play();
 
 int ttgetc(void)
 {
+	MACRO *m;
 	time_t new_time;
 	int flg;
 	int set_tick = 0;
@@ -203,6 +205,12 @@ int ttgetc(void)
 		flg = 1;
 	}
 	ttflsh();
+	m = timer_play();
+	if (m) {
+		co_call(exemac, m);
+		edupd(1);
+		ttflsh();
+	}
 	while (winched) {
 		winched = 0;
 		dostaupd = 1;
