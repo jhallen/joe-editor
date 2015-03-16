@@ -390,10 +390,14 @@ menu,"marking",rtn	% % marking options
 menu,"tab",rtn	% % tab/indent options
 
 :defmenu indent
-mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"32",rtn	1 Space
-mode,"istep",rtn,"2",rtn,mode,"indentc",rtn,"32",rtn	2 Spaces
-mode,"istep",rtn,"4",rtn,mode,"indentc",rtn,"32",rtn	4 Spaces
-mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"9",rtn	8 Tab
+mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 1, Indent character = 32",rtn	1 Space
+mode,"istep",rtn,"2",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 2, Indent character = 32",rtn	2 Spaces
+mode,"istep",rtn,"3",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 3, Indent character = 32",rtn	3 Spaces
+mode,"istep",rtn,"4",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 4, Indent character = 32",rtn	4 Spaces
+mode,"istep",rtn,"5",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 5, Indent character = 32",rtn	5 Spaces
+mode,"istep",rtn,"8",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 8, Indent character = 32",rtn	8 Spaces
+mode,"istep",rtn,"10",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 10, Indent character = 32",rtn	0 Ten
+mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"9",rtn,msg,"Indent step = 1, Indent character = 9",rtn	T Tab
 
 :defmenu menu
 mode,"menu_explorer",rtn	% % Menu explorer %Zmenu_explorer%
