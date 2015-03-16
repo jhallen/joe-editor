@@ -27,6 +27,7 @@
 
 #define random rand
 #define sleep(x) Sleep(1000*(x))
+#define snprintf _snprintf
 #define getenv glue_getenv
 #define _exit jwexit
 #define exit jwexit

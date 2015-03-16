@@ -121,8 +121,7 @@
 //#define HAVE_SIGVEC 1
 
 /* If we have snprintf */
-//#define HAVE_SNPRINTF 1
-// JWTODO: Should look into using snprintf.  I know it's here but I can't find it yet.
+#define HAVE_SNPRINTF 1
 
 /* Define to 1 if `stat' has the bug that it succeeds when given the
    zero-length file name argument. */
