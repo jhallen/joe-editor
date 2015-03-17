@@ -1,4 +1,4 @@
 Test
 
-[a link](./README1.md)
+[a link](README1.md)
 
