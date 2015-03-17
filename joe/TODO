@@ -1,6 +1,9 @@
 
 Improvements:
 
+ joe command in shell only works as an alias, not a real program.  This
+means when mercurial or p4 invokes an editor the wrong thing is done.
+
  shell joe command doesn't work with absolute path if prefix is added.
  this doesn't work well with ^KE either (need to clear path manually)
    emacs does some magic here.. if it detects // it ignores prefix

@@ -2382,13 +2382,23 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 
 unsigned char *canonical(unsigned char *n)
 {
+	int y = 0;
 #ifndef __MSDOS__
 	int x;
 	unsigned char *s;
-	if (n[0] == '~') {
-		for (x = 1; n[x] && n[x] != '/'; ++x) ;
+	for (y = zlen(n); ; --y)
+		if (y <= 2) {
+			y = 0;
+			break;
+		} else if (n[y-2] == '/' && (n[y-1] == '/' || n[y-1] == '~')) {
+			y -= 1;
+			break;
+		}
+	
+	if (n[y] == '~') {
+		for (x = y + 1; n[x] && n[x] != '/'; ++x) ;
 		if (n[x] == '/') {
-			if (x == 1) {
+			if (x == y + 1) {
 				unsigned char *z;
 
 				s = (unsigned char *)getenv("HOME");
@@ -2396,11 +2406,12 @@ unsigned char *canonical(unsigned char *n)
 				z = vsncpy(z, sLEN(z), sz(n + x));
 				vsrm(n);
 				n = z;
+				y = 0;
 			} else {
 				struct passwd *passwd;
 
 				n[x] = 0;
-				passwd = getpwnam((char *)(n + 1));
+				passwd = getpwnam((char *)(n + y + 1));
 				n[x] = '/';
 				if (passwd) {
 					unsigned char *z = vsncpy(NULL, 0,
@@ -2409,12 +2420,18 @@ unsigned char *canonical(unsigned char *n)
 					z = vsncpy(z, sLEN(z), sz(n + x));
 					vsrm(n);
 					n = z;
+					y = 0;
 				}
 			}
 		}
 	}
 #endif
-	return n;
+	if (y) {
+		unsigned char *z = vsncpy(NULL, 0, n + y, zlen(n + y));
+		vsrm(n);
+		return z;
+	} else
+		return n;
 }
 
 int euclid(int a, int b)

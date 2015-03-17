@@ -146,6 +146,10 @@ static int rtnpw(BW *bw)
 	p_goto_bol(bw->cursor);
 	s = brvs(bw->cursor, (int) (byte - bw->cursor->byte));
 
+	if (pw->file_prompt) {
+		s = canonical(s);
+	}
+
 	/* Save text into history buffer */
 	if (pw->hist) {
 		if (bw->b->changed) {
@@ -158,10 +162,6 @@ static int rtnpw(BW *bw)
 	/* Do ~ expansion and set new current directory */
 	if (pw->file_prompt&2) {
 		set_current_dir(bw, s,1);
-	}
-
-	if (pw->file_prompt) {
-		s = canonical(s);
 	}
 
 	win = w->win;
@@ -268,6 +268,12 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	pw->promptofst = 0;
 	pw->pfunc = func;
 	pw->file_prompt = file_prompt;
+	if (pw->file_prompt) {
+		bw->b->o.syntax = load_syntax(USTR "filename");
+		bw->b->o.highlight = 1;
+		bw->o.syntax = bw->b->o.syntax;
+		bw->o.highlight = bw->b->o.highlight;
+	}
 	if (history) {
 		setup_history(history);
 		pw->hist = *history;
