@@ -153,6 +153,8 @@ CMD cmds[] = {
 	{USTR "prverr", TYPETW, uprverr, NULL, 1, USTR "nxterr"},
 	{USTR "psh", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upsh, NULL, 0, NULL},
 	{USTR "pop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upop, NULL, 0, NULL},
+	{USTR "popabort", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upopabort, NULL, 0, NULL},
+	{USTR "popedit", TYPETW, upopedit, NULL, 0, NULL},
 	{USTR "qrepl", TYPETW + TYPEPW + EMOD, pqrepl, NULL, 0, NULL},
 	{USTR "query", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uquery, NULL, 0, NULL},
 	{USTR "querysave", TYPETW, uquerysave, NULL, 0, NULL},

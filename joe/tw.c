@@ -650,6 +650,22 @@ B *wpop(BW *bw)
 	return b;
 }
 
+/* Pop, or do nothing if no window on stack */
+int upopabort(BW *bw)
+{
+	if (bw->parent->bstack) {
+		int rtn;
+		B *b = wpop(bw);
+		W *w = bw->parent;
+		rtn = get_buffer_in_window(bw, b);
+		bw = (BW *)w->object;
+		bw->cursor->xcol = piscol(bw->cursor);
+		return rtn;
+	} else {
+		return 0;
+	}
+}
+
 /* k is last character types which lead to uabort.  If k is -1, it means uabort
    was called internally, and not by the user: which means uabort will not send
    Ctrl-C to process */

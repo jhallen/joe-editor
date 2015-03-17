@@ -4,7 +4,7 @@ alias clear "echo \{shell_clear}"
 
 alias math "echo \{shell_math,"\\\"\!\*\\\"",shell_rtn}; echo \{shell_rtn,shell_math,"\\\""ans:ins"\\\"",shell_rtn}"
 
-alias edit "echo \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
+alias edit "echo \{shell_popedit,"\\\"\!\*\\\"",shell_rtn}"
 
 alias joe "echo \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
 

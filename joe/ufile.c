@@ -716,6 +716,16 @@ int uedit(BW *bw)
 	}
 }
 
+int upopedit(BW *bw)
+{
+	if (wmkpw(bw->parent, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist, doedit, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,5)) {
+		upopabort(bw);
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
 int usetcd(BW *bw)
 {
 	if (wmkpw(bw->parent, joe_gettext(_("Set current directory (^C to abort): ")), &filehist, dosetcd, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,7)) {

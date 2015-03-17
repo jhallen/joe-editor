@@ -1,14 +1,18 @@
 
 Improvements:
 
- We don't use lattr for ansi mode since we are not allowing colors to cross
- lines.  Save CPU cycles by not generating lattr for this case.
+ shell joe command doesn't work with absolute path if prefix is added.
+ this doesn't work well with ^KE either (need to clear path manually)
+   emacs does some magic here.. if it detects // it ignores prefix
+     two parts:
+       it displays prefix with { }
+       when opening file, it starts with the /
 
- Ansi effects not crossing lines means text doesn't remain properly colored
-over edit operations, like insert new line (para format).
+ message printed when we close last window and switch to orphan buffer
 
- when we 'edit' in a shell window, it should pop before loading the new one.
-  otherwise we get a bunch of copies of the shell window I think
+ security hole with "math"
+
+ add shell commands to other rc files
 
  'parserr' leaving many copies of buffer?
 
@@ -16,6 +20,12 @@ over edit operations, like insert new line (para format).
  Think through grep and compile.. maybe parse has to be progressive.
  Maybe ^G parses just the line it's on and we give up on next-error /
  previous-error?
+
+ We don't use lattr for ansi mode since we are not allowing colors to cross
+ lines.  Save CPU cycles by not generating lattr for this case.
+
+ Ansi effects not crossing lines means text doesn't remain properly colored
+over edit operations, like insert new line (para format).
 
  Mode to start joe with shell window.
 
@@ -36,6 +46,10 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+
+ when we 'edit' in a shell window, it should pop before loading the new one.
+  otherwise we get a bunch of copies of the shell window I think
+ [fixed]
 
  Esc sequences could be optimized out: delete one if it results in same
  attributes that already exist

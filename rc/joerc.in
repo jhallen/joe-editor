@@ -725,12 +725,9 @@ abort		^K Q
 abort		^K ^Q
 abort		^K q
 arg		^K \		Repeat next command
- explode		^K I		Show all windows or show only one window
- explode		^K ^I
- explode		^K i
-tw1		^K I
-tw1		^K ^I
-tw1		^K i
+explode		^K I		Show all windows or show only one window
+explode		^K ^I
+explode		^K i
 help		^K H		Help menu
 help		^K ^H
 help		^K h
@@ -822,7 +819,7 @@ aspellword	^[ n
 :def shell_clear psh,bof,markb,eof,markk,blkdel
 :def shell_math math
 :def shell_rtn rtn
-:def shell_edit edit
+:def shell_popedit popedit
 :def shell_dellin dellin
 :def shell_cd cd
 

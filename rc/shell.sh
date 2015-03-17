@@ -10,7 +10,7 @@ joe_math () {
 }
 
 joe_edit () {
-	echo '{'shell_edit,'"'$1'"',shell_rtn'}'
+	echo '{'shell_popedit,'"'$1'"',shell_rtn'}'
 }
 
 unalias cd 2>/dev/null
