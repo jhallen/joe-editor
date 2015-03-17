@@ -822,6 +822,7 @@ aspellword	^[ n
 :def shell_popedit popedit
 :def shell_dellin dellin
 :def shell_cd cd
+:def shell_pop popabort
 
 
  Split window version

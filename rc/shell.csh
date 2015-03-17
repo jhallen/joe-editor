@@ -8,6 +8,8 @@ alias edit "echo \{shell_popedit,"\\\"\!\*\\\"",shell_rtn}"
 
 alias joe "echo \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
 
+alias pop "echo \{shell_pop}"
+
 alias cd "cd "\!\*"; echo \{shell_cd,shell_dellin\\!,"\\\"`pwd`/\\\"",shell_rtn}"
 
 clear

@@ -13,6 +13,10 @@ joe_edit () {
 	echo '{'shell_popedit,'"'$1'"',shell_rtn'}'
 }
 
+joe_pop () {
+	echo '{'shell_pop'}'
+}
+
 unalias cd 2>/dev/null
 
 joe_cd () {
@@ -32,6 +36,7 @@ alias clear=joe_clear
 alias math=joe_math
 alias edit=joe_edit
 alias joe=joe_edit
+alias pop=joe_pop
 alias cd=joe_cd
 
 joe_clear
