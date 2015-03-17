@@ -254,6 +254,8 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->bof->col = 0;
 	b->bof->xcol = 0;
 	b->bof->valcol = 1;
+	b->bof->attr = 0;
+	b->bof->valattr = 1;
 	b->bof->tracker = USTR "bmkchn";
 	b->eof = pdup(b->bof, USTR "bmkchn");
 	b->eof->end = 1;
@@ -264,6 +266,7 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->eof->byte = amnt;
 	b->eof->line = nlines;
 	b->eof->valcol = 0;
+	b->eof->valattr = 0;
 	b->pid = 0;
 	b->out = -1;
 	b->vt = 0;
@@ -366,6 +369,8 @@ void breplace(B *b, B *n)
 	b->bof->col = 0;
 	b->bof->xcol = 0;
 	b->bof->valcol = 1;
+	b->bof->attr = 0;
+	b->bof->valattr = 1;
 	b->bof->end = 0;
 
 	/* Take eof Pointer */
@@ -378,6 +383,8 @@ void breplace(B *b, B *n)
 	b->eof->col = n->eof->col;
 	b->eof->xcol = n->eof->xcol;
 	b->eof->valcol = n->eof->valcol;
+	b->eof->attr = n->eof->attr;
+	b->eof->valattr = n->eof->valattr;
 	b->eof->end = 1;
 
 	/* Reset other pointers */
@@ -513,6 +520,8 @@ P *pset(P *n, P *p)
 		n->line = p->line;
 		n->col = p->col;
 		n->valcol = p->valcol;
+		n->attr = p->attr;
+		n->valattr = p->valattr;
 	}
 	return n;
 }
@@ -564,14 +573,23 @@ int piseol(P *p)
 }
 
 /* is p at the beginning of line? */
+/* This needs to be fast and should not disturb valcol or valattr.  It's used by fixupins(). */
 int pisbol(P *p)
 {
-	int c;
+	unsigned char c;
 
 	if (pisbof(p))
 		return 1;
-	c = prgetb(p);
-	pgetb(p);
+
+	if (!p->ofst)
+		pprev(p);
+
+	--p->ofst;
+	c = GCHAR(p);
+
+	if (++p->ofst == GSIZE(p->hdr))
+		pnext(p);
+
 	return c == '\n';
 }
 
@@ -706,28 +724,77 @@ int pgetb(P *p)
 		++(p->line);
 		p->col = 0;
 		p->valcol = 1;
+		p->attr = 0;
+		p->valattr = 1;
 	} else if (p->b->o.crlf && c == '\r') {
 		if (brc(p) == '\n')
 			return pgetb(p);
-		else
+		else {
 			p->valcol = 0;
+			p->valattr = 0;
+		}
 	} else {
 		p->valcol = 0;
+		p->valattr = 0;
 	}
 	return c;
 }
+
+/* Interned string table for ansi sequences */
+
+HASH *ansi_hash;
+struct ansi_entry {
+	int code;
+	unsigned char *name;
+};
+struct ansi_entry **ansi_table;
+int ansi_siz;
+int ansi_len;
+
+int ansi_code(unsigned char *s)
+{
+	struct ansi_entry *e;
+	if (!ansi_hash)
+		ansi_hash = htmk(128);
+	e = htfind(ansi_hash, s);
+	if (!e) {
+		e = joe_malloc(sizeof(struct ansi_entry));
+		e->name = zdup(s);
+		e->code = ansi_len;
+		htadd(ansi_hash, e->name, e);
+		if (!ansi_siz)
+			ansi_table = (struct ansi_entry **)malloc(ansi_siz = 128);
+		if (ansi_siz == ansi_len)
+			ansi_table = (struct ansi_entry **)realloc(ansi_table, ansi_siz *= 2);
+		ansi_table[ansi_len++] = e;
+	}
+	return (e->code | ANSI_BIT);
+}
+
+unsigned char *ansi_string(int code)
+{
+	code &= ~ANSI_BIT;
+	if (code < 0 || code >= ansi_len)
+		return 0;
+	else
+		return ansi_table[code]->name;
+}
+
+#define ANSIMAX 64
 
 /* return current character and move p to the next character.  column will be updated if it was valid. */
 int pgetc(P *p)
 {
 	if (p->b->o.charmap->type) {
 		int val;
+		int valattr;
 		int c; /* , oc; */
 		int d;
 		int n; /* , m; */
 		int wid = 0;
 
 		val = p->valcol;	/* Remember if column number was valid */
+		valattr = p->valattr;
 		c = pgetb(p);		/* Get first byte */
 		/* oc = c; */
 
@@ -735,11 +802,19 @@ int pgetc(P *p)
 			return c;
 
                 if (p->b->o.ansi && c == '\033') { /* Hide ansi */
-                        while ((d = pgetb(p)) != NO_MORE_DATA)
-                                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z'))
+                	unsigned char buf[ANSIMAX];
+                	int bufx = 0;
+                	buf[bufx++] = c;
+                        while ((d = pgetb(p)) != NO_MORE_DATA) {
+                        	if (bufx < sizeof(buf) - 1)
+                        		buf[bufx++] = d;
+                                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') || d == '\n')
                                         break;
-                        p->valcol = val;
-                        return c;
+			}
+                        p->valcol |= val;
+                        p->valattr = 0;
+                        buf[bufx] = 0;
+                        return ansi_code(buf);
                 }
 
 		if ((c&0xE0)==0xC0) { /* Two bytes */
@@ -797,6 +872,7 @@ int pgetc(P *p)
 			else
 				p->col += wid;
 		}
+		p->valattr |= valattr;
 
 		return c;
 	} else {
@@ -813,13 +889,24 @@ int pgetc(P *p)
 			++(p->line);
 			p->col = 0;
 			p->valcol = 1;
+			p->attr = 0;
+			p->valattr = 1;
                 } else if (p->b->o.ansi && c == '\033') { /* Hide ansi */
                         int d;
                         int v = p->valcol;
-                        while ((d = pgetb(p)) != NO_MORE_DATA)
-                                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z'))
+                        unsigned char buf[ANSIMAX];
+                        int bufx = 0;
+                        buf[bufx++] = c;
+                        while ((d = pgetb(p)) != NO_MORE_DATA) {
+                        	if (bufx < sizeof(buf) - 1)
+                        		buf[bufx++] = d;
+                                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') || d == '\n')
                                         break;
-                        p->valcol = v;
+			}
+			buf[bufx] = 0;
+                        p->valcol |= v;
+                        p->valattr = 0;
+                        return ansi_code(buf);
 		} else if (p->b->o.crlf && c == '\r') {
 			if (brc(p) == '\n')
 				return pgetc(p);
@@ -841,6 +928,7 @@ P *pfwrd(P *p, long n)
 	if (!n)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	do {
 		if (p->ofst == GSIZE(p->hdr))
 			do {
@@ -874,6 +962,7 @@ static int prgetb1(P *p)
 	c = GCHAR(p);
 	--p->byte;
 	p->valcol = 0;
+	p->valattr = 0;
 	if (c == '\n')
 		--p->line;
 	return c;
@@ -971,6 +1060,7 @@ P *pbkwd(P *p, long n)
 	if (!n)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	do {
 		if (!p->ofst)
 			do {
@@ -1018,6 +1108,8 @@ P *p_goto_bol(P *p)
 		pgetb(p);
 	p->col = 0;
 	p->valcol = 1;
+	p->attr = 0;
+	p->valattr = 1;
 	return p;
 }
 
@@ -1077,6 +1169,8 @@ P *pnextl(P *p)
 	++p->line;
 	p->col = 0;
 	p->valcol = 1;
+	p->attr = 0;
+	p->valattr = 1;
 	if (p->ofst == GSIZE(p->hdr))
 		pnext(p);
 	return p;
@@ -1088,6 +1182,7 @@ P *pprevl(P *p)
 	int c;
 
 	p->valcol = 0;
+	p->valattr = 0;
 	do {
 		if (!p->ofst)
 			do {
@@ -1319,6 +1414,7 @@ static P *ffind(P *p, unsigned char *s, int len)
 	if (!len)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	mset(table, 255, 256);
 	for (x = 0; x != len - 1; ++x)
 		table[s[x]] = x;
@@ -1359,6 +1455,7 @@ static P *fifind(P *p, unsigned char *s, int len)
 	if (!len)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	mset(table, 255, 256);
 	for (x = 0; x != len - 1; ++x)
 		table[s[x]] = x;
@@ -1478,6 +1575,7 @@ static P *frfind(P *p, unsigned char *s, int len)
 	if (!len)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	mset(table, 255, 256);
 	for (x = len; --x; table[s[x]] = len - x - 1) ;
 	x = 0;
@@ -1521,6 +1619,7 @@ static P *frifind(P *p, unsigned char *s, int len)
 	if (!len)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	mset(table, 255, 256);
 	for (x = len; --x; table[s[x]] = len - x - 1) ;
 	x = 0;
@@ -1877,8 +1976,10 @@ static B *bcut(P *from, P *to)
 	/* Fix pointers */
 
 	for (p = from->link.next; p != from; p = p->link.next)
-		if (p->line == from->line && p->byte > from->byte)
+		if (p->line == from->line && p->byte > from->byte) {
 			p->valcol = 0;
+			p->valattr = 0;
+		}
 	for (p = from->link.next; p != from; p = p->link.next) {
 		if (p->byte >= from->byte) {
 			if (p->byte <= from->byte + amnt) {
@@ -2043,8 +2144,10 @@ static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 	inserr(p->b->name, p->line, nlines, pisbol(p));	/* FIXME: last arg ??? */
 
 	for (pp = p->link.next; pp != p; pp = pp->link.next)
-		if (pp->line == p->line && (pp->byte > p->byte || (pp->end && pp->byte == p->byte)))
+		if (pp->line == p->line && (pp->byte > p->byte || (pp->end && pp->byte == p->byte))) {
 			pp->valcol = 0;
+			pp->valattr = 0;
+		}
 	for (pp = p->link.next; pp != p; pp = pp->link.next)
 		if (pp->byte == p->byte && !pp->end)
 			if (pp->ptr)
@@ -2122,7 +2225,10 @@ P *binsbyte(P *p, unsigned char c)
 /* UTF-8 encode a character and insert it */
 P *binsc(P *p, int c)
 {
-	if (c>127 && p->b->o.charmap->type) {
+	if ((c & ANSI_BIT) && p->b->o.ansi) {
+		unsigned char *s = ansi_string(c);
+		return binsm(p, s, zlen(s));
+	} else if (c>127 && p->b->o.charmap->type) {
 		unsigned char buf[8];
 		int len = utf8_encode(buf,c);
 		return binsm(p,buf,len);

@@ -1,6 +1,12 @@
 
 Improvements:
 
+ We don't use lattr for ansi mode since we are not allowing colors to cross
+ lines.  Save CPU cycles by not generating lattr for this case.
+
+ Ansi effects not crossing lines means text doesn't remain properly colored
+over edit operations, like insert new line (para format).
+
  when we 'edit' in a shell window, it should pop before loading the new one.
   otherwise we get a bunch of copies of the shell window I think
 
@@ -25,20 +31,22 @@ Improvements:
 
  Context help for shell window?
 
- Esc sequences could be optimized out: delete one if it results in same
- attributes that already exist.
-	Ugh...
-
- check for n^2 algorithms
-
  check querysave and nbuf/pbuf interactions with new buffer stack
-
-Pgetc() does not now always return a character... how to fix?
-	Ugh... (what bugs does is cause?)
 
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+
+ Esc sequences could be optimized out: delete one if it results in same
+ attributes that already exist
+ [done]
+
+ check for n^2 algorithms
+ [done]
+
+Pgetc() does not now always return a character... this breaks paragraph
+formatter and anything that expect binsc(pgetc) to work.
+ [fixed: we assign a code for each ansi sequence]
 
  clean up macro execute for magic shell commands:
    only execute shell_ ones...

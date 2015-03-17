@@ -58,7 +58,10 @@ int pcurattr(P *p)
 	int attr = 0;
 	int state = 0;
 	int arg = 0;
-	P *q = pdup(p, USTR "pcurattr");
+	P *q;
+	if (p->valattr)
+		return p->attr;
+	q = pdup(p, USTR "pcurattr");
 	p_goto_bol(q);
 	while (q->byte != p->byte) {
 		int c = pgetb(q);
@@ -99,6 +102,8 @@ int pcurattr(P *p)
 		}
 	}
 	prm(q);
+	p->attr = attr;
+	p->valattr = 1;
 	return attr;
 }
 
@@ -141,6 +146,10 @@ void psetattr(P *p, int attr, int cur, int adv)
 	}
 	if (!adv)
 		prm(p);
+	else {
+		p->attr = attr;
+		p->valattr = 1;
+	}
 }
 
 void vt_type(VT *bw, int c)
@@ -168,12 +177,10 @@ void vt_type(VT *bw, int c)
 		}
 		binsc(bw->vtcur, c);
 		pgetc(bw->vtcur);
-		/* if (cur_attr) {
-			binss(bw->vtcur, "\033[m");
-		} */
 	} else {
-		P *q = pdup(bw->vtcur, USTR "vt_type");
-		int col = piscol(q);
+		P *q;
+		int col = piscol(bw->vtcur);
+		q = pdup(bw->vtcur, USTR "vt_type");
 		pcol(q, col + 1);
 		org_attr = pcurattr(q);
 		bdel(bw->vtcur, q);

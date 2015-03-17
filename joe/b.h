@@ -39,6 +39,8 @@ struct point {
 	long	xcol;		/* cursor column (can be different from actual column) */
 	int	valcol;		/* bool: is col valid? */
 	int	end;		/* set if this is end of file pointer */
+	int	attr;		/* current ansi attribute */
+	int	valattr;	/* set if attr is still valid */
 
 	P	**owner;	/* owner of this pointer.  owner gets cleared if pointer is deleted. */
 	unsigned char *tracker;	/* Name of function who pdup()ed me */
@@ -310,5 +312,9 @@ void set_file_pos_orphaned();
 void breplace(B *b, B *n);
 
 unsigned char *dequote(unsigned char *);
+
+#define ANSI_BIT 0x40000000
+int ansi_code(unsigned char *s);
+unsigned char *ansi_string(int code);
 
 #endif
