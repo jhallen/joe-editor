@@ -817,6 +817,8 @@ aspellword	^[ n
 
  Macros allowed in shell window commands
 :def shell_clear psh,bof,markb,eof,markk,blkdel
+:def shell_parse parserr
+:def shell_release release
 :def shell_math math
 :def shell_rtn rtn
 :def shell_popedit popedit

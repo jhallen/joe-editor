@@ -134,11 +134,15 @@ static void freeerr(ERROR *n)
 
 /* Free all errors */
 
-static void freeall(void)
+static int freeall(void)
 {
-	while (!qempty(ERROR, link, &errors))
+	int count = 0;
+	while (!qempty(ERROR, link, &errors)) {
 		freeerr(deque_f(ERROR, link, errors.link.next));
+		++count;
+	}
 	errptr = &errors;
+	return count;
 }
 
 /* Parse error messages into database */
@@ -241,7 +245,7 @@ void parseone_grep(struct charmap *map,unsigned char *s,unsigned char **rtn_name
 }
 
 static int parseit(struct charmap *map,unsigned char *s, long int row,
-  void (*parseone)(struct charmap *map, unsigned char *s, unsigned char **rtn_name, long *rtn_line))
+  void (*parseone)(struct charmap *map, unsigned char *s, unsigned char **rtn_name, long *rtn_line), unsigned char *current_dir)
 {
 	unsigned char *name = NULL;
 	long line = -1;
@@ -254,6 +258,14 @@ static int parseit(struct charmap *map,unsigned char *s, long int row,
 			/* We have an error */
 			err = (ERROR *) alitem(&errnodes, sizeof(ERROR));
 			err->file = name;
+			if (current_dir) {
+				err->file = vsncpy(NULL, 0, sv(current_dir));
+				err->file = vsncpy(sv(err->file), sv(name));
+				err->file = canonical(err->file);
+				vsrm(name);
+			} else {
+				err->file = name;
+			}
 			err->org = err->line = line;
 			err->src = row;
 			err->msg = vsncpy(NULL, 0, sc("\\i"));
@@ -272,26 +284,55 @@ void kill_ansi(unsigned char *s);
 
 static long parserr(B *b)
 {
-	P *p = pdup(b->bof, USTR "parserr");
-	P *q = pdup(p, USTR "parserr");
-	long nerrs = 0;
+	if (markv(1)) {
+		P *p = pdup(markb, USTR "parserr1");
+		P *q = pdup(markb, USTR "parserr2");
+		long nerrs = 0;
+		errbuf = markb->b;
 
-	freeall();
-	do {
-		unsigned char *s;
+		freeall();
 
-		pset(q, p);
-		p_goto_eol(p);
-		s = brvs(q, (int) (p->byte - q->byte));
-		if (s) {
-			kill_ansi(s);
-			nerrs += parseit(b->o.charmap, s, q->line, (b->parseone ? b->parseone : parseone));
-			vsrm(s);
-		}
-	} while (pgetc(p) != NO_MORE_DATA);
-	prm(p);
-	prm(q);
-	return nerrs;
+		p_goto_bol(p);
+
+		do {
+			unsigned char *s;
+
+			pset(q, p);
+			p_goto_eol(p);
+			s = brvs(q, (int) (p->byte - q->byte));
+			if (s) {
+				kill_ansi(s);
+				nerrs += parseit(q->b->o.charmap, s, q->line, (q->b->parseone ? q->b->parseone : parseone),q->b->current_dir);
+				vsrm(s);
+			}
+			pgetc(p);
+		} while (p->byte < markk->byte);
+		prm(p);
+		prm(q);
+		return nerrs;
+	} else {
+		P *p = pdup(b->bof, USTR "parserr3");
+		P *q = pdup(p, USTR "parserr4");
+		long nerrs = 0;
+		errbuf = b;
+
+		freeall();
+		do {
+			unsigned char *s;
+
+			pset(q, p);
+			p_goto_eol(p);
+			s = brvs(q, (int) (p->byte - q->byte));
+			if (s) {
+				kill_ansi(s);
+				nerrs += parseit(q->b->o.charmap, s, q->line, (q->b->parseone ? q->b->parseone : parseone), q->b->current_dir);
+				vsrm(s);
+			}
+		} while (pgetc(p) != NO_MORE_DATA);
+		prm(p);
+		prm(q);
+		return nerrs;
+	}
 }
 
 BW *find_a_good_bw(B *b)
@@ -323,10 +364,10 @@ int parserrb(B *b)
 {
 	BW *bw;
 	int n;
-	errbuf = b;
 	freeall();
-	n = parserr(b);
 	bw = find_a_good_bw(b);
+	unmark(bw);
+	n = parserr(b);
 	if (n)
 		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
 	else
@@ -335,10 +376,23 @@ int parserrb(B *b)
 	return 0;
 }
 
+int urelease(BW *bw)
+{
+	if (qempty(ERROR, link, &errors) && !errbuf) {
+		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages")));
+	} else {
+		int count = freeall();
+		errbuf = NULL;
+		joe_snprintf_1(msgbuf, sizeof(msgbuf), joe_gettext(_("%d messages cleared")), count);
+	}
+	msgnw(bw->parent, msgbuf);
+	updall();
+	return 0;
+}
+
 int uparserr(BW *bw)
 {
 	int n;
-	errbuf = bw->b;
 	freeall();
 	n = parserr(bw->b);
 	if (n)

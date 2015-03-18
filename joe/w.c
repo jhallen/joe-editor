@@ -708,8 +708,8 @@ int wabort(W *w)
 				wfit(t);
 			else
 				wspread(t);
-			maint->curwin->msgt = msgt;
-			maint->curwin->msgb = msgb;
+			if (msgt && !maint->curwin->msgt) maint->curwin->msgt = msgt;
+			if (msgb && !maint->curwin->msgb) maint->curwin->msgb = msgb;
 		}
 	}
 	return ret;
@@ -832,7 +832,7 @@ int umwind(BW *bw)
 {
 	W *msgw;
 	if (!errbuf) {
-		msgnw(bw->parent, joe_gettext(_("There is no message buffer")));
+		msgnw(bw->parent, joe_gettext(_("There are no messages")));
 		return -1;
 	}
 

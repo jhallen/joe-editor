@@ -162,6 +162,7 @@ CMD cmds[] = {
 	{USTR "quote8", TYPETW + TYPEPW + EMOD, uquote8, NULL, 0, NULL},
 	{USTR "record", TYPETW + TYPEPW + TYPEMENU + TYPEQW, urecord, NULL, 0, NULL},
 	{USTR "redo", TYPETW + TYPEPW + EFIXXCOL, uredo, NULL, 1, USTR "undo"},
+	{USTR "release", TYPETW, urelease, NULL, 0, NULL},
 	{USTR "reload", TYPETW, ureload, NULL, 0, NULL },
 	{USTR "reloadall", TYPETW, ureload_all, NULL, 0, NULL },
 	{USTR "retype", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uretyp, NULL, 0, NULL},

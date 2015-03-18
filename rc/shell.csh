@@ -2,6 +2,10 @@
 
 alias clear "echo \{shell_clear}"
 
+alias parse "echo \{shell_parse}"
+
+alias release "echo \{shell_release}"
+
 alias math "echo \{shell_math,"\\\"\!\*\\\"",shell_rtn}; echo \{shell_rtn,shell_math,"\\\""ans:ins"\\\"",shell_rtn}"
 
 alias edit "echo \{shell_popedit,"\\\"\!\*\\\"",shell_rtn}"
