@@ -1,28 +1,22 @@
 
 Improvements:
 
- joe command in shell only works as an alias, not a real program.  This
-means when mercurial or p4 invokes an editor the wrong thing is done.
-
- shell joe command doesn't work with absolute path if prefix is added.
- this doesn't work well with ^KE either (need to clear path manually)
-   emacs does some magic here.. if it detects // it ignores prefix
-     two parts:
-       it displays prefix with { }
-       when opening file, it starts with the /
-
- message printed when we close last window and switch to orphan buffer
-
  security hole with "math"
 
  add shell commands to other rc files
 
- 'parserr' leaving many copies of buffer?
+ parserr - no way to turn off highlighting line (but ESC space is OK).
+
+ edit command in shell window does not work with '!pgm' if there is a
+current directory set.
 
  It would be nice if ^G was goto instead of ESC space
  Think through grep and compile.. maybe parse has to be progressive.
  Maybe ^G parses just the line it's on and we give up on next-error /
  previous-error?
+
+ joe command in shell only works as an alias, not a real program.  This
+means when mercurial or p4 invokes an editor the wrong thing is done.
 
  We don't use lattr for ansi mode since we are not allowing colors to cross
  lines.  Save CPU cycles by not generating lattr for this case.
@@ -49,6 +43,20 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+
+ 'parserr' leaving many copies of buffer?
+ [fixed]
+
+ message printed when we close last window and switch to orphan buffer
+ [fixed- now we always do it, but can turn off with noexmsg]
+
+ shell joe command doesn't work with absolute path if prefix is added.
+ this doesn't work well with ^KE either (need to clear path manually)
+   emacs does some magic here.. if it detects // it ignores prefix
+     two parts:
+       it displays prefix with { }
+       when opening file, it starts with the /
+ [fixed- now we do same as emacs]
 
  when we 'edit' in a shell window, it should pop before loading the new one.
   otherwise we get a bunch of copies of the shell window I think

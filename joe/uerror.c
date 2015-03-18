@@ -268,6 +268,8 @@ static int parseit(struct charmap *map,unsigned char *s, long int row,
 
 /* Parse the error output contained in a buffer */
 
+void kill_ansi(unsigned char *s);
+
 static long parserr(B *b)
 {
 	P *p = pdup(b->bof, USTR "parserr");
@@ -282,6 +284,7 @@ static long parserr(B *b)
 		p_goto_eol(p);
 		s = brvs(q, (int) (p->byte - q->byte));
 		if (s) {
+			kill_ansi(s);
 			nerrs += parseit(b->o.charmap, s, q->line, (b->parseone ? b->parseone : parseone));
 			vsrm(s);
 		}

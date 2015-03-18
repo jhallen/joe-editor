@@ -700,12 +700,16 @@ int wabort(W *w)
 		if (!leave)
 			wfit(t);
 	} else {
+		unsigned char *msgt = w->msgt;
+		unsigned char *msgb = w->msgb;
 		doabort(w, &ret);
 		if (!leave) {
 			if (lastw(t)->link.next != t->topwin)
 				wfit(t);
 			else
 				wspread(t);
+			maint->curwin->msgt = msgt;
+			maint->curwin->msgb = msgb;
 		}
 	}
 	return ret;

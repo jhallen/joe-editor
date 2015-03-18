@@ -24,6 +24,7 @@ unsigned char *backpath = NULL;		/* Place to store backup files */
 B *filehist = NULL;	/* History of file names */
 int nobackups = 0;
 int exask = 0;
+extern int noexmsg;
 
 /* Ending message generator */
 /**** message which is shown after closing joe (CTRL+x; CTRL+k) *****/
@@ -54,7 +55,8 @@ void genexmsg(BW *bw, int saved, unsigned char *name)
 		vsrm(exmsg);
 
 	exmsg = vsncpy(NULL,0,sz(msgbuf));
-	msgnw(bw->parent, msgbuf);
+	if (!noexmsg)
+		msgnw(bw->parent, msgbuf);
 }
 
 /* For ^X ^C */
