@@ -1051,8 +1051,8 @@ void bwgen(BW *w, int linums)
 
 	fromline = toline = from = to = 0;
 
-	if (w->b == errbuf) {
-		P *tmp = pdup(w->cursor, USTR "bwgen");
+	if (w->b == errbuf && w->b->err) {
+		P *tmp = pdup(w->b->err, USTR "bwgen");
 		p_goto_bol(tmp);
 		from = tmp->byte;
 		pnextl(tmp);

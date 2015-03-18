@@ -796,6 +796,9 @@ void setline(B *b, long int line)
 
 				/* pline(bw->top, line); */
 				pline(bw->cursor, line);
+				if (!bw->b->err)
+					bw->b->err = pdup(bw->cursor, USTR "setline");
+				pline(bw->b->err, line);
 				if (w->y >= 0 && bw->top->line > oline && bw->top->line - oline < bw->h)
 					nscrlup(w->t->t, bw->y, bw->y + bw->h, (int) (bw->top->line - oline));
 				else if (w->y >= 0 && bw->top->line < oline && oline - bw->top->line < bw->h)
@@ -807,6 +810,9 @@ void setline(B *b, long int line)
 	/* In case error buffer was orphaned */
 	if (errbuf == b && b->oldcur) {
 		pline(b->oldcur, line);
+		if (!b->err)
+			b->err = pdup(b->oldcur, USTR ("setline1"));
+		pline(b->err, line);
 	}
 }
 

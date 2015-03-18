@@ -225,6 +225,7 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->rdonly = 0;
 	b->orphan = 0;
 	b->oldcur = NULL;
+	b->err = NULL;
  	b->oldtop = NULL;
  	b->current_dir = NULL;
 	b->shell_flag = 0;
