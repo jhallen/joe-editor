@@ -16,6 +16,8 @@
 
 [Download source](http://prdownloads.sourceforge.net/joe-editor/joe-3.7.tar.gz?download)
 
+[Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL)
+
 [History](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/history.md)
 
 <p></p>
