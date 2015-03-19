@@ -101,7 +101,7 @@ buffer for dictionary).
 
 * Compile and step through errors or Grep and step through finds.
 
-* Goto matching character delimiter \( \[ \{ \< which skips comments and
+* Goto matching character delimiter "( [ { <" which skips comments and
 quoted matter.
 
 * Goto matching word delimiter, including XML tags and C preprocessor
