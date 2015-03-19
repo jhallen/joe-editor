@@ -1,8 +1,10 @@
-This is Joe's Own Editor.  See the INFO file if you don't know what this is.
+Joe's Own Editor Installation Instructions
 
 =-=-=-=-=
 Mercurial
 =-=-=-=-=
+
+	[Skip if you downloaded the source .tgz distribution file]
 
 Developer checkout:
 
@@ -18,14 +20,22 @@ Update to the branch you want to build:
 
 	hg update -C joe-3	Released branch for joe-3.x
 
+Run autotools to build configure scripts:
+
+	./autojoe
+
+	(You might find that you need to install automake and autoconf
+	first).
+
 =-=-=-=-=-=-=-=-=-=-=-
 Installation procedure
 =-=-=-=-=-=-=-=-=-=-=-
 
-  [To create a Cygwin binary distribution, use the 'cygbuild' script.]
+  [To create a Cygwin binary distribution, use the 'cygbuild' script
+  instead of these instructions.]
 
-  On Ubuntu, you need to: sudo apt-get install ncurses-dev
-  for JOE to access the terminfo database.
+  [On Ubuntu, you need to: sudo apt-get install ncurses-dev
+  for JOE to access the terminfo database.]
 
   JOE uses the GNU Automake and Autoconf suites to build itself.
 
