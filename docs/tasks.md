@@ -1,5 +1,81 @@
 # Various editing tasks
 
+## Pop-up shell
+
+Hit F1 - F4 to open and switch between shell windows.
+
+The terminal emulator is improved so that when you type "man ls" it's
+formatted correctly (it's improved enough so that some interactive programs
+will work in it).  Even so, the shell window is still an edit buffer.
+
+The old shell window (with no terminal emulation) still exists: use ^K ' to
+invoke it as usual.  This is useful to see control sequences emitted by a
+program.
+
+More of the keys get passed to the running program in pop-up shell windows
+compared with the older one.  There is a :shell section of the joerc file to
+control which ones.  In particular arrow keys and Ctrl-C are passed to the
+program.  It means you can easily step through bash history with the arrow
+keys, or abort programs the normal way with Ctrl-C.
+
+On the other hand, loss of Ctrl-C means it's less obvious how to close the
+window.  One way is to move the cursor off of the shell data entry point
+(with Ctrl-P), and then hit Ctrl-C.  Another is to hit ^K Q.  Finally, you
+can type 'pop' at the command prompt.
+
+To quickly position the cursor back to the point where data is entered into
+the shell, hit ^K V.
+
+When you open a shell window, a JOE-specific startup-script is sourced. 
+It's located in /etc/joe/shell.sh (also /etc/joe/shell.csh).  It contains
+some aliases which allow you to control JOE with fake shell commands.  I
+have these commands so far:
+
+Command       | Action
+==============|=======
+clear         | erase shell window (delete buffer contents)
+joe file      | edit a file in joe
+math 1+2      | evaluate equation using JOE's calculator
+cd xyz        | change directory, keep JOE up to date
+markb         | same as ^KB
+markk         | same as ^KK
+mark command  | execute shell command, mark it's output
+parse command | execute shell command, parse it's output for errors
+release       | release parsed errors
+pop           | dismiss shell window (same as ^K Q)
+
+These work by emitting an escape sequence recognized by the terminal
+emulator: ESC { joe_macro }.  When this is received, the macro is executed. 
+For security, only macros defined in the joerc file which begin with
+"shell_" can be executed this way.
+
+One nice use of the shell window is to use JOE's error parser on grep
+output to step through a list of files.  Try this example:
+
+	parse grep -n FIXME *.c
+
+Now use ^P to position the cursor on one of the lines of the list.  Hit ESC
+SPACE to have JOE edit the file and jump to the specified line (also you can
+use ESC - and ESC = to step through the parsed errors).
+
+### How it works..
+
+    * There is a new mode "ansi".  (ESC x mode ansi).  When this mode is
+      enabled, the screen updater hides escape sequences which are in the
+      buffer.  Otherwise you get a big mess from the sequences surrounding
+      colored output from 'ls'.
+
+    * There is a new built-in syntax: "ansi".  (^T y ansi).  This syntax
+      parses the ANSI color control sequences so that text gets colored.
+
+    * There is a terminal emulator to interpret control sequences from the
+      shell program.  It emulates a terminal by modifying the contents of an
+      edit buffer.
+
+    * When the edit window is resized we tell the shell by issuing the
+      TIOCSSIZE or TIOCSWINSZ ioctl.  This way, the program running in the
+      shell knows the window size.
+
 ### TAGS file search
 
 JOE will search for a tags file in the current directory, and if none is

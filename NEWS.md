@@ -1,3 +1,28 @@
+### JOE 4.0
+
+* Pop-up shell windows with full terminal emulation with shell commands
+  that can control the editor.  Hit F1 - F4 to bring up a shell window.
+  See [Pop-up shell feature](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/tasks.md) for a full description.
+
+* The status command (^K SPACE) can now be customized using the same syntax
+  as the status bar.  Look for smsg and zmsg in joerc to see how to do this.
+
+* parserr (the error parser) will parse only the highlighted block if it's set.  Before it always parsed the entire buffer.
+
+* Now there is a per-buffer concept of current directory.  This was added to
+  make the pop-up shell windows work better, but it's useful in general.
+
+* At file prompt you can begin a new anchored path without having to delete
+  the old one.  So you ~jhallen/foo//etc/passwd is translated to /etc/passwd.
+  Prompt windows are now highighted to indicate which parts of the path are
+  being dropped.  The is a syntax file for this: filename.jsf
+
+* The error parser now ignores ANSI sequences (for example some version of grep
+  color their results).
+
+* Temporary messages are no dismissed by keyboard input only.  Before, they
+  could be dismissed by shell input.  Use the noexmsg option to suppress them.
+
 ### JOE 3.8
 
 - Change default indent from 2 to 4.  Add quick menu to change to common
