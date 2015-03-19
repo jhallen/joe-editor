@@ -373,3 +373,19 @@ will not insert.
   can be entered into this prompt like this: 0x2000.
 
 - Search, incremental search, and search &amp; replace all operate as usual.
+
+### Using JOE in a shell script
+
+Joe used to use /dev/tty to access the terminal.  This caused a problem with
+idle-session killers (they would kill joe because the real tty device was
+not being accessed for a long time), so now joe only uses /dev/tty if you
+need to pipe a file into joe, as in:
+
+	echo "hi" | joe -
+
+If you want to use joe in a shell script which has its stdin/stdout
+redirected, but you don't need to do 'joe -', you should simply redirect
+joe's stdin/stdout to /dev/tty:
+
+	joe filename  </dev/tty >/dev/tty
+
