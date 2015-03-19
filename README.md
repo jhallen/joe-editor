@@ -58,14 +58,14 @@ if you want.  Also you can customize the editor by copying the system
 "joerc" file to your home directory.</p>
 
 <p>Here is a basic screen shot of JOE running in a Cygwin console:</p>
-![screen capture](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/htdocs/capture.gif)
+![screen capture](http://joe-editor.sourceforge.net/capture.gif)
 
 <p>Here is a screen shot showing several windows- the first has some example
 double-wide characters, the second is the same buffer as the first, but in
 hex-dump view mode, the third is a shell window and the fourth shows a
 selected rectangular block of numbers and their sum:</p>
 
-![elaborate screen capture](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/htdocs/elaborate.gif)
+![elaborate screen capture](http://joe-editor.sourceforge.net/elaborate.gif)
 
 ### JOE has the following features:
 
