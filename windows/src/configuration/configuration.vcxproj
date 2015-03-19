@@ -44,6 +44,7 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\batch.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\c.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\cobol.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\comment_todo.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\conf.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\csh.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\csharp.jsf.in" />
@@ -74,6 +75,7 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\mail.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\mason.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\matlab.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\md.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\ocaml.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\pascal.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\perl.jsf.in" />

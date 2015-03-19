@@ -304,6 +304,9 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\cobol.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\comment_todo.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\conf.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
@@ -392,6 +395,9 @@
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\matlab.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\md.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\ocaml.jsf.in">

@@ -47,6 +47,9 @@
       <Component Id="cobolJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="cobolJSF" Name="cobol.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\cobol.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="commenttodoJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+        <File Id="commenttodoJSF" Name="comment_todo.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\comment_todo.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="confJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="confJSF" Name="conf.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\conf.jsf" KeyPath="yes" />
       </Component>
@@ -136,6 +139,9 @@
       </Component>
       <Component Id="matlabJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="matlabJSF" Name="matlab.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\matlab.jsf" KeyPath="yes" />
+      </Component>
+      <Component Id="mdJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+	<File Id="mdJSF" Name="md.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\md.jsf" KeyPath="yes" />
       </Component>
       <Component Id="ocamlJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="ocamlJSF" Name="ocaml.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\ocaml.jsf" KeyPath="yes" />
