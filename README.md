@@ -64,3 +64,193 @@ if you want.  Also you can customize the editor by copying the system
 double-wide characters, the second is the same buffer as the first, but in
 hex-dump view mode, the third is a shell window and the fourth shows a
 selected rectangular block of numbers and their sum:</p>
+
+<p>JOE has the following features:</p>
+<ul>
+
+<li>Multi-file search and replace- file list is either given on command line
+or by a UNIX command (grep/find) run from within JOE.</li>
+
+<li>Mouse support, including wheel (works best when using xterm).  The mouse
+can resize windows, scroll windows, select and paste text, and select menu
+entries.</li>
+
+<li>Context display on status line: allows you to see name of function
+cursor is in.</li>
+
+<li>UTF-8 support, optional auto-detect of UTF-8 files.</li>
+
+<li>Syntax highlighting for more than 40 languages.</li>
+
+<li>Hexadecimal edit mode.  Use JOE as a disk editor: joe -overwrite -hex
+/dev/hda1,0,512 (edit first sector of /dev/hda1).</li>
+
+<li>Non-destructive editing of binary files even when handling MS-DOS or
+UNIX line endings.</li>
+
+<li>Swap file allows editing files larger than memory.</li>
+
+<li>Context sensitive on-line help.</li>
+
+<li>Bash-like TAB completion and history for all prompts, or jump into the
+completion menu and use it to traverse the file system.</li>
+
+<li>Complete word in edit buffer by hitting ESC Enter (uses other words in
+buffer for dictionary).</li>
+
+<li>EMACS-compatible file locks and file modification checking.</li>
+
+<li>Shell windows.</li>
+
+<li>Multiple-windows onto same or different files.</li>
+
+<li>Compile and step through errors or Grep and step through finds.</li>
+
+<li>Goto matching character delimiter \( \[ \{ \< which skips comments and
+quoted matter.</li>
+
+<li>Goto matching word delimiter, including XML tags and C preprocessor
+directives.</li>
+
+<li>Ctrl-arrow key block selection.</li>
+
+<li>Search and replace system, including regular expression and optional
+incremental search.  Regular expression key for matching balanced C
+expressions.</li>
+
+<li>Tags file search (tab completion at tags search prompt uses tags file as
+database).</li>
+
+<li>Spell check commands which invoke aspell or ispell.  Language for aspell
+can be passed through editor.</li>
+
+<li>Paragraph format which preserves news/mail quoting indentation
+characters.</li>
+
+<li>Unlimited Undo and Redo.</li>
+
+<li>Yank buffer allows stepping through and insertion of previously deleted
+text.</li>
+
+<li>State file restores history buffers, yank buffer and last file cursor
+positions.</li>
+
+<li>Cursor position history allows you to step through previously visited areas
+of a file.</li>
+
+<li>Multiple interactive keyboard macros.  Macros can be assigned to key
+sequences in joerc file.</li>
+
+<li>Block move/copy/delete/filter.</li>
+
+<li>Rectangle (columnar) block mode- search and replace can be narrowed to
+the rectangular block.  Rectangular blocks can be filtered through UNIX
+commands.</li>
+
+<li>Overtype/Insert modes.</li>
+
+<li>Indent/Unindent (shift block left or right).</li>
+
+<li>Auto-indent mode.</li>
+
+<li>Picture mode for ASCII graphics.</li>
+
+<li>Line number mode displays line number of each line.</li>
+
+<li>Powerful scientific calculator with block statistics functions
+(sum/standard-deviation/count highlighted block of numbers).</li>
+
+<li>Termcap/Terminfo support allows JOE to use any terminal or terminal
+emulator.</li>
+
+<li>Can accept data from a pipe, for example: ls | joe</li>
+</ul>
+
+<p>JOE does not have these features (yet):</p>
+<ul>
+
+<li>Vertical windows, but JOE will probably have this in version 3.6</li>
+
+<li>Folding</li>
+
+<li>Right to left editing for Hebrew and Arabic</li>
+
+<li>Direct editing of 16-bit character sets such as UCS-16 and BIG5</li>
+
+<li>All encompassing macro language like elisp in GNU-EMACS</li>
+
+<li>Background spell checking, like Microsoft WORD</li>
+
+<li>Highlight all matching words</li>
+
+<li>Automatic unzip/untar</li>
+
+<li>Built-in FTP</li>
+
+<li>X-Window version (use inside a terminal emulator)</li>
+
+<li>Native Windows version (but you can use JOE in Cygwin)</li>
+
+<li>Interface to debugger</li>
+
+</ul>
+
+<p>Here are some other editors to consider:</p>
+<a href="http://www.gnu.org/software/emacs">http://www.gnu.org/software/emacs</a>
+Richard Stallman's powerful LISP-based editor.
+<br><br>
+<a href="http://www.jedsoft.org/jed">http://www.jedsoft.org/jed</a> John E.
+Davis' version of EMACS using the S-Lang language.
+<br><br>
+<a href="http://www.jasspa.com">http://www.jasspa.com</a> Micro Emacs
+<br><br>
+<a href="http://www.vile.cx">http://www.vile.cx</a> Paul Fox's vi clone
+(built on top of Micro Emacs).  Now maintained by Tom Dickey and others.
+<br><br>
+<a href="http://www.nano-editor.org">http://www.nano-editor.org</a> An open
+source PICO clone.
+<br><br>
+<a
+href="http://www.washington.edu/pine/faq/whatis.html">http://www.washington.edu.pine/faq/whatis.html</a>
+PICO: A simple editor built on Micro Emacs.
+<br><br>
+<a href="http://www.vim.org">http://www.vim.org</a> Bram Moolenaar's vi
+clone</a>
+<br><br>
+<a href="http://elvis.the-little-red-haired-girl.org/whatiselvis/index.html">
+http://elvis.the-little-red-haired-girl.org</a> Elvis: A
+small vi clone
+<br><br>
+<a href="http://www.jedit.org">http://www.jedit.org</a> Powerful editor
+written in Java
+<br><br>
+<a href="http://www.nedit.org">http://www.nedit.org</a> X-Windowing System
+editor
+<br><br>
+<a href="http://www.ibiblio.org/mc">http://www.ibiblio.org/mc</a> Midnight
+Commander file manager with built-in text editor with highlighting.  Can
+browse ZIP and TAR files.
+<br><br>
+
+<a href="http://www.cs.yorku.ca/~oz/wily">http://www.cs.yorku.ca/~oz/wily</a> A
+UNIX/X clone of Rob Pike's Plan9 editor ACME.  Originally written by Gary
+Capell, but now maintained by Ozan Yigit.  This is an interesting minimalist
+IDE.
+<br><br>
+
+<a
+href="http://www.eclipse.org/downloads">http://www.eclipse.org/downloads</a>
+Huge IDE written in Java.  Performs same function as Wily, but is literally
+1300 times larger.
+<br><br>
+
+<a href="ftp://netlib.bell-labs.com/netlib/research/sam.shar.gz">ftp://netlib.bell-labs.com/netlib/research/sam.shar.gz</a>
+UNIX/X port of Rob Pike's Plan9 editor SAM.  This interesting editor
+supports multi-file regular expression search &amp; replace with unlimited
+undo.
+<br><br>
+
+<a href="http://sed.sourceforge.net">http://sed.sourceforge.net</a>
+UNIX Stream EDitor.  If you're on UNIX, you already have this editor, but follow
+this link to see the amazing things that can be done with it.
+<br><br>
