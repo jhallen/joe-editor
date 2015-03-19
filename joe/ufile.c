@@ -24,6 +24,7 @@ unsigned char *backpath = NULL;		/* Place to store backup files */
 B *filehist = NULL;	/* History of file names */
 int nobackups = 0;
 int exask = 0;
+extern int noexmsg;
 
 /* Ending message generator */
 /**** message which is shown after closing joe (CTRL+x; CTRL+k) *****/
@@ -54,7 +55,8 @@ void genexmsg(BW *bw, int saved, unsigned char *name)
 		vsrm(exmsg);
 
 	exmsg = vsncpy(NULL,0,sz(msgbuf));
-	msgnw(bw->parent, msgbuf);
+	if (!noexmsg)
+		msgnw(bw->parent, msgbuf);
 }
 
 /* For ^X ^C */
@@ -555,6 +557,7 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 	void *object;
 	W *w;
 	B *b;
+	unsigned char *current_dir;
 	if (c == YES_CODE || yncheck(yes_key, c)) {
 		/* Reload from file */
 
@@ -564,6 +567,7 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 
 		b = bfind_reload(s);
 		er = berror;
+		current_dir = vsdup(bw->b->current_dir);
 		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 			if (orphan) {
 				orphit(bw);
@@ -585,6 +589,11 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		w = bw->parent;
 		bwrm(bw);
 		w->object = (void *) (bw = bwmk(w, b, 0));
+		/* Propogate current directory to newly loaded buffer */
+		if (!b->current_dir)
+			b->current_dir = current_dir;
+		else
+			vsrm(current_dir);
 		wredraw(bw->parent);
 		bw->object = object;
 		vsrm(s);
@@ -677,6 +686,19 @@ int doedit(BW *bw, unsigned char *s, void *obj, int *notify)
 		return doedit1(bw, YES_CODE, s, notify);
 }
 
+int dosetcd(BW *bw, unsigned char *s, void *obj, int *notify)
+{
+	if (notify) {
+		*notify = 1;
+	}
+	if (s[0])
+		set_current_dir(bw, s, 1);
+	joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Directory prefix set to %s")), s);
+	msgnw(bw->parent, msgbuf);
+	vsrm(s);
+	return 0;
+}
+
 int okrepl(BW *bw)
 {
 	if (bw->b->count == 1 && bw->b->changed) {
@@ -690,6 +712,25 @@ int okrepl(BW *bw)
 int uedit(BW *bw)
 {
 	if (wmkpw(bw->parent, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist, doedit, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,7)) {
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+int upopedit(BW *bw)
+{
+	if (wmkpw(bw->parent, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist, doedit, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,5)) {
+		upopabort(bw);
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+int usetcd(BW *bw)
+{
+	if (wmkpw(bw->parent, joe_gettext(_("Set current directory (^C to abort): ")), &filehist, dosetcd, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,7)) {
 		return 0;
 	} else {
 		return -1;
@@ -711,6 +752,20 @@ int uswitch(BW *bw)
 	}
 }
 
+void wpush(BW *bw)
+{
+	struct bstack *e;
+	e = (struct bstack *)malloc(sizeof(struct bstack));
+	e->b = bw->b;
+	++bw->b->count;
+	e->cursor = 0;
+	e->top = 0;
+	pdupown(bw->cursor, &e->cursor, USTR "wpush");
+	pdupown(bw->top, &e->top, USTR "wpush");
+	e->next = bw->parent->bstack;
+	bw->parent->bstack = e;
+}
+
 int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 {
 	int ret = 0;
@@ -725,8 +780,12 @@ int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 
 	b = bfind_scratch(s);
 	er = berror;
-	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
-		if (orphan) {
+
+	if (!bw->b->scratch)
+		wpush(bw);
+
+	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) { /* Last reference on dirty buffer */
+		if (orphan || bw->b->scratch) {
 			orphit(bw);
 		} else {
 			if (uduptw(bw)) {
@@ -777,6 +836,7 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	int er;
 	W *w = bw->parent;
 	B *b;
+	unsigned char *current_dir = vsdup(bw->b->current_dir);
 
 	if (notify) {
 		*notify = 1;
@@ -794,6 +854,11 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	}
 	bwrm(bw);
 	w->object = (void *) (bw = bwmk(w, b, 0));
+	/* Propogate current directory into new buffer */
+	if (!b->current_dir)
+		b->current_dir = current_dir;
+	else
+		vsrm(current_dir);
 	wredraw(bw->parent);
 	bw->object = object;
 	vsrm(s);

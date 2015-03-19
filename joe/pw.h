@@ -49,11 +49,13 @@ int simple_cmplt PARAMS((BW *bw,unsigned char **list));
 void setup_history PARAMS((B **history));
 void append_history PARAMS((B *hist,unsigned char *s,int len));
 void promote_history PARAMS((B *hist, long line));
-void set_current_dir PARAMS((unsigned char *s,int simp));
+void set_current_dir PARAMS((BW *bw, unsigned char *s,int simp));
 
 extern int bg_prompt;
 extern int nocurdir;
 
 extern WATOM watompw;
+
+unsigned char *get_cd(W *w);
 
 #endif

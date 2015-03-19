@@ -172,7 +172,7 @@ static int speeds[] = {
 /* Input buffer */
 
 int have = 0;			/* Set if we have pending input */
-static unsigned char havec;	/* Character read in during pending input check */
+unsigned char havec;	/* Character read in during pending input check */
 int leave = 0;			/* When set, typeahead checking is disabled */
 
 /* TTY mode flag.  1 for open, 0 for closed */
@@ -503,6 +503,50 @@ static void pauseit(void)
 #endif
 #endif
 
+/* Check for type-ahead */
+
+int ttcheck()
+{
+	/* Ack previous packet */
+	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
+		unsigned char c = 0;
+
+		if (pack.who && pack.who->func)
+			joe_write(pack.who->ackfd, &c, 1);
+		else
+			joe_write(ackkbd, &c, 1);
+		acceptch = NO_MORE_DATA;
+	}
+
+	/* Check for typeahead or next packet */
+
+	if (!have && !leave) {
+		if (ackkbd != -1) {
+			fcntl(mpxfd, F_SETFL, O_NDELAY);
+			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
+				fcntl(mpxfd, F_SETFL, 0);
+				joe_read(mpxfd, pack.data, pack.size);
+				have = 1;
+				acceptch = pack.ch;
+			} else
+				fcntl(mpxfd, F_SETFL, 0);
+		} else {
+			/* Set terminal input to non-blocking */
+			fcntl(fileno(termin), F_SETFL, O_NDELAY);
+
+			/* Try to read */
+			if (read(fileno(termin), &havec, 1) == 1)
+				have = 1;
+
+			/* Set terminal back to blocking */
+			fcntl(fileno(termin), F_SETFL, 0);
+		}
+	}
+	return have;
+}
+
+/* Flush output and check for type ahead */
+
 int ttflsh(void)
 {
 	/* Flush output */
@@ -543,41 +587,8 @@ int ttflsh(void)
 		obufp = 0;
 	}
 
-	/* Ack previous packet */
-	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
-		unsigned char c = 0;
-
-		if (pack.who && pack.who->func)
-			joe_write(pack.who->ackfd, &c, 1);
-		else
-			joe_write(ackkbd, &c, 1);
-		acceptch = NO_MORE_DATA;
-	}
-
 	/* Check for typeahead or next packet */
-
-	if (!have && !leave) {
-		if (ackkbd != -1) {
-			fcntl(mpxfd, F_SETFL, O_NDELAY);
-			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
-				fcntl(mpxfd, F_SETFL, 0);
-				joe_read(mpxfd, pack.data, pack.size);
-				have = 1;
-				acceptch = pack.ch;
-			} else
-				fcntl(mpxfd, F_SETFL, 0);
-		} else {
-			/* Set terminal input to non-blocking */
-			fcntl(fileno(termin), F_SETFL, O_NDELAY);
-
-			/* Try to read */
-			if (read(fileno(termin), &havec, 1) == 1)
-				have = 1;
-
-			/* Set terminal back to blocking */
-			fcntl(fileno(termin), F_SETFL, 0);
-		}
-	}
+	ttcheck();
 	return 0;
 }
 
@@ -719,6 +730,25 @@ void ttgtsz(int *x, int *y)
 		*x = getit.ws_col;
 		*y = getit.ws_row;
 	}
+#endif
+#endif
+}
+
+/* Set window size */
+
+void ttstsz(int fd, int w, int h)
+{
+#ifdef TIOCSSIZE
+	struct ttysize getit;
+	getit.ts_cols = w;
+	getit.ts_lines = h;
+	joe_ioctl(fd, TIOCSSIZE, &getit);
+#else
+#ifdef TIOCSWINSZ
+	struct winsize getit;
+	getit.ws_col = w;
+	getit.ws_row = h;
+	joe_ioctl(fd, TIOCSWINSZ, &getit);
 #endif
 #endif
 }
@@ -1026,7 +1056,8 @@ static unsigned char **newenv(unsigned char **old, unsigned char *s)
 
 /* If out_only is set, leave program's stdin attached to JOE's stdin */
 
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only)
+MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only,
+           int w, int h)
 {
 	unsigned char buf[80];
 	int fds[2];
@@ -1131,7 +1162,13 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 			/* Open the TTY */
 			if ((x = open((char *)name, O_RDWR)) != -1) {	/* Standard input */
-				unsigned char **env = newenv(mainenv, USTR "TERM=");
+				unsigned char **enva;
+				unsigned char **env;
+				if (w == -1)
+					enva = newenv(mainenv, USTR "TERM=");
+				else
+					enva = newenv(mainenv, USTR "TERM=linux");
+				env = newenv(enva, USTR "JOE=1");
 
 
 				if (!out_only) {
@@ -1165,6 +1202,8 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 #endif
 					/* We could probably have a special TTY set-up for JOE, but for now
 					 * we'll just use the TTY setup for the TTY was was run on */
+					 if (w != -1)
+					         ttstsz(0, w, h);
 
 					/* Execute the shell */
 					execve((char *)cmd, (char **)args, (char **)env);

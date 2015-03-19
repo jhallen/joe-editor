@@ -84,6 +84,8 @@ void nungetc(int c)
 	}
 }
 
+MACRO *type_backtick;
+
 /* Execute a macro every nn seconds */
 
 time_t last_timer_time = 0;
@@ -101,6 +103,8 @@ MACRO *timer_play()
 	return 0;
 }
 
+KBD *shell_kbd;
+
 int edloop(int flg)
 {
 	int term = 0;
@@ -113,8 +117,12 @@ int edloop(int flg)
 			maint->curwin->notify = &term;
 	}
 	while (!leave && (!flg || !term)) {
+		W *w;
 		MACRO *m;
+		BW *bw;
 		int c;
+		int auto_off = 0;
+		int word_off = 0;
 
 		if (exmsg && !flg) {
 			vsrm(exmsg);
@@ -129,9 +137,42 @@ int edloop(int flg)
 		} else
 			c = ttgetc();
 
+		/* Clear temporary messages */
+		w = maint->curwin;
+		do {
+			if (w->y != -1) {
+				msgclr(w);
+			}
+			w = (W *) (w->link.next);
+		} while (w != maint->curwin);
+
 		if (!ahead && c == 10)
 			c = 13;
-		m = dokey(maint->curwin->kbd, c);
+
+		more_no_auto:
+
+		/* Use special kbd if we're handing data to a shell window */
+		bw = (BW *)maint->curwin->object;
+		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor))
+			m = dokey(shell_kbd, c);
+		else if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)
+			m = dokey(bw->b->vt->kbd, c);
+		else
+			m = dokey(maint->curwin->kbd, c);
+
+		/* leading part of backtick hack... */
+		if (m && m->cmd && m->cmd->func == uquote && ttcheck()) {
+			m = type_backtick;
+		}
+
+		/* disable autoindent if it looks like a mouse paste... */
+		if (m && m->cmd && (m->cmd->func == utype || m->cmd->func == urtn) && (maint->curwin->watom->what & TYPETW) && (bw->o.autoindent || bw->o.wordwrap) && ttcheck()) {
+			auto_off = bw->o.autoindent;
+			bw->o.autoindent = 0;
+			word_off = bw->o.wordwrap;
+			bw->o.wordwrap = 0;
+		}
+
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
 			int x = maint->curwin->kbd->x;
 
@@ -143,6 +184,29 @@ int edloop(int flg)
 			m = timer_play();
 		if (m)
 			ret = exemac(m);
+
+		/* trailing part of backtick hack... */
+		while (!leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck() && havec == '`') {
+			ttgetc();
+			ret = exemac(type_backtick);
+		}
+
+		/* trailing part of disabled autoindent */
+		if (!leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck()) {
+			c = ttgetc();
+			goto more_no_auto;
+		}
+
+		if (auto_off) {
+			auto_off = 0;
+			bw->o.autoindent = 1;
+		}
+
+		if (word_off) {
+			word_off = 0;
+			bw->o.wordwrap = 1;
+		}
+
 	}
 
 	if (term == -1)
@@ -387,6 +451,14 @@ int main(int argc, char **real_argv, char **envv)
 		goto exit_errors;
 	}
 
+	{
+		unsigned char buf[10];
+		int x;
+		zlcpy(buf, sizeof(buf), USTR "\"`\"	`  ");
+		type_backtick = mparse(0, buf, &x, 0);
+	}
+
+	shell_kbd = mkkbd(kmap_getcontext(USTR "shell"));
 
 	if (!isatty(fileno(stdin)))
 		idleout = 0;
@@ -552,7 +624,7 @@ int main(int argc, char **real_argv, char **envv)
 			cmd = vsncpy(NULL, 0, sc("/bin/cat"));
 			a = vaadd(a, cmd);
 			
-			cstart (maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1);
+			cstart (maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1, NULL, 0);
 		}
 	}
 
