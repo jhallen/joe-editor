@@ -117,6 +117,7 @@ int edloop(int flg)
 			maint->curwin->notify = &term;
 	}
 	while (!leave && (!flg || !term)) {
+		W *w;
 		MACRO *m;
 		BW *bw;
 		int c;
@@ -135,6 +136,15 @@ int edloop(int flg)
 			ungot = 0;
 		} else
 			c = ttgetc();
+
+		/* Clear temporary messages */
+		w = maint->curwin;
+		do {
+			if (w->y != -1) {
+				msgclr(w);
+			}
+			w = (W *) (w->link.next);
+		} while (w != maint->curwin);
 
 		if (!ahead && c == 10)
 			c = 13;

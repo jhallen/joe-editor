@@ -1346,8 +1346,11 @@ void bwrm(BW *w)
 	joe_free(w);
 }
 
+unsigned char *ustat_line;
+
 int ustat(BW *bw)
 {
+#if 0
 	static unsigned char buf[160];
 	unsigned char bf1[100];
 	unsigned char bf2[100];
@@ -1361,13 +1364,27 @@ int ustat(BW *bw)
 		joe_snprintf_1(bf2, sizeof(bf2), "%lx", (unsigned long)bw->cursor->byte);
 #endif
 
-	if (bw->b->vt)
-		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("cursor=%ld vt=%ld vttop=%d bwtop=%ld")), (long)bw->cursor->byte, (long)bw->b->vt->vtcur->byte, bw->b->vt->top->line, bw->top->line);
-	else if (c == NO_MORE_DATA)
+	if (c == NO_MORE_DATA)
 		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2);
 	else
 		joe_snprintf_9(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
 	msgnw(bw->parent, buf);
+#endif
+
+	int c = brch(bw->cursor);
+	unsigned char *msg;
+
+	if (c == NO_MORE_DATA) {
+		if (bw->o.zmsg) msg = bw->o.zmsg;
+		else msg = USTR "** Line %r Col %c Offset %o(0x%O) **";
+	} else {
+		if (bw->o.smsg) msg = bw->o.smsg;
+		else msg = USTR "** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w **";
+	}
+
+	ustat_line = stagen(ustat_line, bw, msg, zlen(msg) ? msg[zlen(msg) - 1] : ' ');
+	msgnw(bw->parent, ustat_line);
+
 	return 0;
 }
 

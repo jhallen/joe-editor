@@ -1,21 +1,10 @@
 
 Improvements:
 
- messages from shell windows sometimes do not show up.  The issue is that
-when we close a prompt window, we resize the shell window.  This causes bash
-to redraw the line.  This input counts as typing and causes the message to
-be erased (it just causes a screen update which notices the updtab flag
-set).. We need some other way (than setting updtab) to clear the message-
-maybe set updtab on next user input.
-
-
- add shell commands to other rc files
-
  Keys for parserr and release?
 
  Preserve position in parser in case we re-parse (for very long compile we
 want to start looking at errors before it's done)
-
 
  It would be nice if ^G was goto instead of ESC space (when parserr is active?)
   (no good way to do this.)
@@ -52,6 +41,20 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+ add shell commands to other rc files
+ [done]
+
+ status command should use status line escape sequences
+ [done]
+
+ messages from shell windows sometimes do not show up.  The issue is that
+when we close a prompt window, we resize the shell window.  This causes bash
+to redraw the line.  This input counts as typing and causes the message to
+be erased (it just causes a screen update which notices the updtab flag
+set).. We need some other way (than setting updtab) to clear the message-
+maybe set updtab on next user input.
+ [fixed- now we remove message only on user input, not shell input]
+
  security hole with "math"
  [fixed]
 

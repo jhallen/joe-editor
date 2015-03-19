@@ -127,6 +127,8 @@ OPTIONS pdefault = {
 	NULL,		/* *context */
 	NULL,		/* *lmsg */
 	NULL,		/* *rmsg */
+	NULL,		/* *smsg */
+	NULL,		/* *zmsg */
 	0,		/* line numbers */
 	0,		/* read only */
 	0,		/* french spacing */
@@ -186,6 +188,8 @@ OPTIONS fdefault = {
 	USTR "main",		/* *context */
 	USTR "\\i%n %m %M",	/* *lmsg */
 	USTR " %S Ctrl-K H for help",	/* *rmsg */
+	NULL,		/* *smsg */
+	NULL,		/* *zmsg */
 	0,		/* line numbers */
 	0,		/* read only */
 	0,		/* french spacing */
@@ -573,6 +577,20 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			if (arg) {
 				if (options)
 					options->rmsg = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, USTR "smsg")) {
+			if (arg) {
+				if (options)
+					options->smsg = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, USTR "zmsg")) {
+			if (arg) {
+				if (options)
+					options->zmsg = zdup(arg);
 				ret = 2;
 			} else
 				ret = 1;

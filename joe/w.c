@@ -739,12 +739,18 @@ void msgout(W *w)
 
 	if (w->msgb) {
 		mdisp(t, w->y + w->h - 1, w->msgb);
-		w->msgb = 0;
+		// w->msgb = 0;
 	}
 	if (w->msgt) {
 		mdisp(t, w->y + ((w->h > 1 && (w->y || !staen)) ? 1 : 0), w->msgt);
-		w->msgt = 0;
+		// w->msgt = 0;
 	}
+}
+
+void msgclr(W *w)
+{
+	w->msgb = 0;
+	w->msgt = 0;
 }
 
 /* Set temporary message */

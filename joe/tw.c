@@ -145,6 +145,7 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 {
 	unsigned char buf[80];
 	int x;
+	int field;
 	W *w = bw->parent;
 	time_t n=time(NULL);
 	struct tm *cas;
@@ -153,7 +154,13 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 	stalin = vstrunc(stalin, 0);
 	while (*s) {
 		if (*s == '%' && s[1]) {
-			switch (*++s) {
+			field = 0;
+			++s;
+			while (*s >= '0' && *s <= '9' && s[1]) {
+				field = field * 10 + *s - '0';
+				++s;
+			}
+			switch (*s) {
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
 					if ( bw->o.autoindent) {
@@ -297,17 +304,27 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 					stalin = vsadd(stalin, fill);
 				break;
 			case 'r':
-				joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
+				if (field)
+					joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
+				else
+					joe_snprintf_1(buf, sizeof(buf), "%ld", bw->cursor->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'o':
+				if (field)
 #ifdef HAVE_LONG_LONG
-				joe_snprintf_1(buf, sizeof(buf), "%-4lld", (long long)bw->cursor->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%-4lld", (long long)bw->cursor->byte);
 #else
-				joe_snprintf_1(buf, sizeof(buf), "%-4ld", (long)bw->cursor->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%-4ld", (long)bw->cursor->byte);
+#endif
+				else
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, sizeof(buf), "%lld", (long long)bw->cursor->byte);
+#else
+					joe_snprintf_1(buf, sizeof(buf), "%ld", (long)bw->cursor->byte);
 #endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
@@ -315,10 +332,17 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'O':
+				if (field)
 #ifdef HAVE_LONG_LONG
-				joe_snprintf_1(buf, sizeof(buf), "%-4llX", (unsigned long long)bw->cursor->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%-4llX", (unsigned long long)bw->cursor->byte);
 #else
-				joe_snprintf_1(buf, sizeof(buf), "%-4lX", (unsigned long)bw->cursor->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%-4lX", (unsigned long)bw->cursor->byte);
+#endif
+				else
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, sizeof(buf), "%llX", (unsigned long long)bw->cursor->byte);
+#else
+					joe_snprintf_1(buf, sizeof(buf), "%lX", (unsigned long)bw->cursor->byte);
 #endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
@@ -336,17 +360,26 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'A':
-				if (!piseof(bw->cursor))
-					joe_snprintf_1(buf, sizeof(buf), "%2.2X", brch(bw->cursor));
+				if (field)
+					if (!piseof(bw->cursor))
+						joe_snprintf_1(buf, sizeof(buf), "%2.2X", brch(bw->cursor));
+					else
+						joe_snprintf_0(buf, sizeof(buf), "  ");
 				else
-					joe_snprintf_0(buf, sizeof(buf), "  ");
+					if (!piseof(bw->cursor))
+						joe_snprintf_1(buf, sizeof(buf), "%x", brch(bw->cursor));
+					else
+						joe_snprintf_0(buf, sizeof(buf), "");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'c':
-				joe_snprintf_1(buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
+				if (field)
+					joe_snprintf_1(buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
+				else
+					joe_snprintf_1(buf, sizeof(buf), "%ld", piscol(bw->cursor) + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -373,7 +406,10 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'l':
-				joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
+				if (field)
+					joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
+				else
+					joe_snprintf_1(buf, sizeof(buf), "%ld", bw->b->eof->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -410,14 +446,20 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'S':
 				if (bw->b->pid)
-					if (bw == vtmaster(maint, bw->b))
-						stalin = vsncpy(sv(stalin), sz(joe_gettext(_("*SHELLM*"))));
-					else
-						stalin = vsncpy(sv(stalin), sz(joe_gettext(_("*SHELL*"))));
+					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("*SHELL*"))));
 				break;
 			case 'M':
 				if (recmac) {
 					joe_snprintf_1(buf, sizeof(buf), joe_gettext(_("(Macro %d recording...)")), recmac->n);
+					stalin = vsncpy(sv(stalin), sz(buf));
+				}
+				break;
+			case 'e':
+				stalin = vsncpy(sv(stalin), sz(bw->b->o.charmap->name));
+				break;
+			case 'w':
+				if (!piseof(bw->cursor)) {
+					joe_snprintf_1(buf, sizeof(buf), "%d", joe_wcwidth(bw->o.charmap->type, brch(bw->cursor)));
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;

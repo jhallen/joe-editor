@@ -252,6 +252,7 @@ void msgnwt PARAMS((W *w, unsigned char *s));
 extern unsigned char msgbuf[JOE_MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
 
 void msgout PARAMS((W *w));			/* Output msgnw/msgnwt messages */
+void msgclr();					/* Clear them */
 
 /* Common user functions */
 

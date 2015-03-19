@@ -64,6 +64,8 @@ struct options {
 	unsigned char	*context;
 	unsigned char	*lmsg;
 	unsigned char	*rmsg;
+	unsigned char	*smsg;
+	unsigned char	*zmsg;
 	int	linums;
 	int	readonly;
 	int	french;
