@@ -67,6 +67,93 @@ selected rectangular block of numbers and their sum:</p>
 
 <img src="https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/htdocs/elaborate.gif" alt="elaborate screen capture">
 
-<p>JOE has the following features:</p>
+### JOE has the following features:
 
+* Multi-file search and replace- file list is either given on command line or by a UNIX command (grep/find) run from within JOE.
 
+* Mouse support, including wheel (works best when using xterm).  The mouse can resize windows, scroll windows, select and paste text, and select menu entries.
+
+* Context display on status line: allows you to see name of function cursor is in.
+
+* UTF-8 support, optional auto-detect of UTF-8 files.
+
+* Syntax highlighting for more than 40 languages.
+
+* Hexadecimal edit mode.  Use JOE as a disk editor: joe -overwrite -hex /dev/hda1,0,512 (edit first sector of /dev/hda1).
+
+* Non-destructive editing of binary files even when handling MS-DOS or UNIX line endings.
+
+* Swap file allows editing files larger than memory.
+
+* Context sensitive on-line help.
+
+* Bash-like TAB completion and history for all prompts, or jump into the
+completion menu and use it to traverse the file system.
+
+* Complete word in edit buffer by hitting ESC Enter (uses other words in
+buffer for dictionary).
+
+* EMACS-compatible file locks and file modification checking.
+
+* Shell windows.
+
+* Multiple-windows onto same or different files.
+
+* Compile and step through errors or Grep and step through finds.
+
+* Goto matching character delimiter \( \[ \{ \< which skips comments and
+quoted matter.
+
+* Goto matching word delimiter, including XML tags and C preprocessor
+directives.
+
+* Ctrl-arrow key block selection.
+
+* Search and replace system, including regular expression and optional
+incremental search.  Regular expression key for matching balanced C
+expressions.
+
+* Tags file search (tab completion at tags search prompt uses tags file as
+database).
+
+* Spell check commands which invoke aspell or ispell.  Language for aspell
+can be passed through editor.
+
+* Paragraph format which preserves news/mail quoting indentation
+characters.
+
+* Unlimited Undo and Redo.
+
+* Yank buffer allows stepping through and insertion of previously deleted
+text.
+
+* State file restores history buffers, yank buffer and last file cursor
+positions.
+
+* Cursor position history allows you to step through previously visited areas
+of a file.
+
+* Multiple interactive keyboard macros.  Macros can be assigned to key
+sequences in joerc file.
+
+* Block move/copy/delete/filter.
+
+* Rectangle (columnar) block mode- search and replace can be narrowed to
+the rectangular block.  Rectangular blocks can be filtered through UNIX
+commands.
+
+* Overtype/Insert modes.
+
+* Indent/Unindent (shift block left or right).
+
+* Auto-indent mode.
+
+* Picture mode for ASCII graphics.
+
+* Line number mode displays line number of each line.
+
+* Powerful scientific calculator with block statistics functions (sum/standard-deviation/count highlighted block of numbers).
+
+* Termcap/Terminfo support allows JOE to use any terminal or terminal emulator.
+
+* Can accept data from a pipe, for example: ls \| joe
