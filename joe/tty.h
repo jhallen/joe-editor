@@ -202,6 +202,4 @@ void tickon PARAMS((void));
 extern long last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */
 
-extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */
-
 #endif

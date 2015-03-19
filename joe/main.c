@@ -651,7 +651,7 @@ int main(int argc, char **real_argv, char **envv)
 	/* Display startup message unless disabled by global option */
 	if (!nonotice) {
 		msgnw(((BASE *)lastw(maint)->object)->parent,
-		  vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2008 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)")));
+		  vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)")));
 	}
 
 	/* Setup reading in from stdin to first window if something was
