@@ -15,13 +15,13 @@
 * At file prompts you can begin a new anchored path without having to delete
   the old one.  It means that ~jhallen/foo//etc/passwd is translated to /etc/passwd.
   Prompt windows are now highighted to indicate which parts of the path are
-  being dropped.  The is a syntax file for this: filename.jsf
+  being dropped.  There is a syntax file for this: filename.jsf
 
-* The error parser now ignores ANSI sequences (for example some version of grep
-  color their results).
+* The error parser now ignores ANSI sequences (some versions of grep
+  color their results, now JOE can still parse it).
 
-* Temporary messages are no dismissed by keyboard input only.  Before, they
-  could be dismissed by shell input.  Use the noexmsg option to suppress them.
+* Temporary messages are now dismissed by keyboard input only.  Before, they
+  could also be dismissed by shell input.
 
 ### JOE 3.8
 
