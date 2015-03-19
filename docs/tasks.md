@@ -32,7 +32,7 @@ some aliases which allow you to control JOE with fake shell commands.  I
 have these commands so far:
 
 Command       | Action
-==============|=======
+--------------|--------
 clear         | erase shell window (delete buffer contents)
 joe file      | edit a file in joe
 math 1+2      | evaluate equation using JOE's calculator
