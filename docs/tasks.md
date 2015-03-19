@@ -51,7 +51,7 @@ For security, only macros defined in the joerc file which begin with
 
 ### Use cases
 
-The pop shell window has a number of nice uses:
+Pop-up shell windows have a number of nice use cases:
 
 * Use it browse manual pages
 
