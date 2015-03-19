@@ -72,7 +72,10 @@ The pop shell window has a number of nice uses:
 
 ~~~~
 		parse grep -n FIXME *.c
+~~~~
+	Or:
 
+~~~~
 		markb; find . | xargs grep -n FIXME; markk; parse
 ~~~~
 
@@ -87,18 +90,19 @@ The pop shell window has a number of nice uses:
 
 	Now use ^P to position the cursor on one of the lines of the list. 
 	Hit ESC SPACE to have JOE edit the file and jump to the specified
-	line (also you can use ESC - and ESC = to step through the parsed
-	errors).
+	line (also you can use ESC - and ESC = to step through the list).
 
-* Use it conjuction with search and replace to edit many files
+* Use it in conjuction with search and replace to edit many files
 
-	Once JOE has the list of files, use search and replace with the 'e' option
-	to visit all of them:
+	Once JOE has a list of files (from above), use search and replace
+	with the 'e' option to visit all of them:
 
+~~~~
 		^K F
 		   Find: <text>
 		   Options: re
 		   Replace: <replacement text>
+~~~~
 
 * Build your project
 
