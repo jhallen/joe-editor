@@ -70,17 +70,17 @@ The pop shell window has a number of nice uses:
 	Hit F1 and navigate to a directory.  Use grep or find (or both)
 	to generate a list of files):
 
-~~~
+~~~~
 		parse grep -n FIXME *.c
 
 		markb; find . | xargs grep -n FIXME; markk; parse
-~~~
+~~~~
 
 	(Note that you can't say this:
 
-~~~
+~~~~
 		parse find . | xargs grep -n FIXME
-~~~
+~~~~
 
 	...the issue is that only the words to the left of the pipe symbol
 	are passed as arguments to the parse command).
@@ -104,9 +104,9 @@ The pop shell window has a number of nice uses:
 
 	Easily capture errors from a build with:
 
-~~~
+~~~~
 		parse make
-~~~
+~~~~
 
 	Hit ESC = and ESC - to step through the errors.
 

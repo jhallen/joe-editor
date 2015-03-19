@@ -1,6 +1,10 @@
 
 Improvements:
 
+ parse can't be used with commands with pipe symbol
+
+ file names with spaces not working correctly
+
  Keys for parserr and release?
 
  Preserve position in parser in case we re-parse (for very long compile we
