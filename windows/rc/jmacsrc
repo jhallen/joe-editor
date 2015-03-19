@@ -3,7 +3,7 @@
                                 Gnu-Emacs Joe
 
  JOE looks for this file in:
-	1 - %LOCALAPPDATA%\JoeEditor\conf\jmacsrc
+	1 - %LOCALAPPDATA%\JoeEditor\jmacsrc
 	2 - (Program location)\conf\jmacsrc
 
  This file can include other files by placing the following include command
@@ -358,17 +358,18 @@
 
 :defmenu root
 mode,"overwrite",rtn	T Overtype %Zoverwrite%
-mode,"hex",rtn	% % Hex edit mode
+mode,"hex",rtn	' Hex edit mode
 mode,"autoindent",rtn	I Autoindent %Zautoindent%
 mode,"wordwrap",rtn	W Word wrap %Zwordwrap%
 mode,"tab",rtn	D Tab width %Ztab%
 mode,"lmargin",rtn	L Left margin %Zlmargin%
 mode,"rmargin",rtn	R Right margin %Zrmargin%
-mode,"square",rtn	X Rectangle mode %Zsquare%
+mode,"square",rtn	X Column mode %Zsquare%
 mode,"indentc",rtn	% % Indent char %Zindentc%
 mode,"istep",rtn	% % Indent step %Zistep%
+menu,"indent",rtn	= Indent select
 mode,"highlight",rtn	H Highlighting %Zhighlight%
-mode,"crlf",rtn	Z CR-LF (MS-DOS) %Zcrlf%
+mode,"crlf",rtn	Z CR-LF/MS-DOS %Zcrlf%
 mode,"linums",rtn	N Line numbers %Zlinums%
 mode,"beep",rtn	B Beep %Zbeep%
 mode,"rdonly",rtn	O Read only %Zrdonly%
@@ -389,6 +390,16 @@ menu,"global",rtn	% % global options
 menu,"cursor",rtn	% % cursor options
 menu,"marking",rtn	% % marking options
 menu,"tab",rtn	% % tab/indent options
+
+:defmenu indent
+mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 1, Indent character = 32",rtn	1 Space
+mode,"istep",rtn,"2",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 2, Indent character = 32",rtn	2 Spaces
+mode,"istep",rtn,"3",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 3, Indent character = 32",rtn	3 Spaces
+mode,"istep",rtn,"4",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 4, Indent character = 32",rtn	4 Spaces
+mode,"istep",rtn,"5",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 5, Indent character = 32",rtn	5 Spaces
+mode,"istep",rtn,"8",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 8, Indent character = 32",rtn	8 Spaces
+mode,"istep",rtn,"10",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 10, Indent character = 32",rtn	0 Ten
+mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"9",rtn,msg,"Indent step = 1, Indent character = 9",rtn	T Tab
 
 :defmenu menu
 mode,"menu_explorer",rtn	% % Menu explorer %Zmenu_explorer%
@@ -564,9 +575,10 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i   Help Screen    \|turn off with ^X^H   prev. screen ^X,    next screen ^X.     \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
-\i \i  default joerc file is here /usr/local/etc/joe/joerc \|\i \i
-\i \i  default syntax and i18n files are here /usr/local/share/joe \|\i \i
-\i \i  additional documentation can be found here /usr/local/share/doc/joe \|\i \i
+\i \i  default joerc file is here (Program location)\\conf\\jmacsrc \|\i \i
+\i \i  user joerc file is here %LOCALAPPDATA%\\JoeEditor\\jmacsrc \|\i \i
+\i \i  default syntax and i18n files are here (Program location)\\syntax \|\i \i
+\i \i  additional documentation can be found here (Program location)\\doc \|\i \i
 }
 
 {CharTable

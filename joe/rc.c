@@ -1051,7 +1051,7 @@ int display_menu(BW *bw, struct rc_menu *menu)
 	unsigned char **s = vamk(20);
 	int x;
 	for (x = 0; x != menu->size; ++x) {
-		vaadd(s, stagen(NULL, bw, menu->entries[x]->name, ' '));
+		s = vaadd(s, stagen(NULL, bw, menu->entries[x]->name, ' '));
 	}
 	x = choose(bw->parent, bw->parent, s, &menu->last_position);
 	if (x == -1) {
