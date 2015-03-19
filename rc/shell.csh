@@ -1,23 +1,29 @@
 # Aliases for csh/tcsh in JOE shell window
 
-alias clear "echo \{shell_clear}"
+alias clear "echo -n \{shell_clear}"
 
-alias parse "echo \{shell_parse}"
+alias parse "echo -n \{shell_gparse}"
 
-alias release "echo \{shell_release}"
+alias parserr "echo -n \{shell_parserr}"
 
-alias markb "echo \{shell_markb}"
+alias release "echo -n \{shell_release}"
 
-alias markk "echo \{shell_markk}"
+alias markb "echo -n \{shell_markb}"
 
-alias math "echo \{shell_math,"\\\"\!\*\\\"",shell_rtn}; echo \{shell_rtn,shell_math,"\\\""ans:ins"\\\"",shell_rtn}"
+alias markk "echo -n \{shell_markk}"
 
-alias edit "echo \{shell_popedit,"\\\"\!\*\\\"",shell_rtn}"
+alias mark "echo -n \{shell_markb}; "\!\*"; echo -n \{shell_markk}"
 
-alias joe "echo \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
+alias math "echo -n \{shell_math,"\\\"\!\*\\\"",shell_rtn\\!,shell_typemath}; cat >/dev/null"
 
-alias pop "echo \{shell_pop}"
+alias edit "echo -n \{shell_popedit,"\\\"\!\*\\\"",shell_rtn}"
 
-alias cd "cd "\!\*"; echo \{shell_cd,shell_dellin\\!,"\\\"`pwd`/\\\"",shell_rtn}"
+alias joe "echo -n \{shell_popedit,"\\\"\!\*\\\"",shell_rtn}"
+
+alias pop "echo -n \{shell_pop}"
+
+alias cd "cd "\!\*"; echo -n \{shell_cd,shell_dellin\\!,"\\\""; pwd | tr -d '\n'; echo -n /"\\\"",shell_rtn}"
 
 clear
+
+echo

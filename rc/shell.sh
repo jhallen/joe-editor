@@ -2,23 +2,24 @@
 
 # Clear edit buffer
 joe_clear () {
-	echo '{'shell_clear'}'
+	echo -n '{'shell_clear'}'
 }
 
 # Release errors
 joe_release () {
-	echo '{'shell_release'}'
+	echo -n '{'shell_release'}'
 }
 
 # Set marked region beginning
 joe_markb () {
-	echo '{'shell_markb'}'
+	echo -n '{'shell_markb'}'
 }
 
 # Set marked region end
 joe_markk () {
-	echo '{'shell_markk'}'
+	echo -n '{'shell_markk'}'
 }
+
 
 # Mark command result
 joe_mark () {
@@ -29,6 +30,18 @@ joe_mark () {
 
 # Parse command result (or whole buffer if no arg)
 joe_parse () {
+	if [ "$1" = "" ]; then
+		echo -n '{'shell_gparse'}'
+	else
+		joe_markb
+		$*
+		joe_markk
+		echo '{'shell_gparse'}'
+	fi
+}
+
+# Parse command result (or whole buffer if no arg)
+joe_parserr () {
 	if [ "$1" = "" ]; then
 		echo '{'shell_parse'}'
 	else
@@ -41,18 +54,18 @@ joe_parse () {
 
 # Use JOE's calculator
 joe_math () {
-	echo '{'shell_math,'"'$1'"',shell_rtn!,shell_typemath'}'
+	echo -n '{'shell_math,'"'$1'"',shell_rtn!,shell_typemath'}'
 	cat >/dev/null
 }
 
 # Edit a file
 joe_edit () {
-	echo '{'shell_popedit,'"'$1'"',shell_rtn'}'
+	echo -n '{'shell_popedit,'"'$1'"',shell_rtn'}'
 }
 
 # Pop shell window
 joe_pop () {
-	echo '{'shell_pop'}'
+	echo -n '{'shell_pop'}'
 }
 
 unalias cd 2>/dev/null
@@ -68,7 +81,7 @@ joe_cd () {
 		cd "$1"
 	fi
 	# Tell JOE our new directory
-	echo '{'shell_cd,shell_dellin!,'"'`pwd`/'"',shell_rtn'}'
+	echo -n '{'shell_cd,shell_dellin!,'"'`pwd`/'"',shell_rtn'}'
 }
 
 alias clear=joe_clear
@@ -78,9 +91,42 @@ alias joe=joe_edit
 alias pop=joe_pop
 alias cd=joe_cd
 alias parse=joe_parse
+alias parserr=joe_parserr
 alias release=joe_release
 alias markb=joe_markb
 alias markk=joe_markk
 alias mark=joe_mark
 
+# Code to automatically mark and parse output from each command
+# - This is bash specific code
+
+#joe_markb_pre () {
+#	joe_markb
+#	MARK_FLAG=1
+#}
+
+#joe_markk_post () {
+#	if [ "$MARK_FLAG" = "1" ]; then
+#		joe_markk
+#		MARK_FLAG=0
+#		joe_parse
+#	fi
+#}
+
+#preexec () { :; }
+
+#preexec_invoke_exec () {
+#    [ -n "$COMP_LINE" ] && return  # do nothing if completing
+#    [ "$BASH_COMMAND" = "$PROMPT_COMMAND" ] && return # don't cause a preexec for $PROMPT_COMMAND
+#    local this_command=`HISTTIMEFORMAT= history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//"`;
+#    joe_markb_pre
+#    preexec "$this_command"
+#}
+
+#trap 'preexec_invoke_exec' DEBUG
+
+#PROMPT_COMMAND=joe_markk_post
+
 joe_clear
+
+echo

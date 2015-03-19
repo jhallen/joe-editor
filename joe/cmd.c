@@ -95,6 +95,7 @@ CMD cmds[] = {
 	{USTR "fmtblk", TYPETW + EMOD + EFIXXCOL + EBLOCK, ufmtblk, NULL, 1, NULL},
 	{USTR "fwrdc", TYPETW + TYPEPW, ufwrdc, NULL, 1, USTR "bkwdc"},
 	{USTR "gomark", TYPETW + TYPEPW + EMOVE, ugomark, NULL, 0, NULL},
+	{USTR "gparse", TYPETW, ugparse, NULL, 0, NULL},
 	{USTR "grep", TYPETW, ugrep, NULL, 0, NULL},
 	{USTR "groww", TYPETW, ugroww, NULL, 1, USTR "shrinkw"},
 	{USTR "if", TYPETW+TYPEPW+TYPEMENU+TYPEQW+EMETA, uif, 0, 0, 0 },

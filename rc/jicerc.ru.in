@@ -831,6 +831,7 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
  Macros allowed in shell window commands
 :def shell_clear psh,bof,markb,eof,markk,blkdel
 :def shell_parse parserr
+:def shell_gparse gparse
 :def shell_release release
 :def shell_math maths
 :def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn

@@ -50,7 +50,8 @@ cd xyz        | change directory, keep JOE up to date
 markb         | same as ^KB
 markk         | same as ^KK
 mark command  | execute shell command, mark it's output
-parse command | execute shell command, parse it's output for errors
+parse command | execute shell command, parse it's output for file names and line numbers (for find or grep)
+parser command| execute shell command, parse it's output for errors (for gcc)
 release       | release parsed errors
 pop           | dismiss shell window (same as ^K Q)
 
