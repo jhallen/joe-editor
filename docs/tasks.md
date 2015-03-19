@@ -23,6 +23,16 @@ window.  One way is to move the cursor off of the shell data entry point
 (with Ctrl-P), and then hit Ctrl-C.  Another is to hit ^K Q.  Finally, you
 can type 'pop' at the command prompt.
 
+If you need to pass a key to the shell that JOE normally uses, quote it.  For
+example, if you invoke "emacs -nw" in the shell window, you can exit it with:
+
+	ESC \' ^X ^C
+
+or:
+
+	\` ^X ^C
+
+
 To quickly position the cursor back to the point where data is entered into
 the shell, hit ^K V.
 

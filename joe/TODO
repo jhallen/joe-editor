@@ -1,9 +1,11 @@
 
 Improvements:
 
+ Should ^K E pop the shell window?
+
  parse can't be used with commands with pipe symbol
 
- file names with spaces not working correctly
+ parsed file names with spaces not working correctly
 
  Keys for parserr and release?
 
