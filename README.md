@@ -79,3 +79,14 @@ selected rectangular block of numbers and their sum:</p>
 
 * Syntax highlighting for more than 40 languages.
 
+* Hexadecimal edit mode.  Use JOE as a disk editor: joe -overwrite -hex /dev/hda1,0,512 (edit first sector of /dev/hda1).
+
+* Non-destructive editing of binary files even when handling MS-DOS or UNIX line endings.
+
+* Swap file allows editing files larger than memory.
+
+* Context sensitive on-line help.
+
+* Bash-like TAB completion and history for all prompts, or jump into the
+completion menu and use it to traverse the file system.
+
