@@ -65,7 +65,10 @@ double-wide characters, the second is the same buffer as the first, but in
 hex-dump view mode, the third is a shell window and the fourth shows a
 selected rectangular block of numbers and their sum:</p>
 
+<img src="https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/htdocs/elaborate.gif" alt="elaborate screen capture">
+
 <p>JOE has the following features:</p>
+
 <ul>
 
 <li>Multi-file search and replace- file list is either given on command line
@@ -163,94 +166,6 @@ commands.</li>
 <li>Termcap/Terminfo support allows JOE to use any terminal or terminal
 emulator.</li>
 
-<li>Can accept data from a pipe, for example: ls | joe</li>
+<li>Can accept data from a pipe, for example: ls \| joe</li>
 </ul>
 
-<p>JOE does not have these features (yet):</p>
-<ul>
-
-<li>Vertical windows, but JOE will probably have this in version 3.6</li>
-
-<li>Folding</li>
-
-<li>Right to left editing for Hebrew and Arabic</li>
-
-<li>Direct editing of 16-bit character sets such as UCS-16 and BIG5</li>
-
-<li>All encompassing macro language like elisp in GNU-EMACS</li>
-
-<li>Background spell checking, like Microsoft WORD</li>
-
-<li>Highlight all matching words</li>
-
-<li>Automatic unzip/untar</li>
-
-<li>Built-in FTP</li>
-
-<li>X-Window version (use inside a terminal emulator)</li>
-
-<li>Native Windows version (but you can use JOE in Cygwin)</li>
-
-<li>Interface to debugger</li>
-
-</ul>
-
-<p>Here are some other editors to consider:</p>
-<a href="http://www.gnu.org/software/emacs">http://www.gnu.org/software/emacs</a>
-Richard Stallman's powerful LISP-based editor.
-<br><br>
-<a href="http://www.jedsoft.org/jed">http://www.jedsoft.org/jed</a> John E.
-Davis' version of EMACS using the S-Lang language.
-<br><br>
-<a href="http://www.jasspa.com">http://www.jasspa.com</a> Micro Emacs
-<br><br>
-<a href="http://www.vile.cx">http://www.vile.cx</a> Paul Fox's vi clone
-(built on top of Micro Emacs).  Now maintained by Tom Dickey and others.
-<br><br>
-<a href="http://www.nano-editor.org">http://www.nano-editor.org</a> An open
-source PICO clone.
-<br><br>
-<a
-href="http://www.washington.edu/pine/faq/whatis.html">http://www.washington.edu.pine/faq/whatis.html</a>
-PICO: A simple editor built on Micro Emacs.
-<br><br>
-<a href="http://www.vim.org">http://www.vim.org</a> Bram Moolenaar's vi
-clone</a>
-<br><br>
-<a href="http://elvis.the-little-red-haired-girl.org/whatiselvis/index.html">
-http://elvis.the-little-red-haired-girl.org</a> Elvis: A
-small vi clone
-<br><br>
-<a href="http://www.jedit.org">http://www.jedit.org</a> Powerful editor
-written in Java
-<br><br>
-<a href="http://www.nedit.org">http://www.nedit.org</a> X-Windowing System
-editor
-<br><br>
-<a href="http://www.ibiblio.org/mc">http://www.ibiblio.org/mc</a> Midnight
-Commander file manager with built-in text editor with highlighting.  Can
-browse ZIP and TAR files.
-<br><br>
-
-<a href="http://www.cs.yorku.ca/~oz/wily">http://www.cs.yorku.ca/~oz/wily</a> A
-UNIX/X clone of Rob Pike's Plan9 editor ACME.  Originally written by Gary
-Capell, but now maintained by Ozan Yigit.  This is an interesting minimalist
-IDE.
-<br><br>
-
-<a
-href="http://www.eclipse.org/downloads">http://www.eclipse.org/downloads</a>
-Huge IDE written in Java.  Performs same function as Wily, but is literally
-1300 times larger.
-<br><br>
-
-<a href="ftp://netlib.bell-labs.com/netlib/research/sam.shar.gz">ftp://netlib.bell-labs.com/netlib/research/sam.shar.gz</a>
-UNIX/X port of Rob Pike's Plan9 editor SAM.  This interesting editor
-supports multi-file regular expression search &amp; replace with unlimited
-undo.
-<br><br>
-
-<a href="http://sed.sourceforge.net">http://sed.sourceforge.net</a>
-UNIX Stream EDitor.  If you're on UNIX, you already have this editor, but follow
-this link to see the amazing things that can be done with it.
-<br><br>
