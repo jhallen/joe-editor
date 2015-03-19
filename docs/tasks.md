@@ -49,14 +49,67 @@ emulator: ESC { joe_macro }.  When this is received, the macro is executed.
 For security, only macros defined in the joerc file which begin with
 "shell_" can be executed this way.
 
-One nice use of the shell window is to use JOE's error parser on grep
-output to step through a list of files.  Try this example:
+### Use cases
 
-	parse grep -n FIXME *.c
+The pop shell window has a number of nice uses:
 
-Now use ^P to position the cursor on one of the lines of the list.  Hit ESC
-SPACE to have JOE edit the file and jump to the specified line (also you can
-use ESC - and ESC = to step through the parsed errors).
+* Use it browse manual pages
+
+	Hit F1 and type "man fopen".  Use 'b' ('u') and space to control
+	_more_ (or _less_) while viewing the manual.  You can leave the manual
+	on the screen in one window while editing in another window.
+
+* Use it to switch directories
+
+	Hit F1 and navigate to the directory while using _cd_.  Once
+	you are in the right place, hit ^K E to load a file (or type "edit file"
+	from the shell).
+
+* Use it in conjuction with the error parser to find files
+
+	Hit F1 and navigate to a directory.  Use grep or find (or both)
+	to generate a list of files):
+
+```
+		parse grep -n FIXME *.c
+
+		markb; find . | xargs grep -n FIXME; markk; parse
+```
+
+	(Note that you can't say this:
+
+```
+		parse find . | xargs grep -n FIXME
+```
+
+	...the issue is that only the words to the left of the pipe symbol
+	are passed as arguments to the parse command).
+
+	Now use ^P to position the cursor on one of the lines of the list. 
+	Hit ESC SPACE to have JOE edit the file and jump to the specified
+	line (also you can use ESC - and ESC = to step through the parsed
+	errors).
+
+* Use it conjuction with search and replace to edit many files
+
+	Once JOE has the list of files, use search and replace with the 'e' option
+	to visit all of them:
+
+		^K F
+		   Find: <text>
+		   Options: re
+		   Replace: <replacement text>
+
+* Build your project
+
+	Easily capture errors from a build with:
+
+```
+		parse make
+```
+
+	Hit ESC = and ESC - to step through the errors.
+
 
 ### How it works..
 
