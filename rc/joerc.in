@@ -820,6 +820,7 @@ aspellword	^[ n
 :def shell_parse parserr
 :def shell_release release
 :def shell_math math
+:def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn
 :def shell_rtn rtn
 :def shell_popedit popedit
 :def shell_dellin dellin

@@ -8,9 +8,6 @@ be erased (it just causes a screen update which notices the updtab flag
 set).. We need some other way (than setting updtab) to clear the message-
 maybe set updtab on next user input.
 
- hmm.. same problem with "math".  There is a race such that sometimes
-the output
-
  security hole with "math"
 
  add shell commands to other rc files

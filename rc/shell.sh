@@ -5,11 +5,6 @@ joe_clear () {
 	echo '{'shell_clear'}'
 }
 
-# Parse errors
-joe_parse () {
-	echo '{'shell_parse'}'
-}
-
 # Release errors
 joe_release () {
 	echo '{'shell_release'}'
@@ -25,10 +20,29 @@ joe_markk () {
 	echo '{'shell_markk'}'
 }
 
+# Mark command result
+joe_mark () {
+	joe_markb
+	$*
+	joe_markk
+}
+
+# Parse command result (or whole buffer if no arg)
+joe_parse () {
+	if [ "$1" = "" ]; then
+		echo '{'shell_parse'}'
+	else
+		joe_markb
+		$*
+		joe_markk
+		echo '{'shell_parse'}'
+	fi
+}
+
 # Use JOE's calculator
 joe_math () {
-	echo '{'shell_math,'"'$1'"',shell_rtn'}'
-	echo '{'shell_rtn,shell_math,'"'ans:ins'"',shell_rtn'}'
+	echo '{'shell_math,'"'$1'"',shell_rtn,shell_typemath'}'
+	cat >/dev/null
 }
 
 # Edit a file
@@ -67,5 +81,6 @@ alias parse=joe_parse
 alias release=joe_release
 alias markb=joe_markb
 alias markk=joe_markk
+alias mark=joe_mark
 
 joe_clear
