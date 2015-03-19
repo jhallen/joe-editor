@@ -819,7 +819,7 @@ aspellword	^[ n
 :def shell_clear psh,bof,markb,eof,markk,blkdel
 :def shell_parse parserr
 :def shell_release release
-:def shell_math math
+:def shell_math maths
 :def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn
 :def shell_rtn rtn
 :def shell_popedit popedit

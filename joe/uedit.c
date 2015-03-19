@@ -1358,7 +1358,7 @@ static B *linehist = NULL;	/* History of previously entered line numbers */
 
 static int doline(BW *bw, unsigned char *s, void *object, int *notify)
 {
-	long num = calc(bw, s);
+	long num = calc(bw, s, 1);
 
 	if (notify)
 		*notify = 1;
@@ -1396,7 +1396,7 @@ static B *colhist = NULL;	/* History of previously entered column numbers */
 
 static int docol(BW *bw, unsigned char *s, void *object, int *notify)
 {
-	long num = calc(bw, s);
+	long num = calc(bw, s, 1);
 
 	if (notify)
 		*notify = 1;
@@ -1432,7 +1432,7 @@ static B *bytehist = NULL;	/* History of previously entered byte numbers */
 
 static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
 {
-	long num = calc(bw, s);
+	long num = calc(bw, s, 1);
 
 	if (notify)
 		*notify = 1;

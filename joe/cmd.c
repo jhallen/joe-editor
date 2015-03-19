@@ -122,6 +122,7 @@ CMD cmds[] = {
 	{USTR "markk", TYPETW + TYPEPW, umarkk, NULL, 0, NULL},
 	{USTR "markl", TYPETW + TYPEPW, umarkl, NULL, 0, NULL},
 	{USTR "math", TYPETW + TYPEPW, umath, NULL, 0, NULL},
+	{USTR "maths", TYPETW + TYPEPW, usmath, NULL, 0, NULL},
 	{USTR "menu", TYPETW + TYPEPW + TYPEQW, umenu, NULL, 0, NULL},
 	{USTR "mode", TYPETW + TYPEPW + TYPEQW, umode, NULL, 0, NULL},
 	{USTR "msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, NULL, 0, NULL},

@@ -41,7 +41,7 @@ joe_parse () {
 
 # Use JOE's calculator
 joe_math () {
-	echo '{'shell_math,'"'$1'"',shell_rtn,shell_typemath'}'
+	echo '{'shell_math,'"'$1'"',shell_rtn!,shell_typemath'}'
 	cat >/dev/null
 }
 

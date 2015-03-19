@@ -8,7 +8,6 @@ be erased (it just causes a screen update which notices the updtab flag
 set).. We need some other way (than setting updtab) to clear the message-
 maybe set updtab on next user input.
 
- security hole with "math"
 
  add shell commands to other rc files
 
@@ -53,6 +52,8 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+ security hole with "math"
+ [fixed]
 
  parserr - it would be nice if parsing was limited to a block
  [done]

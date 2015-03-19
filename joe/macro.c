@@ -688,7 +688,7 @@ static int dotimer1(BW *bw, unsigned char *s, void *object, int *notify)
 	long num;
 	if (notify)
 		*notify = 1;
-	num = calc(bw, s);
+	num = calc(bw, s, 0);
 	if (merr) {
 		msgnw(bw->parent, merr);
 		return -1;
@@ -841,7 +841,7 @@ static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
 
 	if (notify)
 		*notify = 1;
-	num = calc(bw, s);
+	num = calc(bw, s, 1);
 	if (merr) {
 		msgnw(bw->parent, merr);
 		return -1;
@@ -864,7 +864,7 @@ static int doif(BW *bw,unsigned char *s,void *object,int *notify)
 {
 	long num;
 	if(notify) *notify=1;
-	num=calc(bw,s);
+	num=calc(bw,s,0);
 	if(merr) { msgnw(bw->parent,merr); return -1; }
 	ifflag=(num?1:0);
 	iffail=ifdepth;

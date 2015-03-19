@@ -676,9 +676,9 @@ help		^K ^H
 help		^K h
 hnext		^[ .		Next help window
 hprev		^[ ,		Previous help window
-math		^[ m		Calculator
-math		^[ M		Calculator
-math		^[ ^M		Calculator
+maths		^[ m		Calculator
+maths		^[ M		Calculator
+maths		^[ ^M		Calculator
 msg		^[ h		Display a message
 msg		^[ H		Display a message
 msg		^[ ^H		Display a message
