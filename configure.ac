@@ -4,7 +4,7 @@
 AC_PREREQ(2.54)
 
 #### Here's the only place where to change version number ####
-AC_INIT(joe, 3.7)
+AC_INIT(joe, 3.8)
 AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD

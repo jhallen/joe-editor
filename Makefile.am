@@ -2,8 +2,8 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = man rc po syntax joe
 
-EXTRA_DIST = COPYING docs/LIST docs/HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA \
-	docs/help-system.html charmaps/klingon.in docs/HINTS \
+EXTRA_DIST = COPYING docs/list.md docs/hacking.md ChangeLog NEWS.md README INSTALL INSTALL.AMIGA \
+	docs/help-system.html charmaps/klingon.in docs/tasks.md \
 	cygbuild setup.hint xterm-patch xterm-readme autojoe
 
 sysconf_joedir = $(sysconfdir)/joe
@@ -13,7 +13,7 @@ data_charmapsdir = $(data_joedir)/charmaps
 data_charmaps_DATA = charmaps/klingon
 
 data_docdir = $(docdir)
-data_doc_DATA = docs/LIST README docs/HINTS ChangeLog docs/HACKING NEWS
+data_doc_DATA = docs/list.md README docs/tasks.md ChangeLog docs/hacking.md NEWS.md
 
 install-exec-hook:
 	rm -f $(DESTDIR)$(bindir)/jmacs $(DESTDIR)$(bindir)/jstar $(DESTDIR)$(bindir)/rjoe $(DESTDIR)$(bindir)/jpico
