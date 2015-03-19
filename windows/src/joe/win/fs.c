@@ -213,29 +213,3 @@ int glue_mkdir(const char *path, int mode)
 	/* No mode argument in windows, but the default should be reasonable. */
 	return _wmkdir(wpath);
 }
-
-int glue_fprintf(FILE *fp, const char *fmt, ...)
-{
-	int result;
-	va_list args;
-
-	va_start(args, fmt);
-
-#ifdef DEBUG
-	if (fp == stderr) {
-		char tmp[1024];
-
-		result = vsnprintf(tmp, 1024, fmt, args);
-		va_end(args);
-
-		OutputDebugStringA(tmp);
-
-		return result;
-	}
-#endif
-
-	result = vfprintf(fp, fmt, args);
-	va_end(args);
-
-	return result;
-}

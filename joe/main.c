@@ -188,6 +188,9 @@ void internal_msg(unsigned char *s)
 	P *t = pdup(startup_log->eof, USTR "internal_msg");
 	binss(t, s);
 	prm(t);
+#if defined(JOEWIN) && defined(DEBUG)
+	OutputDebugStringA((LPSTR)s);
+#endif
 }
 
 void setlogerrs(void)

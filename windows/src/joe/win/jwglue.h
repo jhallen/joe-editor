@@ -41,10 +41,6 @@
 #define unlink glue_unlink
 #define mkdir glue_mkdir
 
-#ifdef DEBUG		/* Intercept and redirect stderr to debugger console */
-#define fprintf glue_fprintf
-#endif
-
 /* TODO: long is 32 bits on 64 bit Windows and JOE does not use time_t or off_t (it uses longs to
    store these internally).  time_t is 64 bits on both platforms, but off_t is 32 bits.  This needs
    to be fixed but it is an extensive change that touches all platforms.  For now, we will just live
