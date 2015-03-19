@@ -825,6 +825,8 @@ aspellword	^[ n
 :def shell_dellin dellin
 :def shell_cd cd
 :def shell_pop popabort
+:def shell_markb markb
+:def shell_markk markk
 
 
  Split window version

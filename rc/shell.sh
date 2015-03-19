@@ -15,6 +15,16 @@ joe_release () {
 	echo '{'shell_release'}'
 }
 
+# Set marked region beginning
+joe_markb () {
+	echo '{'shell_markb'}'
+}
+
+# Set marked region end
+joe_markk () {
+	echo '{'shell_markk'}'
+}
+
 # Use JOE's calculator
 joe_math () {
 	echo '{'shell_math,'"'$1'"',shell_rtn'}'
@@ -55,5 +65,7 @@ alias pop=joe_pop
 alias cd=joe_cd
 alias parse=joe_parse
 alias release=joe_release
+alias markb=joe_markb
+alias markk=joe_markk
 
 joe_clear

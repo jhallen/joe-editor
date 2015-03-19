@@ -8,13 +8,21 @@ be erased (it just causes a screen update which notices the updtab flag
 set).. We need some other way (than setting updtab) to clear the message-
 maybe set updtab on next user input.
 
+ hmm.. same problem with "math".  There is a race such that sometimes
+the output
 
  security hole with "math"
 
  add shell commands to other rc files
 
- parserr - it would be nice if parsing was limited to a block
+ Keys for parserr and release?
+
+ Preserve position in parser in case we re-parse (for very long compile we
+want to start looking at errors before it's done)
+
+
  It would be nice if ^G was goto instead of ESC space (when parserr is active?)
+  (no good way to do this.)
 
  edit command in shell window does not work with '!pgm' if there is a
 current directory set.
@@ -48,6 +56,9 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+
+ parserr - it would be nice if parsing was limited to a block
+ [done]
 
  parserr - no way to turn off highlighting line (but ESC space is OK).
  [fixed: added release command]
