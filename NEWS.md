@@ -1,6 +1,6 @@
 ### JOE 4.0
 
-* Pop-up shell windows with full terminal emulation with shell commands
+* JOE now has pop-up shell windows with full terminal emulation and shell commands
   that can control the editor.  Hit F1 - F4 to bring up a shell window.
   See [Pop-up shell feature](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/tasks.md) for a full description.
 
