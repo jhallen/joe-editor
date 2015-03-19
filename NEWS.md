@@ -13,7 +13,7 @@
   make the pop-up shell windows work better, but it's useful in general.
 
 * At file prompts you can begin a new anchored path without having to delete
-  the old one.  So you ~jhallen/foo//etc/passwd is translated to /etc/passwd.
+  the old one.  It means that ~jhallen/foo//etc/passwd is translated to /etc/passwd.
   Prompt windows are now highighted to indicate which parts of the path are
   being dropped.  The is a syntax file for this: filename.jsf
 
