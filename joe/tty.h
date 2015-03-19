@@ -220,6 +220,4 @@ extern long last_time; /* Current time in seconds */
 #endif
 extern int idleout; /* Clear to use /dev/tty for screen */
 
-extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */
-
 #endif

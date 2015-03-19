@@ -691,7 +691,7 @@ int main(int argc, char **real_argv, char **envv)
 	if (!nonotice) {
 		msgnw(((BASE *)lastw(maint)->object)->parent,
 #ifndef JOEWIN
-		  vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2008 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)")));
+		  vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)")));
 #else
 		  USTR("\\i" JW_VERSION_BANNER "\\i"));
 #endif

@@ -298,6 +298,7 @@ extern int guesscrlf; /* Try to guess line ending when set */
 extern int guessindent; /* Try to guess indent character and step when set */
 extern int break_links; /* Break hard links on write */
 extern int break_symlinks; /* Break symbolic links on write */
+extern int nodeadjoe; /* Prevent creation of DEADJOE files */
 
 void set_file_pos_orphaned();
 
