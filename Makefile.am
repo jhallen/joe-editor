@@ -2,9 +2,9 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = man rc po syntax joe
 
-EXTRA_DIST = COPYING docs/list.md docs/hacking.md ChangeLog NEWS.md README INSTALL INSTALL.AMIGA \
+EXTRA_DIST = COPYING docs/list.md docs/hacking.md ChangeLog NEWS.md README README.md INSTALL INSTALL.AMIGA \
 	docs/help-system.html charmaps/klingon.in docs/tasks.md \
-	cygbuild setup.hint xterm-patch xterm-readme autojoe
+	cygbuild setup.hint xterm-patch xterm-readme autojoe docs/options.md docs/man.md
 
 sysconf_joedir = $(sysconfdir)/joe
 data_joedir = $(datadir)/joe
