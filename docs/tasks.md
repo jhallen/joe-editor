@@ -26,11 +26,11 @@ can type 'pop' at the command prompt.
 If you need to pass a key to the shell that JOE normally uses, quote it.  For
 example, if you invoke "emacs -nw" in the shell window, you can exit it with:
 
-	ESC \' ^X ^C
+	ESC ' ^X ^C
 
-or:
+or, if you use ` for the quote character:
 
-	\` ^X ^C
+	` ^X ^C
 
 
 To quickly position the cursor back to the point where data is entered into
