@@ -90,7 +90,7 @@ selected rectangular block of numbers and their sum:</p>
 * Bash-like TAB completion and history for all prompts, or jump into the
 completion menu and use it to traverse the file system.
 
-* Complete word in edit buffer by hitting ESC Enter (uses other words in
+* Complete word in edit buffer by hitting ESC Enter (uses other words in
 buffer for dictionary).
 
 * EMACS-compatible file locks and file modification checking.
@@ -101,7 +101,7 @@ buffer for dictionary).
 
 * Compile and step through errors or Grep and step through finds.
 
-* Goto matching character delimiter "( [ { <" which skips comments and
+* Goto matching character delimiter "() [] {} <>" which skips comments and
 quoted matter.
 
 * Goto matching word delimiter, including XML tags and C preprocessor
