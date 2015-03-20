@@ -304,8 +304,8 @@ If the termcap/terminfo entry is missing, you can add the "-assume_256color"
 option to the joerc file.  Note that this was broken for terminfo in
 versions of JOE below 3.4.
 
-When it is working, the command: "joe -bg_text bg_222" should have a gray
-background.
+When it is working, the command: "joe -assume_256color -text_color bg_222"
+should have a gray background.
 
 ### UTF-8
 
@@ -352,7 +352,7 @@ exactly like the example one in /usr/local/etc/joe/charmaps.
 
 You can hit ^K &lt;space&gt; to see the current character set.
 
-You can hit ` x to enter a Unicode character if the file coding is UTF-8.
+You can hit ESC ' x to enter a Unicode character if the file coding is UTF-8.
 
 ### Indenting blocks
 
@@ -399,9 +399,9 @@ This uses a simple macro: "begin_marking,rtarw,toggle_marking".
 Unfortunately, there is no standard way to get the keysequence given
 by the terminal emulator when you hit Ctrl-rtarw.  Instead you have to
 determine this sequence yourself and enter it directly in the joerc file. 
-Some examples are given for Xterm and gnome-terminal.  Hit ` rtarw within
+Some examples are given for Xterm and gnome-terminal.  Hit ESC ' rtarw within
 JOE to have the sequence shown on your screen.  Note that Putty uses ^\[ ^\[ \[
-C which will not appear with ` rtarw (also ^\[
+C which will not appear with ESC ' rtarw (also ^\[
 ^\[ is set book mark, so you need to unbind it to do this in Putty).
 
 Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
@@ -410,7 +410,7 @@ sequence for these keys are known.
 ### Shell Windows
 
 If you use Bash, you can hit: ESC ' UP-ARROW and ESC ' DOWN-ARROW to scroll through
-Bash's history buffer.  Other keys work as well: try \` A to go to beginning
+Bash's history buffer.  Other keys work as well: try ESC ' A to go to beginning
 of line or ESC ' E to go to end of line.  Unfortunately JOE only emulates a dumb
 terminal, so you have to use a lot of imagination to do any editing beyond
 hitting backspace.

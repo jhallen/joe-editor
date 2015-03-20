@@ -1,5 +1,86 @@
-<h3>JOE options (environment variables at the bottom):</h3>
+<h3>JOE options and environment variables</h3>
 
+### Colors specifications:
+
+Combine attributes and up to one foreground color and one background color
+to create arguments for color options like text_color.  For example:
+bold+bg_green+blue
+
+* Attributes: bold, inverse, blink, dim, underlines, and italic
+
+* Foreground colors: white, cyan, magenta, blue, yellow, green, red, or black
+
+* Background colors: bg_white, bg_cyan, bg_magenta, bg_blue, bg_yellow, bg_green, bg_red or bg_black
+
+With a 16 color or 256 color terminal emulator (export TERM=xterm-16color), these
+brighter than normal colors become available:
+
+* Foreground: WHITE, CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED or BLACK
+
+* Background: bg_WHITE, bg_CYAN, bg_MAGENTA, bg_BLUE, bg_YELLOW, bg_GREEN, bg_RED or bg_BLACK
+
+With a 256 color terminal emulator (export TERM=xterm-256color), these become available:
+
+* fg_RGB and bg_RGB, where R, G and B rand from 0 - 5.  So: fg_500 is bright red.
+
+* fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
+
+### Status line definition strings
+
+-lmsg defines the left-justified string and -rmsg defines the
+right-justified string.  The first character of -rmsg is the background
+fill character.
+
+-smsg defines the status command (^K SPACE).  -zmsg defines it when the cursor
+is at the end of the file.  The last character of smsg or zmsg is the fill character.
+
+The following escape sequences can be used in these strings:
+
+~~~~~
+  %t  12 hour time
+  %u  24 hour time
+  %T  O for overtype mode, I for insert mode
+  %W  W if wordwrap is enabled
+  %I  A if autoindent is enabled
+  %X  Rectangle mode indicator
+  %n  File name
+  %m  '(Modified)' if file has been changed
+  %*  '*' if file has been changed
+  %R  Read-only indicator
+  %r  Row (line) number
+  %c  Column number
+  %o  Byte offset into file
+  %O  Byte offset into file in hex
+  %a  Ascii value of character under cursor
+  %A  Ascii value of character under cursor in hex
+  %w  Width of character under cursor
+  %p  Percent of file cursor is at
+  %l  No. lines in file
+  %k  Entered prefix keys
+  %S  '*SHELL*' if there is a shell running in window
+  %M  Macro recording message
+  %y  Syntax
+  %e  Encoding
+  %x  Context (first non-indented line going backwards)
+  %dd day
+  %dm month
+  %dY year
+  %Ename%  value of environment variable
+  %Tname%  value of option (ON or OFF for boolean options)
+~~~~~
+
+These formatting escape sequences may also be given:
+ 
+~~~~~
+  \i  Inverse
+  \u  Underline
+  \b  Bold
+  \d  Dim
+  \f  Blink
+  \l  Italic
+~~~~~
+
+### Options:
 
 <table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
@@ -14,6 +95,18 @@ terminal instead of showing them as inverse of corresponding character below
 <tr valign="top"><td>assume_256color</td><td>Assume ANSI-like terminal emulator supports 256 colors even if termcap entry says it doesn't.</td></tr>
 
 <tr valign="top"><td>assume_color</td><td>Assume ANSI-like terminal emulator supports color even if termcap entry says it doesn't.</td></tr>
+
+<tr valign="top"><td>text_color</td><td>Set color for text.</td></tr>
+
+<tr valign="top"><td>status_color</td><td>Set color for status bar.</td></tr>
+
+<tr valign="top"><td>help_color</td><td>Set color for help.</td></tr>
+
+<tr valign="top"><td>menu_color</td><td>Set color for menus.</td></tr>
+
+<tr valign="top"><td>prompt_color</td><td>Set color for prompts.</td></tr>
+
+<tr valign="top"><td>msg_color</td><td>Set color for messages.</td></tr>
 
 <tr valign="top"><td>autoindent</td><td>Enable auto-indent mode.</td></tr>
 
@@ -117,6 +210,8 @@ the "get window size" ioctl.</td></tr>
 
 <tr valign="top"><td>lmargin</td><td>Set left margin.</td></tr>
 
+<tr valign="top"><td>lmsg</td><td>Define left-side status bar message.</td></tr>
+
 <tr valign="top"><td>marking</td><td>Enable marking mode: highlights between ^KB and
 cursor.</td></tr>
 
@@ -137,6 +232,12 @@ EMACS).</td></tr>
 <tr valign="top"><td>nobackups</td><td>Disable backup files.</td></tr>
 
 <tr valign="top"><td>nocurdir</td><td>Disable current-directory prefix in prompts.</td></tr>
+
+<tr valign="top"><td>noexmsg</td><td>Disable exiting message ("File not changed so no update needed")</td></tr>
+
+<tr valign="top"><td>nolinefeeds</td><td>Disable sending linefeeds to
+preserve screen history in terminal emulator's scroll-back buffer (only
+relevant when notite mode is enabled).  </td></tr>
 
 <tr valign="top"><td>nolocks</td><td>Disable EMACS compatible file locks.</td></tr>
 
@@ -178,6 +279,8 @@ of previouly edited files.</td></tr>
 
 <tr valign="top"><td>rmargin</td><td>Set right margin.</td></tr>
 
+<tr valign="top"><td>rmsg</td><td>Define right-side status bar message.</td></tr>
+
 <tr valign="top"><td>rtbutton</td><td>Swap left and right mouse buttons.</td></tr>
 
 <tr valign="top"><td>search_prompting</td><td>Show previous search string in search command (like in PICO).</td></tr>
@@ -195,6 +298,8 @@ the user.</td></tr>
 
 <tr valign="top"><td>smarthome</td><td>Enable smart home (home key jumps to indentation
 point on first or second press).</td></tr>
+
+<tr valign="top"><td>smsg</td><td>Define status command format when cursor is on a character.</td></tr>
 
 <tr valign="top"><td>spaces</td><td>Insert spaces when tab key is hit.</td></tr>
 
@@ -220,6 +325,8 @@ tabs.</td></tr>
 <tr valign="top"><td>wordwrap</td><td>Enable wordwrap mode.</td></tr>
 
 <tr valign="top"><td>wrap</td><td>Enable search to wrap to beginning of file.</td></tr>
+
+<tr valign="top"><td>zmsg</td><td>Define status command format when cursor is at end of file.</td></tr>
 
 </tbody>
 </table>

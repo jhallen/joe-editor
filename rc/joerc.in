@@ -108,7 +108,7 @@
 
  -nonotice	Disable copyright notice
 
- -noexmsg	Disable exiting message ("File not changed so no updated needed")
+ -noexmsg	Disable exiting message ("File not changed so no update needed")
 
  -noxon		Attempt to turn off ^S/^Q processing
 
