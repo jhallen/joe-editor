@@ -154,7 +154,12 @@ def gethgrev():
     res = getoutput(".", ['hg', 'id', '-nib'])
     if res is None: return None
     
-    parent, revnum, branch = res.split(' ')
+    parts = res.split(' ')
+    if len(parts) == 3:
+        parent, revnum, branch = parts
+    else:
+        return None
+    
     return parent, branch
 
 def getdatebld():
