@@ -9,6 +9,7 @@
 <col width="125">
 <tbody>
 <tr valign="top"><td>bknd</td><td>Run a shell in a window</td></tr>
+<tr valign="top"><td>vtbknd</td><td>Run a shell in a terminal emulator window</td></tr>
 <tr valign="top"><td>killproc</td><td>Kill program in current window</td></tr>
 <tr valign="top"><td>run</td><td>Run a UNIX command in a window</td></tr>
 <tr valign="top"><td>sys</td><td>Run a UNIX command and return to editor when done (I/O does
@@ -70,7 +71,8 @@ nothing.</td></tr>
 exists</td></tr>
 <tr valign="top"><td>switch</td><td>Load file into window: always uses buffer if it
 exists</td></tr>
-<tr valign="top"><td>scratch</td><td>Load a scratch buffer into current window</td></tr>
+<tr valign="top"><td>scratch</td><td>Push a scratch buffer into current window</td></tr>
+<tr valign="top"><td>popabort</td><td>Abort and pop window from stack (do nothing if stack empty)</td></tr>
 <tr valign="top"><td>nbuf</td><td>Load next buffer into current window</td></tr>
 <tr valign="top"><td>pbuf</td><td>Load previous buffer into current window</td></tr>
 <tr valign="top"><td>reload</td><td>Re-read file into buffer (revert)</td></tr>
@@ -141,8 +143,13 @@ history</td></tr>
 <tbody>
 <tr valign="top"><td>nxterr</td><td>Goto next parsed error</td></tr>
 <tr valign="top"><td>parserr</td><td>Parse errors in current file</td></tr>
+<tr valign="top"><td>gparse</td><td>Parse grep list in current file</td></tr>
+<tr valign="top"><td>jump</td><td>Parse current line and jump to it</td></tr>
 <tr valign="top"><td>prverr</td><td>Go to previous parsed error</td></tr>
 <tr valign="top"><td>showerr</td><td>Show current message</td></tr>
+<tr valign="top"><td>grep</td><td>Execute grep command, parse when done</td></tr>
+<tr valign="top"><td>build</td><td>Execute build command, parse when done</td></tr>
+<tr valign="top"><td>release</td><td>Release error/grep records</td></tr>
 </tbody>
 </table>
 
@@ -184,6 +191,8 @@ buffers</td></tr>
 <colgroup>
 <col width="125">
 <tbody>
+<tr valign="top"><td>cd</td><td>Set directory prefix</td></tr>
+
 <tr valign="top"><td>save</td><td>Save file</td></tr>
 
 <tr valign="top"><td>savenow</td><td>Save immediately, unless file name is not
@@ -247,6 +256,8 @@ known</td></tr>
 <tr valign="top"><td>rtn</td><td>Return key</td></tr>
 
 <tr valign="top"><td>type</td><td>Insert typed character</td></tr>
+
+<tr valign="top"><td>secure_type</td><td>Insert typed character, but only allowed in prompt windows (not allowed in shell windows)</td></tr>
 </tbody>
 </table>
 
@@ -299,6 +310,8 @@ known</td></tr>
 <tr valign="top"><td>pgupmenu</td><td>Scroll menu up</td></tr>
 
 <tr valign="top"><td>pgdnmenu</td><td>Scroll menu down</td></tr>
+
+<tr valign="top"><td>tabmenu</td><td>Tab through menu</td></tr>
 </tbody>
 </table>
 
@@ -312,7 +325,11 @@ known</td></tr>
 
 <tr valign="top"><td>execmd</td><td>Execute a joe command</td></tr>
 
+<tr valign="top"><td>debug_joe</td><td>Insert debug information into buffer</td></tr>
+
 <tr valign="top"><td>math</td><td>Calculator</td></tr>
+
+<tr valign="top"><td>maths</td><td>Secure Calculator (no way to run joe() macros)</td></tr>
 
 <tr valign="top"><td>mode</td><td>Mode prompt</td></tr>
 
@@ -330,7 +347,10 @@ known</td></tr>
 
 <tr valign="top"><td>tag</td><td>Tags file search</td></tr>
 
-<tr valign="top"><td>txt</td><td>Insert text</td></tr>
+<tr valign="top"><td>timer</td><td>Execute a macro periodically</td></tr>
+
+<tr valign="top"><td>txt</td><td>Insert text.  If first character is \`, then text is assumed to be a format string (that is, the string
+used to define the status line for the rmsg and lmsg options) and is formatted before the insertion.</td></tr>
 
 <tr valign="top"><td>name</td><td>Insert current file name</td></tr>
 
@@ -478,6 +498,8 @@ return key for this prompt.</p>
 <tr valign="top"><td>mwind</td><td>Get error messages window on the screen and put cursor in
 it.</td></tr>
 
+<tr valign="top"><td>showlog</td><td>Get startup log scratch buffer into window.</td></tr>
+
 <tr valign="top"><td>mfit</td><td>Fit two windows on the screen: make current window 6 lines,
 		and give rest of space to window above.  The window above is
 		either the existing previous window, a newly created one if
@@ -508,19 +530,32 @@ clicked/dragged</td></tr>
 
 <tr valign="top"><td>defmdown</td><td>Default single-click handlers</td></tr>
 
+<tr valign="top"><td>defmup</td><td>Default single-click release handlers</td></tr>
+
 <tr valign="top"><td>defmdrag</td><td>(click to move cursor, drag to select
 characters)</td></tr>
 
 <tr valign="top"><td>defm2down</td><td>Default double-click handlers</td></tr>
 
+<tr valign="top"><td>defm2up</td><td>Default double-click release handlers</td></tr>
+
 <tr valign="top"><td>defm2drag</td><td>(drag to select words)</td></tr>
 
 <tr valign="top"><td>defm3down</td><td>Default triple-click handlers</td></tr>
 
+<tr valign="top"><td>defm3up</td><td>Default triple-click release handlers</td></tr>
+
 <tr valign="top"><td>defm3drag</td><td>(drag to select lines)</td></tr>
+
+<tr valign="top"><td>xtmouse</td><td>Handle xterm mouse events</td></tr>
+
+<tr valign="top"><td>extmouse</td><td>Handle extended xterm mouse events</td></tr>
 
 <tr valign="top"><td>paste</td><td>Insert base64 encoded text (for XTerm --enable-base64
 option).</td></tr>
+
+<tr valign="top"><td>brpaste</td><td>Insert text until ESC [ 2 0 1 ~ has been received.  This is for bracketed paste support.</td></tr>
+
 </tbody>
 </table>
 
