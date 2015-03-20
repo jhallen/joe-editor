@@ -982,8 +982,8 @@ pbuf		^[ ^U		Prev buffer
  Standard JOE user interface
 
 quote8		^\		Enter Meta chars
-quote		`		Enter Ctrl chars
- quote		^[ '		Enter Ctrl chars
+ quote		`		Enter Ctrl chars
+quote		^[ '		Enter Ctrl chars
 quote		^Q
 
 backs		^?		Backspace
