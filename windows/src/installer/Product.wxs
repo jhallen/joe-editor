@@ -42,7 +42,8 @@
     <Property Id="ARPPRODUCTICON" Value="joewinicon.exe" />
     <Property Id="ARPURLINFOABOUT" Value="http://joe-editor.sourceforge.net/" />
     <Property Id="ARPHELPLINK" Value="https://sourceforge.net/p/joe-editor/" />
-    
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.DocRootDir)\COPYING.rtf" />
+
     <Feature Id="CompleteFeature" Title="JOE for Windows" Description="The complete JOE for Windows" Display="expand" Level="1" ConfigurableDirectory="INSTALLFOLDER" Absent="disallow" AllowAdvertise="no" InstallDefault="local">
       <!-- This is here in order to disable "install to run from network" option.  We must have a component in the feature to disable it. -->
       <ComponentRef Id="StartMenuShortcutsDirComponent" />
@@ -53,6 +54,7 @@
         <ComponentGroupRef Id="SyntaxComponentGroup" />
         <ComponentGroupRef Id="StandardColorsComponentGroup" />
 	<ComponentRef Id="PathEnvComponent" />
+        <ComponentGroupRef Id="DocumentsComponentGroup" />
       </Feature>
 
       <Feature Id="JoeFeature" Title="JOE editor" Description="Standard JOE editor personality" Level="1" AllowAdvertise="no" InstallDefault="local">
@@ -93,6 +95,7 @@
           <Directory Id="CONFIGFOLDER" Name="conf" />
           <Directory Id="COLORFOLDER" Name="schemes" />
           <Directory Id="DOCFOLDER" Name="doc" />
+          
         </Directory>
       </Directory>
 

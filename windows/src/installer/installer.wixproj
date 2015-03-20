@@ -26,6 +26,7 @@
       ;$(DefineConstants);
       ;BinRootDir=$(OutputRootDir);
       ;SrcRootDir=$(JoeWinRoot);
+      ;JoeRootDir=$(JoeRoot);
       ;DocRootDir=$(JoeDocsDir);
       ;SchemesRootDir=$(SchemesOutDir);
       ;SyntaxRootDir=$(SyntaxOutDir);
@@ -38,7 +39,8 @@
   <ItemGroup>
     <Compile Include="binaries.wxs" />
     <Compile Include="colors.wxs" />
-    <Compile Include="Product.wxs" />
+    <Compile Include="docs.wxs" />
+    <Compile Include="product.wxs" />
     <Compile Include="rcfiles.wxs" />
     <Compile Include="syntaxes.wxs" />
   </ItemGroup>

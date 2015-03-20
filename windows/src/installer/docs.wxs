@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   This file is part of Joe's Own Editor for Windows.
+   Copyright (c) 2014 John J. Jordan.
+ 
+   Joe's Own Editor for Windows is free software: you can redistribute it
+   and/or modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation, either version 2 of the
+   License, or (at your option) any later version.
+ 
+   Joe's Own Editor for Windows is distributed in the hope that it will
+   be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ 
+   You should have received a copy of the GNU General Public License
+   along with Joe's Own Editor for Windows.  If not, see
+   <http://www.gnu.org/licenses/>.
+-->
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include properties.wxi ?>
+
+  <Fragment>
+    <ComponentGroup Id="DocumentsComponentGroup" Directory="DOCFOLDER">
+      <Component Id="LicenseTXTComponent" Guid="*" Win64="$(var.Win64)">
+        <File Id="licenseTXT" Name="license.txt" DiskId="1" Source="$(var.DocRootDir)\license.txt" KeyPath="yes" />
+      </Component>
+      <Component Id="ReadmeMDComponent" Guid="*" Win64="$(var.Win64)">
+        <File Id="readmeMD" Name="readme.md" DiskId="1" Source="$(var.JoeRootDir)\readme.md" KeyPath="yes" />
+      </Component>
+      <Component Id="NewsMDComponent" Guid="*" Win64="$(var.Win64)">
+        <File Id="newsMD" Name="news.md" DiskId="1" Source="$(var.JoeRootDir)\news.md" KeyPath="yes" />
+      </Component>
+      <Component Id="TasksMDComponent" Guid="*" Win64="$(var.Win64)">
+        <File Id="tasksMD" Name="tasks.md" DiskId="1" Source="$(var.JoeRootDir)\docs\tasks.md" KeyPath="yes" />
+      </Component>
+      <Component Id="WindowsMDComponent" Guid="*" Win64="$(var.Win64)">
+        <File Id="windowsMD" Name="windows.md" DiskId="1" Source="$(var.JoeRootDir)\docs\windows.md" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
