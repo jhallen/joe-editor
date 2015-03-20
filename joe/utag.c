@@ -7,6 +7,83 @@
  */
 #include "types.h"
 
+/* Tag database */
+
+typedef struct tag TAG;
+static struct tag {
+	LINK(TAG) link;
+	unsigned char *file;	/* Target file */
+	unsigned char *srch;	/* Target search pattern */
+	long line;		/* Target line number */
+	int last;		/* Set on last record */
+} tags = { { &tags, &tags } };
+
+static TAG tagnodes = { { &tagnodes, &tagnodes } };
+
+static void freetag(TAG *n)
+{
+	vsrm(n->file);
+	vsrm(n->srch);
+	enquef(TAG, link, &tagnodes, n);
+}
+
+static void clrtags()
+{
+	while (!qempty(TAG, link, &tags)) {
+		freetag(deque_f(TAG, link, tags.link.next));
+	}
+}
+
+static void addtag(unsigned char *file, unsigned char *srch, long line)
+{
+	TAG *n = (TAG *)alitem(&tagnodes, sizeof(TAG));
+	n->file = file;
+	n->srch = srch;
+	n->line = line;
+	n->last = 0;
+	enqueb(TAG, link, &tags, n);
+}
+
+int utagjump(BW *bw)
+{
+	unsigned char *file;
+	unsigned char *srch;
+	long line;
+	int last;
+	if (qempty(TAG, link, &tags)) {
+		msgnw(bw->parent, joe_gettext(_("Not found")));
+		return -1;
+	}
+	file = tags.link.next->file;
+	srch = tags.link.next->srch;
+	line = tags.link.next->line;
+	last = tags.link.next->last;
+	demote(TAG,link,&tags,tags.link.next);
+	if (doswitch(bw, vsncpy(NULL, 0, sv(file)), NULL, NULL)) {
+		return -1;
+	}
+	bw = (BW *)maint->curwin->object;
+	p_goto_bof(bw->cursor);
+	if (last) {
+		msgnw(bw->parent, joe_gettext(_("Last match")));
+	} else {
+		msgnw(bw->parent, joe_gettext(_("There are more matches")));
+	}
+	if (!srch) {
+		int omid = mid;
+		mid = 1;
+		pline(bw->cursor, line - 1);
+		bw->cursor->xcol = piscol(bw->cursor);
+		dofollows();
+		mid = omid;
+		smode = 2;
+		return 0;
+	} else {
+		smode = 2;
+		return dopfnext(bw, mksrch(vsncpy(NULL, 0, sv(srch)), NULL, 0, 0, -1, 0, 0, 0), NULL);
+	}
+}
+
 static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 {
 	unsigned char buf[512];
@@ -29,39 +106,35 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 		   for the environment variable TAGS.
 		*/
 		char *tagspath = getenv("TAGS");
-		if(tagspath){
+		if(tagspath) {
 			f = fopen(tagspath, "r");    
 		}
-		if(!f){
+		if(!f) {
 			msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
 			vsrm(s);
 			vsrm(t);
 			return -1;
 		}
 	}
-	while (fgets((char *)buf, 512, f)) {
+	clrtags();
+	while (fgets((char *)buf, sizeof(buf), f)) {
 		int x, y, c;
-
-		for (x = 0; buf[x] && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
+		for (x = 0; buf[x] && buf[x] != ' ' && buf[x] !='\t'; ++x) ;
 		c = buf[x];
 		buf[x] = 0;
-		if (!zcmp(s, buf) || (t && !zcmp(t, buf))) {
+		/* We look for string and buffer-name:string */
+		/* We need to look for .*::string also */
+		if (!zcmp(buf, s) || !zmcmp(buf, s) || (t && !zcmp(t, buf))) {
 			buf[x] = c;
 			while (buf[x] == ' ' || buf[x] == '\t') {
 				++x;
 			}
 			for (y = x; buf[y] && buf[y] != ' ' && buf[y] != '\t' && buf[y] != '\n'; ++y) ;
 			if (x != y) {
+				unsigned char *file;
 				c = buf[y];
 				buf[y] = 0;
-				if (doswitch(bw, vsncpy(NULL, 0, sz(buf + x)), NULL, NULL)) {
-					vsrm(s);
-					vsrm(t);
-					fclose(f);
-					return -1;
-				}
-				bw = (BW *) maint->curwin->object;
-				p_goto_bof(bw->cursor);
+				file = vsncpy(NULL, 0, sz(buf + x));
 				buf[y] = c;
 				while (buf[y] == ' ' || buf[y] == '\t') {
 					++y;
@@ -69,20 +142,14 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 				for (x = y; buf[x] && buf[x] != '\n'; ++x) ;
 				buf[x] = 0;
 				if (x != y) {
-					long line = 0;
-
-					if (buf[y] >= '0' && buf[y] <= '9') {
+					if (buf[y] >= '0' && buf[y] <= '9')  {
+						long line = 1;
 						/* It's a line number */
 						sscanf((char *)(buf + y), "%ld", &line);
 						if (line >= 1) {
-							int omid = mid;
-
-							mid = 1;
-							pline(bw->cursor, line - 1), bw->cursor->xcol = piscol(bw->cursor);
-							dofollows();
-							mid = omid;
+							addtag(file, NULL, line);
 						} else {
-							msgnw(bw->parent, joe_gettext(_("Invalid line number")));
+							vsrm(file);
 						}
 					} else {
 						int z = 0;
@@ -120,26 +187,23 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 							}
 						}
 						if (z) {
-							vsrm(s);
-							vsrm(t);
-							fclose(f);
 							buf1[z] = 0;
-							return dopfnext(bw, mksrch(vsncpy(NULL, 0, sz(buf1)), NULL, 0, 0, -1, 0, 0, 0), NULL);
+							addtag(file, vsncpy(NULL, 0, sz(buf1)),1);
+						} else {
+							vsrm(file);
 						}
 					}
+				} else {
+					vsrm(file);
 				}
-				vsrm(s);
-				vsrm(t);
-				fclose(f);
-				return 0;
 			}
 		}
 	}
-	msgnw(bw->parent, joe_gettext(_("Not found")));
-	vsrm(s);
-	vsrm(t);
 	fclose(f);
-	return -1;
+	if (!qempty(TAG, link, &tags)) {
+		tags.link.prev->last = 1;
+	}
+	return utagjump(bw);
 }
 
 static unsigned char **get_tag_list()
@@ -149,6 +213,7 @@ static unsigned char **get_tag_list()
 	int i,pos;
 	FILE *f;
 	unsigned char **lst = NULL;
+	HASH *ht = htmk(256); /* Prevent duplicates in list */
 	
 	f = fopen("tags", "r");
 	if (f) {
@@ -163,11 +228,28 @@ static unsigned char **get_tag_list()
 			if (pos > 0) {
 				zncpy(tag, buf, pos);
 				tag[pos] = '\0';
+				if (!htfind(ht, tag)) {
+					unsigned char *s = vsncpy(NULL, 0, sz(tag));
+					htadd(ht, s, s);
+					lst = vaadd(lst, s);
+					for (i = 0; tag[i]; ++i)
+						if (tag[i] == ':' && tag[i+1] == ':') {
+							break;
+						}
+					if (tag[i]) {
+						i += 2;
+						if (!htfind(ht, tag + i)) {
+							s = vsncpy(NULL, 0, sz(tag + i));
+							htadd(ht, s, s);
+							lst = vaadd(lst, s);
+						}
+					}
+				}
 			}
-			lst = vaadd(lst, vsncpy(NULL, 0, sz(tag)));
 		}
 		fclose(f);	
 	}
+	htrm(ht);
 	return lst;
 }
 
@@ -195,6 +277,11 @@ static B *taghist = NULL;
 int utag(BW *bw)
 {
 	BW *pbw;
+
+	/* Repeat previous search */
+	if (smode && !qempty(TAG, link, &tags)) {
+		return utagjump(bw);
+	}
 
 	pbw = wmkpw(bw->parent, joe_gettext(_("Tag search: ")), &taghist, dotag, NULL, NULL, tag_cmplt, NULL, NULL, locale_map, 0);
 	if (pbw && joe_isalnum_(bw->b->o.charmap,brch(bw->cursor))) {

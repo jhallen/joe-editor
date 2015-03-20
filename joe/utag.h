@@ -8,6 +8,7 @@
 #ifndef _JOE_UTAG_H
 #define _JOE_UTAG_H 1
 
+int utagjump PARAMS((BW *bw));
 int utag PARAMS((BW *bw));
 
 #endif

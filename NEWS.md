@@ -23,6 +23,10 @@
 * Temporary messages are now dismissed by keyboard input only.  Before, they
   could also be dismissed by shell input.
 
+* Tags search now supports multiple matches.  Repeatedly hit ^K ; to cycle
+  through them.  Also it will now match on the member name part of member
+  functions ('fred' will match 'myclass::fred').
+
 ### JOE 3.8
 
 - Change default indent from 2 to 4.  Add quick menu to change to common

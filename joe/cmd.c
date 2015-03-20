@@ -192,6 +192,7 @@ CMD cmds[] = {
 	{USTR "sys", TYPETW + TYPEPW, usys, NULL, 0, NULL },
 	{USTR "tabmenu", TYPEMENU, umtab, NULL, 1, USTR "ltarwmenu"},
 	{USTR "tag", TYPETW + TYPEPW, utag, NULL, 0, NULL},
+	{USTR "tagjump", TYPETW + TYPEPW, utagjump, NULL, 0, NULL},
 	{USTR "toggle_marking", TYPETW + TYPEPW, utoggle_marking, NULL, 0, NULL},
 	{USTR "then", TYPEPW+EMOD, urtn, 0, 0, 0 },
 	{USTR "timer", TYPETW + TYPEPW + TYPEMENU + TYPEQW, utimer, NULL, 1, NULL},

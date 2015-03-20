@@ -292,6 +292,18 @@ int zcmp(unsigned char *a, unsigned char *b)
 	return strcmp((char *)a, (char *)b);
 }
 
+int zmcmp(unsigned char *a, unsigned char *b)
+{
+	while (*a) {
+		if (a[0] == ':' && a[1] == ':') {
+			a += 2;
+			break;
+		}
+		++a;
+	}
+	return zcmp(a, b);
+}
+
 int zncmp(unsigned char *a, unsigned char *b, size_t len)
 {
 	return strncmp((char *)a, (char *)b, len);
