@@ -157,12 +157,12 @@ commands.
 
 * Termcap/Terminfo support allows JOE to use any terminal or terminal emulator.
 
-* Can accept data from a pipe, for example: ls \| joe
+* Can accept data from a pipe, for example: ls | joe
 
 <p>JOE does not have these features (yet):</p>
 <ul>
 
-<li>Vertical windows, but JOE will probably have this in version 3.6</li>
+<li>Vertical windows</li>
 
 <li>Folding</li>
 

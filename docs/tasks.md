@@ -120,7 +120,7 @@ Pop-up shell windows have a number of nice use cases:
 	Easily capture errors from a build with:
 
 ~~~~
-		parse make
+		parserr make
 ~~~~
 
 	Hit ESC = and ESC - to step through the errors.
@@ -128,21 +128,21 @@ Pop-up shell windows have a number of nice use cases:
 
 ### How it works..
 
-    * There is a new mode "ansi".  (ESC x mode ansi).  When this mode is
-      enabled, the screen updater hides escape sequences which are in the
-      buffer.  Otherwise you get a big mess from the sequences surrounding
-      colored output from 'ls'.
+* There is a new mode "ansi".  (ESC x mode ansi).  When this mode is
+enabled, the screen updater hides escape sequences which are in the
+buffer.  Otherwise you get a big mess from the sequences surrounding
+colored output from 'ls'.
 
-    * There is a new built-in syntax: "ansi".  (^T y ansi).  This syntax
-      parses the ANSI color control sequences so that text gets colored.
+* There is a new built-in syntax: "ansi".  (^T y ansi).  This syntax
+parses the ANSI color control sequences so that text gets colored.
 
-    * There is a terminal emulator to interpret control sequences from the
-      shell program.  It emulates a terminal by modifying the contents of an
-      edit buffer.
+* There is a terminal emulator to interpret control sequences from the
+shell program.  It emulates a terminal by modifying the contents of an
+edit buffer.
 
-    * When the edit window is resized we tell the shell by issuing the
-      TIOCSSIZE or TIOCSWINSZ ioctl.  This way, the program running in the
-      shell knows the window size.
+* When the edit window is resized we tell the shell by issuing the
+TIOCSSIZE or TIOCSWINSZ ioctl.  This way, the program running in the
+shell knows the window size.
 
 ### TAGS file search
 
@@ -388,7 +388,7 @@ editing.
 
 ### Selecting blocks
 
-The "classic" way is to hit ^K B at the beginning and ^K K at the
+The classic way is to hit ^K B at the beginning and ^K K at the
 end.  These set pointers called markb and markk.  Once these are set you
 can jump to markb with ^\[ b and jump to markk with \[ k.
 
@@ -409,13 +409,13 @@ sequence for these keys are known.
 
 ### Shell Windows
 
-If you use Bash, you can hit: ` UP-ARROW and ` DOWN-ARROW to scroll through
-Bash's history buffer.  Other keys work as well: try ` A to go to beginning
-of line or ` E to go to end of line.  Unfortunately JOE only emulates a dumb
+If you use Bash, you can hit: ESC ' UP-ARROW and ESC ' DOWN-ARROW to scroll through
+Bash's history buffer.  Other keys work as well: try \` A to go to beginning
+of line or ESC ' E to go to end of line.  Unfortunately JOE only emulates a dumb
 terminal, so you have to use a lot of imagination to do any editing beyond
 hitting backspace.
 
-In general, any character quoted with ` is sent to the shell.
+In general, any character quoted with ESC ' is sent to the shell.
 
 Also sent to the shell: TAB, Backspace, Enter, ^C and ^D.
 
@@ -460,7 +460,7 @@ example, here is the page down other window macro:
 	prevw,pgdn-!,nextw
 
 Now if you execute this with an argument of -2, it will be repeated twice,
-but pgup will be executed instead of pgdn.  (not that several postfix
+but pgup will be executed instead of pgdn.  (note that several postfix
 modifiers can be placed after each command).
 
 Sometimes when a repeat argument is given to macro, you want only one of the
@@ -507,7 +507,7 @@ but all of the editing commands operate the same way.  It is most useful to
 select overtype mode in conjunction with hex dump (hit ^T T).  Then typing
 will not insert.
 
-- To enter the hex byte 0xF8 type ` x F 8
+- To enter the hex byte 0xF8 type ESC ' x F 8
 
 - You can use ^KC to copy a block as usual.  If overtype mode is selected,
   the block will overwrite the destination data without changing the size of
@@ -525,10 +525,10 @@ idle-session killers (they would kill joe because the real tty device was
 not being accessed for a long time), so now joe only uses /dev/tty if you
 need to pipe a file into joe, as in:
 
-	echo "hi" | joe -
+	echo "hi" | joe
 
 If you want to use joe in a shell script which has its stdin/stdout
-redirected, but you don't need to do 'joe -', you should simply redirect
+redirected, but you do not need to pipe to it', you should simply redirect
 joe's stdin/stdout to /dev/tty:
 
 	joe filename  </dev/tty >/dev/tty
