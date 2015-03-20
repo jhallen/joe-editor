@@ -1017,6 +1017,7 @@ stat		^X ?		JED
 stat		^X =		Gnu-Emacs
 swap		^X ^X		Swap mark and cursor
 tag		^[ .		Tag search
+tagjump		^[ ,		Jump to next match
 tomatch		^X g		Goto matching parenthasis (joe)
 tomatch		^[ ^F		(uemacs)
 txt		^X t		Prompt for text to insert
