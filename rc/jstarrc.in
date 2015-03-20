@@ -498,14 +498,14 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i\|^E up   ^X down  \|^C  next screen  \|^KK end   \|^Y  line  \|^V  overtype \|^KQ abort \|\i \i
 \i \i\|^A previous word \|^QS beg. of line \|^KV move  \|^T  >word \|^]  refresh  \|^KZ shell \|\i \i
 \i \i\|^F next word     \|^QD end of line  \|^KC copy  \|^QY >line \|^O  options  \|\uFILE\u      \|\i \i
-\i \i\|\uSEARCH\u           \|^QR top of file  \|^KW file  \|^U  undo  \|\uSPELL\u        \|^KE new   \|\i \i
+\i \i\|\uSEARCH\u           \|^QR top of file  \|^KW file  \|^U  undo  \|\uSPELL\u        \|^KE edit  \|\i \i
 \i \i\|^QF find text    \|^QC end of file  \|^KY delete \|^^ redo  \|^QN word     \|^KR insert\|\i \i
 \i \i\|^L  find next    \|^QI to line No.  \|^K/ filter \|         \|^QL file     \|^KD save  \|\i \i
 }
 
 {Windows
 \i   Help Screen    \|turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \i\|^KO Split the window in half           \|^KE Load file into window             \|\i \i
+\i \i\|^KO Split the window in half           \|F1 - F4 Pop-up shell window           \|\i \i
 \i \i\|^KG Make current window bigger         \|^KT Make current window smaller       \|\i \i
 \i \i\|^KN Go to the window below             \|^KP Go to the window above            \|\i \i
 \i \i\|^KQ Eliminate the current window       \|^KI Show all windows / Show one window\|\i \i
@@ -769,7 +769,7 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 :def shell_math maths
 :def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn
 :def shell_rtn rtn
-:def shell_popedit popedit
+:def shell_edit edit
 :def shell_dellin dellin
 :def shell_cd cd
 :def shell_pop popabort

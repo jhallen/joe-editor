@@ -568,6 +568,12 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		b = bfind_reload(s);
 		er = berror;
 		current_dir = vsdup(bw->b->current_dir);
+		/* Try to pop scratch window */
+		if (bw->b->scratch) {
+			W *w = bw->parent;
+			upopabort(bw);
+			bw = (BW *)w->object;
+		}
 		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 			if (orphan) {
 				orphit(bw);
@@ -620,6 +626,12 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 
 		b = bfind(s);
 		er = berror;
+		/* Try to pop scratch window */
+		if (bw->b->scratch) {
+			W *w = bw->parent;
+			upopabort(bw);
+			bw = (BW *)w->object;
+		}
 		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 			if (orphan) {
 				orphit(bw);
@@ -712,16 +724,6 @@ int okrepl(BW *bw)
 int uedit(BW *bw)
 {
 	if (wmkpw(bw->parent, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist, doedit, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,7)) {
-		return 0;
-	} else {
-		return -1;
-	}
-}
-
-int upopedit(BW *bw)
-{
-	if (wmkpw(bw->parent, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist, doedit, USTR "Names", NULL, cmplt, NULL, NULL, locale_map,5)) {
-		upopabort(bw);
 		return 0;
 	} else {
 		return -1;

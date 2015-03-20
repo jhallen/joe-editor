@@ -836,7 +836,7 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 :def shell_math maths
 :def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn
 :def shell_rtn rtn
-:def shell_popedit popedit
+:def shell_edit edit
 :def shell_dellin dellin
 :def shell_cd cd
 :def shell_pop popabort

@@ -60,7 +60,7 @@ joe_math () {
 
 # Edit a file
 joe_edit () {
-	echo -n '{'shell_popedit,'"'$1'"',shell_rtn'}'
+	echo -n '{'shell_edit,'"'$1'"',shell_rtn'}'
 }
 
 # Pop shell window

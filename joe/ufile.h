@@ -18,7 +18,6 @@ int usys PARAMS((BW *bw));
 int usave PARAMS((BW *bw));
 int usavenow PARAMS((BW *bw));
 int uedit PARAMS((BW *bw));
-int upopedit PARAMS((BW *bw));
 int usetcd PARAMS((BW *bw));
 int uswitch PARAMS((BW *bw));
 int uscratch PARAMS((BW *bw));

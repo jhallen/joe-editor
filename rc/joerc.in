@@ -555,7 +555,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
 {Windows
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i\|^KO Split the window in half           \|^KE Load file into window             \|\i \i
+\i \i\|^KO Split the window in half           \|F1 - F4 Pop-up shell window           \|\i \i
 \i \i\|^KG Make current window bigger         \|^KT Make current window smaller       \|\i \i
 \i \i\|^KN Go to the window below             \|^KP Go to the window above            \|\i \i
 \i \i\|^[V Switch to next buffer              \|^[U Switch to previous buffer         \|\i \i
@@ -829,7 +829,7 @@ aspellword	^[ n
 :def shell_math maths
 :def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn
 :def shell_rtn rtn
-:def shell_popedit popedit
+:def shell_edit edit
 :def shell_dellin dellin
 :def shell_cd cd
 :def shell_pop popabort
