@@ -191,35 +191,35 @@ commands.
 <p>Here are some other editors to consider:</p>
 <a href="http://www.gnu.org/software/emacs">http://www.gnu.org/software/emacs</a>
 Richard Stallman's powerful LISP-based editor.
-<br>
+
 <a href="http://www.jedsoft.org/jed">http://www.jedsoft.org/jed</a> John E.
 Davis' version of EMACS using the S-Lang language.
-<br>
+
 <a href="http://www.jasspa.com">http://www.jasspa.com</a> Micro Emacs
-<br>
+
 <a href="http://www.vile.cx">http://www.vile.cx</a> Paul Fox's vi clone
 (built on top of Micro Emacs).  Now maintained by Tom Dickey and others.
-<br>
+
 <a href="http://www.nano-editor.org">http://www.nano-editor.org</a> An open
 source PICO clone.
-<br>
+
 <a
 href="http://www.washington.edu/pine/faq/whatis.html">http://www.washington.edu.pine/faq/whatis.html</a>
 PICO: A simple editor built on Micro Emacs.
-<br>
+
 <a href="http://www.vim.org">http://www.vim.org</a> Bram Moolenaar's vi
 clone</a>
-<br>
+
 <a href="http://elvis.the-little-red-haired-girl.org/whatiselvis/index.html">
 http://elvis.the-little-red-haired-girl.org</a> Elvis: A
 small vi clone
-<br>
+
 <a href="http://www.jedit.org">http://www.jedit.org</a> Powerful editor
 written in Java
-<br>
+
 <a href="http://www.nedit.org">http://www.nedit.org</a> X-Windowing System
 editor
-<br>
+
 <a href="http://www.ibiblio.org/mc">http://www.ibiblio.org/mc</a> Midnight
 Commander file manager with built-in text editor with highlighting.  Can
 browse ZIP and TAR files.
@@ -229,21 +229,17 @@ browse ZIP and TAR files.
 UNIX/X clone of Rob Pike's Plan9 editor ACME.  Originally written by Gary
 Capell, but now maintained by Ozan Yigit.  This is an interesting minimalist
 IDE.
-<br>
 
 <a
 href="http://www.eclipse.org/downloads">http://www.eclipse.org/downloads</a>
 Huge IDE written in Java.  Performs same function as Wily, but is literally
 1300 times larger.
-<br>
 
 <a href="ftp://netlib.bell-labs.com/netlib/research/sam.shar.gz">ftp://netlib.bell-labs.com/netlib/research/sam.shar.gz</a>
 UNIX/X port of Rob Pike's Plan9 editor SAM.  This interesting editor
 supports multi-file regular expression search &amp; replace with unlimited
 undo.
-<br>
 
 <a href="http://sed.sourceforge.net">http://sed.sourceforge.net</a>
 UNIX Stream EDitor.  If you're on UNIX, you already have this editor, but follow
 this link to see the amazing things that can be done with it.
-
