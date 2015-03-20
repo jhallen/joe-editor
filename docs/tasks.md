@@ -64,7 +64,7 @@ For security, only macros defined in the joerc file which begin with
 
 Pop-up shell windows have a number of nice use cases:
 
-* Use it browse manual pages
+* Use it to browse manual pages
 
 	Hit F1 and type "man fopen".  Use 'b' ('u') and space to control
 	_more_ (or _less_) while viewing the manual.  You can leave the manual
