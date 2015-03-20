@@ -37,5 +37,6 @@ alias cd "cd "\!\*"; echo -n \{shell_cd,shell_dellin\\!,"\\\""; pwd | tr -d '\n
 
 clear
 
+echo
 echo Type joehelp for editor shell commands
-
+echo

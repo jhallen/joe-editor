@@ -142,4 +142,6 @@ alias mark=joe_mark
 
 joe_clear
 
+echo
 echo Type joehelp for editor shell commands
+echo
