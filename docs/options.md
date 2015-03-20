@@ -1,12 +1,12 @@
 <h3>JOE options and environment variables</h3>
 
-### Colors specifications:
+### Color specifications:
 
 Combine attributes and up to one foreground color and one background color
 to create arguments for color options like text_color.  For example:
 bold+bg_green+blue
 
-* Attributes: bold, inverse, blink, dim, underlines, and italic
+* Attributes: bold, inverse, blink, dim, underlined, and italic
 
 * Foreground colors: white, cyan, magenta, blue, yellow, green, red, or black
 
@@ -79,8 +79,10 @@ These formatting escape sequences may also be given:
   \f  Blink
   \l  Italic
 ~~~~~
-
+<br>
 ### Options:
+
+These may be supplied on the command line when invoking JOE or in the joerc file.
 
 <table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
