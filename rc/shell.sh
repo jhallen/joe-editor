@@ -1,5 +1,18 @@
 # Aliases for sh/dash/ash/bash/ksh/zsh in JOE shell window
 
+joehelp () {
+	echo "clear         - erase buffer"
+	echo "joe           - edit file"
+	echo "math 1+2      - calculator"
+	echo "pop           - dismiss shell"
+	echo "parse [cmd]   - grep parse command"
+	echo "parserr [cmd] - compile parse command"
+	echo "release       - drop parsed messages"
+	echo "markb         - mark beginning of region"
+	echo "markk         - mark end of region"
+	echo "mark cmd      - mark output of command"
+}
+
 # Clear edit buffer
 joe_clear () {
 	echo -n '{'shell_clear'}'
@@ -129,4 +142,4 @@ alias mark=joe_mark
 
 joe_clear
 
-echo
+echo Type joehelp for editor shell commands

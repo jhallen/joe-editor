@@ -1,5 +1,16 @@
 # Aliases for csh/tcsh in JOE shell window
 
+alias joehelp 'echo "clear         - erase buffer"; \\
+echo "joe           - edit file"; \\
+echo "math 1+2      - calculator"; \\
+echo "pop           - dismiss shell"; \\
+echo "parse cmd     - grep parse command"; \\
+echo "parserr cmd   - compile parse command"; \\
+echo "release       - drop parsed messages"; \\
+echo "markb         - mark beginning of region"; \\
+echo "markk         - mark end of region"; \\
+echo "mark cmd      - mark output of command"'
+
 alias clear "echo -n \{shell_clear}"
 
 alias parse "echo -n \{shell_gparse}"
@@ -26,4 +37,5 @@ alias cd "cd "\!\*"; echo -n \{shell_cd,shell_dellin\\!,"\\\""; pwd | tr -d '\n
 
 clear
 
-echo
+echo Type joehelp for editor shell commands
+
