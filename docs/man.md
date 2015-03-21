@@ -634,12 +634,10 @@ search would begin, and the sample line would be changed to:
 
 Address: England, London, S. Holmes, 221b Baker St.
 
-Hello
-><a name="blocks"/>
-THere
 
 ### Blocks
 
+<a name="blocks"/>
 
 If you want to move, copy, save or delete a specific section of text, you 
 can do it with highlighted blocks.  First, move the cursor to the start of 
