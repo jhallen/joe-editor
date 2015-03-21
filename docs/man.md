@@ -339,8 +339,8 @@ the same place relative to the screen.  Hit __^K U__ or __^K V__ to move
 the cursor to the beginning or the end of the file.  Look at the help 
 screens in the editor to find even more delete and movement commands.
 
-If you make a mistake, you can hit __^___ to "undo" it.  On most keyboards
-you hit just __^-__ to get __^___, but on some you might have to hold
+If you make a mistake, you can hit __^\___ to "undo" it.  On most keyboards
+you hit just __^-__ to get __^\___, but on some you might have to hold
 both the __Shift__ and __Control__ keys down at the same time to get it.
 If you "undo" too much, you can "redo" the changes back into existence by
 hitting __^^__ (type this with just __^6__ on most keyboards).
