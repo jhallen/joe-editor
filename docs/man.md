@@ -527,6 +527,7 @@ replacing.
 
 You can hit __^L__ to repeat the previous search.
 
+<a name="regular"/>
 ### Regular Expressions
 
 A number of special character sequences may be entered as search
@@ -608,6 +609,7 @@ Use this if you need to put a __\\__ in the replacement string.
 
 Use this if you need to put a line-break in the replacement string.
 
+<a name="where"/>
 ### Where
 
 Some examples:
@@ -619,6 +621,8 @@ Address: S. Holmes, 221b Baker St., London, England
 
 If you wanted to rearrange the list, to get the country first, then the 
 city, then the person's name, and then the address, you could do this:
+
+<a name="did"/>
 ### DID
 
 Type __^K F__ to start the search, and type:
@@ -629,6 +633,7 @@ to match "Address:", the four comma-separated elements, and then the end of
 the line.  When asked for options, you would type __r__ to replace the 
 string, and then type:
 
+<a name="it"/>
 ### IT
 
 __Address:\3,\2,\0,\1__
@@ -636,14 +641,15 @@ __Address:\3,\2,\0,\1__
 To shuffle the information the way you want it. After hitting return, the 
 search would begin, and the sample line would be changed to:
 
+<a name="break"/>
 ### BREAK
 
 Address: England, London, S. Holmes, 221b Baker St.
 
 
+<a name="blocks"/>
 ### Blocks
 
-<a name="blocks"/>
 
 If you want to move, copy, save or delete a specific section of text, you 
 can do it with highlighted blocks.  First, move the cursor to the start of 
