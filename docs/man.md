@@ -130,27 +130,27 @@ Assume ANSI-like terminal emulator supports 256 colors even if termcap entry say
 Assume ANSI-like terminal emulator supports color even if termcap entry says it doesn't.
 <br>
 
-* text_color <color\>
+* text_color __color__
 Set color for text.
 <br>
 
-* status_color <color\>
+* status_color __color__
 Set color for status bar.
 <br>
 
-* help_color <color\>
+* help_color __color__
 Set color for help.
 <br>
 
-* menu_color <color\>
+* menu_color __color__
 Set color for menus.
 <br>
 
-* prompt_color <color\>
+* prompt_color __color__
 Set color for prompts.
 <br>
 
-* msg_color <color\>
+* msg_color __color__
 Set color for messages.
 <br>
 
@@ -260,7 +260,7 @@ The column number on the status line is updated constantly when
 this is set, otherwise it is updated only once a second.
 <br>
 
-* language <language\>
+* language __language__
 Sets language for aspell.
 <br>
 
@@ -424,7 +424,7 @@ indentation is duplicated onto the new line.
 Enable ^G skipping of C-style comments /* ... */
 <br>
 
-* cpara <characters>
+* cpara __characters__
 Sets list of characters which can indent paragraphs.
 <br>
 
@@ -437,7 +437,7 @@ Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
 editing MS-DOS or VMS files.
 <br>
 
-* encoding <encoding>
+* encoding __encoding__
 Set file encoding (like utf-8 or 8859-1).
 <br>
 
@@ -511,7 +511,7 @@ Set read-only mode.
 Set right margin.
 <br>
 
-* rmsg <string>
+* rmsg __string__
 Define right-side status bar message.
 <br>
 
@@ -532,7 +532,7 @@ Enable smart home (home key jumps to indentation
 point on first or second press).
 <br>
 
-* smsg <string>
+* smsg __string__
 Define status command format when cursor is on a character.
 <br>
 
@@ -540,7 +540,7 @@ Define status command format when cursor is on a character.
 Insert spaces when tab key is hit.
 <br>
 
-* syntax <syntax>
+* syntax __syntax__
 Set syntax for syntax highlighting.
 <br>
 
@@ -548,7 +548,7 @@ Set syntax for syntax highlighting.
 Set tab stop width.
 <br>
 
-* text_delimiters <word delimiter list>
+* text_delimiters __word delimiter list__
 Give list of word delimiters which ^G will
 step through.
 <br>
@@ -561,7 +561,7 @@ step through.
 JOE wraps the previous word when you type past the right margin.
 <br>
 
-* zmsg <string>
+* zmsg __string__
 Define status command format when cursor is at end of file.
 <br>
 
