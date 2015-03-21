@@ -424,7 +424,7 @@ a TAB character (which does the same thing the TAB key does).  A useful
 control character to enter is 12 (__^\[ ' L__), which causes most printers to
 advance to the top of the page.  You'll notice that JOE displays this
 character as an underlined L.  You can enter the characters above 127, the
-__meta characters__, by first hitting __^\__.  This adds 128
+__meta characters__, by first hitting __^\___.  This adds 128
 to the next (possibly control) character entered.  JOE displays characters
 above 128 in inverse-video.  Some foreign languages, which have more letters
 than English, use the meta characters for the rest of their alphabet.  You
