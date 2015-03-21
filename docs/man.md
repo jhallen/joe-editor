@@ -933,7 +933,8 @@ exactly like the example one in /usr/local/etc/joe/charmaps.
 
 You can hit ^K &lt;space&gt; to see the current character set.
 
-You can hit ESC ' x to enter a Unicode character if the file coding is UTF-8.
+You can hit __ESC ' x__ to enter a Unicode character if the file coding is
+UTF-8.
 
 ## Prompts
 
@@ -979,13 +980,13 @@ Page Down to scroll it (even if you have not jumped into it).
 
 TAB completion works in the search and replace prompts as well.  In this
 case, JOE tries to complete the word based on the contents of the buffer. 
-If you need search for the TAB character itself, you can enter it with ESC '
-TAB
+If you need search for the TAB character itself, you can enter it with __ESC '
+TAB__.
 
-Also, you can hit ESC &lt;Enter&gt; in a text window to request JOE to
+Also, you can hit __ESC &lt;Enter&gt;__ in a text window to request JOE to
 complete the word you are typing.  As with the search prompt, JOE tries to
 complete the word based on the contents of the buffer.  It will bring up a
-menu of possibilities if you hit ESC &lt;Enter&gt; twice.
+menu of possibilities if you hit __ESC &lt;Enter&gt;__ twice.
 
 
 ## Where am I?
@@ -1240,7 +1241,7 @@ highlighting off.
 
 The classic way is to hit ^K B at the beginning and ^K K at the
 end.  These set pointers called markb and markk.  Once these are set you
-can jump to markb with ESC b and jump to markk with \[ k.
+can jump to markb with __ESC b__ and jump to markk with __ESC k__.
 
 New way: hit Ctrl-rtarw (right arrow) to start selecting rightward. 
 Each time you hit Ctrl-rtarw, the block is extended one more to the right. 
@@ -1251,8 +1252,8 @@ terminal emulator when you hit Ctrl-rtarw.  Instead you have to determine
 this sequence yourself and enter it directly in the joerc file.  Some
 examples are given for Xterm and gnome-terminal.  Hit __ESC '__ ctrl-rtarw
 within JOE to have the sequence shown on your screen.  Note that Putty uses
-ESC ESC \[ C which will not appear with ESC ' rtarw (also ESC ESC is set
-book mark, so you need to unbind it to do this in Putty).
+__ESC ESC \[ C__ which will not appear with __ESC ' rtarw__ (also
+__ESC ESC__ is set book mark, so you need to unbind it to do this in Putty).
 
 Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
 sequence for these keys are known.
@@ -1658,13 +1659,13 @@ passed to the shell.  Type the shell __exit__ command to stop recording
 shell output.  If you press __^C__ in a shell window, when the cursor is
 not at the end of the window, the shell is __kill__ed.
 
-If you use Bash, you can hit: ESC ' UP-ARROW and ESC ' DOWN-ARROW to scroll
-through Bash's history buffer.  Other keys work as well: try ESC ' ^A to go
-to beginning of line or ESC ' ^E to go to end of line.  Unfortunately JOE
-only emulates a dumb terminal, so you have to use a lot of imagination to do
-any editing beyond hitting backspace.
+If you use Bash, you can hit: __ESC ' UP-ARROW__ and __ESC ' DOWN-ARROW__ to
+scroll through Bash's history buffer.  Other keys work as well: try
+__ESC ' ^A__ to go to beginning of line or __ESC ' ^E__ to go to end of line.
+Unfortunately JOE only emulates a dumb terminal, so you have to use a lot of
+imagination to do any editing beyond hitting backspace.
 
-In general, any character quoted with ESC ' is sent to the shell.
+In general, any character quoted with __ESC '__ is sent to the shell.
 
 Also sent to the shell: TAB, Backspace, Enter, ^C and ^D.
 
@@ -1725,7 +1726,7 @@ release       | release parsed errors
 pop           | dismiss shell window (same as ^K Q)
 
 These work by emitting an escape sequence recognized by the terminal
-emulator: ESC { joe_macro }.  When this is received, the macro is executed. 
+emulator: __ESC { joe_macro }__.  When this is received, the macro is executed. 
 For security, only macros defined in the joerc file which begin with
 "shell_" can be executed this way.
 
@@ -1769,8 +1770,8 @@ Pop-up shell windows have a number of nice use cases:
 	are passed as arguments to the parse command).
 
 	Now use ^P to position the cursor on one of the lines of the list. 
-	Hit ESC SPACE to have JOE edit the file and jump to the specified
-	line (also you can use ESC - and ESC = to step through the list).
+	Hit __ESC SPACE__ to have JOE edit the file and jump to the specified
+	line (also you can use __ESC -__ and __ESC =__ to step through the list).
 
 * Use it in conjuction with search and replace to edit many files
 
@@ -1792,12 +1793,12 @@ Pop-up shell windows have a number of nice use cases:
 		parserr make
 ~~~~
 
-	Hit ESC = and ESC - to step through the errors.
+	Hit __ESC =__ and __ESC -__ to step through the errors.
 
 
 ### How it works..
 
-* There is a new mode "ansi".  (ESC x mode ansi).  When this mode is
+* There is a new mode "ansi".  (__ESC x__ mode ansi).  When this mode is
 enabled, the screen updater hides escape sequences which are in the
 buffer.  Otherwise you get a big mess from the sequences surrounding
 colored output from 'ls'.
@@ -1841,37 +1842,37 @@ from "grep -n", "find" and similar programs.
 Once JOE has the error list, there are a number of things you can do with
 it:
 
-* Visit the files/locations in the list with ESC - and ESC =
+* Visit the files/locations in the list with __ESC -__ and __ESC =__
 
 * Search and replace across all files in the list by using the 'e' search
   and replace option.
 
 * Clear the list by using the "release" command.
 
-Also, you can use ESC space ('jump' command) to parse the line the cursor is
+Also, you can use __ESC space__ ('jump' command) to parse the line the cursor is
 on and jump to the parsed filename and line number.  'jump' uses the
 grep/find parser unless 'parserr' had been previously issued in the buffer.
 
 ## Grep-find
 
-Hit ESC g to bring up the prompt.  Enter a command which results in file
+Hit __ESC g__ to bring up the prompt.  Enter a command which results in file
 names with line numbers, for example: 'grep -n fred *.c'.  This will list all
 instances of 'fred' in the *.c files.  You need the '-n' to get the line
 numbers.
 
-Now you can hit ESC space on one of the lines to jump to the selected
-file.  Also, you can use ESC = and ESC - to step through each line.
+Now you can hit __ESC space__ on one of the lines to jump to the selected
+file.  Also, you can use __ESC =__ and __ESC -__ to step through each line.
 
 ## Compile
 
-Hit ESC c to save all modified files and then bring up the compile prompt. 
+Hit __ESC c__ to save all modified files and then bring up the compile prompt. 
 Enter the command you want to use for the compiler (typically "make").  The
 compiler will run in a shell window.  When it's complete, the results are
 parsed.
 
-If there are any errors or warnings from the compiler you can hit ESC space
-on one of the lines to jump to the selected file.  Also, you can use ESC =
-and ESC - to step through each line.
+If there are any errors or warnings from the compiler you can hit
+__ESC space__ on one of the lines to jump to the selected file.  Also,
+you can use __ESC =__ and __ESC -__ to step through each line.
 
 ## Syntax highlighting
 
@@ -2137,13 +2138,13 @@ but all of the editing commands operate the same way.  It is most useful to
 select overtype mode in conjunction with hex dump (hit ^T T).  Then typing
 will not insert.
 
-- To enter the hex byte 0xF8 type ESC ' x F 8
+- To enter the hex byte 0xF8 type __ESC ' x F 8__
 
 - You can use ^KC to copy a block as usual.  If overtype mode is selected,
   the block will overwrite the destination data without changing the size of
   the file.  Otherwise it inserts.
 
-- Hit ESC x byte &lt;Enter&gt;, to jump to a particular byte offset.  Hex values
+- Hit __ESC x byte &lt;Enter&gt;__, to jump to a particular byte offset.  Hex values
   can be entered into this prompt like this: 0x2000.
 
 - Search, incremental search, and search &amp; replace all operate as usual.
@@ -2294,7 +2295,7 @@ Used to get user name for EMACS compatible file locks.
 <a name="list"></a>
 ## JOE commands grouped by function
 
-<p>These commands can be entered at the ESC x prompt.</p>
+<p>These commands can be entered at the __ESC x__ prompt.</p>
 
 <p><b>Background programs</b></p>
 
@@ -2687,7 +2688,7 @@ used to define the status line for the rmsg and lmsg options) and is formatted b
 <p>When you hit ^[ q, if the character under the cursor is an 'A': "it's a A"
 is inserted into the buffer, otherwise "it's not an A" is inserted.</p>
 
-<p>"if" creates a math prompt (like ESC m).  "then" is like "rtn"- it hits the
+<p>"if" creates a math prompt (like __ESC m__).  "then" is like "rtn"- it hits the
 return key for this prompt.</p>
 
 <p>Within the math prompt, the following variables are available:</p>
@@ -2850,7 +2851,8 @@ characters)</td></tr>
 <tr valign="top"><td>paste</td><td>Insert base64 encoded text (for XTerm --enable-base64
 option).</td></tr>
 
-<tr valign="top"><td>brpaste</td><td>Insert text until ESC [ 2 0 1 ~ has been received.  This is for bracketed paste support.</td></tr>
+<tr valign="top"><td>brpaste</td><td>Insert text until __ESC [ 2 0 1 ~__ has been received. 
+This is for bracketed paste support.</td></tr>
 
 </tbody>
 </table>
