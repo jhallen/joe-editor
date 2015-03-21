@@ -14,9 +14,7 @@ __rjoe [global-options] [ [local-options] filename ]...__
 <br>
 __jpico [global-options] [ [local-options] filename ]...__
 
-<a name="Description" />
 ## Description
-
 
 JOE is a powerful console screen editor.  It has a "mode-less" user
 interface which is similar to many user-friendly PC editors.  Users of
@@ -529,7 +527,6 @@ replacing.
 
 You can hit __^L__ to repeat the previous search.
 
-<a name="regular"/>
 ### Regular Expressions
 
 A number of special character sequences may be entered as search
@@ -611,9 +608,6 @@ Use this if you need to put a __\\__ in the replacement string.
 
 Use this if you need to put a line-break in the replacement string.
 
-<a name="where"/>
-### Where
-
 Some examples:
 
 Suppose you have a list of addresses, each on a separate line, which starts 
@@ -624,9 +618,6 @@ Address: S. Holmes, 221b Baker St., London, England
 If you wanted to rearrange the list, to get the country first, then the 
 city, then the person's name, and then the address, you could do this:
 
-<a name="did"/>
-### DID
-
 Type __^K F__ to start the search, and type:
 
 __Address:\\\*,\\\*,\\\*,\\\*\$__
@@ -635,23 +626,15 @@ to match "Address:", the four comma-separated elements, and then the end of
 the line.  When asked for options, you would type __r__ to replace the 
 string, and then type:
 
-<a name="it"/>
-### IT
-
 __Address:\3,\2,\0,\1__
 
 To shuffle the information the way you want it. After hitting return, the 
 search would begin, and the sample line would be changed to:
 
-<a name="break"/>
-### BREAK
-
 Address: England, London, S. Holmes, 221b Baker St.
 
-
-<a name="blocks"/>
+<a name="blocks"></a>
 ### Blocks
-
 
 If you want to move, copy, save or delete a specific section of text, you 
 can do it with highlighted blocks.  First, move the cursor to the start of 
@@ -802,7 +785,7 @@ passed to the shell.  Type the shell __exit__ command to stop recording
 shell output.  If you press __^C__ in a shell window, when the cursor is
 not at the end of the window, the shell is __kill__ed.
 
-<a name="evariables"/>
+<a name="evariables"></a>
 ## Environment variables 
 
 For JOE to operate correctly, a number of other environment settings must be 
@@ -841,7 +824,7 @@ output of the computer, you can set the environment variable __DOPADDING__
 to have __JOE__ slow down the output by interspersing PAD characters
 between the terminal screen update sequences.
 
-<a name="filenames"/>
+<a name="filenames"></a>
 ## Filenames
 
 Wherever JOE expects you to enter a file name, whether on the command line
@@ -877,7 +860,7 @@ quota.
 
 
 <br><br>
-<a name="joerc"/>
+<a name="joerc"></a>
 ## The joerc file
 
 ^T options, the help screens and the key-sequence to editor command
