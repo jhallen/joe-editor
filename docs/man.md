@@ -837,6 +837,16 @@ the cursor will immediately jump to the left margin.
 If you want to center a line within the margins, use the __^K A__
 command.
 
+## Spell checker
+
+Hit __ESC n__ to check the spelling of the word the cursor is on using the
+aspell program (or ispell program if you modify the joerc file).  Hit
+__ESC l__ to check the highlighted block or the entire file if no block is
+highlighted.
+
+JOE passes the language and character enoding to the spell checker.  To
+change the langauge, hit ^T V.
+
 ## Over-type mode
 
 Sometimes it's tiresome to have to delete old text before or after you 
@@ -879,6 +889,53 @@ passed untranslated to the terminal.
 
 When UTF-8 encoding is used, characters above 255 may be inserted with __ESC
  '__.
+
+## Character sets and UTF-8
+
+JOE handles two classes of character sets: UTF-8 and byte coded (like
+ISO-8859-1).  It can not yet handle other major classes such as UTF-16 or
+GB2312. There are other restrictions: character sets must use LF (0x0A) or
+CR-LF (0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be
+0x09. Basically, the files must be UNIX or MS-DOS compatible text files.
+
+This means EBCDIC will not work properly (but you would need to handle fixed
+record length lines anyway) and character sets which use CR terminated lines
+(MACs) will not yet work.
+
+The terminal and the file can have different encodings.  JOE will translate
+between the two.  Currently, one of the two must be UTF-8 for translation to
+work.
+
+The character set for the terminal and the default character set assumed for
+files is determined by the 'LC_ALL' environment variable (and if that's not
+set, LC_CTYPE and LANG are also checked).
+
+For example, if LC_ALL is set to:
+
+	de_DE
+
+Then the character set will be ISO-8859-1.
+
+If LC_ALL is set to:
+
+	de_DE.UTF-8
+
+The character set will be UTF-8.
+
+Hit ^T E to change the coding for the file.  Hit &lt;tab&gt; &lt;tab&gt; at this prompt
+to get a list of available codings.  There are a number of built-in
+character sets, plus you can install character sets in the ~/.joe/charmaps
+and /usr/local/etc/joe/charmaps directories.
+
+Check: /usr/share/i18n/charmaps for example character set files.  Only
+byte oriented character sets will work.  Also, the file should not be
+gzipped (all of the charmap file in /usr/share/i18n/charmaps on my computer
+were compressed).  The parser is very bad, so basically the file has to look
+exactly like the example one in /usr/local/etc/joe/charmaps.
+
+You can hit ^K &lt;space&gt; to see the current character set.
+
+You can hit ESC ' x to enter a Unicode character if the file coding is UTF-8.
 
 ## Prompts
 
@@ -1817,303 +1874,6 @@ If there are any errors or warnings from the compiler you can hit ESC space
 on one of the lines to jump to the selected file.  Also, you can use ESC =
 and ESC - to step through each line.
 
-
-
-<a name="evariables"></a>
-## Environment variables 
-
-For JOE to operate correctly, a number of other environment settings must be 
-correct.  The throughput (baud rate) of the connection between the computer 
-and your terminal must be set correctly for JOE to update the screen 
-smoothly and allow typeahead to defer the screen update.  Use the __stty nnn__
-command to set this.  You want to set it as close as possible to 
-actual throughput of the connection.  For example, if you are connected via 
-a 1200 baud modem, you want to use this value for __stty__.  If you are 
-connected via 14.4k modem, but the terminal server you are connected to 
-connects to the computer a 9600 baud, you want to set your speed as 9600 
-baud.  The special baud rate of 38400 or __extb__ is used to indicate that 
-you have a very-high speed connection, such as a memory mapped console or an 
-X-window terminal emulator.  If you can't use __stty__ to set the actual 
-throughput (perhaps because of a modem communicating with the computer at a 
-different rate than it's communicating over the phone line), you can put a 
-numeric value in the __BAUD__ environment variable instead (use __setenv 
-BAUD 9600__ for csh or __BAUD=9600; export BAUD__ for sh).  
-
-The __TERM__ environment variable must be set to the type of terminal
-you're using.  If the size (number of lines/columns) of your terminal is
-different from what is reported in the TERMCAP or TERMINFO entry, you can
-set this with the __stty rows nn cols nn__ command, or by setting the
-__LINES__ and __COLUMNS__ environment variables.  The terminal size is
-variable on modern systems and is determined by an ioctl, so these
-parameters often have no effect.
-
-JOE normally expects that flow control between the computer and your
-terminal to use ^S/^Q handshaking (i.e., if the computer is sending
-characters too fast for your terminal, your terminal sends ^S to stop the
-output and ^Q to restart it).  If the flow control uses out-of-band or
-hardware handshaking or if your terminal is fast enough to always keep up
-with the computer output and you wish to map ^S/^Q to edit commands, you can
-set the environment variable __NOXON__ to have JOE attempt to turn off
-^S/^Q handshaking.  If the connection between the computer and your terminal
-uses no handshaking and your terminal is not fast enough to keep up with the
-output of the computer, you can set the environment variable __DOPADDING__
-to have __JOE__ slow down the output by interspersing PAD characters
-between the terminal screen update sequences.
-
-Here is a complete list of the environment variables:
-
-* BAUD
-Tell JOE the baud rate of the terminal (overrides value reported by stty).
-<br>
-
-* COLUMNS
-Set number of columns in terminal emulator (in case
-termcap entry is wrong).  This is only useful on old system which don't have
-the "get window size" ioctl.
-<br>
-
-* DOPADDING
-Enable JOE to send padding NULs to the terminal
-when set (for very old terminals).
-<br>
-
-* HOME
-Used to get path to home directory for ~
-expansion and also to find ~/.joerc file ~/.joe directory.
-<br>
-
-* HOSTNAME
-Used to get hostname to put in EMACS compatible locks.
-<br>
-
-* JOETERM
-Gives terminal type: JOE will use this instead of TERM if it's set.
-<br>
-
-* LANG
-Sets locale (like en_US.utf-8).  JOE uses
-the first of these which is set: LC_ALL, LC_CTYPE, LANG.
-<br>
-
-* LC_ALL
-Sets locale (like en_US.utf-8).  JOE
-uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
-<br>
-
-* LC_CTYPE
-Sets locale (like en_US.utf-8).  JOE
-uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
-<br>
-
-* LINES
-Set number of lines in terminal emulator (in case
-termcap entry is wrong).  This is only useful on old system which don't have
-the "get window size" ioctl.
-<br>
-
-* NOXON
-Disable ^S and ^Q flow control, possibly
-allowing ^S and ^Q to be used as editor keys.
-<br>
-
-* SHELL
-Path to shell (like /bin/sh).  This is
-used in several places: If you are on a system with no job control, this
-shell is invoked when you hit ^KZ.  Also this is shell which is run in shell
-windows.  If SHELL is not set (Cygwin) or if it's set to /bin/sh, JOE
-invokes the first of these which exists: /bin/bash, /usr/bin/bash, /bin/sh.
-<br>
-
-* SIMPLE_BACKUP_SUFFIX
-If this is set, it is
-appended to the file name instead of ~ to create the backup file name.
-<br>
-
-* TAGS
-If set to a path to a file, JOE tries to
-use this as the "tags" file if there is no "tags" file in the current
-directory.
-<br>
-
-* TEMP
-If set, gives path to directory to open
-swapfile instead of /tmp
-<br>
-
-* TERMCAP
-Used by JOE's built-in termcap file
-parser (not used for terminfo).  A termcap entry can be placed directly in
-this variable (which will be used if it matches TERM), or if it begins with
-/, it gives a list of paths to termcap files to search.
-<br>
-
-* TERMPATH
-Gives list of paths to termcap files to search when TERMCAP has a
-termcap entry (otherwise it's ignored).  The default list of paths to
-termcap files (when TERMCAP and TERMPATH do not have it) is: "~/.termcap
-/etc/joe/termcap /etc/termcap"
-<br>
-
-* TERM
-Gives terminal type, like "vt100" or "xterm".
-<br>
-
-* USER
-Used to get user name for EMACS compatible file locks.
-<br>
-
-## The joerc file
-
-^T options, the help screens and the key-sequence to editor command
-bindings are all defined in JOE's initialization file.  If you make a copy
-of this file (which normally resides in __/etc/joe/joerc__) to
-__$HOME/.joerc__, you can customize these setting to your liking.  The
-syntax of the initialization file should be fairly obvious and there are
-further instruction in it.
-
-## Xterm Mouse support
-
-There are two levels of mouse support.  The -mouse option enables the
-first level, which will work with any stock Xterm.  If -joexterm is also
-set, mouse support is enhanced, but you need a recent version of XTerm,
-and it needs to be ./configured with the --enable-paste64 option.
-
-When -mouse is set, you can:
-
-* Left-click in a text window to set the cursor position.  Left-click in a different window to move the cursor to a different window.
-
-* Select text with the mouse.  Left-click and drag to select some text- it
-will be as if you had used ^KB and ^KK to mark it. Left-click (but don't
-drag) to position the cursor somewhere else.  Middle click to copy the
-selected text to the cursor- it will be as if you had hit ^KC.  If you drag
-past the edge of the text window, the window will auto-scroll to select more
-text.  Unfortunately, Xterm does not send any codes when the cursor is
-outside of the Xterm frame itself, so this only works if the mouse is still
-contained within the Xterm frame.  I've sent a patch to the Xterm maintainer
-to improve this, but he has not taken it yet.
-
-* Resize windows with the mouse: click and hold on a status line
-dividing two windows to move it.
-
-* Select menu entries (such as any completion menu or the ^T options
-menu): click on the menu item to position the cursor on it.  Double-click on
-a menu item to select it (same as hitting return with cursor on it).</li>
-
-* If your mouse has a wheel, turning the wheel will scroll the window with
-the cursor.
-
-Unfortunately, when -mouse is selected, cut and paste between X windows
-does not work as it normally does in a shell window (left-click and drag to
-select, middle click to paste).  Instead, you have to hold the shift key
-down to do this: shift-left-click and drag to select, and shift-middle click
-to paste.  Note that pasting text into JOE this way has problems: any `
-characters will get messed up because ` means quote the following control
-character.  Also if auto-indent is enabled, pasted text will not be indented
-properly.
-
-When -joexterm is set (and you have ./configured Xterm with
---enable-paste64):
-
-* Cut &amp; paste are properly integrated with X.  Text selected with
-left-click-drag is available for pasting into other X windows (even if the
-selected text is larger than the text window).  Text selected in other X
-windows can be pasted into JOE with middle-click.  There are no problems
-pasting text containing ` or with auto-indent.
-
---enable-paste64 allows an application program to communicate Base-64
-encoded selection data to and from the Xterm.  The program has full control
-over what is in the selection data and when it is received or sent.
-
-## Color Xterm support
-
-JOE can make use of monochrome Xterm, 8-color Xterm, 16-color Xterm,
-88-color Xterm and 256-color Xterm.  The number of colors which Xterm
-supports is determined by which "configure" script options are set before
-the Xterm source code is compiled.  The termcap or terminfo entry must
-support how your Xterm is configured.  On my Slackware Linux distribution,
-you have to set the TERM environment variable to one of these:
-
-<ul>
-<li>xterm</li>
-<li>xterm-color</li>
-<li>xterm-16color</li>
-<li>xterm-88color</li>
-<li>xterm-256color</li>
-</ul>
-
-If the termcap/terminfo entry is missing, you can add the "-assume_256color"
-option to the joerc file.  Note that this was broken for terminfo in
-versions of JOE below 3.4.
-
-When it is working, the command: "joe -assume_256color -text_color bg_222"
-should have a gray background.
-
-## UTF-8
-
-JOE handles two classes of character sets: UTF-8 and byte coded (like
-ISO-8859-1).  It can not yet handle other major classes such as UTF-16 or
-GB2312. There are other restrictions: character sets must use LF (0x0A) or
-CR-LF (0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be
-0x09. Basically, the files must be UNIX or MS-DOS compatible text files.
-
-This means EBCDIC will not work properly (but you would need to handle fixed
-record length lines anyway) and character sets which use CR terminated lines
-(MACs) will not yet work.
-
-The terminal and the file can have different encodings.  JOE will translate
-between the two.  Currently, one of the two must be UTF-8 for translation to
-work.
-
-The character set for the terminal and the default character set assumed for
-files is determined by the 'LC_ALL' environment variable (and if that's not
-set, LC_CTYPE and LANG are also checked).
-
-For example, if LC_ALL is set to:
-
-	de_DE
-
-Then the character set will be ISO-8859-1.
-
-If LC_ALL is set to:
-
-	de_DE.UTF-8
-
-The character set will be UTF-8.
-
-Hit ^T E to change the coding for the file.  Hit &lt;tab&gt; &lt;tab&gt; at this prompt
-to get a list of available codings.  There are a number of built-in
-character sets, plus you can install character sets in the ~/.joe/charmaps
-and /usr/local/etc/joe/charmaps directories.
-
-Check: /usr/share/i18n/charmaps for example character set files.  Only
-byte oriented character sets will work.  Also, the file should not be
-gzipped (all of the charmap file in /usr/share/i18n/charmaps on my computer
-were compressed).  The parser is very bad, so basically the file has to look
-exactly like the example one in /usr/local/etc/joe/charmaps.
-
-You can hit ^K &lt;space&gt; to see the current character set.
-
-You can hit ESC ' x to enter a Unicode character if the file coding is UTF-8.
-
-## Hex edit mode
-
-When this mode is selected (either put -hex on the command line, or look for
-"Hex edit mode" after hitting ^T), the buffer is displayed as a hex dump,
-but all of the editing commands operate the same way.  It is most useful to
-select overtype mode in conjunction with hex dump (hit ^T T).  Then typing
-will not insert.
-
-- To enter the hex byte 0xF8 type ESC ' x F 8
-
-- You can use ^KC to copy a block as usual.  If overtype mode is selected,
-  the block will overwrite the destination data without changing the size of
-  the file.  Otherwise it inserts.
-
-- Hit ESC x byte &lt;Enter&gt;, to jump to a particular byte offset.  Hex values
-  can be entered into this prompt like this: 0x2000.
-
-- Search, incremental search, and search &amp; replace all operate as usual.
-
 ## Syntax highlighting
 
 To enable highlight use __^T H__.
@@ -2279,6 +2039,256 @@ directives.  For example:
     .endif
 
 .else if also available.  .ifdefs can be nested.
+
+
+
+## The joerc file
+
+^T options, the help screens and the key-sequence to editor command
+bindings are all defined in JOE's initialization file.  If you make a copy
+of this file (which normally resides in __/etc/joe/joerc__) to
+__$HOME/.joerc__, you can customize these setting to your liking.  The
+syntax of the initialization file should be fairly obvious and there are
+further instruction in it.
+
+## Xterm Mouse support
+
+There are two levels of mouse support.  The -mouse option enables the
+first level, which will work with any stock Xterm.  If -joexterm is also
+set, mouse support is enhanced, but you need a recent version of XTerm,
+and it needs to be ./configured with the --enable-paste64 option.
+
+When -mouse is set, you can:
+
+* Left-click in a text window to set the cursor position.  Left-click in a different window to move the cursor to a different window.
+
+* Select text with the mouse.  Left-click and drag to select some text- it
+will be as if you had used ^KB and ^KK to mark it. Left-click (but don't
+drag) to position the cursor somewhere else.  Middle click to copy the
+selected text to the cursor- it will be as if you had hit ^KC.  If you drag
+past the edge of the text window, the window will auto-scroll to select more
+text.  Unfortunately, Xterm does not send any codes when the cursor is
+outside of the Xterm frame itself, so this only works if the mouse is still
+contained within the Xterm frame.  I've sent a patch to the Xterm maintainer
+to improve this, but he has not taken it yet.
+
+* Resize windows with the mouse: click and hold on a status line
+dividing two windows to move it.
+
+* Select menu entries (such as any completion menu or the ^T options
+menu): click on the menu item to position the cursor on it.  Double-click on
+a menu item to select it (same as hitting return with cursor on it).</li>
+
+* If your mouse has a wheel, turning the wheel will scroll the window with
+the cursor.
+
+Unfortunately, when -mouse is selected, cut and paste between X windows
+does not work as it normally does in a shell window (left-click and drag to
+select, middle click to paste).  Instead, you have to hold the shift key
+down to do this: shift-left-click and drag to select, and shift-middle click
+to paste.  Note that pasting text into JOE this way has problems: any `
+characters will get messed up because ` means quote the following control
+character.  Also if auto-indent is enabled, pasted text will not be indented
+properly.
+
+When -joexterm is set (and you have ./configured Xterm with
+--enable-paste64):
+
+* Cut &amp; paste are properly integrated with X.  Text selected with
+left-click-drag is available for pasting into other X windows (even if the
+selected text is larger than the text window).  Text selected in other X
+windows can be pasted into JOE with middle-click.  There are no problems
+pasting text containing ` or with auto-indent.
+
+--enable-paste64 allows an application program to communicate Base-64
+encoded selection data to and from the Xterm.  The program has full control
+over what is in the selection data and when it is received or sent.
+
+## Color Xterm support
+
+JOE can make use of monochrome Xterm, 8-color Xterm, 16-color Xterm,
+88-color Xterm and 256-color Xterm.  The number of colors which Xterm
+supports is determined by which "configure" script options are set before
+the Xterm source code is compiled.  The termcap or terminfo entry must
+support how your Xterm is configured.  On my Slackware Linux distribution,
+you have to set the TERM environment variable to one of these:
+
+<ul>
+<li>xterm</li>
+<li>xterm-color</li>
+<li>xterm-16color</li>
+<li>xterm-88color</li>
+<li>xterm-256color</li>
+</ul>
+
+If the termcap/terminfo entry is missing, you can add the "-assume_256color"
+option to the joerc file.  Note that this was broken for terminfo in
+versions of JOE below 3.4.
+
+When it is working, the command: "joe -assume_256color -text_color bg_222"
+should have a gray background.
+
+## Hex edit mode
+
+When this mode is selected (either put -hex on the command line, or look for
+"Hex edit mode" after hitting ^T), the buffer is displayed as a hex dump,
+but all of the editing commands operate the same way.  It is most useful to
+select overtype mode in conjunction with hex dump (hit ^T T).  Then typing
+will not insert.
+
+- To enter the hex byte 0xF8 type ESC ' x F 8
+
+- You can use ^KC to copy a block as usual.  If overtype mode is selected,
+  the block will overwrite the destination data without changing the size of
+  the file.  Otherwise it inserts.
+
+- Hit ESC x byte &lt;Enter&gt;, to jump to a particular byte offset.  Hex values
+  can be entered into this prompt like this: 0x2000.
+
+- Search, incremental search, and search &amp; replace all operate as usual.
+
+<a name="evariables"></a>
+## Environment variables 
+
+For JOE to operate correctly, a number of other environment settings must be 
+correct.  The throughput (baud rate) of the connection between the computer 
+and your terminal must be set correctly for JOE to update the screen 
+smoothly and allow typeahead to defer the screen update.  Use the __stty nnn__
+command to set this.  You want to set it as close as possible to 
+actual throughput of the connection.  For example, if you are connected via 
+a 1200 baud modem, you want to use this value for __stty__.  If you are 
+connected via 14.4k modem, but the terminal server you are connected to 
+connects to the computer a 9600 baud, you want to set your speed as 9600 
+baud.  The special baud rate of 38400 or __extb__ is used to indicate that 
+you have a very-high speed connection, such as a memory mapped console or an 
+X-window terminal emulator.  If you can't use __stty__ to set the actual 
+throughput (perhaps because of a modem communicating with the computer at a 
+different rate than it's communicating over the phone line), you can put a 
+numeric value in the __BAUD__ environment variable instead (use __setenv 
+BAUD 9600__ for csh or __BAUD=9600; export BAUD__ for sh).  
+
+The __TERM__ environment variable must be set to the type of terminal
+you're using.  If the size (number of lines/columns) of your terminal is
+different from what is reported in the TERMCAP or TERMINFO entry, you can
+set this with the __stty rows nn cols nn__ command, or by setting the
+__LINES__ and __COLUMNS__ environment variables.  The terminal size is
+variable on modern systems and is determined by an ioctl, so these
+parameters often have no effect.
+
+JOE normally expects that flow control between the computer and your
+terminal to use ^S/^Q handshaking (i.e., if the computer is sending
+characters too fast for your terminal, your terminal sends ^S to stop the
+output and ^Q to restart it).  If the flow control uses out-of-band or
+hardware handshaking or if your terminal is fast enough to always keep up
+with the computer output and you wish to map ^S/^Q to edit commands, you can
+set the environment variable __NOXON__ to have JOE attempt to turn off
+^S/^Q handshaking.  If the connection between the computer and your terminal
+uses no handshaking and your terminal is not fast enough to keep up with the
+output of the computer, you can set the environment variable __DOPADDING__
+to have __JOE__ slow down the output by interspersing PAD characters
+between the terminal screen update sequences.
+
+Here is a complete list of the environment variables:
+
+* BAUD
+Tell JOE the baud rate of the terminal (overrides value reported by stty).
+<br>
+
+* COLUMNS
+Set number of columns in terminal emulator (in case
+termcap entry is wrong).  This is only useful on old system which don't have
+the "get window size" ioctl.
+<br>
+
+* DOPADDING
+Enable JOE to send padding NULs to the terminal
+when set (for very old terminals).
+<br>
+
+* HOME
+Used to get path to home directory for ~
+expansion and also to find ~/.joerc file ~/.joe directory.
+<br>
+
+* HOSTNAME
+Used to get hostname to put in EMACS compatible locks.
+<br>
+
+* JOETERM
+Gives terminal type: JOE will use this instead of TERM if it's set.
+<br>
+
+* LANG
+Sets locale (like en_US.utf-8).  JOE uses
+the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+<br>
+
+* LC_ALL
+Sets locale (like en_US.utf-8).  JOE
+uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+<br>
+
+* LC_CTYPE
+Sets locale (like en_US.utf-8).  JOE
+uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+<br>
+
+* LINES
+Set number of lines in terminal emulator (in case
+termcap entry is wrong).  This is only useful on old system which don't have
+the "get window size" ioctl.
+<br>
+
+* NOXON
+Disable ^S and ^Q flow control, possibly
+allowing ^S and ^Q to be used as editor keys.
+<br>
+
+* SHELL
+Path to shell (like /bin/sh).  This is
+used in several places: If you are on a system with no job control, this
+shell is invoked when you hit ^KZ.  Also this is shell which is run in shell
+windows.  If SHELL is not set (Cygwin) or if it's set to /bin/sh, JOE
+invokes the first of these which exists: /bin/bash, /usr/bin/bash, /bin/sh.
+<br>
+
+* SIMPLE_BACKUP_SUFFIX
+If this is set, it is
+appended to the file name instead of ~ to create the backup file name.
+<br>
+
+* TAGS
+If set to a path to a file, JOE tries to
+use this as the "tags" file if there is no "tags" file in the current
+directory.
+<br>
+
+* TEMP
+If set, gives path to directory to open
+swapfile instead of /tmp
+<br>
+
+* TERMCAP
+Used by JOE's built-in termcap file
+parser (not used for terminfo).  A termcap entry can be placed directly in
+this variable (which will be used if it matches TERM), or if it begins with
+/, it gives a list of paths to termcap files to search.
+<br>
+
+* TERMPATH
+Gives list of paths to termcap files to search when TERMCAP has a
+termcap entry (otherwise it's ignored).  The default list of paths to
+termcap files (when TERMCAP and TERMPATH do not have it) is: "~/.termcap
+/etc/joe/termcap /etc/termcap"
+<br>
+
+* TERM
+Gives terminal type, like "vt100" or "xterm".
+<br>
+
+* USER
+Used to get user name for EMACS compatible file locks.
+<br>
 
 ## Command list
 
