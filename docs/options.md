@@ -335,7 +335,7 @@ tabs.</td></tr>
 </tbody>
 </table>
 
-<h3 name="env">Environment variables:</h3>
+<h3 id="env">Environment variables:</h3>
 <table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
 <col width="125">
