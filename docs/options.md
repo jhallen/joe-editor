@@ -250,6 +250,8 @@ relevant when notite mode is enabled).  </td></tr>
 <tr valign="top"><td>nosta</td><td>Disable top most status line (so that when you edit a
 file, only your text is on the screen).</td></tr>
 
+<tr valign="top"><td>notagsmenu</td><td>Disable selection menu for tags search with multiple results.</td></tr>
+
 <tr valign="top"><td>notite</td><td>Disable ti and te termcap sequences which are usually
 set up to save and restore the terminal screen contents when JOE starts and
 exits.</td></tr>

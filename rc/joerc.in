@@ -163,6 +163,8 @@
  -menu_jump	Jump into file selection menu when tab is hit (otherwise, menu
 		comes up, but cursor stays in file name prompt).
 
+ -notagsmenu	Disable tags file search menu
+
  -icase         Search is case insensitive by default.
 
  -wrap          Search wraps

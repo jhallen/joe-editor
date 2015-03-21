@@ -347,6 +347,8 @@ known</td></tr>
 
 <tr valign="top"><td>tag</td><td>Tags file search</td></tr>
 
+<tr valign="top"><td>tagjump</td><td>Jump to next tags file search match (only if notagsmenu is set)</td></tr>
+
 <tr valign="top"><td>timer</td><td>Execute a macro periodically</td></tr>
 
 <tr valign="top"><td>txt</td><td>Insert text.  If first character is \`, then text is assumed to be a format string (that is, the string
