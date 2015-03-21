@@ -207,7 +207,14 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 							int q;
 							while (buf[y] >= '0' && buf[y] <= '9')
 								++y;
-							while (buf[y] == ' ' && buf[y] == '\t')
+							/* Comment (skip vi junk) */
+							while (buf[y] == ' ' || buf[y] == '\t' ||
+							       buf[y] == ';' || buf[y] == '"' ||
+							       (buf[y] && (buf[y + 1] == ' ' ||
+							                   buf[y + 1] == '\t' ||
+							                   buf[y + 1] == '\r' ||
+							                   buf[y + 1] == '\n' ||
+							                   !buf[y + 1])))
 								++y;
 							q = y + zlen(buf + y);
 							if (q > y && buf[q - 1] == '\n') {
@@ -264,8 +271,14 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 							unsigned char *srch;
 							srch = vsncpy(NULL, 0, buf1, z);
 							if (buf[y]) ++y;
-							/* Comment */
-							while (buf[y] == ' ' && buf[y] == '\t')
+							/* Comment (skip vi junk) */
+							while (buf[y] == ' ' || buf[y] == '\t' ||
+							       buf[y] == ';' || buf[y] == '"' ||
+							       (buf[y] && (buf[y + 1] == ' ' ||
+							                   buf[y + 1] == '\t' ||
+							                   buf[y + 1] == '\r' ||
+							                   buf[y + 1] == '\n' ||
+							                   !buf[y + 1])))
 								++y;
 							q = y + zlen(buf + y);
 							if (q > y && buf[q - 1] == '\n') {

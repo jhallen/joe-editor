@@ -3,6 +3,11 @@ Improvements:
 
  Long bash lines not quite working correctly...
 
+ Should ^K E pop the shell window?
+    if current is scratch it should pop
+    popedit will not be needed then..
+
+
  'parse' can't be used with commands with pipe symbol
 
  Keys for parserr and release?
@@ -45,9 +50,6 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
- Should ^K E pop the shell window?
- [fixed]
-
  parsed file names with spaces not working correctly
  parse file names with no line numbers?
  [fixed]
