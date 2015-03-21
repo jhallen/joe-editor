@@ -700,7 +700,7 @@ For example, to delete the next 20 lines of text, type:
 
 __^K \\ 20__<return>__^Y__
 
-### Macros and commands
+## Macros and commands
 
 A macro is a comma separated list of commands.  When the macro is executed,
 each command is executed until either the end of the list is reached, or one
@@ -710,14 +710,14 @@ commands beep if you have beeps enabled (^T B).
 Hit __^\[ D__ to insert the current set of keyboard macros as text into the
 current buffer.
 
-#### Command prompt
+### Command prompt
 
 Execute a macro directly at the command prompt.  Hit __ESC x__.  Hit tab
 at this prompt for a completion list of all available commands.
 
 Here is a [complete list of commands](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/list.md).
 
-#### Define your own
+### Define your own
 
 You can bind macros to key sequences or define your own named macros in the
 joerc file.
