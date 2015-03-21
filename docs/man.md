@@ -96,133 +96,16 @@ should.  See the section [Environment variables](#evariables) below.
 
 ## Command Line Options
 
-The following global options may be specified on the command line:
+Only a subset of the options are shown here.  Please refer to this
+[complete list of options](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md).
 
-* -asis
-
-Characters with codes above 127 will be sent to the terminal as-is, instead
-of as inverse of the corresponding character below 128.  If this does not
-work, check your terminal server.
-
-* -backpath path
-
-If this option is given, backup files will be stored in the specified
-directory instead of in each file's original directory.
-
-* -baud nnn
-
-Set the baud rate for the purposes of terminal screen optimization.  Joe
-inserts delays for baud rates below 19200, which bypasses tty buffering so
-that typeahead will interrupt the screen output.  Scrolling commands will
-not be used for 38400 baud.  This is useful for X-terms and other console
-ttys which really aren't going over a serial line.
-
-* -beep
-
-Joe will beep on command errors and when the cursor goes past
-extremes.
-
-* -columns nnn
-
-Sets the number of screen columns.
-
-* -csmode
-
-Continued search mode: a search immediately following a search will repeat
-the previous search instead of prompting for new string.  This is useful for
-the the __^\[S__ and __^\[R__ commands and for when joe is trying to be emacs.
-
-* -dopadding
-
-Joe usually assumes that there is some kind of flow control between it and
-the tty.  If there isn't, this option will make joe output extra ^@s to the
-tty as specified by the termcap entry.  The extra ^@s allow the terminal to
-catch up after long terminal commands.
-
-* -exask
-
-This option makes ^KX verify the file name that it's about to write.
-
-* -force
-
-This option makes sure that the last line of the file has a line-feed which
-it's saved.
-
-* -help
-
-The editor will start with the help screen on if this option is
-given.
-
-* -keepup
-
-Normally the column number and control-key prefix fields of the status
-lines are on a one second delay to reduce CPU consumption, but with this
-option they are updated after each key-stroke.
-
-* -lightoff
-
-The block highlighting will go away after any block command if this option
-is given.
-
-* -lines nnn
-
-Sets the number of screen lines.
-
-* -marking
-
-Text between ^KB and the cursor is highlighted (use with -lightoff and a
-modified joerc file to have drop-anchor style block selection).
-
-* -mid
-
-If this option is set and the cursor moves off the window, the window will
-be scrolled so that the cursor is in the center.  This option is forced on
-slow terminals which don't have scrolling commands.
-
-* -nobackups
-
-This option prevents backup files.
-
-* -nonotice
-
-This option prevent the copyright notice from being displayed when the
-editor starts.
-
-* -nosta
-
-This option eliminates the top-most status line.  It's nice for when you
-only want to see your text on the screen or if you're using a vt52.
-
-* -noxon
-
-Attempt to turn off ^S/^Q processing.  This is useful for when joe is trying
-to be WordStar or EMACS.
+The following options may be specified on the command line:
 
 * -orphan
 
 When this option is active, extra files on the command line will be placed
 in orphaned buffers instead of in extra windows.  This is useful for when
 joe is trying to be emacs.
-
-* -pg nnn
-
-This specifies the number of lines to keep after PgUp/PgDn (^U/^V).  If -1
-is given, half the window is kept.
-
-* -skiptop nnn
-
-Don't use the top nnn lines of the screen.  Useful for when joe is used as a
-BBS editor.
-
-Each of these options may be specified in the joerc file as well.  In
-addition, the NOXON, BAUD, LINES, COLUMNS and DOPADDING options may be
-specified with environment variables.
-
-The JOETERM environment variable may be set to override the regular TERM
-environment variable for specifying your terminal type.
-
-The following options may be specified before each filename on the command
-line:
 
 * +nnn
 
@@ -233,58 +116,24 @@ The cursor starts on the specified line.
 Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
 editing MS-DOS or VMS files.
 
-* -wordwrap
-
-Joe wraps the previous word when you type past the right margin.
-
-* -autoindent
-
-When you hit Return on an indented line, the indentation is duplicated onto
-the new line.
-
-* -overwrite
-
-Typing overwrites existing characters instead of inserting before
-them.
-
-* -lmargin nnn
-
-Sets the left margin.
-
-* -rmargin nnn
-
-Sets the right margin.
-
-* -tab nnn
-
-Sets the tab width.
-
-* -indentc nnn
-
-Sets the indentation character for ^K, and ^K. (32 for SPACE, 9 for
-TAB).
-
-* -istep nnn
-
-Sets the indentation step for ^K, and ^K..
-
-* -linums
-
-Line numbers are displayed before each line.
-
 * -rdonly
 
 The file is read only.
-
-* -keymap name
-
-Use an alternate section of the joerc file for the key sequence
-bindings.
 
 These options can also be specified in the joerc file.  They can be set
 depending on the file-name extension.  Programs (.c, .h or .p extension)
 usually have autoindent enabled.  Wordwrap is enabled on other files, but rc
 files have it disabled.
+
+### Mode command
+
+Many options can be controlled with the __^T__ menu.  This menu is defined
+in the joerc file.  Each option in the __^T__ menu just executes a macro.  Usually
+the macro is the mode command.  You can execute the mode command directly with:
+
+	ESC x mode <enter\>
+
+Hit tab for a completion list of all options.
 
 ## Basic Editing
 
@@ -851,16 +700,25 @@ For example, to delete the next 20 lines of text, type:
 
 __^K \\ 20__<return>__^Y__
 
-### Macros
+### Macros and commands
 
-A macro is a comma separated list of commands or named macros found in the
-joerc file.  When the macro is executed, each command is executed until
-either the end of the list is reached, or one of the commands fails
-(non-zero return value from the command).  Failed commands beep if you have
-beeps enabled (^T B).
+A macro is a comma separated list of commands.  When the macro is executed,
+each command is executed until either the end of the list is reached, or one
+of the commands fails (non-zero return value from the command).  Failed
+commands beep if you have beeps enabled (^T B).
 
 Hit __^\[ D__ to insert the current set of keyboard macros as text into the
 current buffer.
+
+#### Command prompt
+
+Execute a macro directly at the command prompt.  Hit __ESC x__.  Hit tab
+at this prompt for a completion list of all available commands.
+
+#### Define your own
+
+You can bind macros to key sequences or define your own named macros in the
+joerc file.
 
 ### Macro don't stop modifier
 
