@@ -1,41 +1,47 @@
-<h1>JOE</h1>
-<h2>Name</h2>
-joe - Joe's Own Editor
-<h2>Syntax</h2>
-<b>joe [global-options] [ [local-options] filename ]...</b>
-<br><br>
-<b>jstar [global-options] [ [local-options] filename ]...</b>
-<br><br>
-<b>jmacs [global-options] [ [local-options] filename ]...</b>
-<br><br>
-<b>rjoe [global-options] [ [local-options] filename ]...</b>
-<br><br>
-<b>jpico [global-options] [ [local-options] filename ]...</b>
-<h2>Description</h2>
-<p>JOE is a powerful ASCII-text screen editor.  It has a "mode-less" user
+# JOE - Joe's Own Editor
+
+[TOC]
+
+## Syntax
+
+__joe [global-options] [ [local-options] filename ]...__
+<br>
+__jstar [global-options] [ [local-options] filename ]...__
+<b>
+__jmacs [global-options] [ [local-options] filename ]...__
+<br>
+__rjoe [global-options] [ [local-options] filename ]...__
+<br>
+__jpico [global-options] [ [local-options] filename ]...__
+
+## Description
+
+JOE is a powerful console screen editor.  It has a "mode-less" user
 interface which is similar to many user-friendly PC editors.  Users of
 Micro-Pro's WordStar or Borland's "Turbo" languages will feel at home.  JOE
 is a full featured UNIX screen-editor though, and has many features for
-editing programs and text.</p>
-<p>JOE also emulates several other editors.  JSTAR is a close imitation of
+editing programs and text.
+
+JOE also emulates several other editors.  JSTAR is a close imitation of
 WordStar with many "JOE" extensions.  JPICO is a close imitation of the
 Pine mailing system's PICO editor, but with many extensions and
 improvements.  JMACS is a GNU-EMACS imitation.  RJOE is a restricted
 version of JOE, which allows you to edit only the files specified on the
-command line.</p>
-<p>Although JOE is actually five different editors, it still requires only one
+command line.
+
+Although JOE is actually five different editors, it still requires only one
 executable, but one with five different names.  The name of the editor with
 an "rc" appended gives the name of JOE's initialization file, which
-determines the personality of the editor.</p>
-<p>JOE is free software;  you can distribute it and/or modify it under the
+determines the personality of the editor.
+
+JOE is free software;  you can distribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation.  I have no plans for turning JOE into a commercial or share-ware
-product.  JOE is available over the Internet from
-<b>www.sourceforge.net/projects/joe-editor</b>.</p>
+Foundation.  JOE is available over the Internet from
+<http://www.sourceforge.net/projects/joe-editor>.
 
-<h2>Usage</h2>
+## Usage
 
-<p>To start the editor, type <b>joe</b> followed by zero or more names of files
+To start the editor, type __joe__ followed by zero or more names of files
 you want to edit.  Each file name may be preceded by a local option setting
 (see the local options table which follows).  Other global options, which
 apply to the editor as a whole, may also be placed on the command line (see
@@ -43,8 +49,9 @@ the global options table which follows).  If you are editing a new file, you
 can either give the name of the new file when you invoke the editor, or in
 the editor when you save the new file.  A modified syntax for file names is
 provided to allow you to edit program output, standard input/output, or
-sections of files or devices.  See the section <b>Filenames</b> below for
-details.</p>
+sections of files or devices.  See the section [Filenames](#filenames) below for
+details.
+
 <p>Once you are in the editor, you can type in text and use special
 control-character sequences to perform other editing tasks.  To find out
 what the control-character sequences are, read the rest of this man page or
@@ -687,9 +694,11 @@ output of the computer, you can set the environment variable <b>DOPADDING</b>
 to have <b>JOE</b> slow down the output by interspersing PAD characters
 between the terminal screen update sequences.</p>
 
-<h2>Filenames</h2>
-<p>Wherever JOE expects you to enter a file name, whether on the command line
-or in prompts within the editor, you may also type:</p>
+<a name="filenames"/>
+## Filenames
+
+Wherever JOE expects you to enter a file name, whether on the command line
+or in prompts within the editor, you may also type:
 
 <ul>
 
