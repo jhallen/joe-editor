@@ -68,7 +68,7 @@ will work in place of __^H__, __Tab__ will work in place of __^I__,
 __Return__ or __Enter__ will work in place of __^M__ and
 __Linefeed__ will work in place of __^J__.  Some keyboards may give you
 trouble with some control keys.  __^___, __^^__ and __^@__ can usually
-be entered without pressing shift (I.E., try __^-__, __^6__ and
+be entered without pressing shift (i.e., try __^-__, __^6__ and
 __^2__).  Other keyboards may reassign these to other keys.  Try:
 __^.__, __^,__ and __^/__.  __^SPACE__ can usually be used in place
 of __^@__.  __^\\__ and __^\]__ are interpreted by many communication
@@ -92,7 +92,7 @@ usually resides as __/home/jhallen/bin/joe__).
 
 There are a number of other obscure invocation parameters which may have to
 be set, particularly if your terminal screen is not updating as you think it
-should.  See the section __Environment variables__ below.
+should.  See the section [Environment variables](#evariables) below.
 
 ## Command Line Options
 
@@ -375,7 +375,7 @@ next line so that you don't have to hit __Return__.  This is called
 word-wrap mode.  Word-wrap can be turned on or off with the __^T W__ 
 command.  JOE's initialization file is usually set up so that this mode is 
 automatically turned on for all non-program files.  See the section below on 
-the __joerc__ file to change this and other defaults.
+the [joerc](#joerc) file to change this and other defaults.
 
 Aside for Word-wrap mode, JOE does not automatically keep paragraphs 
 formatted like some word-processors.  Instead, if you need a paragraph to be 
@@ -475,7 +475,7 @@ name from what the file was called originally).  After the file is saved,
 you can hit __^K E__ to edit a different file.
 
 If you want to save only a selected section of the file, see the section on
-__Blocks__ below.__
+[Blocks](#blocks) below.
 
 If you want to include another file in the file you're editing, use __^K
 R__ to insert it.
@@ -635,6 +635,7 @@ search would begin, and the sample line would be changed to:
 Address: England, London, S. Holmes, 221b Baker St.
 
 
+<a name="blocks">
 ### Blocks
 
 
@@ -787,6 +788,7 @@ passed to the shell.  Type the shell __exit__ command to stop recording
 shell output.  If you press __^C__ in a shell window, when the cursor is
 not at the end of the window, the shell is __kill__ed.
 
+<a name="evariables"/>
 ## Environment variables 
 
 For JOE to operate correctly, a number of other environment settings must be 
@@ -813,7 +815,7 @@ set this with the __stty rows nn cols nn__ command, or by setting the
 __LINES__ and __COLUMNS__ environment variables.
 
 JOE normally expects that flow control between the computer and your
-terminal to use ^S/^Q handshaking (I.E., if the computer is sending
+terminal to use ^S/^Q handshaking (i.e., if the computer is sending
 characters too fast for your terminal, your terminal sends ^S to stop the
 output and ^Q to restart it).  If the flow control uses out-of-band or
 hardware handshaking or if your terminal is fast enough to always keep up
