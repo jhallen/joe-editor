@@ -5,7 +5,9 @@ enum vt_state {
 	vt_esc,
 	vt_args,
 	vt_cmd,
-	vt_utf
+	vt_utf,
+	vt_osc,
+	vt_osce
 };
 
 struct vt_context {

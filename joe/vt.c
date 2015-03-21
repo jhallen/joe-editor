@@ -706,6 +706,8 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 					break;
 				} else if (c == '8') { /* vt100: restore position and attributes (home, initially) */
 					break;
+				} else if (c == ']') { /* OSC */
+					vt->state = vt_osc;
 				} else if (c == '[') { /* CSI */
 					vt->argc = 0;
 					vt->argv[0] = 0;
@@ -717,6 +719,22 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 				} else { /* Ignore the rest... */
 					vt->state = vt_idle;
 				}
+				break;
+			} case vt_osc: { /* Operating system controls */
+				if (c == 7 || c == 13 || c == 10)
+					/* Technically we should eat 13 and 10, but
+					   don't want user to get stuck. */
+					vt->state = vt_idle;
+				else if (c == 27)
+					vt->state = vt_osce;
+				break;
+			} case vt_osce: {
+				if (c == '\\')
+					vt->state = vt_idle;
+				else if (c == 27)
+					vt->state = vt_osce;
+				else
+					vt->state = vt_osc;
 				break;
 			} case vt_cmd: {
 				if (c != '}') {
