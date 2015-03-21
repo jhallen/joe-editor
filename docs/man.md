@@ -113,11 +113,64 @@ Some options take arguments.  Arguments are given like this:
 
 The following global options may be specified on the command line:
 
+* -asis
+
+Characters with codes above 127 will be sent to the terminal as-is, instead
+of as inverse of the corresponding character below 128.  If this does not
+work, check your terminal server.  This option has no effect if UTF-8
+encoding is used.
+
+* -baud nnn
+
+Set the baud rate for the purposes of terminal screen optimization.  JOE
+inserts delays for baud rates below 19200, which bypasses tty buffering so
+that typeahead will interrupt the screen output.  Scrolling commands will
+not be used for 38400 baud and above.  This is useful for X-terms and other
+console ttys which really aren't going over a serial line.
+
+* -beep
+
+Joe will beep on command errors and when the cursor goes past extremes.
+
+* -force
+
+This option makes sure that the last line of the file has a line-feed which
+it's saved.
+
+* -help
+
+The editor will start with the help screen on if this option is given.
+
+* -mid
+
+If this option is set and the cursor moves off the window, the window will
+be scrolled so that the cursor is in the center.  This option is forced on
+slow terminals which don't have scrolling commands.
+
+* -nonotice
+
+This option prevent the copyright notice from being displayed when the
+editor starts.
+
+* -nosta
+
+This option eliminates the top-most status line.  It's nice for when you
+only want to see your text on the screen or if you're using a vt52.
+
+* -noxon
+Attempt to turn off ^S/^Q processing.  This is useful for when joe is
+emulating WordStar or EMACS.
+
 * -orphan
 
 When this option is active, extra files on the command line will be placed
 in orphaned buffers instead of in extra windows.  This is enabled by default
 in jmacs.
+
+* -pg nnn
+
+This specifies the number of lines to keep after PgUp/PgDn (^U/^V).  If -1
+is given, half the window is kept.
 
 The following local options may be specified on the command line:
 
@@ -129,6 +182,34 @@ The cursor starts on the specified line.
 
 Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
 editing MS-DOS or VMS files.
+
+* -wordwrap
+Joe wraps the previous word when you type past the right margin.
+
+* -autoindent
+When you hit Return on an indented line, the indentation is duplicated onto
+the new line.
+
+* -overwrite
+Typing overwrites existing characters instead of inserting before them.
+
+* -lmargin nnn
+Sets the left margin.
+
+* -rmargin nnn
+Sets the right margin.
+
+* -tab nnn
+Sets the tab width.
+
+* -indentc nnn
+Sets the indentation character for ^K, and ^K. (32 for SPACE, 9 for TAB).
+
+* -istep nnn
+Sets the indentation step for ^K, and ^K..
+
+* -linums
+Line numbers are displayed before each line.
 
 * -rdonly
 
@@ -294,7 +375,7 @@ __meta characters__, by first hitting __^\___.  This adds 128
 to the next (possibly control) character entered.  JOE displays characters
 above 128 in inverse-video.  Some foreign languages, which have more letters
 than English, use the meta characters for the rest of their alphabet.  You
-have to put the editor in __ASIS__ mode (described later) to have these
+have to put the editor in __ASIS__ mode to have these
 passed untranslated to the terminal.
 
 ## Prompts
