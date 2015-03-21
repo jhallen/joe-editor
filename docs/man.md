@@ -540,7 +540,7 @@ and then a B.
 
 * __\?__
 
-This finds exactly one character.  For example, if you give __A\\\?B__ as
+This finds exactly one character.  For example, if you give __A\?B__ as
 the search text, JOE will find AXB, but not AB or AXXB.
 
 * __\^ \$__
@@ -548,10 +548,10 @@ the search text, JOE will find AXB, but not AB or AXXB.
 These match the beginning and end of a line.  For example, if you give
 __\^test\$__, then JOE with find __test__ on a line by itself.
 
-* __\\\< \\\>__
+* __\< \\\>__
 
 These match the beginning and end of a word.  For example, if you give
-__\\\<\\\*is\\\*\\\>__, then joe will find whole words which have the
+__\<\\\*is\\\*\\\>__, then joe will find whole words which have the
 sub-string __is__ within them.
 
 * __\\\[...]__
@@ -597,10 +597,10 @@ you give __"&"__, then joe will put quote marks around words.
 
 * __\0 - \9__
 
-These get replaced with the text which matched the Nth __\*__, __\?__,
-__\+__, __\c__, __\+__, or __\[...]__ in the search string.
+These get replaced with the text which matched the Nth __\\\*__, __\?__,
+__\\\+__, __\c__, or __\[...]__ in the search string.
 
-* __\\__
+* __\\\\__
 
 Use this if you need to put a __\\__ in the replacement string.
 
@@ -634,8 +634,8 @@ search would begin, and the sample line would be changed to:
 
 Address: England, London, S. Holmes, 221b Baker St.
 
+<a name="blocks"\>
 
-<a name="blocks">
 ### Blocks
 
 
