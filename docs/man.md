@@ -1216,6 +1216,22 @@ will be moved by subsequent __^K ,__ and __^K .__ commands.  The number
 of columns these commands shift by can be set through a __^T__
 option.
 
+### Rectangle mode
+
+Type __^T X__ to have __^K B__ and __^K K__ select rectangular blocks
+instead of stream-of-text blocks.  This mode is useful for moving, copying,
+deleting or saving columns of text.  You can also filter columns of text
+with the __^K /__ command- if you want to sort a column, for example.  The
+insert file command, __^K R__ is also affected.
+
+When rectangle mode is selected, over-type mode is also useful
+(__^T T__).  When over-type mode is selected, rectangles will replace
+existing text instead of getting inserted before it.  Also the delete block
+command (__^K Y__) will clear the selected rectangle with SPACEs and TABs
+instead of deleting it.  Over-type mode is especially useful for the filter
+block command (__^K /__), since it will maintain the original width of the
+selected column.
+
 ## Windows
 
 You can edit more than one file at the same time or edit two or more
@@ -1378,22 +1394,6 @@ of a macro- so if the macro ends in a dialog you often want to call 'query'
 to prevent the ^KB ^KK positions from being restored too early.
 
 
-
-## Rectangle mode
-
-Type __^T X__ to have __^K B__ and __^K K__ select rectangular blocks
-instead of stream-of-text blocks.  This mode is useful for moving, copying,
-deleting or saving columns of text.  You can also filter columns of text
-with the __^K /__ command- if you want to sort a column, for example.  The
-insert file command, __^K R__ is also affected.
-
-When rectangle mode is selected, over-type mode is also useful
-(__^T T__).  When over-type mode is selected, rectangles will replace
-existing text instead of getting inserted before it.  Also the delete block
-command (__^K Y__) will clear the selected rectangle with SPACEs and TABs
-instead of deleting it.  Over-type mode is especially useful for the filter
-block command (__^K /__), since it will maintain the original width of the
-selected column.
 
 ## Tags search
 
