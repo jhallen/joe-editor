@@ -1420,6 +1420,116 @@ Since __^K ;__ loads  the definition file into the current window, you
 probably want to split the window first with __^K O__, to have both the
 original file and the definition file loaded.
 
+## Calulator
+
+JOE has a built-in calculator which can be invoked with __ESC m__.
+
+<p><b>Math functions:</b></p>
+
+<p>sin, cos, tan, exp, sqrt, cbrt, ln, log,
+asin, acos, atan, sinh, cosh, tanh, asinh, acosh,
+atanh, int, floor, ceil, abs, erf, erfc, j0,
+j1, y0, y1</p>
+
+<p><b>Variables:</b></p>
+
+<table width="100%" cellspacing=20 border=0 cellpadding=0>
+<colgroup>
+<col width="125">
+<tbody>
+<tr valign="top"><td>e</td><td>Set to 'e'</td></tr>
+
+<tr valign="top"><td>pi</td><td>Set to 'pi'</td></tr>
+
+<tr valign="top"><td>top</td><td>Set to line number of top window line</td></tr>
+
+<tr valign="top"><td>lines</td><td>Set to number of lines in file</td></tr>
+
+<tr valign="top"><td>line</td><td>Set to current line number</td></tr>
+
+<tr valign="top"><td>col</td><td>Set to current column number</td></tr>
+
+<tr valign="top"><td>byte</td><td>Set to current byte number</td></tr>
+
+<tr valign="top"><td>size</td><td>Set to buffer size</td></tr>
+
+<tr valign="top"><td>height</td><td>Set to window height</td></tr>
+
+<tr valign="top"><td>width</td><td>Set to window width</td></tr>
+
+<tr valign="top"><td>char</td><td>Set to ASCII val of character under cursor	</td></tr>
+
+<tr valign="top"><td>markv</td><td>True if there is a valid block set (^KB ...
+^KK)</td></tr>
+
+<tr valign="top"><td>rdonly</td><td>True if file is read-only</td></tr>
+
+<tr valign="top"><td>arg</td><td>Current repeat argument</td></tr>
+
+<tr valign="top"><td>argset</td><td>True if a repeat argument was given</td></tr>
+
+<tr valign="top"><td>no_windows</td><td>No. buffer windows on the screen</td></tr>
+
+<tr valign="top"><td>ans</td><td>Result of previous expression</td></tr>
+</tbody>
+</table>
+
+<p><b>Commands:</b></p>
+
+<table width="100%" cellspacing=20 border=0 cellpadding=0>
+<colgroup>
+<col width="125">
+<tbody>
+<tr valign="top"><td>hex</td><td>Hex display mode</td></tr>
+
+<tr valign="top"><td>dec</td><td>Decimal display mode</td></tr>
+
+<tr valign="top"><td>ins</td><td>Insert 'ans' into buffer</td></tr>
+
+<tr valign="top"><td>sum</td><td>Sum of numbers in block</td></tr>
+
+<tr valign="top"><td>cnt</td><td>Count numbers in block</td></tr>
+
+<tr valign="top"><td>avg</td><td>Average value of numbers in block</td></tr>
+
+<tr valign="top"><td>dev</td><td>Standard deviation of numbers in block</td></tr>
+
+<tr valign="top"><td>eval</td><td>Evaluate math expressions in block (or whole file
+		if no block set).</td></tr>
+
+<tr valign="top"><td>joe</td><td>..)	Execute a JOE macro (argument in same format
+		as joerc file macros).  Return value of
+		JOE macro is returned (for macro success,
+		return true (non-zero)).</td></tr>
+</tbody>
+</table>
+
+<p>For example:</p>
+
+<p>joe(sys,"[ 1 == 1 ]",rtn)</p>
+
+<p>([ 1 == 1 ]) is a shell command.  "[" is a synonym for
+the "test" UNIX command.</p>
+
+<p>Returns true.</p>
+
+<p>Remember: argument for JOE macro command
+"if" is a math expression.  So for example, the
+macro:</p>
+
+<p>if,"joe(sys,\"[ 1 == 1 ]\",rtn)",then,"TRUE",endif</p>
+
+<p>Types TRUE into the buffer.</p>
+
+<p><b>Operators:</b></p>
+	
+<p>^  * / %  + -  &lt; &lt;= &gt; &gt;= == !=  &amp;&amp;  ||  ? :  =  :</p>
+
+<p>&amp;&amp;, || and ? : work as in C and sh as far as side effects: if the
+left side of &amp;&amp; is false, the right side is not evaluated.</p>
+
+<p>: is expression separator</p>
+
 ## Shell windows
 
 Hit __^K '__ to run a command shell in one of JOE's windows.  When the
@@ -2778,112 +2888,4 @@ option).</td></tr>
 </tbody>
 </table>
 
-
-<p><b>Math</b></p>
-
-<p><b>Math functions:</b></p>
-
-<p>sin, cos, tan, exp, sqrt, cbrt, ln, log,
-asin, acos, atan, sinh, cosh, tanh, asinh, acosh,
-atanh, int, floor, ceil, abs, erf, erfc, j0,
-j1, y0, y1</p>
-
-<p><b>Variables:</b></p>
-
-<table width="100%" cellspacing=20 border=0 cellpadding=0>
-<colgroup>
-<col width="125">
-<tbody>
-<tr valign="top"><td>e</td><td>Set to 'e'</td></tr>
-
-<tr valign="top"><td>pi</td><td>Set to 'pi'</td></tr>
-
-<tr valign="top"><td>top</td><td>Set to line number of top window line</td></tr>
-
-<tr valign="top"><td>lines</td><td>Set to number of lines in file</td></tr>
-
-<tr valign="top"><td>line</td><td>Set to current line number</td></tr>
-
-<tr valign="top"><td>col</td><td>Set to current column number</td></tr>
-
-<tr valign="top"><td>byte</td><td>Set to current byte number</td></tr>
-
-<tr valign="top"><td>size</td><td>Set to buffer size</td></tr>
-
-<tr valign="top"><td>height</td><td>Set to window height</td></tr>
-
-<tr valign="top"><td>width</td><td>Set to window width</td></tr>
-
-<tr valign="top"><td>char</td><td>Set to ASCII val of character under cursor	</td></tr>
-
-<tr valign="top"><td>markv</td><td>True if there is a valid block set (^KB ...
-^KK)</td></tr>
-
-<tr valign="top"><td>rdonly</td><td>True if file is read-only</td></tr>
-
-<tr valign="top"><td>arg</td><td>Current repeat argument</td></tr>
-
-<tr valign="top"><td>argset</td><td>True if a repeat argument was given</td></tr>
-
-<tr valign="top"><td>no_windows</td><td>No. buffer windows on the screen</td></tr>
-
-<tr valign="top"><td>ans</td><td>Result of previous expression</td></tr>
-</tbody>
-</table>
-
-<p><b>Commands:</b></p>
-
-<table width="100%" cellspacing=20 border=0 cellpadding=0>
-<colgroup>
-<col width="125">
-<tbody>
-<tr valign="top"><td>hex</td><td>Hex display mode</td></tr>
-
-<tr valign="top"><td>dec</td><td>Decimal display mode</td></tr>
-
-<tr valign="top"><td>ins</td><td>Insert 'ans' into buffer</td></tr>
-
-<tr valign="top"><td>sum</td><td>Sum of numbers in block</td></tr>
-
-<tr valign="top"><td>cnt</td><td>Count numbers in block</td></tr>
-
-<tr valign="top"><td>avg</td><td>Average value of numbers in block</td></tr>
-
-<tr valign="top"><td>dev</td><td>Standard deviation of numbers in block</td></tr>
-
-<tr valign="top"><td>eval</td><td>Evaluate math expressions in block (or whole file
-		if no block set).</td></tr>
-
-<tr valign="top"><td>joe</td><td>..)	Execute a JOE macro (argument in same format
-		as joerc file macros).  Return value of
-		JOE macro is returned (for macro success,
-		return true (non-zero)).</td></tr>
-</tbody>
-</table>
-
-<p>For example:</p>
-
-<p>joe(sys,"[ 1 == 1 ]",rtn)</p>
-
-<p>([ 1 == 1 ]) is a shell command.  "[" is a synonym for
-the "test" UNIX command.</p>
-
-<p>Returns true.</p>
-
-<p>Remember: argument for JOE macro command
-"if" is a math expression.  So for example, the
-macro:</p>
-
-<p>if,"joe(sys,\"[ 1 == 1 ]\",rtn)",then,"TRUE",endif</p>
-
-<p>Types TRUE into the buffer.</p>
-
-<p><b>Operators:</b></p>
-	
-<p>^  * / %  + -  &lt; &lt;= &gt; &gt;= == !=  &amp;&amp;  ||  ? :  =  :</p>
-
-<p>&amp;&amp;, || and ? : work as in C and sh as far as side effects: if the
-left side of &amp;&amp; is false, the right side is not evaluated.</p>
-
-<p>: is expression separator</p>
 
