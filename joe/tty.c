@@ -1068,10 +1068,6 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 	unsigned char *name;
 	int ttyfd = -1;
 
-	/* Get pty/tty pair */
-	if (!(name = getpty(ptyfd, &ttyfd)))
-		return NULL;
-
 	/* Find free slot */
 	for (x = 0; x != NPROC; ++x)
 		if (!asyncs[x].func) {
@@ -1079,6 +1075,10 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 			break;
 		}
 	if (x==NPROC)
+		return NULL;
+
+	/* Get pty/tty pair */
+	if (!(name = getpty(ptyfd, &ttyfd)))
 		return NULL;
 
 	/* Fixes cygwin console bug: if you fork() with inverse video he assumes you want
