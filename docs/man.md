@@ -1130,6 +1130,8 @@ and ESC - to step through each line.
 <a name="evariables"></a>
 ## Environment variables 
 
+Please refer to this [complete list of environment variabls](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md#env).
+
 For JOE to operate correctly, a number of other environment settings must be 
 correct.  The throughput (baud rate) of the connection between the computer 
 and your terminal must be set correctly for JOE to update the screen 
