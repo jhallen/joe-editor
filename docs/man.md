@@ -111,13 +111,15 @@ Some options take arguments.  Arguments are given like this:
 
 	-lmargin 5
 
-The following options may be specified on the command line:
+The following global options may be specified on the command line:
 
 * -orphan
 
 When this option is active, extra files on the command line will be placed
-in orphaned buffers instead of in extra windows.  This is useful for when
-joe is trying to be emacs.
+in orphaned buffers instead of in extra windows.  This is enabled by default
+in jmacs.
+
+The following local options may be specified on the command line:
 
 * +nnn
 
