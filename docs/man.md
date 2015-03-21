@@ -2290,10 +2290,8 @@ Gives terminal type, like "vt100" or "xterm".
 Used to get user name for EMACS compatible file locks.
 <br>
 
-## Command list
-
 <a name="list"></a>
-### JOE commands grouped by function:
+## JOE commands grouped by function
 
 <p>These commands can be entered at the ESC x prompt.</p>
 
