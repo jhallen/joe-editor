@@ -416,12 +416,12 @@ arbitrary assignment between characters and numbers is called the ASCII
 character set).  The numbers outside of this range, from 0 to 255, aren't
 usually displayed, but sometimes have other special meanings.  The number
 10, for example, is used for the line-breaks.  You can enter these special,
-non-displayed __control characters__ by first hitting __`__ and then
+non-displayed __control characters__ by first hitting __^\[ '__ and then
 hitting a character in the range __@ A B C ... X Y Z [ ^ ] \ ___ to get
-the number 0 - 31, and ? to get 127.  For example, if you hit __` J__,
-you'll insert a line-break character, or if you hit __` I__, you'll insert
+the number 0 - 31, and ? to get 127.  For example, if you hit __^\[ ' J__,
+you'll insert a line-break character, or if you hit __^\[ ' I__, you'll insert
 a TAB character (which does the same thing the TAB key does).  A useful
-control character to enter is 12 (__` L__), which causes most printers to
+control character to enter is 12 (__^\[ ' L__), which causes most printers to
 advance to the top of the page.  You'll notice that JOE displays this
 character as an underlined L.  You can enter the characters above 127, the
 __meta characters__, by first hitting __^\__.  This adds 128
