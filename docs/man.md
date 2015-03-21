@@ -1,4 +1,4 @@
-k# JOE - Joe's Own Editor
+# JOE - Joe's Own Editor
 
 [TOC]
 
@@ -713,7 +713,7 @@ iteration of the key-strokes.
 For example, if you want to put "**" in front of a number of lines, you can 
 type:
 
-__^K \[ ^A ** __<down arrow> __^K ]__
+__^K \[ ^A \*\* __<down arrow\> __^K ]__
 
 
 Which starts the macro recording, moves the cursor to the beginning of the 
