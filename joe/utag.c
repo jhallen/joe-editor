@@ -148,6 +148,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 	unsigned char buf[512];
 	unsigned char buf1[512];
 	FILE *f;
+	unsigned char *prefix = NULL;
 	unsigned char *t = NULL;
 	struct tag *ta;
 
@@ -167,7 +168,8 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 		*/
 		char *tagspath = getenv("TAGS");
 		if(tagspath) {
-			f = fopen(tagspath, "r");    
+			f = fopen(tagspath, "r");
+			prefix = dirprt(tagspath);
 		}
 		if(!f) {
 			msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
@@ -194,10 +196,12 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 			}
 			for (y = x; buf[y] && buf[y] != ' ' && buf[y] != '\t' && buf[y] != '\n'; ++y) ;
 			if (x != y) {
-				unsigned char *file;
+				unsigned char *file = 0;
 				c = buf[y];
 				buf[y] = 0;
-				file = vsncpy(NULL, 0, sz(buf + x));
+				if (prefix)
+					file = vsncpy(NULL, 0, sv(prefix));
+				file = vsncpy(sv(file), sz(buf + x));
 				buf[y] = c;
 				while (buf[y] == ' ' || buf[y] == '\t') {
 					++y;
@@ -312,6 +316,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 		}
 	}
 	fclose(f);
+	vsrm(prefix);
 	if (!qempty(TAG, link, &tags)) {
 		tags.link.prev->last = 1;
 	}
@@ -340,30 +345,54 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 	last_cursor = 0;
 	/* Jump if only one result */
 	if (notagsmenu || aLEN(tag_array) == 1)
-		return dotagjump(bw, 0);
+		return dotagjump(bw, notagsmenu);
 	if (mkmenu(bw->parent, bw->parent, tag_array, dotagmenu, NULL, NULL, 0, tag_array, NULL))
 		return 0;
 	else
 		return -1;
 }
 
-static unsigned char **get_tag_list()
+static unsigned char **tag_word_list;
+static time_t last_update;
+
+static void get_tag_list()
 {
 	unsigned char buf[512];
 	unsigned char tag[512];
 	int i,pos;
 	FILE *f;
-	unsigned char **lst = NULL;
-	HASH *ht = htmk(256); /* Prevent duplicates in list */
-	
+	HASH *ht; /* Used to prevent duplicates in list */
+	struct stat stat;
+
+	/* first try to open the tags file in the current directory */
 	f = fopen("tags", "r");
+	if (!f) {
+		/* if there's no tags file in the current dir, then query
+		   for the environment variable TAGS.
+		*/
+		char *tagspath = getenv("TAGS");
+		if(tagspath) {
+			f = fopen(tagspath, "r");    
+		}
+	}
 	if (f) {
-		while (fgets((char *)buf, 512, f)) {
+		if (!fstat(fileno(f), &stat)) {
+			if (last_update == stat.st_mtime) {
+				fclose(f);
+				return;
+			} else {
+				last_update = stat.st_mtime;
+			}
+		}
+		ht = htmk(256);
+		varm(tag_word_list);
+		tag_word_list = 0;
+		while (fgets((char *)buf, sizeof(buf), f)) {
 			pos = 0;
-			for (i=0; i<512; i++) {
+			for (i=0; i<sizeof(buf); i++) {
 				if (buf[i] == ' ' || buf[i] == '\t') {
 					pos = i;
-					i = 512;
+					i = sizeof(buf);
 				}
 			}
 			if (pos > 0) {
@@ -373,7 +402,7 @@ static unsigned char **get_tag_list()
 					unsigned char *s = vsncpy(NULL, 0, sz(tag));
 					/* Add class::member */
 					htadd(ht, s, s);
-					lst = vaadd(lst, s);
+					tag_word_list = vaadd(tag_word_list, s);
 					i = zlen(tag);
 					do {
 						if (tag[i] == ':' && tag[i + 1] == ':') {
@@ -381,35 +410,27 @@ static unsigned char **get_tag_list()
 							if (!htfind(ht, tag + i)) {
 								s = vsncpy(NULL, 0, sz(tag + i));
 								htadd(ht, s, s);
-								lst = vaadd(lst, s);
+								tag_word_list = vaadd(tag_word_list, s);
 							}
 							/* Add member */
 							if (!htfind(ht, tag + i + 2)) {
 								s = vsncpy(NULL, 0, sz(tag + i + 2));
 								htadd(ht, s, s);
-								lst = vaadd(lst, s);
+								tag_word_list = vaadd(tag_word_list, s);
 							}
 						}
 					} while(i--);
 				}
 			}
 		}
-		fclose(f);	
+		fclose(f);
+		htrm(ht);
 	}
-	htrm(ht);
-	return lst;
 }
-
-static unsigned char **tag_word_list;
 
 static int tag_cmplt(BW *bw)
 {
-	/* Reload every time: we should really check date of tags file...
-	if (tag_word_list)
-		varm(tag_word_list); */
-
-	if (!tag_word_list)
-		tag_word_list = get_tag_list();
+	get_tag_list();
 
 	if (!tag_word_list) {
 		ttputc(7);

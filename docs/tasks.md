@@ -176,8 +176,78 @@ complete the word you are typing.  As with the search prompt, JOE tries to
 complete the word based on the contents of the buffer.  It will bring up a
 menu of possibilities if you hit ESC &lt;Enter&gt; twice.
 
-At the ^K ; (tags search) prompt, TAB completion uses the ctags file to
-get its data
+### Tags search
+
+JOE can jump to the definition of an identifier (such as a function name or
+a variable) by looking it up in a tags file.
+
+First, create the tags file with the "ctags" program.  For example:
+
+	ctags *.c *.h
+
+This will create a file called "tags" in the current directory.
+
+JOE looks for the "tags" file in the current directory.  If there is none,
+it will try to open the file specified by the TAGS environment variable.
+
+Paths in the tags file are always relative to location of the tags file
+itself.
+
+The tags file contains a list of identifier definition locations in one of
+these formats:
+
+	identifier filename /search-expression/[;comments]
+
+	identifier filename ?search-expression?[;comments]
+
+	identifier filename line-number[;comments]
+
+Some versions of ctags include class-names in the identifiers:
+
+	class::member
+
+In this case, JOE will match on any of these strings:
+
+	member
+	::member
+	class::member
+
+Some versions of ctags include a filename in the identifier:
+
+	filename:identifier
+
+In this case JOE will only find the identifier if the buffer name matches
+the filename.
+
+The search-expression is a vi regular expression, but JOE only supports the
+following special characters:
+
+	^ at the beginning means expression starts at beginning of line
+
+	$ at the end means expression ends at end of line
+
+	\x quote x (suppress meaning of /, ?, ^ or $)
+
+Type ^K ; to bring up a tags search prompt.  If the cursor had been on an
+identifier, the prompt is pre-loaded with it.  TAB completion works in this
+prompt.  When you hit return, the tags search commences:
+
+If there is one and only one match, JOE will jump directly to the
+definition.
+
+If there are multiple matches, then the behavior is controlled by the
+notagsmenu option.  If notagsmenu is enabled JOE jumps to the first
+definition.  If you hit ^K ; again before hitting any other keys, JOE jumps
+to the next definition, and so on.  The "tagjump" command also performs this
+function.
+
+If notagsmenu is disabled, JOE brings up a menu of all the matches.  You
+select the one you want and JOE jumps to it.  If you hit ^K ; again before
+hitting any other keys, the same menu re-appears with the cursor left in the
+original location.
+
+You can hit ^K - to move the cusor back to the original location before the
+tags search (often ^C will work as well).
 
 ### Xterm Mouse support
 
