@@ -63,7 +63,7 @@ The __^__ means that you hold down the __Control__ key while pressing
 the following key (the same way the __Shift__ key works for uppercase
 letters).  A number of control-key sequences are duplicated on other keys,
 so that you don't need to press the control key: __ESC__ will work in
-place of __^[__, __Del__ will work in place of __^?__, __Backspace__
+place of __^\[__, __Del__ will work in place of __^?__, __Backspace__
 will work in place of __^H__, __Tab__ will work in place of __^I__,
 __Return__ or __Enter__ will work in place of __^M__ and
 __Linefeed__ will work in place of __^J__.  Some keyboards may give you
