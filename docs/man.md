@@ -1195,11 +1195,11 @@ __SIZE__ may be entered in decimal (ex.: 123) octal (ex.: 0777) or
 hexadecimal (ex.: 0xFF).  For example, use __joe /dev/fd0,508,2__ to edit
 bytes 508 and 509 of the first floppy drive in Linux.
 
-* -
+* <blank>
 
 Use this to get input from the standard input or to write output to the
 standard output.  For example, you can put joe in a pipe of commands:
-__quota -v | joe - | mail root__, if you want to complain about your low
+__quota -v | joe | mail root__, if you want to complain about your low
 quota.
 
 
