@@ -77,7 +77,7 @@ to get it to pass through the communication program.
 
 Once you have typed __^K H__, the first help window appears at the top of
 the screen.  You can continue to enter and edit text while the help window
-is on.  To page through other topics, hit __^[,__ and __^[.__ (that is,
+is on.  To page through other topics, hit __^\[,__ and __^\[.__ (that is,
 __ESC ,__ and __ESC .__).  Use __^K H__ to dismiss the help window.
 
 You can customize the keyboard layout, the help screens and a number of
@@ -130,7 +130,7 @@ Sets the number of screen columns.
 
 Continued search mode: a search immediately following a search will repeat
 the previous search instead of prompting for new string.  This is useful for
-the the __^[S__ and __^[R__ commands and for when joe is trying to be emacs.
+the the __^\[S__ and __^\[R__ commands and for when joe is trying to be emacs.
 
 * -dopadding
 
