@@ -77,7 +77,7 @@ to get it to pass through the communication program.
 
 Once you have typed __^K H__, the first help window appears at the top of
 the screen.  You can continue to enter and edit text while the help window
-is on.  To page through other topics, hit __^\[,__ and __^\[.__ (that is,
+is on.  To page through other topics, hit __ESC ,__ and __ESC .__ (that is,
 __ESC ,__ and __ESC .__).  Use __^K H__ to dismiss the help window.
 
 You can customize the keyboard layout, the help screens and a number of
@@ -177,6 +177,7 @@ The following local options may be specified on the command line:
 
 * +nnn
 The cursor starts on the specified line.
+<br>
 
 * -crlf
 Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
@@ -372,12 +373,12 @@ arbitrary assignment between characters and numbers is called the ASCII
 character set).  The numbers outside of this range, from 0 to 255, aren't
 usually displayed, but sometimes have other special meanings.  The number
 10, for example, is used for the line-breaks.  You can enter these special,
-non-displayed __control characters__ by first hitting __^\[ '__ and then
+non-displayed __control characters__ by first hitting __ESC '__ and then
 hitting a character in the range __@ A B C ... X Y Z [ ^ ] \\ \___ to get
-the number 0 - 31, and ? to get 127.  For example, if you hit __^\[ ' J__,
-you'll insert a line-break character, or if you hit __^\[ ' I__, you'll insert
+the number 0 - 31, and ? to get 127.  For example, if you hit __ESC ' J__,
+you'll insert a line-break character, or if you hit __ESC ' I__, you'll insert
 a TAB character (which does the same thing the TAB key does).  A useful
-control character to enter is 12 (__^\[ ' L__), which causes most printers to
+control character to enter is 12 (__ESC ' L__), which causes most printers to
 advance to the top of the page.  You'll notice that JOE displays this
 character as an underlined L.  You can enter the characters above 127, the
 __meta characters__, by first hitting __^\___.  This adds 128
@@ -386,6 +387,9 @@ above 128 in inverse-video.  Some foreign languages, which have more letters
 than English, use the meta characters for the rest of their alphabet.  You
 have to put the editor in __ASIS__ mode to have these
 passed untranslated to the terminal.
+
+When UTF-8 encoding is used, characters above 255 may be inserted with __ESC
+ '__.
 
 ## Prompts
 
@@ -706,7 +710,7 @@ it really bothers you, however, just hit  __^K B ^K K__, to turn the highlightin
 
 The classic way is to hit ^K B at the beginning and ^K K at the
 end.  These set pointers called markb and markk.  Once these are set you
-can jump to markb with ^\[ b and jump to markk with \[ k.
+can jump to markb with ESC b and jump to markk with \[ k.
 
 New way: hit Ctrl-rtarw (right arrow) to start selecting rightward. 
 Each time you hit Ctrl-rtarw, the block is extended one more to the right. 
@@ -715,10 +719,10 @@ This uses a simple macro: "begin_marking,rtarw,toggle_marking".
 Unfortunately, there is no standard way to get the keysequence given
 by the terminal emulator when you hit Ctrl-rtarw.  Instead you have to
 determine this sequence yourself and enter it directly in the joerc file. 
-Some examples are given for Xterm and gnome-terminal.  Hit ESC ' rtarw within
-JOE to have the sequence shown on your screen.  Note that Putty uses ^\[ ^\[ \[
-C which will not appear with ESC ' rtarw (also ^\[
-^\[ is set book mark, so you need to unbind it to do this in Putty).
+Some examples are given for Xterm and gnome-terminal.  Hit __ESC '__ ctrl-rtarw within
+JOE to have the sequence shown on your screen.  Note that Putty uses ESC ESC \[
+C which will not appear with ESC ' rtarw (also ESC
+ESC is set book mark, so you need to unbind it to do this in Putty).
 
 Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
 sequence for these keys are known.
@@ -811,7 +815,7 @@ each command is executed until either the end of the list is reached, or one
 of the commands fails (non-zero return value from the command).  Failed
 commands beep if you have beeps enabled (^T B).
 
-Hit __^\[ D__ to insert the current set of keyboard macros as text into the
+Hit __ESC D__ to insert the current set of keyboard macros as text into the
 current buffer.
 
 ### Command prompt
