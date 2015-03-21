@@ -573,7 +573,7 @@ parenthesis.
 * __\\\+__
 
 This finds zero or more of the character which immediately follows the
-__\+__.  For example, if you give __\+\[ \]__, where the
+__\+__.  For example, if you give __\\\+\\\[ \]__, where the
 characters within the brackets are both SPACE and TAB, then JOE will find
 whitespace.
 
@@ -598,7 +598,7 @@ you give __"&"__, then joe will put quote marks around words.
 * __\0 - \9__
 
 These get replaced with the text which matched the Nth __\\\*__, __\?__,
-__\\\+__, __\c__, or __\[...]__ in the search string.
+__\\\+__, __\c__, or __\\\[...]__ in the search string.
 
 * __\\\\__
 
@@ -608,6 +608,7 @@ Use this if you need to put a __\\__ in the replacement string.
 
 Use this if you need to put a line-break in the replacement string.
 
+### Where
 
 Some examples:
 
@@ -618,6 +619,7 @@ Address: S. Holmes, 221b Baker St., London, England
 
 If you wanted to rearrange the list, to get the country first, then the 
 city, then the person's name, and then the address, you could do this:
+### DID
 
 Type __^K F__ to start the search, and type:
 
@@ -627,10 +629,14 @@ to match "Address:", the four comma-separated elements, and then the end of
 the line.  When asked for options, you would type __r__ to replace the 
 string, and then type:
 
+### IT
+
 __Address:\3,\2,\0,\1__
 
 To shuffle the information the way you want it. After hitting return, the 
 search would begin, and the sample line would be changed to:
+
+### BREAK
 
 Address: England, London, S. Holmes, 221b Baker St.
 
