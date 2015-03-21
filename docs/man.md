@@ -114,106 +114,115 @@ Some options take arguments.  Arguments are given like this:
 The following global options may be specified on the command line:
 
 * -asis
-
 Characters with codes above 127 will be sent to the terminal as-is, instead
 of as inverse of the corresponding character below 128.  If this does not
 work, check your terminal server.  This option has no effect if UTF-8
 encoding is used.
+<br>
 
 * -baud nnn
-
 Set the baud rate for the purposes of terminal screen optimization.  JOE
 inserts delays for baud rates below 19200, which bypasses tty buffering so
 that typeahead will interrupt the screen output.  Scrolling commands will
 not be used for 38400 baud and above.  This is useful for X-terms and other
 console ttys which really aren't going over a serial line.
+<br>
 
 * -beep
-
 Joe will beep on command errors and when the cursor goes past extremes.
+<br>
 
 * -force
-
 This option makes sure that the last line of the file has a line-feed which
 it's saved.
+<br>
 
 * -help
-
 The editor will start with the help screen on if this option is given.
+<br>
 
 * -mid
-
 If this option is set and the cursor moves off the window, the window will
 be scrolled so that the cursor is in the center.  This option is forced on
 slow terminals which don't have scrolling commands.
+<br>
 
 * -nonotice
-
 This option prevent the copyright notice from being displayed when the
 editor starts.
+<br>
 
 * -nosta
-
 This option eliminates the top-most status line.  It's nice for when you
 only want to see your text on the screen or if you're using a vt52.
+<br>
 
 * -noxon
 Attempt to turn off ^S/^Q processing.  This is useful for when joe is
 emulating WordStar or EMACS.
+<br>
 
 * -orphan
-
 When this option is active, extra files on the command line will be placed
 in orphaned buffers instead of in extra windows.  This is enabled by default
 in jmacs.
+<br>
 
 * -pg nnn
-
 This specifies the number of lines to keep after PgUp/PgDn (^U/^V).  If -1
 is given, half the window is kept.
+<br>
 
 The following local options may be specified on the command line:
 
 * +nnn
-
 The cursor starts on the specified line.
 
 * -crlf
-
 Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
 editing MS-DOS or VMS files.
+<br>
 
 * -wordwrap
 Joe wraps the previous word when you type past the right margin.
+<br>
 
 * -autoindent
 When you hit Return on an indented line, the indentation is duplicated onto
 the new line.
+<br>
 
 * -overwrite
 Typing overwrites existing characters instead of inserting before them.
+<br>
 
 * -lmargin nnn
 Sets the left margin.
+<br>
 
 * -rmargin nnn
 Sets the right margin.
+<br>
 
 * -tab nnn
 Sets the tab width.
+<br>
 
 * -indentc nnn
 Sets the indentation character for ^K, and ^K. (32 for SPACE, 9 for TAB).
+<br> 
 
 * -istep nnn
 Sets the indentation step for ^K, and ^K..
+<br>
 
 * -linums
 Line numbers are displayed before each line.
+<br>
 
 * -rdonly
-
 The file is read only.
+<br>
 
 These options can also be specified in the joerc file.  They can be set
 depending on the file-name extension.  Programs (.c, .h or .p extension)
