@@ -941,39 +941,35 @@ the search text in the remainder of the file without asking for confirmation
 (subject to the __nnn__ option above), or __^C__ to stop searching and
 replacing.
 
+* __a__
+
+The search covers all loaded buffers.  So to replace all instances of "foo"
+with "bar" in all .c files in the current directory:
+
+	joe *.c
+	   ^K F foo &lt;Enter&gt;
+	   ra &lt;Enter&gt;
+	   bar &lt;Enter&gt;
+
+* __e__
+
+The search covers all files in the grep or make error list.  You can use a
+UNIX command to generate a list of files and search and replace through the
+list.  So to replace all instances of "foo" with "bar" in all .c files which
+begin with f.  You can also use "ls" and "find" instead of grep to create
+the file list.
+
+
+	ESC g
+	grep -n foo f*.c &lt;Enter&gt;
+	^K F foo &lt;Enter&gt;
+	re &lt;Enter&gt;
+	bar &lt;Enter&gt;
+
 You can hit __^L__ to repeat the previous search.
 
 You can hit ^K H at the search and replace options prompt
 to bring up a list of all search and replace options.
-
-## Multi-file search and replace
-
-There are two new search and replace options:
-
-<ul>
-<li>'a': The search covers all loaded buffers.  So you can say:
-<ul>
-<li>joe *.c</li>
-<li>^K F foo &lt;Enter&gt;</li>
-<li>ra &lt;Enter&gt;</li>
-<li>bar &lt;Enter&gt;</li>
-</ul>to replace all instances of "foo" with "bar" in all .c files.
-</li>
-<li>'e': The search covers all files in the grep or make error list.  You
-can use a UNIX command to generate a list of files and search and replace
-through the list:
-<ul>
-<li>ESC g</li>
-<li>grep -n foo f*.c &lt;Enter&gt;</li>
-<li>^K F foo &lt;Enter&gt;</li>
-<li>re &lt;Enter&gt;</li>
-<li>bar &lt;Enter&gt;</li>
-to replace all instances of "foo" with "bar" in all .c files which begin
-with f.  You can also use "ls" and "find" instead of grep to create the file
-list.
-</ul>
-</li>
-</ul>
 
 ## Regular Expressions
 
