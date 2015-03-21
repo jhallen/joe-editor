@@ -1,4 +1,4 @@
-# JOE - Joe's Own Editor
+k# JOE - Joe's Own Editor
 
 [TOC]
 
@@ -863,7 +863,7 @@ quota.
 
 
 <br><br>
-<a name="joerc">
+<a name="joerc"/>
 ## The joerc file
 
 ^T options, the help screens and the key-sequence to editor command
