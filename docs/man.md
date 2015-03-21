@@ -573,7 +573,7 @@ parenthesis.
 * __\\\+__
 
 This finds zero or more of the character which immediately follows the
-__\+__.  For example, if you give __\[ ]\+\[ ]__, where the
+__\+__.  For example, if you give __\+\[ \]__, where the
 characters within the brackets are both SPACE and TAB, then JOE will find
 whitespace.
 
