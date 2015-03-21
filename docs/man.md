@@ -532,7 +532,7 @@ You can hit __^L__ to repeat the previous search.
 A number of special character sequences may be entered as search
 text:
 
-* __\*__
+* __\\\*__
 
 This finds zero or more characters.  For example, if you give __A\*B__ as
 the search text, JOE will try to find an A followed by any number of characters
@@ -548,13 +548,13 @@ the search text, JOE will find AXB, but not AB or AXXB.
 These match the beginning and end of a line.  For example, if you give
 __\^test\$__, then JOE with find __test__ on a line by itself.
 
-* __\< \>__
+* __\< \\\>__
 
 These match the beginning and end of a word.  For example, if you give
 __\<\*is\*>__, then joe will find whole words which have the
 sub-string __is__ within them.
 
-* __\[...]__
+* __\\\[...]__
 
 This matches any single character which appears within the brackets.  For
 example, if __\[Tt]his__ is entered as the search string, then JOE finds
@@ -570,7 +570,7 @@ For example, if you search for __malloc(\c)__, then JOE will find all
 function calls to __malloc__, even if there was a __)__ within the
 parenthesis.
 
-* __\+__
+* __\\\+__
 
 This finds zero or more of the character which immediately follows the
 __\+__.  For example, if you give __\[ ]\+\[ ]__, where the
@@ -579,7 +579,7 @@ whitespace.
 
 * __\\__
 
-Matches a single \.
+Matches a single \\.
 
 * __\n__
 
@@ -589,11 +589,11 @@ This finds the special end-of-line or line-break character.
 A number of special character sequences may also be given in the replacement
 string:
 
-* __\&amp;__
+* __\\&__
 
 This gets replaced by the text which matched the search string.  For
-example, if the search string was __\&lt;\*\&gt;__, which matches words, and
-you give __"\&amp;"__, then joe will put quote marks around words.
+example, if the search string was __\<\\\*\\\>__, which matches words, and
+you give __"&"__, then joe will put quote marks around words.
 
 * __\0 - \9__
 
@@ -602,7 +602,7 @@ __\+__, __\c__, __\+__, or __\[...]__ in the search string.
 
 * __\\__
 
-Use this if you need to put a __\__ in the replacement string.
+Use this if you need to put a __\\__ in the replacement string.
 
 * __\n__
 
@@ -621,7 +621,7 @@ city, then the person's name, and then the address, you could do this:
 
 Type __^K F__ to start the search, and type:
 
-__Address:\*,\*,\*,\*\$__
+__Address:\\\*,\\\*,\\\*,\\\*\$__
 
 to match "Address:", the four comma-separated elements, and then the end of 
 the line.  When asked for options, you would type __r__ to replace the 
@@ -706,7 +706,7 @@ commands.
 
 Macros allow you to record a series of keystrokes and replay them with the 
 press of two keys.  This is useful to automate repetitive tasks.  To start a 
-macro recording, hit __^K [__ followed by a number from 0 to 9.  The 
+macro recording, hit __^K \[__ followed by a number from 0 to 9.  The 
 status line will display (Macro n recording...).  Now, type in the series of 
 keystrokes that you want to be able to repeat.  The commands you type will 
 have their usual effect. Hit __^K ]__ to stop recording the macro.  Hit 
@@ -716,7 +716,7 @@ iteration of the key-strokes.
 For example, if you want to put "**" in front of a number of lines, you can 
 type:
 
-__^K [ ^A ** __<down arrow> __^K ]__
+__^K \[ ^A ** __<down arrow> __^K ]__
 
 
 Which starts the macro recording, moves the cursor to the beginning of the 
