@@ -1238,13 +1238,11 @@ and ESC - to step through each line.
 <a name="evariables"></a>
 ## Environment variables 
 
-Please refer to this [complete list of environment variables](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md#env).
-
 For JOE to operate correctly, a number of other environment settings must be 
 correct.  The throughput (baud rate) of the connection between the computer 
 and your terminal must be set correctly for JOE to update the screen 
-smoothly and allow typeahead to defer the screen update.  Use the __stty 
-nnn__ command to set this.  You want to set it as close as possible to 
+smoothly and allow typeahead to defer the screen update.  Use the __stty nnn__
+command to set this.  You want to set it as close as possible to 
 actual throughput of the connection.  For example, if you are connected via 
 a 1200 baud modem, you want to use this value for __stty__.  If you are 
 connected via 14.4k modem, but the terminal server you are connected to 
@@ -1275,6 +1273,70 @@ uses no handshaking and your terminal is not fast enough to keep up with the
 output of the computer, you can set the environment variable __DOPADDING__
 to have __JOE__ slow down the output by interspersing PAD characters
 between the terminal screen update sequences.
+
+* BAUD Tell JOE the baud rate of the terminal (overrides value reported by stty).
+
+* COLUMNS Set number of columns in terminal emulator (in case
+termcap entry is wrong).  This is only useful on old system which don't have
+the "get window size" ioctl.
+
+* DOPADDING Enable JOE to send padding NULs to the terminal
+when set (for very old terminals).
+
+* HOME Used to get path to home directory for ~
+expansion and also to find ~/.joerc file ~/.joe directory.
+
+* HOSTNAME Used to get hostname to put in EMACS
+compatible locks.
+
+* JOETERM Gives terminal type: JOE will use this instead of TERM if it's set.
+
+* LANG Sets locale (like en_US.utf-8).  JOE uses
+the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+
+* LC_ALL Sets locale (like en_US.utf-8).  JOE
+uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+
+* LC_CTYPE Sets locale (like en_US.utf-8).  JOE
+uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+
+* LINES Set number of lines in terminal emulator (in case
+termcap entry is wrong).  This is only useful on old system which don't have
+the "get window size" ioctl.
+
+* NOXON Disable ^S and ^Q flow control, possibly
+allowing ^S and ^Q to be used as editor keys.
+
+* SHELL Path to shell (like /bin/sh).  This is
+used in several places: If you are on a system with no job control, this
+shell is invoked when you hit ^KZ.  Also this is shell which is run in shell
+windows.  If SHELL is not set (Cygwin) or if it's set to /bin/sh, JOE
+invokes the first of these which exists: /bin/bash, /usr/bin/bash, /bin/sh.
+
+* SIMPLE_BACKUP_SUFFIX If this is set, it is
+appended to the file name instead of ~ to create the backup file name.
+
+* TAGS If set to a path to a file, JOE tries to
+use this as the "tags" file if there is no "tags" file in the current
+directory.
+
+* TEMP If set, gives path to directory to open
+swapfile instead of /tmp
+
+* TERMCAP Used by JOE's built-in termcap file
+parser (not used for terminfo).  A termcap entry can be placed directly in
+this variable (which will be used if it matches TERM), or if it begins with
+/, it gives a list of paths to termcap files to search.
+
+* TERMPATH Gives list of paths to termcap files to search when TERMCAP has a
+termcap entry (otherwise it's ignored).  The default list of paths to
+termcap files (when TERMCAP and TERMPATH do not have it) is: "~/.termcap
+/etc/joe/termcap /etc/termcap"
+
+* TERM Gives terminal type, like "vt100" or "xterm".
+
+* USER Used to get user name for EMACS compatible
+file locks.
 
 <a name="filenames"></a>
 ## Filenames
