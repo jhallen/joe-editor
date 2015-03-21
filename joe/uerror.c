@@ -378,6 +378,7 @@ int parserrb(B *b)
 
 int urelease(BW *bw)
 {
+	bw->b->parseone = 0;
 	if (qempty(ERROR, link, &errors) && !errbuf) {
 		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages")));
 	} else {
@@ -394,7 +395,7 @@ int uparserr(BW *bw)
 {
 	int n;
 	freeall();
-	bw->b->parseone = 0;
+	bw->b->parseone = parseone;
 	n = parserr(bw->b);
 	if (n)
 		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);

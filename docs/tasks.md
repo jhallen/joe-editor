@@ -328,6 +328,45 @@ list.
 You can hit ^K H at the search and replace options prompt
 to bring up a list of all search and replace options.
 
+### Compiler and grep/find parsers
+
+JOE has two parsers which can be used to generate the error list (list of
+file names / line numbers).
+
+The "parserr" command parses the entire buffer, or if the block is set, just
+the highighted block for compiler error messages.  The messages should be in
+this format:
+
+	<junk> file.name <junk> line-number <junk> : <junk>
+
+The file name needs to be made of numbers, letters, '/', '.' and '-'.  It
+must have at leat one '.' in it.  There needs to be a colon somewhere after
+the line number.  Lines not in this format are ignored.
+
+THe "gparse' command parses the entire buffer, or if the block is set, just
+the highlighted block for a list of filenames or filenames with line numbers
+from "grep -n", "find" and similar programs.
+
+	filename
+
+	filename:<junk>
+
+	filename:line-number:<junk>
+
+Once JOE has the error list, there are a number of things you can do with
+it:
+
+* Visit the files/locations in the list with ESC - and ESC =
+
+* Search and replace across all files in the list by using the 'e' search
+  and replace option.
+
+* Clear the list by using the "release" command.
+
+Also, you can use ESC space ('jump' command) to parse the line the cursor is
+on and jump to the parsed filename and line number.  'jump' uses the
+grep/find parser unless 'parserr' had been previously issues in the buffer.
+
 ### Grep-find
 
 Hit ESC g to bring up the prompt.  Enter a command which results in file
@@ -337,6 +376,17 @@ numbers.
 
 Now you can hit ESC space on one of the lines to jump to the selected
 file.  Also, you can use ESC = and ESC - to step through each line.
+
+### Compile
+
+Hit ESC c to save all modified files and then bring up the compile prompt. 
+Enter the command you want to use for the compiler (typically "make").  The
+compiler will run in a shell window.  When it's complete, the results are
+parsed.
+
+If there are any errors or warnings from the compiler you can hit ESC space
+on one of the lines to jump to the selected file.  Also, you can use ESC =
+and ESC - to step through each line.
 
 ### How do I deselect a highlighted block?
 
