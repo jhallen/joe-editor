@@ -124,11 +124,13 @@ encoding is used.
 <br>
 
 * assume_256color
-Assume ANSI-like terminal emulator supports 256 colors even if termcap entry says it doesn't.
+Assume ANSI-like terminal emulator supports 256 colors even if termcap entry
+says it doesn't.
 <br>
 
 * assume_color
-Assume ANSI-like terminal emulator supports color even if termcap entry says it doesn't.
+Assume ANSI-like terminal emulator supports color even if termcap entry says
+it doesn't.
 <br>
 
 * text_color __color__
@@ -176,7 +178,8 @@ aren't going over a serial line.
 <br>
 
 * beep
-Enable beeps when edit commands return errors, for example when the cursor goes past extremes.
+Enable beeps when edit commands return errors, for example when the cursor
+goes past extremes.
 <br>
 
 * break_links
@@ -271,14 +274,13 @@ block operation.
 <br>
 
 * lines nnn
-Set number of lines in terminal emulator (in case
-termcap entry is wrong).  This is only useful on old system which don't have
-the "get window size" ioctl.
+Set number of lines in terminal emulator (in case termcap entry is wrong). 
+This is only useful on old system which don't have the "get window size"
+ioctl.
 <br>
 
 * marking
-Enable marking mode: highlights between ^KB and
-cursor.
+Enable marking mode: highlights between ^KB and cursor.
 <br>
 
 * menu_above
@@ -286,14 +288,12 @@ Put menus above prompt instead of below them.
 <br>
 
 * menu_explorer
-Stay in menu when a directory is selected
-(otherwise the directory is added to the path and the cursor jumps back to
-the prompt).
+Stay in menu when a directory is selected (otherwise the directory is added
+to the path and the cursor jumps back to the prompt).
 <br>
 
 * menu_jump
-Jump into the file selection menu when tab tab is
-hit.
+Jump into the file selection menu when tab tab is hit.
 <br>
 
 * mid
@@ -353,24 +353,24 @@ exits.
 <br>
 
 * noxon
-Disable ^S and ^Q flow control, possibly
-allowing ^S and ^Q to be used as editor keys.
+Disable ^S and ^Q flow control, possibly allowing ^S and ^Q to be used as
+editor keys.
 <br>
 
 * orphan
-Orphan extra files given on the command line instead
-of creating windows for them (the files are loaded, but you need to use
-switch-buffer commands to access them).
+Orphan extra files given on the command line instead of creating windows for
+them (the files are loaded, but you need to use switch-buffer commands to
+access them).
 <br>
 
 * pg nnn
-Set number of lines to keep during Page Up and Page Down
-(use -1 for 1/2 window size).
+Set number of lines to keep during Page Up and Page Down (use -1 for 1/2
+window size).
 <br>
 
 * restore
-Set to have cursor position restore to last position
-of previouly edited files.
+Set to have cursor position restore to last position of previouly edited
+files.
 <br>
 
 * rtbutton
@@ -382,10 +382,9 @@ Show previous search string in search command (like in PICO).
 <br>
 
 * skiptop nnn
-When set to N, the first N lines of the terminal
-screen are not used by JOE and are instead left with their original
-contents.  This is useful for programs which call JOE to leave a message for
-the user.
+When set to N, the first N lines of the terminal screen are not used by JOE
+and are instead left with their original contents.  This is useful for
+programs which call JOE to leave a message for the user.
 <br>
 
 * square
@@ -397,8 +396,7 @@ Transpose rows with columns in all menus.
 <br>
 
 * undo_keep nnn
-Sets number of UNDO records to keep (0 means
-infinite).
+Sets number of UNDO records to keep (0 means infinite).
 <br>
 
 * usetabs
@@ -448,8 +446,8 @@ there isn't one when the file is saved.
 <br>
 
 * french
-When set, only one space is inserted after periods in
-paragraph reformats instead of two.
+When set, only one space is inserted after periods in paragraph reformats
+instead of two.
 <br>
 
 * hex
@@ -461,13 +459,13 @@ Enable syntax highlighting.
 <br>
 
 * indentc nnn
-Sets the indentation character for shift left and shift right (__^K ,__ and __^K .__).
-Use 32 for SPACE, 9 for TAB.
+Sets the indentation character for shift left and shift right (__^K ,__ and
+__^K .__).  Use 32 for SPACE, 9 for TAB.
 <br>
 
 * indentfirst
-When set, the smart home key jumps to the
-indentation point first, otherwise it jumps to column 1 first.
+When set, the smart home key jumps to the indentation point first, otherwise
+it jumps to column 1 first.
 <br>
 
 * istep nnn
@@ -487,12 +485,12 @@ Define left-side status bar message.
 <br>
 
 * overwrite
-Enable overtype mode.  Typing overwrites existing characters instead of inserting before them.
+Enable overtype mode.  Typing overwrites existing characters instead of
+inserting before them.
 <br>
 
 * picture
-Enable "picture" mode- allows cursor to go past ends
-of lines.
+Enable "picture" mode- allows cursor to go past ends of lines.
 <br>
 
 * pound_comment
@@ -500,8 +498,8 @@ of lines.
 <br>
 
 * purify
-Clean up indentation when enabled (during shift-left
-and shift-right commands).
+Clean up indentation when enabled (during shift-left and shift-right
+commands).
 <br>
 
 * rdonly
@@ -529,8 +527,8 @@ Enable smart backspace (backspace unindents).
 <br>
 
 * smarthome
-Enable smart home (home key jumps to indentation
-point on first or second press).
+Enable smart home (home key jumps to indentation point on first or second
+press).
 <br>
 
 * smsg __string__
@@ -550,8 +548,7 @@ Set tab stop width.
 <br>
 
 * text_delimiters __word delimiter list__
-Give list of word delimiters which ^G will
-step through.
+Give list of word delimiters which ^G will step through.
 <br>
 
 * vhdl_comment
@@ -600,8 +597,8 @@ With a 256 color terminal emulator (export TERM=xterm-256color), these become av
 ### Status line definition strings
 
 -lmsg defines the left-justified string and -rmsg defines the
-right-justified string.  The first character of -rmsg is the background
-fill character.
+right-justified string.  The first character of -rmsg is the background fill
+character.
 
 -smsg defines the status command (^K SPACE).  -zmsg defines it when the cursor
 is at the end of the file.  The last character of smsg or zmsg is the fill character.
@@ -657,8 +654,9 @@ These formatting escape sequences may also be given:
 ### Mode command
 
 Many options can be controlled with the __^T__ menu.  This menu is defined
-in the joerc file.  Each option in the __^T__ menu just executes a macro.  Usually
-the macro is the mode command.  You can execute the mode command directly with:
+in the joerc file.  Each option in the __^T__ menu just executes a macro. 
+Usually the macro is the mode command.  You can execute the mode command
+directly with:
 
 	ESC x mode <enter>
 
@@ -922,10 +920,10 @@ If LC_ALL is set to:
 
 The character set will be UTF-8.
 
-Hit ^T E to change the coding for the file.  Hit &lt;tab&gt; &lt;tab&gt; at this prompt
-to get a list of available codings.  There are a number of built-in
-character sets, plus you can install character sets in the ~/.joe/charmaps
-and /usr/local/etc/joe/charmaps directories.
+Hit ^T E to change the coding for the file.  Hit &lt;tab&gt; &lt;tab&gt; at
+this prompt to get a list of available codings.  There are a number of
+built-in character sets, plus you can install character sets in the
+~/.joe/charmaps and /usr/local/etc/joe/charmaps directories.
 
 Check: /usr/share/i18n/charmaps for example character set files.  Only
 byte oriented character sets will work.  Also, the file should not be
@@ -1079,8 +1077,8 @@ the file list.
 
 You can hit __^L__ to repeat the previous search.
 
-You can hit ^K H at the search and replace options prompt
-to bring up a list of all search and replace options.
+You can hit ^K H at the search and replace options prompt to bring up a list
+of all search and replace options.
 
 ## Regular Expressions
 
@@ -1233,9 +1231,10 @@ will be converted to uppercase.
 
 ### How do I deselect a highlighted block?
 
-After you are finished with some block operations, you can just leave the 
-highlighting on if you don't mind it (but don't accidently hit __^K Y__).  If
-it really bothers you, however, just hit  __^K B ^K K__, to turn the highlighting off.  
+After you are finished with some block operations, you can just leave the
+highlighting on if you don't mind it (but don't accidently hit __^K Y__). 
+If it really bothers you, however, just hit __^K B ^K K__, to turn the
+highlighting off.
 
 ### Selecting blocks
 
@@ -1247,13 +1246,13 @@ New way: hit Ctrl-rtarw (right arrow) to start selecting rightward.
 Each time you hit Ctrl-rtarw, the block is extended one more to the right. 
 This uses a simple macro: "begin_marking,rtarw,toggle_marking".
 
-Unfortunately, there is no standard way to get the keysequence given
-by the terminal emulator when you hit Ctrl-rtarw.  Instead you have to
-determine this sequence yourself and enter it directly in the joerc file. 
-Some examples are given for Xterm and gnome-terminal.  Hit __ESC '__ ctrl-rtarw within
-JOE to have the sequence shown on your screen.  Note that Putty uses ESC ESC \[
-C which will not appear with ESC ' rtarw (also ESC
-ESC is set book mark, so you need to unbind it to do this in Putty).
+Unfortunately, there is no standard way to get the keysequence given by the
+terminal emulator when you hit Ctrl-rtarw.  Instead you have to determine
+this sequence yourself and enter it directly in the joerc file.  Some
+examples are given for Xterm and gnome-terminal.  Hit __ESC '__ ctrl-rtarw
+within JOE to have the sequence shown on your screen.  Note that Putty uses
+ESC ESC \[ C which will not appear with ESC ' rtarw (also ESC ESC is set
+book mark, so you need to unbind it to do this in Putty).
 
 Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
 sequence for these keys are known.
@@ -1659,11 +1658,11 @@ passed to the shell.  Type the shell __exit__ command to stop recording
 shell output.  If you press __^C__ in a shell window, when the cursor is
 not at the end of the window, the shell is __kill__ed.
 
-If you use Bash, you can hit: ESC ' UP-ARROW and ESC ' DOWN-ARROW to scroll through
-Bash's history buffer.  Other keys work as well: try ESC ' ^A to go to beginning
-of line or ESC ' ^E to go to end of line.  Unfortunately JOE only emulates a dumb
-terminal, so you have to use a lot of imagination to do any editing beyond
-hitting backspace.
+If you use Bash, you can hit: ESC ' UP-ARROW and ESC ' DOWN-ARROW to scroll
+through Bash's history buffer.  Other keys work as well: try ESC ' ^A to go
+to beginning of line or ESC ' ^E to go to end of line.  Unfortunately JOE
+only emulates a dumb terminal, so you have to use a lot of imagination to do
+any editing beyond hitting backspace.
 
 In general, any character quoted with ESC ' is sent to the shell.
 
@@ -1878,10 +1877,11 @@ and ESC - to step through each line.
 
 To enable highlight use __^T H__.
 
-To select the syntax, use __^T Y__.  You can hit TAB at the prompt for a completion list.
+To select the syntax, use __^T Y__.  You can hit TAB at the prompt for a
+completion list.
 
-JOE tries to determine the syntax to use based on the name and contents of the file.  The
-configuration file /etc/joe/ftyperc contains the definitions.
+JOE tries to determine the syntax to use based on the name and contents of
+the file.  The configuration file /etc/joe/ftyperc contains the definitions.
 
 Each syntax is defined by a file located /usr/share/joe/syntax/.
 
@@ -2060,7 +2060,8 @@ and it needs to be ./configured with the --enable-paste64 option.
 
 When -mouse is set, you can:
 
-* Left-click in a text window to set the cursor position.  Left-click in a different window to move the cursor to a different window.
+* Left-click in a text window to set the cursor position.  Left-click in a
+  different window to move the cursor to a different window.
 
 * Select text with the mouse.  Left-click and drag to select some text- it
 will be as if you had used ^KB and ^KK to mark it. Left-click (but don't
