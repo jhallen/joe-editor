@@ -94,6 +94,7 @@ There are a number of other obscure invocation parameters which may have to
 be set, particularly if your terminal screen is not updating as you think it
 should.  See the section [Environment variables](#evariables) below.
 
+<a name="options"></a>
 ## Command Line Options
 
 These options can also be specified in the joerc file.  Local options can be
@@ -2281,6 +2282,7 @@ directives.  For example:
 
 ## Command list
 
+<a name="list"></a>
 ### JOE commands grouped by function:
 
 <p>These commands can be entered at the ESC x prompt.</p>

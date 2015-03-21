@@ -4,9 +4,9 @@
 
 [Release Notes](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/NEWS.md)
 
-[List of Commands](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/list.md)
+[List of Commands](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#list)
 
-[List of Options](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md)
+[List of Options](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#options)
 
 [Hacking](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/hacking.md)
 
