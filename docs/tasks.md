@@ -144,12 +144,6 @@ edit buffer.
 TIOCSSIZE or TIOCSWINSZ ioctl.  This way, the program running in the
 shell knows the window size.
 
-### TAGS file search
-
-JOE will search for a tags file in the current directory, and if none is
-found there, it will open the tags file name given in the TAGS environment
-variable.
-
 ### Completion and selection menus
 
 You can hit TAB in just about any prompt to request JOE to complete the
