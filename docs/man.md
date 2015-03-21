@@ -1259,7 +1259,9 @@ The __TERM__ environment variable must be set to the type of terminal
 you're using.  If the size (number of lines/columns) of your terminal is
 different from what is reported in the TERMCAP or TERMINFO entry, you can
 set this with the __stty rows nn cols nn__ command, or by setting the
-__LINES__ and __COLUMNS__ environment variables.
+__LINES__ and __COLUMNS__ environment variables.  The terminal size is
+variable on modern systems and is determined by an ioctl, so these
+parameters often have no effect.
 
 JOE normally expects that flow control between the computer and your
 terminal to use ^S/^Q handshaking (i.e., if the computer is sending
@@ -1274,77 +1276,113 @@ output of the computer, you can set the environment variable __DOPADDING__
 to have __JOE__ slow down the output by interspersing PAD characters
 between the terminal screen update sequences.
 
-* BAUD Tell JOE the baud rate of the terminal (overrides value reported by stty).
+Here is a complete list of the environment variables:
 
-* COLUMNS Set number of columns in terminal emulator (in case
+* BAUD
+Tell JOE the baud rate of the terminal (overrides value reported by stty).
+<br>
+
+* COLUMNS
+Set number of columns in terminal emulator (in case
 termcap entry is wrong).  This is only useful on old system which don't have
 the "get window size" ioctl.
+<br>
 
-* DOPADDING Enable JOE to send padding NULs to the terminal
+* DOPADDING
+Enable JOE to send padding NULs to the terminal
 when set (for very old terminals).
+<br>
 
-* HOME Used to get path to home directory for ~
+* HOME
+Used to get path to home directory for ~
 expansion and also to find ~/.joerc file ~/.joe directory.
+<br>
 
-* HOSTNAME Used to get hostname to put in EMACS
-compatible locks.
+* HOSTNAME
+Used to get hostname to put in EMACS compatible locks.
+<br>
 
-* JOETERM Gives terminal type: JOE will use this instead of TERM if it's set.
+* JOETERM
+Gives terminal type: JOE will use this instead of TERM if it's set.
+<br>
 
-* LANG Sets locale (like en_US.utf-8).  JOE uses
+* LANG
+Sets locale (like en_US.utf-8).  JOE uses
 the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+<br>
 
-* LC_ALL Sets locale (like en_US.utf-8).  JOE
+* LC_ALL
+Sets locale (like en_US.utf-8).  JOE
 uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+<br>
 
-* LC_CTYPE Sets locale (like en_US.utf-8).  JOE
+* LC_CTYPE
+Sets locale (like en_US.utf-8).  JOE
 uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+<br>
 
-* LINES Set number of lines in terminal emulator (in case
+* LINES
+Set number of lines in terminal emulator (in case
 termcap entry is wrong).  This is only useful on old system which don't have
 the "get window size" ioctl.
+<br>
 
-* NOXON Disable ^S and ^Q flow control, possibly
+* NOXON
+Disable ^S and ^Q flow control, possibly
 allowing ^S and ^Q to be used as editor keys.
+<br>
 
-* SHELL Path to shell (like /bin/sh).  This is
+* SHELL
+Path to shell (like /bin/sh).  This is
 used in several places: If you are on a system with no job control, this
 shell is invoked when you hit ^KZ.  Also this is shell which is run in shell
 windows.  If SHELL is not set (Cygwin) or if it's set to /bin/sh, JOE
 invokes the first of these which exists: /bin/bash, /usr/bin/bash, /bin/sh.
+<br>
 
-* SIMPLE_BACKUP_SUFFIX If this is set, it is
+* SIMPLE_BACKUP_SUFFIX
+If this is set, it is
 appended to the file name instead of ~ to create the backup file name.
+<br>
 
-* TAGS If set to a path to a file, JOE tries to
+* TAGS
+If set to a path to a file, JOE tries to
 use this as the "tags" file if there is no "tags" file in the current
 directory.
+<br>
 
-* TEMP If set, gives path to directory to open
+* TEMP
+If set, gives path to directory to open
 swapfile instead of /tmp
+<br>
 
-* TERMCAP Used by JOE's built-in termcap file
+* TERMCAP
+Used by JOE's built-in termcap file
 parser (not used for terminfo).  A termcap entry can be placed directly in
 this variable (which will be used if it matches TERM), or if it begins with
 /, it gives a list of paths to termcap files to search.
+<br>
 
-* TERMPATH Gives list of paths to termcap files to search when TERMCAP has a
+* TERMPATH
+Gives list of paths to termcap files to search when TERMCAP has a
 termcap entry (otherwise it's ignored).  The default list of paths to
 termcap files (when TERMCAP and TERMPATH do not have it) is: "~/.termcap
 /etc/joe/termcap /etc/termcap"
+<br>
 
-* TERM Gives terminal type, like "vt100" or "xterm".
+* TERM
+Gives terminal type, like "vt100" or "xterm".
+<br>
 
-* USER Used to get user name for EMACS compatible
-file locks.
+* USER
+Used to get user name for EMACS compatible file locks.
+<br>
 
 <a name="filenames"></a>
 ## Filenames
 
 Wherever JOE expects you to enter a file name, whether on the command line
 or in prompts within the editor, you may also type:
-
-
 
 * !command
 
