@@ -51,8 +51,8 @@ static void addtag(unsigned char *key, unsigned char *file, unsigned char *srch,
 	n->last = 0;
 	enqueb(TAG, link, &tags, n);
 }
-              
-int utagjump(BW *bw)
+
+static int dotagjump(BW *bw, int flag)
 {
 	unsigned char *file;
 	unsigned char *srch;
@@ -85,12 +85,19 @@ int utagjump(BW *bw)
 		bw->cursor->xcol = piscol(bw->cursor);
 		dofollows();
 		mid = omid;
-		smode = 2;
+		if (flag)
+			smode = 2;
 		return 0;
 	} else {
-		smode = 2;
+		if (flag)
+			smode = 2;
 		return dopfnext(bw, mksrch(vsncpy(NULL, 0, sv(srch)), NULL, 0, 0, -1, 0, 0, 0), NULL);
 	}
+}
+              
+int utagjump(BW *bw)
+{
+	return dotagjump(bw, 1);
 }
 
 static int last_cursor;
@@ -313,16 +320,27 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 	tag_array = vamk(10);
 	for (ta = tags.link.next; ta != &tags; ta=ta->link.next) {
 		unsigned char buf[1024];
-		if (ta->srch)
-			joe_snprintf_3(buf, sizeof(buf), "%s:%s %s",ta->file,ta->srch,(ta->cmnt ? ta->cmnt : USTR ""));
-		else
-			joe_snprintf_3(buf, sizeof(buf), "%s:%ld %s",ta->file,ta->line,(ta->cmnt ? ta->cmnt : USTR ""));
+		if (ta->srch) {
+			char *a;
+			joe_snprintf_2(buf, sizeof(buf), "%s%s",ta->file,ta->srch /* ,(ta->cmnt ? ta->cmnt : USTR "") */);
+			a = zstr(buf, "\\^");
+			if (a) {
+				a[0] = ':';
+				a[1] = '"';
+			}
+			a = zstr(buf, "\\$");
+			if (a) {
+				a[0] = '"';
+				a[1] = ' ';
+			}
+		} else
+			joe_snprintf_2(buf, sizeof(buf), "%s:%ld",ta->file,ta->line /* ,(ta->cmnt ? ta->cmnt : USTR "") */);
 		tag_array = vaadd(tag_array, vsncpy(NULL, 0, sz(buf)));
 	}
 	last_cursor = 0;
 	/* Jump if only one result */
 	if (notagsmenu || aLEN(tag_array) == 1)
-		return utagjump(bw);
+		return dotagjump(bw, 0);
 	if (mkmenu(bw->parent, bw->parent, tag_array, dotagmenu, NULL, NULL, 0, tag_array, NULL))
 		return 0;
 	else
