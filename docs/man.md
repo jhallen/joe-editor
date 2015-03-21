@@ -96,82 +96,321 @@ should.  See the section [Environment variables](#evariables) below.
 
 ## Command Line Options
 
-Only a subset of the options are shown here.  Please refer to this
-[complete list of options](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md).
+These options can also be set in the joerc file.
 
 An option is enabled when it's given like this:
 
-	-wordwrap
+* -wordwrap
 
 An option is disabled when it's given like this:
 
-	--wordwrap
+* --wordwrap
 
 Some options take arguments.  Arguments are given like this:
 
-	-lmargin 5
+* -lmargin 5
 
 The following global options may be specified on the command line:
 
-* -asis
+* asis
 Characters with codes above 127 will be sent to the terminal as-is, instead
 of as inverse of the corresponding character below 128.  If this does not
 work, check your terminal server.  This option has no effect if UTF-8
 encoding is used.
 <br>
 
-* -baud nnn
-Set the baud rate for the purposes of terminal screen optimization.  JOE
-inserts delays for baud rates below 19200, which bypasses tty buffering so
-that typeahead will interrupt the screen output.  Scrolling commands will
-not be used for 38400 baud and above.  This is useful for X-terms and other
-console ttys which really aren't going over a serial line.
+* assume_256color
+Assume ANSI-like terminal emulator supports 256 colors even if termcap entry says it doesn't.
 <br>
 
-* -beep
-Joe will beep on command errors and when the cursor goes past extremes.
+* assume_color
+Assume ANSI-like terminal emulator supports color even if termcap entry says it doesn't.
 <br>
 
-* -force
-This option makes sure that the last line of the file has a line-feed which
-it's saved.
+* text_color
+Set color for text.
 <br>
 
-* -help
-The editor will start with the help screen on if this option is given.
+* status_color
+Set color for status bar.
 <br>
 
-* -mid
+* help_color
+Set color for help.
+<br>
+
+* menu_color
+Set color for menus.
+<br>
+
+* prompt_color
+Set color for prompts.
+<br>
+
+* msg_color
+Set color for messages.
+<br>
+
+* autoswap
+Automatically swap ^KB with ^KK if necessary to
+mark a legal block during block copy/move commands.
+<br>
+
+* backpath
+Sets bath to a directory where all backup files are
+to be stored.  If this is unset (the default) backup files are stored in the
+directory containing the file.
+<br>
+
+* baud
+Set the baud rate for the purposes of terminal screen optimization
+(overrides value reported by stty).  JOE inserts delays for baud rates below
+19200, which bypasses tty buffering so that typeahead will interrupt the
+screen output.  Scrolling commands will not be used for 38400 baud and
+above.  This is useful for X-terms and other console ttys which really
+aren't going over a serial line.
+<br>
+
+* beep
+Enable beeps when edit commands return errors, for example when the cursor goes past extremes.
+<br>
+
+* break_links
+When enabled, JOE first deletes the file before
+writing it in order to break hard-links and symbolic-links.
+<br>
+
+* break_hardlinks
+When enabled, and the file is
+not a symbolic links, JOE first deletes the file before
+writing it in order to break hard-links.
+<br>
+
+* columns
+Set number of columns in terminal emulator (in case
+termcap entry is wrong).  This is only useful on old system which don't have
+the "get window size" ioctl.
+<br>
+
+* csmode
+Enable continued search mode: Successive
+^KFs repeat the current search instead of prompting for a new one.
+<br>
+
+* dopadding
+Enable JOE to send padding NULs to the terminal (for very old terminals).
+<br>
+
+* exask
+When set, ^KX prompts for a new name before saving the file.
+<br>
+
+* floatmouse
+When set, mouse clicks can position the cursor
+beyond the ends of lines.
+<br>
+
+* help
+When set, start off with the on-line help enabled.
+<br>
+
+* help_is_utf8
+When set, the help text in the joerc file is
+assumed to be UTF-8.
+<br>
+
+* icase
+Search is case insensitive by default when set.
+<br>
+
+* joe_state
+Enable reading and writing of ~/.joe_state file
+<br>
+
+* joexterm
+Set this if xterm was configured with --paste64
+option for better mouse support.
+<br>
+
+* keepup
+The column number on the status line is updated constantly when
+this is set, otherwise it is updated only once a second.
+<br>
+
+* language
+Sets language for aspell.
+<br>
+
+* lightoff
+Automatically turn off ^KB ^KK highlighting after a
+block operation.
+<br>
+
+* lines
+Set number of lines in terminal emulator (in case
+termcap entry is wrong).  This is only useful on old system which don't have
+the "get window size" ioctl.
+<br>
+
+* lmsg
+Define left-side status bar message.
+<br>
+
+* marking
+Enable marking mode: highlights between ^KB and
+cursor.
+<br>
+
+* menu_above
+Put menus above prompt instead of below them.
+<br>
+
+* menu_explorer
+Stay in menu when a directory is selected
+(otherwise the directory is added to the path and the cursor jumps back to
+the prompt).
+<br>
+
+* menu_jump
+Jump into the file selection menu when tab tab is
+hit.
+<br>
+
+* mid
 If this option is set and the cursor moves off the window, the window will
 be scrolled so that the cursor is in the center.  This option is forced on
 slow terminals which don't have scrolling commands.
 <br>
 
-* -nonotice
+* mouse
+Enable xterm mouse support.
+<br>
+
+* nobackups
+Disable backup files.
+<br>
+
+* nocurdir
+Disable current-directory prefix in prompts.
+<br>
+
+* noexmsg
+Disable exiting message ("File not changed so no update needed")
+<br>
+
+* nolinefeeds
+Disable sending linefeeds to
+preserve screen history in terminal emulator's scroll-back buffer (only
+relevant when notite mode is enabled).  
+<br>
+
+* nolocks
+Disable EMACS compatible file locks.
+<br>
+
+* nomodcheck
+Disable periodic file modification check.
+<br>
+
+* nonotice
 This option prevent the copyright notice from being displayed when the
 editor starts.
 <br>
 
-* -nosta
+* nosta
 This option eliminates the top-most status line.  It's nice for when you
 only want to see your text on the screen or if you're using a vt52.
 <br>
 
-* -noxon
-Attempt to turn off ^S/^Q processing.  This is useful for when joe is
-emulating WordStar or EMACS.
+* notagsmenu
+Disable selection menu for tags search with multiple results.
 <br>
 
-* -orphan
-When this option is active, extra files on the command line will be placed
-in orphaned buffers instead of in extra windows.  This is enabled by default
-in jmacs.
+* notite
+Disable ti and te termcap sequences which are usually
+set up to save and restore the terminal screen contents when JOE starts and
+exits.
 <br>
 
-* -pg nnn
-This specifies the number of lines to keep after PgUp/PgDn (^U/^V).  If -1
-is given, half the window is kept.
+* noxon
+Disable ^S and ^Q flow control, possibly
+allowing ^S and ^Q to be used as editor keys.
 <br>
+
+* orphan
+Orphan extra files given on the command line instead
+of creating windows for them (the files are loaded, but you need to use
+switch-buffer commands to access them).
+<br>
+
+* pg nnn
+Set number of lines to keep during Page Up and Page Down
+(use -1 for 1/2 window size).
+<br>
+
+* picture
+Enable "picture" mode- allows cursor to go past ends
+of lines.
+<br>
+
+* restore
+Set to have cursor position restore to last position
+of previouly edited files.
+<br>
+
+* rmsg
+Define right-side status bar message.
+<br>
+
+* rtbutton
+Swap left and right mouse buttons.
+<br>
+
+* search_prompting
+Show previous search string in search command (like in PICO).
+<br>
+
+* skiptop
+When set to N, the first N lines of the terminal
+screen are not used by JOE and are instead left with their original
+contents.  This is useful for programs which call JOE to leave a message for
+the user.
+<br>
+
+* smsg
+Define status command format when cursor is on a character.
+<br>
+
+* square
+Enable rectangular block mode.
+<br>
+
+* syntax
+Set syntax for syntax highlighting.
+<br>
+
+* transpose
+Transpose rows with columns in all menus.
+<br>
+
+* undo_keep
+Sets number of UNDO records to keep (0 means
+infinite).
+<br>
+
+* usetabs
+Set to allow rectangular block operations to use
+tabs.
+<br>
+
+* wrap
+Enable search to wrap to beginning of file.
+<br>
+
+* zmsg
+Define status command format when cursor is at end of file.
+<br>
+
 
 The following local options may be specified on the command line:
 
@@ -179,50 +418,149 @@ The following local options may be specified on the command line:
 The cursor starts on the specified line.
 <br>
 
+* autoindent
+Enable auto-indent mode.  When you hit Return on an indented line, the
+indentation is duplicated onto the new line.
+<br>
+
+* c_comment
+Enable ^G skipping of C-style comments /* ... */
+<br>
+
+* cpara
+Sets list of characters which can indent paragraphs.
+<br>
+
+* cpp_comment
+Enable ^G skipping of C++-style comments // ...
+<br>
+
 * -crlf
 Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
 editing MS-DOS or VMS files.
 <br>
 
-* -wordwrap
-Joe wraps the previous word when you type past the right margin.
+* encoding
+Set file encoding (like utf-8 or 8859-1).
 <br>
 
-* -autoindent
-When you hit Return on an indented line, the indentation is duplicated onto
-the new line.
+* force
+When set, a final newline is appended to the file if
+there isn't one when the file is saved.
 <br>
 
-* -overwrite
-Typing overwrites existing characters instead of inserting before them.
+* french
+When set, only one space is inserted after periods in
+paragraph reformats instead of two.
 <br>
 
-* -lmargin nnn
-Sets the left margin.
+* guess_crlf
+When set, JOE tries to guess the file format
+MS-DOS or UNIX.
 <br>
 
-* -rmargin nnn
-Sets the right margin.
+* guess_indent
+When set, JOE tries to guess the indentation
+character and indentation step based on how a file is already indented.
 <br>
 
-* -tab nnn
-Sets the tab width.
+* guess_non_utf8
+When set, enable guessing of non-UTF-8 files
+in UTF-8 locales.
 <br>
 
-* -indentc nnn
-Sets the indentation character for ^K, and ^K. (32 for SPACE, 9 for TAB).
-<br> 
-
-* -istep nnn
-Sets the indentation step for ^K, and ^K..
+* guess_utf8
+When set, enable guessing of UTF-8 files in
+non-UTF-8 locales.
 <br>
 
-* -linums
-Line numbers are displayed before each line.
+* hex
+Enable hex-dump mode.
 <br>
 
-* -rdonly
-The file is read only.
+* highlight
+Enable syntax highlighting.
+<br>
+
+* indentc nnn
+Sets the indentation character for shift left and shift right (__^K ,__ and __^K .__).
+Use 32 for SPACE, 9 for TAB.
+<br>
+
+* indentfirst
+When set, the smart home key jumps to the
+indentation point first, otherwise it jumps to column 1 first.
+<br>
+
+* istep nnn
+Sets indentation step.
+<br>
+
+* linums
+Enable line number display.
+<br>
+
+* lmargin
+Set left margin.
+<br>
+
+* overwrite
+Enable overtype mode.  Typing overwrites existing characters instead of inserting before them.
+<br>
+
+* pound_comment
+^G ignores # ... comments.
+<br>
+
+* purify
+Clean up indentation when enabled (during shift-left
+and shift-right commands).
+<br>
+
+* rdonly
+Set read-only mode.
+<br>
+
+* rmargin
+Set right margin.
+<br>
+
+* semi_comment
+^G ignores ; ... comments.
+<br>
+
+* single_quoted
+^G ignores '...'
+<br>
+
+* smartbacks
+Enable smart backspace (backspace unindents).
+<br>
+
+* smarthome
+Enable smart home (home key jumps to indentation
+point on first or second press).
+<br>
+
+* spaces
+Insert spaces when tab key is hit.
+<br>
+
+* tab
+Set tab stop width.
+<br>
+
+* text_delimiters
+Give list of word delimiters which ^G will
+step through.
+<br>
+
+* vhdl_comment
+^G ignores -- ... comments
+<br>
+
+* wordwrap
+JOE wraps the previous word when you type past the right margin.
 <br>
 
 These options can also be specified in the joerc file.  They can be set
