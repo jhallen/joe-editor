@@ -962,7 +962,7 @@ the file list.
 
 
 	ESC g
-	  grep -n foo f*.c &lt;Enter&gt;
+	  grep -n foo f*.c <Enter>
 	^K F
            foo <Enter>
 	   re <Enter>
