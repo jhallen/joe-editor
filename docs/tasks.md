@@ -524,8 +524,8 @@ sequence for these keys are known.
 ### Shell Windows
 
 If you use Bash, you can hit: ESC ' UP-ARROW and ESC ' DOWN-ARROW to scroll through
-Bash's history buffer.  Other keys work as well: try ESC ' A to go to beginning
-of line or ESC ' E to go to end of line.  Unfortunately JOE only emulates a dumb
+Bash's history buffer.  Other keys work as well: try ESC ' ^A to go to beginning
+of line or ESC ' ^E to go to end of line.  Unfortunately JOE only emulates a dumb
 terminal, so you have to use a lot of imagination to do any editing beyond
 hitting backspace.
 
