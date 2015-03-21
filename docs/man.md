@@ -99,6 +99,18 @@ should.  See the section [Environment variables](#evariables) below.
 Only a subset of the options are shown here.  Please refer to this
 [complete list of options](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md).
 
+An option is enabled when it's given like this:
+
+	-wordwrap
+
+An option is disabled when it's given like this:
+
+	--wordwrap
+
+Some options take arguments.  Arguments are given like this:
+
+	-lmargin 5
+
 The following options may be specified on the command line:
 
 * -orphan
@@ -1130,7 +1142,7 @@ and ESC - to step through each line.
 <a name="evariables"></a>
 ## Environment variables 
 
-Please refer to this [complete list of environment variabls](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md#env).
+Please refer to this [complete list of environment variables](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md#env).
 
 For JOE to operate correctly, a number of other environment settings must be 
 correct.  The throughput (baud rate) of the connection between the computer 

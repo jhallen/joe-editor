@@ -1,3 +1,7 @@
+## Release Notes
+
+[Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
+
 ### JOE 4.0
 
 * JOE now has pop-up shell windows with full terminal emulation and shell commands
@@ -23,9 +27,15 @@
 * Temporary messages are now dismissed by keyboard input only.  Before, they
   could also be dismissed by shell input.
 
-* Tags search now supports multiple matches.  Repeatedly hit ^K ; to cycle
-  through them.  Also it will now match on the member name part of member
-  functions ('fred' will match 'myclass::fred').
+* Tags search now supports multiple matches.  ^K ; can be configured to
+  either provide a menu of the matches or to cycle through them.
+
+* Tags search will now match on the member name part of member functions
+  ('fred' will match 'myclass::fred').
+
+* Tags search will prepend the path to the tags file file name in the tags
+  file.  This is important when JOE finds the tags file via the TAGS
+  environment variable.
 
 ### JOE 3.8
 

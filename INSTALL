@@ -34,9 +34,6 @@ Installation procedure
   [To create a Cygwin binary distribution, use the 'cygbuild' script
   instead of these instructions.]
 
-  [On Ubuntu, you need to: sudo apt-get install ncurses-dev
-  for JOE to access the terminfo database.]
-
   JOE uses the GNU Automake and Autoconf suites to build itself.
 
   Usually you want JOE to use the terminfo database. JOE needs
@@ -48,26 +45,32 @@ Installation procedure
 
   Run configure script, type one of these:
 
+    Normal installation:
+
 	./configure --prefix=/usr --sysconfdir=/etc
 
-	  (normal system installation)
 		- executables in /usr/bin
 		- man pages in /usr/man
 		- configuration files in /etc/joe
+		- syntax files in /usr/share/joe
+
+    Install into your home directory:
 
 	./configure --prefix=$HOME
 
-	  (install into your home directory)
 		- executables in ~/bin
 		- man pages in ~/man
 		- configuration files in ~/etc/joe
+		- syntax files in ~/share/joe
+
+    Install into /usr/local:
 
 	./configure
 
-	  (install into /local)
 		- executables in /usr/local/bin
 		- man pages in /usr/local/man
-		- configuration files in /usr/local/etc
+		- configuration files in /usr/local/etc/joe
+		- syntax files in /usr/local/share/joe
 
   [For Cygwin, I've found that you need to add
   "--disable-curses --disable-termcap" to the above commands.]
