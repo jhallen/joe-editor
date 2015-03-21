@@ -158,7 +158,7 @@ Set color for messages.
 <br>
 
 * autoswap
-Automatically swap ^KB with ^KK if necessary to
+Automatically swap __^K B__ with __^K K__ if necessary to
 mark a legal block during block copy/move commands.
 <br>
 
@@ -201,7 +201,7 @@ the "get window size" ioctl.
 
 * csmode
 Enable continued search mode: Successive
-^KFs repeat the current search instead of prompting for a new one.
+__^K F__s repeat the current search instead of prompting for a new one.
 <br>
 
 * dopadding
@@ -209,7 +209,7 @@ Enable JOE to send padding NULs to the terminal (for very old terminals).
 <br>
 
 * exask
-When set, ^KX prompts for a new name before saving the file.
+When set, __^K X__ prompts for a new name before saving the file.
 <br>
 
 * floatmouse
@@ -269,7 +269,7 @@ Sets language for aspell.
 <br>
 
 * lightoff
-Automatically turn off ^KB ^KK highlighting after a
+Automatically turn off __^K B__ __^K K__ highlighting after a
 block operation.
 <br>
 
@@ -280,7 +280,7 @@ ioctl.
 <br>
 
 * marking
-Enable marking mode: highlights between ^KB and cursor.
+Enable marking mode: highlights between __^K B__ and cursor.
 <br>
 
 * menu_above
@@ -353,7 +353,7 @@ exits.
 <br>
 
 * noxon
-Disable ^S and ^Q flow control, possibly allowing ^S and ^Q to be used as
+Disable __^S__ and __^Q__ flow control, possibly allowing __^S__ and __^Q__ to be used as
 editor keys.
 <br>
 
@@ -420,7 +420,7 @@ indentation is duplicated onto the new line.
 <br>
 
 * c_comment
-Enable ^G skipping of C-style comments /* ... */
+Enable __^G__ skipping of C-style comments /* ... */
 <br>
 
 * cpara __characters__
@@ -428,7 +428,7 @@ Sets list of characters which can indent paragraphs.
 <br>
 
 * cpp_comment
-Enable ^G skipping of C++-style comments // ...
+Enable __^G__ skipping of C++-style comments // ...
 <br>
 
 * crlf
@@ -494,7 +494,7 @@ Enable "picture" mode- allows cursor to go past ends of lines.
 <br>
 
 * pound_comment
-^G ignores # ... comments.
+__^G__ ignores # ... comments.
 <br>
 
 * purify
@@ -515,11 +515,11 @@ Define right-side status bar message.
 <br>
 
 * semi_comment
-^G ignores ; ... comments.
+__^G__ ignores ; ... comments.
 <br>
 
 * single_quoted
-^G ignores '...'
+__^G__ ignores '...'
 <br>
 
 * smartbacks
@@ -548,11 +548,11 @@ Set tab stop width.
 <br>
 
 * text_delimiters __word delimiter list__
-Give list of word delimiters which ^G will step through.
+Give list of word delimiters which __^G__ will step through.
 <br>
 
 * vhdl_comment
-^G ignores -- ... comments
+__^G__ ignores -- ... comments
 <br>
 
 * wordwrap
@@ -600,7 +600,7 @@ With a 256 color terminal emulator (export TERM=xterm-256color), these become av
 right-justified string.  The first character of -rmsg is the background fill
 character.
 
--smsg defines the status command (^K SPACE).  -zmsg defines it when the cursor
+-smsg defines the status command (__^K SPACE__).  -zmsg defines it when the cursor
 is at the end of the file.  The last character of smsg or zmsg is the fill character.
 
 The following escape sequences can be used in these strings:
@@ -843,7 +843,7 @@ __ESC l__ to check the highlighted block or the entire file if no block is
 highlighted.
 
 JOE passes the language and character enoding to the spell checker.  To
-change the langauge, hit ^T V.
+change the langauge, hit __^T V__.
 
 ## Over-type mode
 
@@ -920,7 +920,7 @@ If LC_ALL is set to:
 
 The character set will be UTF-8.
 
-Hit ^T E to change the coding for the file.  Hit &lt;tab&gt; &lt;tab&gt; at
+Hit __^T E__ to change the coding for the file.  Hit &lt;tab&gt; &lt;tab&gt; at
 this prompt to get a list of available codings.  There are a number of
 built-in character sets, plus you can install character sets in the
 ~/.joe/charmaps and /usr/local/etc/joe/charmaps directories.
@@ -931,7 +931,7 @@ gzipped (all of the charmap file in /usr/share/i18n/charmaps on my computer
 were compressed).  The parser is very bad, so basically the file has to look
 exactly like the example one in /usr/local/etc/joe/charmaps.
 
-You can hit ^K &lt;space&gt; to see the current character set.
+You can hit __^K SPACE__ to see the current character set.
 
 You can hit __ESC ' x__ to enter a Unicode character if the file coding is
 UTF-8.
@@ -969,10 +969,10 @@ word you are typing.  If JOE beeps, there are either no completions or many.
 As with the "bash" shell, hit TAB twice to bring up a list of all the
 possibilities.  This list is actually a menu, but by default, the cursor
 does not jump into it since it is usually easier to just type in your
-selection. You can, however, jump into the menu window with ^K P (move to
+selection. You can, however, jump into the menu window with __^K P__ (move to
 previous window) and use the arrow keys and &lt;Enter&gt; to make your
 selection.  Also in a menu, you can hit the first letter of any of the items
-to make the cursor jump directly to it.  The ^T option menu works like
+to make the cursor jump directly to it.  The __^T__ option menu works like
 this.
 
 If the menu is too large to fit in the window, you can hit Page Up and
@@ -999,7 +999,7 @@ line number and/or column number always displayed on the status line by
 setting placing the appropriate escape sequences in the status line setup
 strings.  Edit the joerc file for details.
 
-## What if I hit ^K by accident?
+## What if I hit __^K__ by accident?
 
 Hit the space bar.  This runs an innocuous command (it shows the line
 number on the status bar).
@@ -1078,7 +1078,7 @@ the file list.
 
 You can hit __^L__ to repeat the previous search.
 
-You can hit ^K H at the search and replace options prompt to bring up a list
+You can hit __^K H__ at the search and replace options prompt to bring up a list
 of all search and replace options.
 
 ## Regular Expressions
@@ -1198,7 +1198,7 @@ search prompt.
 For Ctrl-G to work on word delimiters, the cursor must be positioned
 on the first letter of the word.  So in XML, if the cursor is on the &lt; in
 &lt;foo&gt;, it will jump to the &gt;.  But if it is one the 'f', it will
-jump to the matching &lt;/foo&gt;.  Likewise, in C, ^G will jump between #if, #else
+jump to the matching &lt;/foo&gt;.  Likewise, in C, __^G__ will jump between #if, #else
 and #endif, but you need to position the cursor on the letter,
 not the '#'.
 
@@ -1239,9 +1239,9 @@ highlighting off.
 
 ### Selecting blocks
 
-The classic way is to hit ^K B at the beginning and ^K K at the
+The classic way is to hit __^K B__ at the beginning and __^K K__ at the
 end.  These set pointers called markb and markk.  Once these are set you
-can jump to markb with __ESC b__ and jump to markk with __ESC k__.
+can jump to markb with __ESC B__ and jump to markk with __ESC K__.
 
 New way: hit Ctrl-rtarw (right arrow) to start selecting rightward. 
 Each time you hit Ctrl-rtarw, the block is extended one more to the right. 
@@ -1360,7 +1360,7 @@ __^K \\ 20__<return>__^Y__
 A macro is a comma separated list of commands.  When the macro is executed,
 each command is executed until either the end of the list is reached, or one
 of the commands fails (non-zero return value from the command).  Failed
-commands beep if you have beeps enabled (^T B).
+commands beep if you have beeps enabled (__^T B__).
 
 Hit __ESC D__ to insert the current set of keyboard macros as text into the
 current buffer.
@@ -1392,7 +1392,7 @@ the original window.
 
 ### Macro repeat argument modifiers
 
-Repeat arguments can be specified with ^K \\.  When a command is executed
+Repeat arguments can be specified with __^K \\__.  When a command is executed
 with a repeat argument, it is repeatedly executed the specified number of
 times.  If the repeat argument is negative, an opposite command (if one
 exists) is executed instead.  For example, if you repeat "rtarw" -3 times,
@@ -1441,14 +1441,14 @@ repeat count, however.
 
 ### 'psh'/'query' interaction
 
-The 'psh' command saves the ^KB and ^KK positions on a stack.  When the
+The 'psh' command saves the __^K B__ and __^K K__ positions on a stack.  When the
 macro completes, (or when the 'pop' command is called) the positions are
 restored.
 
 The 'query' command suspends macro execution until the current dialog is
 complete.  It also suspends the automatic 'pop' which happens at the end
 of a macro- so if the macro ends in a dialog you often want to call 'query'
-to prevent the ^KB ^KK positions from being restored too early.
+to prevent the __^K B__ __^K K__ positions from being restored too early.
 
 
 
@@ -1507,7 +1507,7 @@ following special characters:
 
 	\x quote x (suppress meaning of /, ?, ^ or $)
 
-Type ^K ; to bring up a tags search prompt.  If the cursor had been on an
+Type __^K ;__ to bring up a tags search prompt.  If the cursor had been on an
 identifier, the prompt is pre-loaded with it.  TAB completion works in this
 prompt.
 
@@ -1518,17 +1518,17 @@ definition.
 
 If there are multiple matches, then the behavior is controlled by the
 notagsmenu option.  If notagsmenu is enabled JOE jumps to the first
-definition.  If you hit ^K ; again before hitting any other keys, JOE jumps
+definition.  If you hit __^K ;__ again before hitting any other keys, JOE jumps
 to the next definition, and so on.  The "tagjump" command also performs this
 function.
 
 If notagsmenu is disabled, JOE brings up a menu of all the matches.  You
-select the one you want and JOE jumps to it.  If you hit ^K ; again before
+select the one you want and JOE jumps to it.  If you hit __^K ;__ again before
 hitting any other keys, the same menu re-appears with the cursor left in the
 original location.
 
-You can hit ^K - to move the cusor back to the original location before the
-tags search (often ^C will work as well).
+You can hit __^K -__ to move the cusor back to the original location before the
+tags search (often __^C__ will work as well).
 
 Since __^K ;__ loads  the definition file into the current window, you
 probably want to split the window first with __^K O__, to have both the
@@ -1654,8 +1654,8 @@ shell window (the cursor will follow this output if it's at the end of the
 shell window).  This command is useful for recording the results of shell
 commands- for example the output of __make__, the result of __grep__ping
 a set of files for a string, or directory listings from __FTP__ sessions. 
-Besides typeable characters, the keys ^C, Backspace, DEL, Return and ^D are
-passed to the shell.  Type the shell __exit__ command to stop recording
+Besides typeable characters, the keys __^C__, Backspace, DEL, Return and
+__^D__ are passed to the shell.  Type the shell __exit__ command to stop recording
 shell output.  If you press __^C__ in a shell window, when the cursor is
 not at the end of the window, the shell is __kill__ed.
 
@@ -1667,7 +1667,7 @@ imagination to do any editing beyond hitting backspace.
 
 In general, any character quoted with __ESC '__ is sent to the shell.
 
-Also sent to the shell: TAB, Backspace, Enter, ^C and ^D.
+Also sent to the shell: TAB, Backspace, Enter, __^C__ and __^D__.
 
 <a name="popup"></a>
 ## Pop-up shell windows
@@ -1678,7 +1678,7 @@ The terminal emulator is improved so that when you type "man ls" it's
 formatted correctly (it's improved enough so that some interactive programs
 will work in it).  Even so, the shell window is still an edit buffer.
 
-The old shell window (with no terminal emulation) still exists: use ^K ' to
+The old shell window (with no terminal emulation) still exists: use __^K '__ to
 invoke it as usual.  This is useful to see control sequences emitted by a
 program.
 
@@ -1690,7 +1690,7 @@ keys, or abort programs the normal way with Ctrl-C.
 
 On the other hand, loss of Ctrl-C means it's less obvious how to close the
 window.  One way is to move the cursor off of the shell data entry point
-(with Ctrl-P), and then hit Ctrl-C.  Another is to hit ^K Q.  Finally, you
+(with Ctrl-P), and then hit Ctrl-C.  Another is to hit __^K Q__.  Finally, you
 can type 'pop' at the command prompt.
 
 If you need to pass a key to the shell that JOE normally uses, quote it.  For
@@ -1698,13 +1698,8 @@ example, if you invoke "emacs -nw" in the shell window, you can exit it with:
 
 	ESC ' ^X ^C
 
-or, if you use ` for the quote character:
-
-	` ^X ^C
-
-
 To quickly position the cursor back to the point where data is entered into
-the shell, hit ^K V.
+the shell, hit __^K V__.
 
 When you open a shell window, a JOE-specific startup-script is sourced. 
 It's located in /etc/joe/shell.sh (also /etc/joe/shell.csh).  It contains
@@ -1743,7 +1738,7 @@ Pop-up shell windows have a number of nice use cases:
 * Use it to switch directories
 
 	Hit F1 and navigate to the directory while using _cd_.  Once
-	you are in the right place, hit ^K E to load a file (or type "edit file"
+	you are in the right place, hit __^K E__ to load a file (or type "edit file"
 	from the shell).
 
 * Use it in conjuction with the error parser to find files
@@ -1769,7 +1764,7 @@ Pop-up shell windows have a number of nice use cases:
 	...the issue is that only the words to the left of the pipe symbol
 	are passed as arguments to the parse command).
 
-	Now use ^P to position the cursor on one of the lines of the list. 
+	Now use __^P__ to position the cursor on one of the lines of the list. 
 	Hit __ESC SPACE__ to have JOE edit the file and jump to the specified
 	line (also you can use __ESC -__ and __ESC =__ to step through the list).
 
@@ -1803,7 +1798,7 @@ enabled, the screen updater hides escape sequences which are in the
 buffer.  Otherwise you get a big mess from the sequences surrounding
 colored output from 'ls'.
 
-* There is a new built-in syntax: "ansi".  (^T y ansi).  This syntax
+* There is a new built-in syntax: "ansi".  (__^T Y__ ansi).  This syntax
 parses the ANSI color control sequences so that text gets colored.
 
 * There is a terminal emulator to interpret control sequences from the
@@ -2045,7 +2040,7 @@ directives.  For example:
 
 ## The joerc file
 
-^T options, the help screens and the key-sequence to editor command
+__^T__ options, the help screens and the key-sequence to editor command
 bindings are all defined in JOE's initialization file.  If you make a copy
 of this file (which normally resides in __/etc/joe/joerc__) to
 __$HOME/.joerc__, you can customize these setting to your liking.  The
@@ -2065,9 +2060,9 @@ When -mouse is set, you can:
   different window to move the cursor to a different window.
 
 * Select text with the mouse.  Left-click and drag to select some text- it
-will be as if you had used ^KB and ^KK to mark it. Left-click (but don't
+will be as if you had used __^K B__ and __^K K__ to mark it. Left-click (but don't
 drag) to position the cursor somewhere else.  Middle click to copy the
-selected text to the cursor- it will be as if you had hit ^KC.  If you drag
+selected text to the cursor- it will be as if you had hit __^K C__.  If you drag
 past the edge of the text window, the window will auto-scroll to select more
 text.  Unfortunately, Xterm does not send any codes when the cursor is
 outside of the Xterm frame itself, so this only works if the mouse is still
@@ -2077,7 +2072,7 @@ to improve this, but he has not taken it yet.
 * Resize windows with the mouse: click and hold on a status line
 dividing two windows to move it.
 
-* Select menu entries (such as any completion menu or the ^T options
+* Select menu entries (such as any completion menu or the __^T__ options
 menu): click on the menu item to position the cursor on it.  Double-click on
 a menu item to select it (same as hitting return with cursor on it).</li>
 
@@ -2133,14 +2128,14 @@ should have a gray background.
 ## Hex edit mode
 
 When this mode is selected (either put -hex on the command line, or look for
-"Hex edit mode" after hitting ^T), the buffer is displayed as a hex dump,
+"Hex edit mode" after hitting __^T__), the buffer is displayed as a hex dump,
 but all of the editing commands operate the same way.  It is most useful to
-select overtype mode in conjunction with hex dump (hit ^T T).  Then typing
+select overtype mode in conjunction with hex dump (hit __^T T__).  Then typing
 will not insert.
 
 - To enter the hex byte 0xF8 type __ESC ' x F 8__
 
-- You can use ^KC to copy a block as usual.  If overtype mode is selected,
+- You can use __^K C__ to copy a block as usual.  If overtype mode is selected,
   the block will overwrite the destination data without changing the size of
   the file.  Otherwise it inserts.
 
@@ -2178,13 +2173,13 @@ variable on modern systems and is determined by an ioctl, so these
 parameters often have no effect.
 
 JOE normally expects that flow control between the computer and your
-terminal to use ^S/^Q handshaking (i.e., if the computer is sending
-characters too fast for your terminal, your terminal sends ^S to stop the
-output and ^Q to restart it).  If the flow control uses out-of-band or
+terminal to use __^S__/__^Q__ handshaking (i.e., if the computer is sending
+characters too fast for your terminal, your terminal sends __^S__ to stop the
+output and __^Q__ to restart it).  If the flow control uses out-of-band or
 hardware handshaking or if your terminal is fast enough to always keep up
-with the computer output and you wish to map ^S/^Q to edit commands, you can
+with the computer output and you wish to map __^S__/__^Q__ to edit commands, you can
 set the environment variable __NOXON__ to have JOE attempt to turn off
-^S/^Q handshaking.  If the connection between the computer and your terminal
+__^S__/__^Q__ handshaking.  If the connection between the computer and your terminal
 uses no handshaking and your terminal is not fast enough to keep up with the
 output of the computer, you can set the environment variable __DOPADDING__
 to have __JOE__ slow down the output by interspersing PAD characters
@@ -2242,14 +2237,14 @@ the "get window size" ioctl.
 <br>
 
 * NOXON
-Disable ^S and ^Q flow control, possibly
-allowing ^S and ^Q to be used as editor keys.
+Disable __^S__ and __^Q__ flow control, possibly
+allowing __^S__ and __^Q__ to be used as editor keys.
 <br>
 
 * SHELL
 Path to shell (like /bin/sh).  This is
 used in several places: If you are on a system with no job control, this
-shell is invoked when you hit ^KZ.  Also this is shell which is run in shell
+shell is invoked when you hit __^K Z__.  Also this is shell which is run in shell
 windows.  If SHELL is not set (Cygwin) or if it's set to /bin/sh, JOE
 invokes the first of these which exists: /bin/bash, /usr/bin/bash, /bin/sh.
 <br>
@@ -2295,7 +2290,7 @@ Used to get user name for EMACS compatible file locks.
 <a name="list"></a>
 ## JOE commands grouped by function
 
-<p>These commands can be entered at the __ESC x__ prompt.</p>
+These commands can be entered at the __ESC x__ prompt.
 
 <p><b>Background programs</b></p>
 
@@ -2683,9 +2678,9 @@ used to define the status line for the rmsg and lmsg options) and is formatted b
 
 <p>Here is an example 'if' macro:</p>
 
-<p>if,"char==65",then,"it's an A",else,"it's not an A",endif	^[ q</p>
+<p>if,"char==65",then,"it's an A",else,"it's not an A",endif	__^[ q__</p>
 
-<p>When you hit ^[ q, if the character under the cursor is an 'A': "it's a A"
+<p>When you hit __^[ q__, if the character under the cursor is an 'A': "it's a A"
 is inserted into the buffer, otherwise "it's not an A" is inserted.</p>
 
 <p>"if" creates a math prompt (like __ESC m__).  "then" is like "rtn"- it hits the
