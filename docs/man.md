@@ -565,7 +565,7 @@ JOE wraps the previous word when you type past the right margin.
 Define status command format when cursor is at end of file.
 <br>
 
-### Color specifications:
+### Colors and attributes:
 
 Combine attributes and up to one foreground color and one background color
 to create arguments for color options like text_color.  For example:
@@ -580,11 +580,17 @@ bold+bg_green+blue
 With a 16 color or 256 color terminal emulator (export TERM=xterm-16color), these
 brighter than normal colors become available:
 
+> Note that you need an xterm which was compiled to support 16 or 256 colors
+> and a matching termcap/terminfo entry for it.
+
 * Foreground: WHITE, CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED or BLACK
 
 * Background: bg_WHITE, bg_CYAN, bg_MAGENTA, bg_BLUE, bg_YELLOW, bg_GREEN, bg_RED or bg_BLACK
 
 With a 256 color terminal emulator (export TERM=xterm-256color), these become available:
+
+> Note that you need an xterm which was compiled to support 256 colors and a
+> matching termcap/terminfo entry for it.
 
 * fg_RGB and bg_RGB, where R, G and B rand from 0 - 5.  So: fg_500 is bright red.
 
@@ -2272,56 +2278,6 @@ directives.  For example:
     .endif
 
 .else if also available.  .ifdefs can be nested.
-
-#### Obsolete feature: sync lines
-
-the sync lines specification no longer matter.  We now always parse
-from the beginning of the file.  Here is the old description:
-
-Define no. sync lines
-You can say:
-
-* '-200' means 200 lines
-* '-'    means always start parsing from beginning of file when we lose sync
-         if nothing is specified, the default is -50
-
-#### Colors and attributes
-
-Define colors and attributes.  Give a list of attributes, one
-background color and one foreground color (default is used if
-color is left out).
-
-Attributes:
-  bold inverse blink dim underline
-
-Standard colors:
-
-Foreground:
-  white cyan magenta blue yellow green red black
-
-Background:
-  bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
-
-For 16 color and 256 color xterms: "export TERM=xterm-16color", these
-brighter than normal colors are available:
-
-> Note that you need an xterm which was compiled to support 16 or 256 colors
-> and a matching termcap/terminfo entry for it.
-
-Foreground:
-  WHITE CYAN MAGENTA BLUE YELLOW GREEN RED BLACK
-
-Background:
-  bg_WHITE bg_CYAN bg_MAGENTA bg_BLUE bg_YELLOW bg_GREEN bg_RED bg_BLACK
-
-For 256 color xterm: "export TERM=xterm-256color", these become available:
-
-> Note that you need an xterm which was compiled to support 256 colors and a
-> matching termcap/terminfo entry for it.
-
-fg_RGB and bg_RGB, where R, G, and B range from 0 - 5.  So: fg_500 is bright red.
-
-fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
 
 ## Command list
 
