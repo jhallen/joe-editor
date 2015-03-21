@@ -1587,3 +1587,4 @@ For 256 color xterm: "export TERM=xterm-256color", these become available:
 fg_RGB and bg_RGB, where R, G, and B range from 0 - 5.  So: fg_500 is bright red.
 
 fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
+
