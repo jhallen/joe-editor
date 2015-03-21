@@ -130,27 +130,27 @@ Assume ANSI-like terminal emulator supports 256 colors even if termcap entry say
 Assume ANSI-like terminal emulator supports color even if termcap entry says it doesn't.
 <br>
 
-* text_color
+* text_color <color\>
 Set color for text.
 <br>
 
-* status_color
+* status_color <color\>
 Set color for status bar.
 <br>
 
-* help_color
+* help_color <color\>
 Set color for help.
 <br>
 
-* menu_color
+* menu_color <color\>
 Set color for menus.
 <br>
 
-* prompt_color
+* prompt_color <color\>
 Set color for prompts.
 <br>
 
-* msg_color
+* msg_color <color\>
 Set color for messages.
 <br>
 
@@ -159,13 +159,13 @@ Automatically swap ^KB with ^KK if necessary to
 mark a legal block during block copy/move commands.
 <br>
 
-* backpath
+* backpath path
 Sets bath to a directory where all backup files are
 to be stored.  If this is unset (the default) backup files are stored in the
 directory containing the file.
 <br>
 
-* baud
+* baud nnn
 Set the baud rate for the purposes of terminal screen optimization
 (overrides value reported by stty).  JOE inserts delays for baud rates below
 19200, which bypasses tty buffering so that typeahead will interrupt the
@@ -189,7 +189,7 @@ not a symbolic links, JOE first deletes the file before
 writing it in order to break hard-links.
 <br>
 
-* columns
+* columns nnn
 Set number of columns in terminal emulator (in case
 termcap entry is wrong).  This is only useful on old system which don't have
 the "get window size" ioctl.
@@ -211,6 +211,26 @@ When set, ^KX prompts for a new name before saving the file.
 * floatmouse
 When set, mouse clicks can position the cursor
 beyond the ends of lines.
+<br>
+
+* guess_crlf
+When set, JOE tries to guess the file format
+MS-DOS or UNIX.
+<br>
+
+* guess_indent
+When set, JOE tries to guess the indentation
+character and indentation step based on how a file is already indented.
+<br>
+
+* guess_non_utf8
+When set, enable guessing of non-UTF-8 files
+in UTF-8 locales.
+<br>
+
+* guess_utf8
+When set, enable guessing of UTF-8 files in
+non-UTF-8 locales.
 <br>
 
 * help
@@ -240,7 +260,7 @@ The column number on the status line is updated constantly when
 this is set, otherwise it is updated only once a second.
 <br>
 
-* language
+* language <language\>
 Sets language for aspell.
 <br>
 
@@ -249,7 +269,7 @@ Automatically turn off ^KB ^KK highlighting after a
 block operation.
 <br>
 
-* lines
+* lines nnn
 Set number of lines in terminal emulator (in case
 termcap entry is wrong).  This is only useful on old system which don't have
 the "get window size" ioctl.
@@ -360,7 +380,7 @@ Swap left and right mouse buttons.
 Show previous search string in search command (like in PICO).
 <br>
 
-* skiptop
+* skiptop nnn
 When set to N, the first N lines of the terminal
 screen are not used by JOE and are instead left with their original
 contents.  This is useful for programs which call JOE to leave a message for
@@ -375,7 +395,7 @@ Enable rectangular block mode.
 Transpose rows with columns in all menus.
 <br>
 
-* undo_keep
+* undo_keep nnn
 Sets number of UNDO records to keep (0 means
 infinite).
 <br>
@@ -404,7 +424,7 @@ indentation is duplicated onto the new line.
 Enable ^G skipping of C-style comments /* ... */
 <br>
 
-* cpara
+* cpara <characters>
 Sets list of characters which can indent paragraphs.
 <br>
 
@@ -412,12 +432,12 @@ Sets list of characters which can indent paragraphs.
 Enable ^G skipping of C++-style comments // ...
 <br>
 
-* -crlf
+* crlf
 Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
 editing MS-DOS or VMS files.
 <br>
 
-* encoding
+* encoding <encoding>
 Set file encoding (like utf-8 or 8859-1).
 <br>
 
@@ -429,26 +449,6 @@ there isn't one when the file is saved.
 * french
 When set, only one space is inserted after periods in
 paragraph reformats instead of two.
-<br>
-
-* guess_crlf
-When set, JOE tries to guess the file format
-MS-DOS or UNIX.
-<br>
-
-* guess_indent
-When set, JOE tries to guess the indentation
-character and indentation step based on how a file is already indented.
-<br>
-
-* guess_non_utf8
-When set, enable guessing of non-UTF-8 files
-in UTF-8 locales.
-<br>
-
-* guess_utf8
-When set, enable guessing of UTF-8 files in
-non-UTF-8 locales.
 <br>
 
 * hex
@@ -507,11 +507,11 @@ and shift-right commands).
 Set read-only mode.
 <br>
 
-* rmargin
+* rmargin nnn
 Set right margin.
 <br>
 
-* rmsg
+* rmsg <string>
 Define right-side status bar message.
 <br>
 
@@ -532,7 +532,7 @@ Enable smart home (home key jumps to indentation
 point on first or second press).
 <br>
 
-* smsg
+* smsg <string>
 Define status command format when cursor is on a character.
 <br>
 
@@ -540,15 +540,15 @@ Define status command format when cursor is on a character.
 Insert spaces when tab key is hit.
 <br>
 
-* syntax
+* syntax <syntax>
 Set syntax for syntax highlighting.
 <br>
 
-* tab
+* tab nnn
 Set tab stop width.
 <br>
 
-* text_delimiters
+* text_delimiters <word delimiter list>
 Give list of word delimiters which ^G will
 step through.
 <br>
@@ -561,9 +561,91 @@ step through.
 JOE wraps the previous word when you type past the right margin.
 <br>
 
-* zmsg
+* zmsg <string>
 Define status command format when cursor is at end of file.
 <br>
+
+### Color specifications:
+
+Combine attributes and up to one foreground color and one background color
+to create arguments for color options like text_color.  For example:
+bold+bg_green+blue
+
+* Attributes: bold, inverse, blink, dim, underlined, and italic
+
+* Foreground colors: white, cyan, magenta, blue, yellow, green, red, or black
+
+* Background colors: bg_white, bg_cyan, bg_magenta, bg_blue, bg_yellow, bg_green, bg_red or bg_black
+
+With a 16 color or 256 color terminal emulator (export TERM=xterm-16color), these
+brighter than normal colors become available:
+
+* Foreground: WHITE, CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED or BLACK
+
+* Background: bg_WHITE, bg_CYAN, bg_MAGENTA, bg_BLUE, bg_YELLOW, bg_GREEN, bg_RED or bg_BLACK
+
+With a 256 color terminal emulator (export TERM=xterm-256color), these become available:
+
+* fg_RGB and bg_RGB, where R, G and B rand from 0 - 5.  So: fg_500 is bright red.
+
+* fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
+
+### Status line definition strings
+
+-lmsg defines the left-justified string and -rmsg defines the
+right-justified string.  The first character of -rmsg is the background
+fill character.
+
+-smsg defines the status command (^K SPACE).  -zmsg defines it when the cursor
+is at the end of the file.  The last character of smsg or zmsg is the fill character.
+
+The following escape sequences can be used in these strings:
+
+~~~~~
+  %t  12 hour time
+  %u  24 hour time
+  %T  O for overtype mode, I for insert mode
+  %W  W if wordwrap is enabled
+  %I  A if autoindent is enabled
+  %X  Rectangle mode indicator
+  %n  File name
+  %m  '(Modified)' if file has been changed
+  %*  '*' if file has been changed
+  %R  Read-only indicator
+  %r  Row (line) number
+  %c  Column number
+  %o  Byte offset into file
+  %O  Byte offset into file in hex
+  %a  Ascii value of character under cursor
+  %A  Ascii value of character under cursor in hex
+  %w  Width of character under cursor
+  %p  Percent of file cursor is at
+  %l  No. lines in file
+  %k  Entered prefix keys
+  %S  '*SHELL*' if there is a shell running in window
+  %M  Macro recording message
+  %y  Syntax
+  %e  Encoding
+  %x  Context (first non-indented line going backwards)
+  %dd day
+  %dm month
+  %dY year
+  %Ename%  value of environment variable
+  %Tname%  value of option (ON or OFF for boolean options)
+~~~~~
+
+These formatting escape sequences may also be given:
+ 
+~~~~~
+  \i  Inverse
+  \u  Underline
+  \b  Bold
+  \d  Dim
+  \f  Blink
+  \l  Italic
+~~~~~
+<br>
+
 
 ### Mode command
 
