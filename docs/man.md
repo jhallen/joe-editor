@@ -87,7 +87,7 @@ by modifying it.  See the section [joerc](#joerc) below.
 
 To have JOE used as your default editor for e-mail and News, you need to set
 the __EDITOR__ and __VISUAL__ environment variables in your shell
-initialization file (__.cshrc__ or __.profile__) to refer to JOE (joe
+initialization file (__.cshrc__ or __.profile__) to refer to JOE (JOE
 usually resides as __/home/jhallen/bin/joe__).
 
 There are a number of other obscure invocation parameters which may have to
@@ -434,7 +434,7 @@ Enable ^G skipping of C++-style comments // ...
 <br>
 
 * crlf
-Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
+JOE uses CR-LF as the end of line sequence instead of just LF.  This is for
 editing MS-DOS or VMS files.
 <br>
 
@@ -787,22 +787,22 @@ bytes 508 and 509 of the first floppy drive in Linux.
 * <blank>
 
 Use this to get input from the standard input or to write output to the
-standard output.  For example, you can put joe in a pipe of commands:
+standard output.  For example, you can put JOE in a pipe of commands:
 __quota -v | joe | mail root__, if you want to complain about your low
 quota.
 
 ### Using JOE in a shell script
 
-Joe used to use /dev/tty to access the terminal.  This caused a problem with
-idle-session killers (they would kill joe because the real tty device was
-not being accessed for a long time), so now joe only uses /dev/tty if you
-need to pipe a file into joe, as in:
+JOE used to use /dev/tty to access the terminal.  This caused a problem with
+idle-session killers (they would kill JOE because the real tty device was
+not being accessed for a long time), so now JOE only uses /dev/tty if you
+need to pipe a file into JOE, as in:
 
 	echo "hi" | joe
 
-If you want to use joe in a shell script which has its stdin/stdout
+If you want to use JOE in a shell script which has its stdin/stdout
 redirected, but you do not need to pipe to it', you should simply redirect
-joe's stdin/stdout to /dev/tty:
+JOE's stdin/stdout to /dev/tty:
 
 	joe filename  </dev/tty >/dev/tty
 
@@ -939,10 +939,10 @@ You can hit ESC ' x to enter a Unicode character if the file coding is UTF-8.
 
 ## Prompts
 
-If you hit __TAB__ at any file name prompt, joe will attempt to complete
+If you hit __TAB__ at any file name prompt, JOE will attempt to complete
 the name you entered as much as possible.  If it couldn't complete the
-entire name, because there are more than one possible completions, joe
-beeps.  If you hit __TAB__ again, joe list the completions.  You can use
+entire name, because there are more than one possible completions, JOE
+beeps.  If you hit __TAB__ again, JOE lists the completions.  You can use
 the arrow keys to move around this directory menu and press RETURN or SPACE
 to select an item.  If you press the first letter of one of the directory
 entries, it will be selected, or if more than one entry has the same first
@@ -1106,7 +1106,7 @@ __\^test\$__, then JOE with find __test__ on a line by itself.
 * __\< \\\>__
 
 These match the beginning and end of a word.  For example, if you give
-__\<\\\*is\\\*\\\>__, then joe will find whole words which have the
+__\<\\\*is\\\*\\\>__, then JOE will find whole words which have the
 sub-string __is__ within them.
 
 * __\\\[...]__
@@ -1148,7 +1148,7 @@ string:
 
 This gets replaced by the text which matched the search string.  For
 example, if the search string was __\<\\\*\\\>__, which matches words, and
-you give __"&"__, then joe will put quote marks around words.
+you give __"&"__, then JOE will put quote marks around words.
 
 * __\0 - \9__
 
@@ -1225,9 +1225,9 @@ it to where the cursor is positioned.  __^K Y__ to deletes the highlighted
 text.  __^K W__, writes the highlighted text to a file.  
 
 A very useful command is __^K /__, which filters a block of text through a
-unix command.  For example, if you select a list of words with __^K B__
+UNIX command.  For example, if you select a list of words with __^K B__
 and __^K K__, and then type __^K / sort__, the list of words will be
-sorted.  Another useful unix command for __^K /__, is __tr__.  If you
+sorted.  Another useful UNIX command for __^K /__, is __tr__.  If you
 type __^K / tr a-z A-Z__, then all of the letters in the highlighted block
 will be converted to uppercase.
 
@@ -1714,7 +1714,7 @@ have these commands so far:
 Command       | Action
 --------------|--------
 clear         | erase shell window (delete buffer contents)
-joe file      | edit a file in joe
+joe file      | edit a file in JOE
 math 1+2      | evaluate equation using JOE's calculator
 cd xyz        | change directory, keep JOE up to date
 markb         | same as ^KB
@@ -2335,7 +2335,7 @@ and turn on marking mode.  Otherwise set markb to cursor and turn on marking
 mode.</td></tr>
 <tr valign="top"><td>select</td><td>Set markb.  If it was already set, do
 nothing.</td></tr>
-<tr valign="top"><td>filt</td><td>Filter block or file through a unix command</td></tr>
+<tr valign="top"><td>filt</td><td>Filter block or file through a UNIX command</td></tr>
 <tr valign="top"><td>markb</td><td>Set beginning of block mark</td></tr>
 <tr valign="top"><td>markk</td><td>Set end of block mark</td></tr>
 <tr valign="top"><td>markl</td><td>Mark current line</td></tr>
@@ -2475,7 +2475,7 @@ changed.</td></tr>
 <tr valign="top"><td>querysave</td><td>Prompt to save each modified buffer
 		Use in a macro: "querysave,query,killjoe"</td></tr>
 
-<tr valign="top"><td>killjoe</td><td>Exit joe immediately without checking for modified
+<tr valign="top"><td>killjoe</td><td>Exit JOE immediately without checking for modified
 buffers</td></tr>
 </tbody>
 </table>
@@ -2618,7 +2618,7 @@ known</td></tr>
 <tbody>
 <tr valign="top"><td>beep</td><td>Beep</td></tr>
 
-<tr valign="top"><td>execmd</td><td>Execute a joe command</td></tr>
+<tr valign="top"><td>execmd</td><td>Execute a JOE command</td></tr>
 
 <tr valign="top"><td>debug_joe</td><td>Insert debug information into buffer</td></tr>
 
