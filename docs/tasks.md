@@ -162,7 +162,7 @@ Page Down to scroll it (even if you have not jumped into it).
 
 TAB completion works in the search and replace prompts as well.  In this
 case, JOE tries to complete the word based on the contents of the buffer. 
-If you need search for the TAB character itself, you can enter it with `
+If you need search for the TAB character itself, you can enter it with ESC '
 TAB
 
 Also, you can hit ESC &lt;Enter&gt; in a text window to request JOE to
@@ -365,7 +365,7 @@ it:
 
 Also, you can use ESC space ('jump' command) to parse the line the cursor is
 on and jump to the parsed filename and line number.  'jump' uses the
-grep/find parser unless 'parserr' had been previously issues in the buffer.
+grep/find parser unless 'parserr' had been previously issued in the buffer.
 
 ### Grep-find
 
