@@ -71,7 +71,7 @@ trouble with some control keys.  __^___, __^^__ and __^@__ can usually
 be entered without pressing shift (I.E., try __^-__, __^6__ and
 __^2__).  Other keyboards may reassign these to other keys.  Try:
 __^.__, __^,__ and __^/__.  __^SPACE__ can usually be used in place
-of __^@__.  __^\__ and __^]__ are interpreted by many communication
+of __^@__.  __^\\__ and __^\]__ are interpreted by many communication
 programs, including telnet and kermit.  Usually you just hit the key twice
 to get it to pass through the communication program.
 
