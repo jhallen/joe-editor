@@ -2,7 +2,7 @@
 
 * JOE now has pop-up shell windows with full terminal emulation and shell commands
   that can control the editor.  Hit F1 - F4 to bring up a shell window.
-  See [Pop-up shell feature](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/tasks.md#popup) for a full description.
+  See [Pop-up shell feature](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#popup) for a full description.
 
 * The status command (^K SPACE) can now be customized using the same syntax
   as the status bar.  Look for smsg and zmsg in joerc to see how to do this.
