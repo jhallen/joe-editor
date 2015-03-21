@@ -286,8 +286,7 @@ depending on the file-name extension.  Programs (.c, .h or .p extension)
 usually have autoindent enabled.  Wordwrap is enabled on other files, but rc
 files have it disabled.
 
-## Editing Tasks
-### Basic Editing
+## Basic Editing
 
 When you type characters into the editor, they are normally inserted into
 the file being edited (or appended to the file if the cursor is at the end
@@ -345,7 +344,7 @@ both the __Shift__ and __Control__ keys down at the same time to get it.
 If you "undo" too much, you can "redo" the changes back into existence by
 hitting __^^__ (type this with just __^6__ on most keyboards).
 
-### Cursor position history
+## Cursor position history
 
 If you were editing in one place within the file, and you then temporarily 
 had to look or edit some other place within the file, you can get back to 
@@ -354,7 +353,7 @@ to the last place you made a change in the file.  You can step through a
 history of places with __^K -__ and __^K =__, in the same way you can 
 step through the history of changes with the "undo" and "redo" commands.
 
-### Save and exit
+## Save and exit
 
 When you are done editing the file, hit __^K X__ to exit the editor.  You
 will be prompted for a file name if you hadn't already named the file you
@@ -369,7 +368,7 @@ If you edit a file and save the changes, a "backup" copy of that file is
 created in the current directory, with a ~ appended to the name, which 
 contains the original version of the file.
 
-### Word wrap and formatting
+## Word wrap and formatting
 
 If you type past the right edge of the screen in a C language or PASCAL 
 file, the screen will scroll to the right to follow the cursor.  If you type 
@@ -395,7 +394,7 @@ the cursor will immediately jump to the left margin.
 If you want to center a line within the margins, use the __^K A__
 command.
 
-### Over-type mode
+## Over-type mode
 
 Sometimes it's tiresome to have to delete old text before or after you 
 insert new text.  This happens, for example, when you are changing a table 
@@ -411,7 +410,7 @@ insert-mode as soon as possible by typing __^T T__ again.
 If you need to insert while you're in over-type mode, hit __^@__.  This
 inserts a single SPACE into the text.
 
-### Control and Meta characters
+## Control and Meta characters
 
 Each character is represented by a number.  For example, the number for 'A'
 is 65 and the number for '1' is 49.  All of the characters which you
@@ -435,7 +434,7 @@ than English, use the meta characters for the rest of their alphabet.  You
 have to put the editor in __ASIS__ mode (described later) to have these
 passed untranslated to the terminal.
 
-### Prompts
+## Prompts
 
 If you hit __TAB__ at any file name prompt, joe will attempt to complete
 the name you entered as much as possible.  If it couldn't complete the
@@ -461,7 +460,7 @@ F__ command if you want.
 Since prompts are windows, you can also switch out of them with __^K P__
 and __^K N__.
 
-### Completion and selection menus
+## Completion and selection menus
 
 You can hit TAB in just about any prompt to request JOE to complete the
 word you are typing.  If JOE beeps, there are either no completions or many. 
@@ -488,7 +487,7 @@ complete the word based on the contents of the buffer.  It will bring up a
 menu of possibilities if you hit ESC &lt;Enter&gt; twice.
 
 
-### Where am I?
+## Where am I?
 
 
 Hit __^K SPACE__ to have JOE report the line number, column number, and
@@ -498,12 +497,12 @@ line number and/or column number always displayed on the status line by
 setting placing the appropriate escape sequences in the status line setup
 strings.  Edit the joerc file for details.
 
-### What if I hit ^K by accident?
+## What if I hit ^K by accident?
 
 Hit the space bar.  This runs an innocuous command (it shows the line
 number on the status bar).
 
-### File operations
+## File operations
 
 
 You can hit __^K D__ to save the current file (possibly under a different
@@ -516,7 +515,7 @@ If you want to save only a selected section of the file, see the section on
 If you want to include another file in the file you're editing, use __^K
 R__ to insert it.
 
-### Temporarily suspending the editor
+## Temporarily suspending the editor
 
 
 If you need to temporarily stop the editor and go back to the shell, hit 
@@ -525,7 +524,7 @@ answer an e-mail message or read this man page, for example.  You have to
 type __fg__ or __exit__ (you'll be told which when you hit __^K Z__) 
 to return to the editor.  
 
-### Searching for text
+## Searching for text
 
 
 Hit __^K F__ to have the editor search forwards or backwards for a text 
@@ -566,7 +565,7 @@ You can hit __^L__ to repeat the previous search.
 You can hit ^K H at the search and replace options prompt
 to bring up a list of all search and replace options.
 
-### Multi-file search and replace
+## Multi-file search and replace
 
 There are two new search and replace options:
 
@@ -595,7 +594,7 @@ list.
 </li>
 </ul>
 
-### Regular Expressions
+## Regular Expressions
 
 A number of special character sequences may be entered as search
 text:
@@ -701,7 +700,7 @@ search would begin, and the sample line would be changed to:
 
 Address: England, London, S. Holmes, 221b Baker St.
 
-### Goto matching delimiter
+## Goto matching delimiter
 
 Hit Ctrl-G to jump between matching delimiters.  This works on both
 character delimiters (like '(' and ')') and word delimiters for languages
@@ -724,7 +723,7 @@ this: see the __ftyperc__ file for examples of how this is done.
 
 <a name="blocks"></a>
 
-### Blocks
+## Blocks
 
 If you want to move, copy, save or delete a specific section of text, you 
 can do it with highlighted blocks.  First, move the cursor to the start of 
@@ -786,7 +785,7 @@ will be moved by subsequent __^K ,__ and __^K .__ commands.  The number
 of columns these commands shift by can be set through a __^T__
 option.
 
-### Windows
+## Windows
 
 You can edit more than one file at the same time or edit two or more
 different places of the same file.  To do this, hit __^K O__, to split the
@@ -810,7 +809,7 @@ will be placed in a different window.
 You can change the height of the windows with the __^K G__ and __^K T__
 commands.
 
-### Keyboard macros 
+## Keyboard macros 
 
 
 Macros allow you to record a series of keystrokes and replay them with the 
@@ -938,7 +937,7 @@ to prevent the ^KB ^KK positions from being restored too early.
 
 
 
-### Rectangle mode
+## Rectangle mode
 
 Type __^T X__ to have __^K B__ and __^K K__ select rectangular blocks
 instead of stream-of-text blocks.  This mode is useful for moving, copying,
@@ -954,7 +953,7 @@ instead of deleting it.  Over-type mode is especially useful for the filter
 block command (__^K /__), since it will maintain the original width of the
 selected column.
 
-### Tags search
+## Tags search
 
 If you are editing a large C program with many source files, you can use the 
 __ctags__ program to generate a __tags__ file.  This file contains a 
@@ -1036,7 +1035,7 @@ Since __^K ;__ loads  the definition file into the current window, you
 probably want to split the window first with __^K O__, to have both the
 original file and the definition file loaded.
 
-### Shell windows
+## Shell windows
 
 Hit __^K '__ to run a command shell in one of JOE's windows.  When the
 cursor is at the end of a shell window (use __^K V__ if it's not),
@@ -1206,7 +1205,7 @@ edit buffer.
 TIOCSSIZE or TIOCSWINSZ ioctl.  This way, the program running in the
 shell knows the window size.
 
-### Compiler and grep/find parsers
+## Compiler and grep/find parsers
 
 JOE has two parsers which can be used to generate the error list (list of
 file names / line numbers).
@@ -1245,7 +1244,7 @@ Also, you can use ESC space ('jump' command) to parse the line the cursor is
 on and jump to the parsed filename and line number.  'jump' uses the
 grep/find parser unless 'parserr' had been previously issued in the buffer.
 
-### Grep-find
+## Grep-find
 
 Hit ESC g to bring up the prompt.  Enter a command which results in file
 names with line numbers, for example: 'grep -n fred *.c'.  This will list all
@@ -1255,7 +1254,7 @@ numbers.
 Now you can hit ESC space on one of the lines to jump to the selected
 file.  Also, you can use ESC = and ESC - to step through each line.
 
-### Compile
+## Compile
 
 Hit ESC c to save all modified files and then bring up the compile prompt. 
 Enter the command you want to use for the compiler (typically "make").  The
@@ -1353,7 +1352,7 @@ __$HOME/.joerc__, you can customize these setting to your liking.  The
 syntax of the initialization file should be fairly obvious and there are
 further instruction in it.
 
-### Xterm Mouse support
+## Xterm Mouse support
 
 There are two levels of mouse support.  The -mouse option enables the
 first level, which will work with any stock Xterm.  If -joexterm is also
@@ -1406,7 +1405,7 @@ pasting text containing ` or with auto-indent.
 encoded selection data to and from the Xterm.  The program has full control
 over what is in the selection data and when it is received or sent.
 
-### Color Xterm support
+## Color Xterm support
 
 JOE can make use of monochrome Xterm, 8-color Xterm, 16-color Xterm,
 88-color Xterm and 256-color Xterm.  The number of colors which Xterm
@@ -1430,7 +1429,7 @@ versions of JOE below 3.4.
 When it is working, the command: "joe -assume_256color -text_color bg_222"
 should have a gray background.
 
-### UTF-8
+## UTF-8
 
 JOE handles two classes of character sets: UTF-8 and byte coded (like
 ISO-8859-1).  It can not yet handle other major classes such as UTF-16 or
@@ -1477,7 +1476,7 @@ You can hit ^K &lt;space&gt; to see the current character set.
 
 You can hit ESC ' x to enter a Unicode character if the file coding is UTF-8.
 
-### Hex edit mode
+## Hex edit mode
 
 When this mode is selected (either put -hex on the command line, or look for
 "Hex edit mode" after hitting ^T), the buffer is displayed as a hex dump,
@@ -1496,7 +1495,7 @@ will not insert.
 
 - Search, incremental search, and search &amp; replace all operate as usual.
 
-### Using JOE in a shell script
+## Using JOE in a shell script
 
 Joe used to use /dev/tty to access the terminal.  This caused a problem with
 idle-session killers (they would kill joe because the real tty device was
