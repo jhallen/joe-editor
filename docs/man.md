@@ -14,8 +14,9 @@ __rjoe [global-options] [ [local-options] filename ]...__
 <br>
 __jpico [global-options] [ [local-options] filename ]...__
 
-<a name="Description"/>
+<a name="Description"></a>
 ## Description
+
 
 JOE is a powerful console screen editor.  It has a "mode-less" user
 interface which is similar to many user-friendly PC editors.  Users of
