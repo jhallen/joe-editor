@@ -96,7 +96,10 @@ should.  See the section [Environment variables](#evariables) below.
 
 ## Command Line Options
 
-These options can also be set in the joerc file.
+These options can also be specified in the joerc file.  Local options can be
+set depending on the file-name extension.  Programs (.c, .h or .p extension)
+usually have autoindent enabled.  Wordwrap is enabled on other files, but rc
+files have it disabled.
 
 An option is enabled when it's given like this:
 
@@ -252,10 +255,6 @@ termcap entry is wrong).  This is only useful on old system which don't have
 the "get window size" ioctl.
 <br>
 
-* lmsg
-Define left-side status bar message.
-<br>
-
 * marking
 Enable marking mode: highlights between ^KB and
 cursor.
@@ -348,18 +347,9 @@ Set number of lines to keep during Page Up and Page Down
 (use -1 for 1/2 window size).
 <br>
 
-* picture
-Enable "picture" mode- allows cursor to go past ends
-of lines.
-<br>
-
 * restore
 Set to have cursor position restore to last position
 of previouly edited files.
-<br>
-
-* rmsg
-Define right-side status bar message.
 <br>
 
 * rtbutton
@@ -377,16 +367,8 @@ contents.  This is useful for programs which call JOE to leave a message for
 the user.
 <br>
 
-* smsg
-Define status command format when cursor is on a character.
-<br>
-
 * square
 Enable rectangular block mode.
-<br>
-
-* syntax
-Set syntax for syntax highlighting.
 <br>
 
 * transpose
@@ -406,11 +388,6 @@ tabs.
 * wrap
 Enable search to wrap to beginning of file.
 <br>
-
-* zmsg
-Define status command format when cursor is at end of file.
-<br>
-
 
 The following local options may be specified on the command line:
 
@@ -504,8 +481,17 @@ Enable line number display.
 Set left margin.
 <br>
 
+* lmsg
+Define left-side status bar message.
+<br>
+
 * overwrite
 Enable overtype mode.  Typing overwrites existing characters instead of inserting before them.
+<br>
+
+* picture
+Enable "picture" mode- allows cursor to go past ends
+of lines.
 <br>
 
 * pound_comment
@@ -525,6 +511,10 @@ Set read-only mode.
 Set right margin.
 <br>
 
+* rmsg
+Define right-side status bar message.
+<br>
+
 * semi_comment
 ^G ignores ; ... comments.
 <br>
@@ -542,8 +532,16 @@ Enable smart home (home key jumps to indentation
 point on first or second press).
 <br>
 
+* smsg
+Define status command format when cursor is on a character.
+<br>
+
 * spaces
 Insert spaces when tab key is hit.
+<br>
+
+* syntax
+Set syntax for syntax highlighting.
 <br>
 
 * tab
@@ -563,10 +561,9 @@ step through.
 JOE wraps the previous word when you type past the right margin.
 <br>
 
-These options can also be specified in the joerc file.  They can be set
-depending on the file-name extension.  Programs (.c, .h or .p extension)
-usually have autoindent enabled.  Wordwrap is enabled on other files, but rc
-files have it disabled.
+* zmsg
+Define status command format when cursor is at end of file.
+<br>
 
 ### Mode command
 
