@@ -417,7 +417,7 @@ character set).  The numbers outside of this range, from 0 to 255, aren't
 usually displayed, but sometimes have other special meanings.  The number
 10, for example, is used for the line-breaks.  You can enter these special,
 non-displayed __control characters__ by first hitting __^\[ '__ and then
-hitting a character in the range __@ A B C ... X Y Z [ ^ ] \ ___ to get
+hitting a character in the range __@ A B C ... X Y Z [ ^ ] \\ \___ to get
 the number 0 - 31, and ? to get 127.  For example, if you hit __^\[ ' J__,
 you'll insert a line-break character, or if you hit __^\[ ' I__, you'll insert
 a TAB character (which does the same thing the TAB key does).  A useful
@@ -534,13 +534,13 @@ text:
 
 * __\\\*__
 
-This finds zero or more characters.  For example, if you give __A\*B__ as
+This finds zero or more characters.  For example, if you give __A\\\*B__ as
 the search text, JOE will try to find an A followed by any number of characters
 and then a B.
 
 * __\?__
 
-This finds exactly one character.  For example, if you give __A\?B__ as
+This finds exactly one character.  For example, if you give __A\\\?B__ as
 the search text, JOE will find AXB, but not AB or AXXB.
 
 * __\^ \$__
@@ -548,10 +548,10 @@ the search text, JOE will find AXB, but not AB or AXXB.
 These match the beginning and end of a line.  For example, if you give
 __\^test\$__, then JOE with find __test__ on a line by itself.
 
-* __\< \\\>__
+* __\\\< \\\>__
 
 These match the beginning and end of a word.  For example, if you give
-__\<\*is\*>__, then joe will find whole words which have the
+__\\\<\\\*is\\\*\\\>__, then joe will find whole words which have the
 sub-string __is__ within them.
 
 * __\\\[...]__
@@ -734,14 +734,14 @@ macros from within new macros.
 
 ### Repeat
 
-You can use the repeat command, __^K \__, to repeat a macro, or any other
+You can use the repeat command, __^K \\__, to repeat a macro, or any other
 edit command or even a normal character, a specified number of times.  Hit
-__^K \__, type in the number of times you want the command repeated and
+__^K \\__, type in the number of times you want the command repeated and
 press __Return__.  The next edit command you now give will be repeated
 that many times.
 For example, to delete the next 20 lines of text, type:
 
-__^K \ 20__<return>__^Y__
+__^K \\ 20__<return>__^Y__
 
 ### Rectangle mode
 
