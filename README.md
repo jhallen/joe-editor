@@ -1,6 +1,6 @@
 # Joe's Own Editor
 
-[Editing Tasks](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/tasks.md) 
+[User manual](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md) 
 
 [Release Notes](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/NEWS.md)
 
@@ -9,8 +9,6 @@
 [List of Options](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md)
 
 [Hacking](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/hacking.md)
-
-[Man page](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md)
 
 [Project page](http://www.sourceforge.net/projects/joe-editor)
 

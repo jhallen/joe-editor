@@ -131,7 +131,7 @@ Many options can be controlled with the __^T__ menu.  This menu is defined
 in the joerc file.  Each option in the __^T__ menu just executes a macro.  Usually
 the macro is the mode command.  You can execute the mode command directly with:
 
-	ESC x mode <enter\>
+	ESC x mode <enter>
 
 Hit tab for a completion list of all options.
 
@@ -714,6 +714,8 @@ current buffer.
 
 Execute a macro directly at the command prompt.  Hit __ESC x__.  Hit tab
 at this prompt for a completion list of all available commands.
+
+Here is a [complete list of commands](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/list.md).
 
 #### Define your own
 
