@@ -947,9 +947,10 @@ The search covers all loaded buffers.  So to replace all instances of "foo"
 with "bar" in all .c files in the current directory:
 
 	joe *.c
-	   ^K F foo &lt;Enter&gt;
-	   ra &lt;Enter&gt;
-	   bar &lt;Enter&gt;
+	   ^K F
+	       foo <Enter>
+	       ra <Enter>
+	       bar <Enter>
 
 * __e__
 
@@ -961,10 +962,11 @@ the file list.
 
 
 	ESC g
-	grep -n foo f*.c &lt;Enter&gt;
-	^K F foo &lt;Enter&gt;
-	re &lt;Enter&gt;
-	bar &lt;Enter&gt;
+	  grep -n foo f*.c &lt;Enter&gt;
+	^K F
+           foo <Enter>
+	   re <Enter>
+	   bar <Enter>
 
 You can hit __^L__ to repeat the previous search.
 
