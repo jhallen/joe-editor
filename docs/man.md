@@ -746,6 +746,71 @@ If you edit a file and save the changes, a "backup" copy of that file is
 created in the current directory, with a ~ appended to the name, which 
 contains the original version of the file.
 
+## File operations
+
+
+You can hit __^K D__ to save the current file (possibly under a different
+name from what the file was called originally).  After the file is saved,
+you can hit __^K E__ to edit a different file.
+
+If you want to save only a selected section of the file, see the section on
+[Blocks](#blocks) below.
+
+If you want to include another file in the file you're editing, use __^K
+R__ to insert it.
+
+<a name="filenames"></a>
+## Filenames
+
+Wherever JOE expects you to enter a file name, whether on the command line
+or in prompts within the editor, you may also type:
+
+* !command
+
+Read or write data to or from a shell command.  For example,
+use __joe '!ls'__ to get a copy of your directory listing to edit or from
+within the editor use __^K D !mail jhallen@world.std.com__ to send the
+file being edited to me.
+
+* &gt;&gt;filename
+
+Use this to have JOE append the edited text to the end of the file 
+"filename."
+
+* filename,START,SIZE
+
+Use this to access a fixed section of a file or device.  __START__ and
+__SIZE__ may be entered in decimal (ex.: 123) octal (ex.: 0777) or
+hexadecimal (ex.: 0xFF).  For example, use __joe /dev/fd0,508,2__ to edit
+bytes 508 and 509 of the first floppy drive in Linux.
+
+* <blank>
+
+Use this to get input from the standard input or to write output to the
+standard output.  For example, you can put joe in a pipe of commands:
+__quota -v | joe | mail root__, if you want to complain about your low
+quota.
+
+### Using JOE in a shell script
+
+Joe used to use /dev/tty to access the terminal.  This caused a problem with
+idle-session killers (they would kill joe because the real tty device was
+not being accessed for a long time), so now joe only uses /dev/tty if you
+need to pipe a file into joe, as in:
+
+	echo "hi" | joe
+
+If you want to use joe in a shell script which has its stdin/stdout
+redirected, but you do not need to pipe to it', you should simply redirect
+joe's stdin/stdout to /dev/tty:
+
+	joe filename  </dev/tty >/dev/tty
+
+
+<br><br>
+<a name="joerc"></a>
+
+
 ## Word wrap and formatting
 
 If you type past the right edge of the screen in a C language or PASCAL 
@@ -882,19 +947,6 @@ strings.  Edit the joerc file for details.
 
 Hit the space bar.  This runs an innocuous command (it shows the line
 number on the status bar).
-
-## File operations
-
-
-You can hit __^K D__ to save the current file (possibly under a different
-name from what the file was called originally).  After the file is saved,
-you can hit __^K E__ to edit a different file.
-
-If you want to save only a selected section of the file, see the section on
-[Blocks](#blocks) below.
-
-If you want to include another file in the file you're editing, use __^K
-R__ to insert it.
 
 ## Temporarily suspending the editor
 
@@ -1910,56 +1962,6 @@ Gives terminal type, like "vt100" or "xterm".
 Used to get user name for EMACS compatible file locks.
 <br>
 
-<a name="filenames"></a>
-## Filenames
-
-Wherever JOE expects you to enter a file name, whether on the command line
-or in prompts within the editor, you may also type:
-
-* !command
-
-Read or write data to or from a shell command.  For example,
-use __joe '!ls'__ to get a copy of your directory listing to edit or from
-within the editor use __^K D !mail jhallen@world.std.com__ to send the
-file being edited to me.
-
-* &gt;&gt;filename
-
-Use this to have JOE append the edited text to the end of the file 
-"filename."
-
-* filename,START,SIZE
-
-Use this to access a fixed section of a file or device.  __START__ and
-__SIZE__ may be entered in decimal (ex.: 123) octal (ex.: 0777) or
-hexadecimal (ex.: 0xFF).  For example, use __joe /dev/fd0,508,2__ to edit
-bytes 508 and 509 of the first floppy drive in Linux.
-
-* <blank>
-
-Use this to get input from the standard input or to write output to the
-standard output.  For example, you can put joe in a pipe of commands:
-__quota -v | joe | mail root__, if you want to complain about your low
-quota.
-
-### Using JOE in a shell script
-
-Joe used to use /dev/tty to access the terminal.  This caused a problem with
-idle-session killers (they would kill joe because the real tty device was
-not being accessed for a long time), so now joe only uses /dev/tty if you
-need to pipe a file into joe, as in:
-
-	echo "hi" | joe
-
-If you want to use joe in a shell script which has its stdin/stdout
-redirected, but you do not need to pipe to it', you should simply redirect
-joe's stdin/stdout to /dev/tty:
-
-	joe filename  </dev/tty >/dev/tty
-
-
-<br><br>
-<a name="joerc"></a>
 ## The joerc file
 
 ^T options, the help screens and the key-sequence to editor command
