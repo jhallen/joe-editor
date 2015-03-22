@@ -43,6 +43,9 @@
 
 ### JOE 3.8
 
+- Search JOE image for :include files referenced by the joerc file.
+  Include ftyperc file in the JOE image.
+
 - Change default indent from 2 to 4.  Add quick menu to change to common
   indent values: ^T = (1, 2, 4, or 8).  Switch to + and - for definitively
   setting or clearing options so that 0 and 1 can be use for quick select.
