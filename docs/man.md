@@ -1205,6 +1205,28 @@ search would begin, and the sample line would be changed to:
 
 Address: England, London, S. Holmes, 221b Baker St.
 
+## Incremental search
+
+Use __ESC S__ to start an increment search forwards, or __ESC R__ to start
+an incremental search backwards.  As you type the search string, the cursor
+will jump to the first text that matches the regular expression you have
+entered so far.
+
+Hit __ESC S__ or __ESC R__ again to find the next occurance of the text or
+to switch the direction of the search.
+
+__^S__, __^\\__ and __^L__ have the same effect as __ESC S__. __^R__ has the same
+effect as __ESC R__.  These keys are to support JMACS.
+
+Hit __Backspace__ to undo the last incremental search action.  The last
+action could be a repeat of a previous search or the entering of a new
+character.
+
+Use __^Q__ to insert control characters into the search text.  Previously,
+\` could also be used for this.
+
+Hit any other key to exit the increment search. 
+
 ## Goto matching delimiter
 
 Hit __^G__ to jump between matching delimiters.  This works on both
@@ -2001,21 +2023,21 @@ Each syntax is defined by a file located /usr/share/joe/syntax/.
 *from [c.jsf](http://joe-editor.hg.sourceforge.net/hgweb/joe-editor/joe-editor/file/tip/syntax/c.jsf.in),
 slightly modified*
 
-A (deterministic) state machine which performs lexical analysis of C.
-(This is the "assembly language" of syntax highlighting.  A separate
-program could be used to convert a regular expression NFA syntax into this
-format).
+A deterministic state machine that performs lexical analysis of the target
+language is provided in a syntax file.  (This is the "assembly language" of
+syntax highlighting.  A separate program could in principal be used to
+convert a regular expression NFA syntax into this format).
 
 Each state begins with:
 
     :<name> <color-name> <context>
 
-\<name\> is the state's name.
+<name\> is the state's name.
 
-\<color-name\> is the color used for characters eaten by the state
+<color-name\> is the color used for characters eaten by the state
 (really a symbol for a user definable color).
 
-\<context\> tells JOE if the current character is part of a comment or a
+<context\> tells JOE if the current character is part of a comment or a
 string.  This allows JOE to skip over comments and strings when matching
 characters such as parentheses.  To use this feature, the
 highlighter_context option must be applied to the files highlighted by the
@@ -2024,7 +2046,7 @@ entries.
 
 The valid contexts are:
 
-  * comment  This character is part of a comment.  Example:  /* comment */
+  * comment  This character is part of a comment.  Example:  /\* comment \*/
 
   * string   This character is part of a string.  Examples: "string" 'c' 'string'
 
@@ -2040,12 +2062,13 @@ jump has the form:
 
         <character-list> <target-state-name> [<option>s]
 
-There are three ways to specify \<character-list\>s, either * for any
-character not otherwise specified, & to match the character in the
-delimiter match buffer or a literal list of characters within quotes
-(ranges and escape sequences allowed).  When the next character matches
-any in the list, a jump to the target-state is taken and the character is
-eaten (we advance to the next character of the file to be colored).
+There are three ways to specify <character-list\>s, either __\*__ for any
+character not otherwise specified, __&__ to match the character in the
+delimiter match buffer (opposite character like \( and \) automatically
+match) or a literal list of characters within quotes (ranges and escape
+sequences allowed).  When the next character matches any in the list, a jump
+to the target-state is taken and the character is eaten (we advance to the
+next character of the file to be colored).
 
 The * transition should be the first transition specified in the state.
 
@@ -2056,8 +2079,8 @@ There are several options:
                     can make infinite loops).  'noeat' implies 'recolor=-1'.
 
 * __recolor=-N__  - Recolor the past N characters with the color of the
-                    target-state.  For example once /* is recognized as the
-                    start of C comment, you want to color the /* with the C
+                    target-state.  For example once /\* is recognized as the
+                    start of C comment, you want to color the /\* with the C
                     comment color with recolor=-2.
 
 * __mark__        - Mark beginning of a region with current position.
@@ -2071,9 +2094,9 @@ There are several options:
                     must be on the same line as recolormark.
 
 * __buffer__      - Start copying characters to a string buffer, beginning with this
-                    one (it's ok to not terminate buffering with a matching
-                    'strings' option- the buffer is limited to leading 23
-                    characters).
+                    one (it's OK to not terminate buffering with a matching
+                    'strings', 'istrings' or 'hold' option- the buffer is limited
+                    to leading 23 characters).
 
 * __save_c__      - Save character in delimiter match buffer.
 
@@ -2113,7 +2136,7 @@ just to get a color specification.
 Delimiter match buffer is for perl and shell: a regex in perl can be s<..>(...)
 and in shell you can say: <<EOS ....... EOS.  The idea is that you capture
 the first delimiter into the match buffer (the &lt; or first "EOS") and then
-match it with "&" in a string or character list.
+match it to the second one with "&" in a string or character list.
 
 #### Subroutines
 
