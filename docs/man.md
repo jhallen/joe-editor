@@ -440,6 +440,10 @@ editing MS-DOS or VMS files.
 Set file encoding (like utf-8 or 8859-1).
 <br>
 
+* flowed
+Set to force an extra space after each line of a paragraph but the last.
+<br>
+
 * force
 When set, a final newline is appended to the file if
 there isn't one when the file is saved.
@@ -457,6 +461,10 @@ Enable hex-dump mode.
 * highlight
 Enable syntax highlighting.
 <br>
+
+* highlighter_context
+Enable use of syntax file to identify comments and strings which should be
+skipped over during __^G__ matching.
 
 * indentc nnn
 Sets the indentation character for shift left and shift right (__^K ,__ and
@@ -549,7 +557,9 @@ Set tab stop width.
 
 * text_delimiters __word delimiter list__
 Give list of word delimiters which __^G__ will step through.
-<br>
+
+For example, "begin=end:if=elif=else=endif" means that __^G__ will jump
+between the matching if, elif, else and endif.
 
 * vhdl_comment
 __^G__ ignores -- ... comments
@@ -806,8 +816,6 @@ JOE's stdin/stdout to /dev/tty:
 
 
 <br><br>
-<a name="joerc"></a>
-
 
 ## Word wrap and formatting
 
@@ -831,6 +839,27 @@ The margins which JOE uses for paragraph formatting and word-wrap can be set
 with the __^T L__ and __^T R__ commands.  If the left margin is set to
 a value other than 1, then when you start typing at the beginning of a line,
 the cursor will immediately jump to the left margin.
+
+There are a number of options which control the paragraph reformatter and
+word wrapper:
+
+* The __cpara__ option provides a list of characters which can indent a
+  paragraph.  For example, in e-mail quoted matter is indicated by __\>__ 
+  at the beginnings of line, so this character should be in the cpara list.
+
+* Autoindent mode effects the formatter.  If autoindent is disabled, only
+  the first line will be indented.  If autoindent is enabled, the entire
+  paragraph is indented.
+
+* __french__ determines how many spaces are inserted after periods.
+
+* When __flowed__ is enabled, a space is inserted after each line but the
+  last of paragraph.  This indicates that the lines belong together as a
+  single paragraph in some programs.
+
+* When __overtype__ is enabled, the word wrapper will not insert lines.
+
+## Centering
 
 If you want to center a line within the margins, use the __^K A__
 command.
@@ -2037,7 +2066,7 @@ directives.  For example:
 .else if also available.  .ifdefs can be nested.
 
 
-
+<a name="joerc"></a>
 ## The joerc file
 
 __^T__ options, the help screens and the key-sequence to editor command
@@ -2045,7 +2074,7 @@ bindings are all defined in JOE's initialization file.  If you make a copy
 of this file (which normally resides in __/etc/joe/joerc__) to
 __$HOME/.joerc__, you can customize these setting to your liking.  The
 syntax of the initialization file should be fairly obvious and there are
-further instruction in it.
+further instructions in it.
 
 ## Xterm Mouse support
 
