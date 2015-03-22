@@ -668,7 +668,7 @@ in the joerc file.  Each option in the __^T__ menu just executes a macro.
 Usually the macro is the mode command.  You can execute the mode command
 directly with:
 
-	ESC x mode <enter>
+	ESC X mode <enter>
 
 Hit tab for a completion list of all options.
 
@@ -866,9 +866,9 @@ command.
 
 ## Spell checker
 
-Hit __ESC n__ to check the spelling of the word the cursor is on using the
+Hit __ESC N__ to check the spelling of the word the cursor is on using the
 aspell program (or ispell program if you modify the joerc file).  Hit
-__ESC l__ to check the highlighted block or the entire file if no block is
+__ESC L__ to check the highlighted block or the entire file if no block is
 highlighted.
 
 JOE passes the language and character enoding to the spell checker.  To
@@ -1098,7 +1098,7 @@ begin with f.  You can also use "ls" and "find" instead of grep to create
 the file list.
 
 
-	ESC g
+	ESC G
 	  grep -n foo f*.c <Enter>
 	^K F
            foo <Enter>
@@ -1392,12 +1392,26 @@ of the commands fails (non-zero return value from the command).  Failed
 commands beep if you have beeps enabled (__^T B__).
 
 Hit __ESC D__ to insert the current set of keyboard macros as text into the
-current buffer.
+current buffer.  For example, the "\*\*" insert macro above looks like this:
+
+	home,"**",dnarw	^K 0	Macro 0
+
+You could insert this into your .joerc file and change the key sequene (the
+__K 0__) to something more permanent.
+
+Macros can also be named in the joerc file using this syntax:
+
+	:def foo eof,bol
+
+__foo__ will position the cursor at the beginning of the last line of the
+file.  Once a macro has been named this way it will show up in the
+completion list of the __ESC X__ command prompt.
 
 ### Command prompt
 
-Execute a macro directly at the command prompt.  Hit __ESC x__.  Hit tab
-at this prompt for a completion list of all available commands.
+You can execute a macro directly by typing it into the command prompt.  Hit
+__ESC X__ to bring up the command prompt.  Hit tab at this prompt for a
+completion list of all available commands.
 
 Here is a [complete list of commands](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/list.md).
 
@@ -1565,7 +1579,7 @@ original file and the definition file loaded.
 
 ## Calulator
 
-JOE has a built-in calculator which can be invoked with __ESC m__.
+JOE has a built-in calculator which can be invoked with __ESC M__.
 
 <p><b>Math functions:</b></p>
 
@@ -1640,7 +1654,7 @@ j1, y0, y1</p>
 <tr valign="top"><td>eval</td><td>Evaluate math expressions in block (or whole file
 		if no block set).</td></tr>
 
-<tr valign="top"><td>joe</td><td>..)	Execute a JOE macro (argument in same format
+<tr valign="top"><td>joe(...)</td><td>Execute a JOE macro (argument in same format
 		as joerc file macros).  Return value of
 		JOE macro is returned (for macro success,
 		return true (non-zero)).</td></tr>
@@ -1822,7 +1836,7 @@ Pop-up shell windows have a number of nice use cases:
 
 ### How it works..
 
-* There is a new mode "ansi".  (__ESC x__ mode ansi).  When this mode is
+* There is a new mode "ansi".  (__ESC X__ mode ansi).  When this mode is
 enabled, the screen updater hides escape sequences which are in the
 buffer.  Otherwise you get a big mess from the sequences surrounding
 colored output from 'ls'.
@@ -1873,29 +1887,29 @@ it:
 
 * Clear the list by using the "release" command.
 
-Also, you can use __ESC space__ ('jump' command) to parse the line the cursor is
+Also, you can use __ESC SPACE__ ('jump' command) to parse the line the cursor is
 on and jump to the parsed filename and line number.  'jump' uses the
 grep/find parser unless 'parserr' had been previously issued in the buffer.
 
 ## Grep-find
 
-Hit __ESC g__ to bring up the prompt.  Enter a command which results in file
+Hit __ESC G__ to bring up the prompt.  Enter a command which results in file
 names with line numbers, for example: 'grep -n fred *.c'.  This will list all
 instances of 'fred' in the *.c files.  You need the '-n' to get the line
 numbers.
 
-Now you can hit __ESC space__ on one of the lines to jump to the selected
+Now you can hit __ESC SPACE__ on one of the lines to jump to the selected
 file.  Also, you can use __ESC =__ and __ESC -__ to step through each line.
 
 ## Compile
 
-Hit __ESC c__ to save all modified files and then bring up the compile prompt. 
+Hit __ESC C__ to save all modified files and then bring up the compile prompt. 
 Enter the command you want to use for the compiler (typically "make").  The
 compiler will run in a shell window.  When it's complete, the results are
 parsed.
 
 If there are any errors or warnings from the compiler you can hit
-__ESC space__ on one of the lines to jump to the selected file.  Also,
+__ESC SPACE__ on one of the lines to jump to the selected file.  Also,
 you can use __ESC =__ and __ESC -__ to step through each line.
 
 ## Syntax highlighting
@@ -2168,7 +2182,7 @@ will not insert.
   the block will overwrite the destination data without changing the size of
   the file.  Otherwise it inserts.
 
-- Hit __ESC x byte &lt;Enter&gt;__, to jump to a particular byte offset.  Hex values
+- Hit __ESC X byte &lt;Enter&gt;__, to jump to a particular byte offset.  Hex values
   can be entered into this prompt like this: 0x2000.
 
 - Search, incremental search, and search &amp; replace all operate as usual.
@@ -2319,7 +2333,7 @@ Used to get user name for EMACS compatible file locks.
 <a name="list"></a>
 ## JOE commands grouped by function
 
-These commands can be entered at the __ESC x__ prompt.
+These commands can be entered at the __ESC X__ prompt.
 
 <p><b>Background programs</b></p>
 
@@ -2712,7 +2726,7 @@ used to define the status line for the rmsg and lmsg options) and is formatted b
 <p>When you hit __^[ q__, if the character under the cursor is an 'A': "it's a A"
 is inserted into the buffer, otherwise "it's not an A" is inserted.</p>
 
-<p>"if" creates a math prompt (like __ESC m__).  "then" is like "rtn"- it hits the
+<p>"if" creates a math prompt (like __ESC M__).  "then" is like "rtn"- it hits the
 return key for this prompt.</p>
 
 <p>Within the math prompt, the following variables are available:</p>
