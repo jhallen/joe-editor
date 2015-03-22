@@ -12,7 +12,7 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	utils.h va.h vfile.h vs.h w.h utf8.h syntax.h i18n.h charmap.h mouse.h \
 	lattr.h gettext.h builtin.h vt.h
 
-bin_PROGRAMS = joe termidx
+bin_PROGRAMS = joe termidx stringify
 INCLUDES = -DJOERC="\"$(sysconf_joedir)/\"" -DJOEDATA="\"$(data_joedir)/\""
 
 # joe_LDADD = -lm
@@ -25,6 +25,8 @@ joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c 
 	builtins.c vt.c
 
 termidx_SOURCES = termidx.c
+
+stringify_SOURCES = stringify.c
 
 distclean-local:
 	rm -f *~
