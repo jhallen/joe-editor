@@ -223,8 +223,10 @@ MS-DOS or UNIX.
 <br>
 
 * guess_indent
-When set, JOE tries to guess the indentation
-character and indentation step based on how a file is already indented.
+When set, JOE tries to guess the indentation character and indentation
+step based on the contents of the file.  The algorithm is to find the
+greatest common factor of the three most common indentations found in the
+file.
 <br>
 
 * guess_non_utf8
@@ -506,8 +508,10 @@ __^G__ ignores # ... comments.
 <br>
 
 * purify
-Clean up indentation when enabled (during shift-left and shift-right
-commands).
+Fix indentation if necessary before shifting or smart backspace.  For
+example, if indentation uses a mix of tabs and spaces, and indentc is
+space, then indentation will be converted to all spaces before the shifting
+operation.
 <br>
 
 * rdonly
@@ -531,12 +535,13 @@ __^G__ ignores '...'
 <br>
 
 * smartbacks
-Enable smart backspace (backspace unindents).
+Enable smart backspace and tab.  When this mode is set backspace and tab
+indent or unindent based on the values of the istep and indentc options.
 <br>
 
 * smarthome
-Enable smart home (home key jumps to indentation point on first or second
-press).
+Home key first moves cursor to beginning of line, then if hit again, to
+the first non-blank character.
 <br>
 
 * smsg __string__
@@ -1332,7 +1337,7 @@ sequence for these keys are known.
 
 ### Indenting program blocks
 
-Auto-indent mode toggled with the __^T I__ command.  The
+Auto-indent mode is toggled with the __^T I__ command.  The
 __joerc__ is normally set up so that files with names ending with .p, .c
 or .h have auto-indent mode enabled.  When auto-indent mode is enabled and
 you hit __Return__, the cursor will be placed in the same column that the
@@ -1341,9 +1346,43 @@ first non-SPACE/TAB character was in on the original line.
 You can use the __^K ,__ and __^K .__ commands to shift a block of text 
 to the left or right.  If no highlighting is set when you give these 
 commands, the program block the cursor is located in will be selected, and 
-will be moved by subsequent __^K ,__ and __^K .__ commands.  The number 
-of columns these commands shift by can be set through a __^T__
-option.
+will be moved by subsequent __^K ,__ and __^K .__ commands.
+
+The number of columns these commands shift by and the character used for
+shifting can be set through the istep and indentc options.  These options
+are available in the __^T__ menu.  Also, __^T =__ can be used to quickly
+select from a number of common values for indentation step and character.
+
+JOE has a bunch of additional options related to indenting programs:
+
+* smartbacks
+Enable smart backspace and tab.  When this mode is set backspace and tab
+indent or unindent based on the values of the istep and indentc options.
+<br>
+
+* smarthome
+Home key first moves cursor to beginning of line, then if hit again, to
+the first non-blank character.
+<br>
+
+* indentfirst
+Smart home goes to first non-blank character first, instead of going
+to the beginning of the line first.
+<br>
+
+* purify
+Fix indentation if necessary before shifting or smart backspace.  For
+example, if indentation uses a mix of tabs and spaces, and indentc is
+space, then indentation will be converted to all spaces before the shifting
+operation.
+<br>
+
+* guess_indent
+When set, JOE tries to guess the indentation character and indentation
+step based on the contents of the file.  The algorithm is to find the
+greatest common factor of the three most common indentations found in the
+file.
+<br>
 
 ### Rectangle mode
 
@@ -1360,6 +1399,23 @@ command (__^K Y__) will clear the selected rectangle with SPACEs and TABs
 instead of deleting it.  Over-type mode is especially useful for the filter
 block command (__^K /__), since it will maintain the original width of the
 selected column.
+
+### Picture mode
+
+Use __^T P__ to enter or exit picture mode.  Picture mode helps with ASCII
+drawings.
+
+Picture mode controls how JOE handles the case where the cursor is past the
+ends of lines.  This happens when you use the up or down arrow keys to move
+the cursor from the end of a long line to a short line.
+
+If you attempt to type a character in this case:
+
+If picture mode is off, the cursor will jump to the end of the line and
+insert it there.
+
+If picture mode is on, the line is filled with spaces so that the character
+can be inserted at the cursor position.
 
 ## Windows
 
