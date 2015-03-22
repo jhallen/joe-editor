@@ -37,6 +37,8 @@
   file.  This is important when JOE finds the tags file via the TAGS
   environment variable.
 
+* Remove ` as quote character from incremental search.
+
 ### JOE 3.8
 
 - Change default indent from 2 to 4.  Add quick menu to change to common
