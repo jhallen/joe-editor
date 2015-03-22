@@ -661,17 +661,6 @@ These formatting escape sequences may also be given:
 <br>
 
 
-### Mode command
-
-Many options can be controlled with the __^T__ menu.  This menu is defined
-in the joerc file.  Each option in the __^T__ menu just executes a macro. 
-Usually the macro is the mode command.  You can execute the mode command
-directly with:
-
-	ESC X mode <enter>
-
-Hit tab for a completion list of all options.
-
 ## Basic Editing
 
 When you type characters into the editor, they are normally inserted into
@@ -1362,7 +1351,7 @@ editor, but which are not in a window.  __^C__ normally closes a window and
 discards the buffer that was in it.  If you hit __^C__ on the last remaining
 window, it will normally exit the editor.  However, if there are orphan
 buffers, __^C__ will instead load them into this final window to give you
-chance to explicitly discard them.  If the __orphan__ options is given on
+chance to explicitly discard them.  If the __orphan__ option is given on
 the command line, as in __joe -orphan *.c__, then JOE only loads the first
 file into a window and leaves all the rest as orphans.
 
@@ -2186,6 +2175,30 @@ the following must be provided:
  Key binding tables can inherit bindings from already defined tables.  This
 allows you to group common key bindings into a single table which is
 inherited by the others.
+
+### Mode command
+
+Many options can be controlled with the __^T__ menu.  This menu is defined
+in the joerc file.  Each option in the __^T__ menu just executes a macro. 
+Usually the macro is the mode command.  You can execute the mode command
+directly with:
+
+	ESC X mode <enter>
+
+Hit tab for a completion list of all options.
+
+### Menu command
+
+This command calls up a named menu of macros which was defined in the
+__joerc__ file.
+
+	ESC X menu <enter>
+
+As usual, hit TAB at the prompt for a completion list of the menus which
+exist.
+
+__^T__ is bound to the simple macro __mode,"root",rtn__- it brings up the
+root of the options menu system.
 
 ## Xterm Mouse support
 
