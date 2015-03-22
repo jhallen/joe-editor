@@ -275,6 +275,10 @@ static int dobknd(BW *bw, int vt)
 
 int uvtbknd(BW *bw)
 {
+	if (kmap_empty(kmap_getcontext(USTR "vtshell"))) {
+		msgnw(bw->parent, joe_gettext(_(":vtshell keymap is missing")));
+		return -1;
+	}
 	return dobknd(bw, 1);
 }
 
@@ -282,6 +286,10 @@ int uvtbknd(BW *bw)
 
 int ubknd(BW *bw)
 {
+	if (kmap_empty(shell_kbd->topmap)) {
+		msgnw(bw->parent, joe_gettext(_(":shell keymap is missing")));
+		return -1;
+	}
 	return dobknd(bw, 0);
 }
 

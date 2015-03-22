@@ -2294,6 +2294,32 @@ __/etc/joe/ftyperc__).  __ftyperc__ has the file type table which determines
 which local options (including syntax for the highlighter) are applied to
 each file type.
 
+### Initialization file loading sequence
+
+If the path for an initialization file begins with '/' (you can specify this
+with the include directive), JOE only tries to load it from the absolute
+path.  Otherwise, JOE tries to load initialization files (the joerc file and
+any files included in it, typically ftyperc) from three places:
+
+* "$HOME/.joerc" - The user's personalized joerc file.
+
+* "/etc/joe/joerc" - The system's joerc file.
+The exact path is fixed during the build, and is determined by the
+--sysconfdir configure script option.
+
+* "*joerc" - Built-in file
+This means JOE searches for the file in a table of files linked in with the
+JOE binary (they are in the builtins.c file).  A built-in joerc file is
+provided so that the editor will run in cases where system's joerc is
+inaccessible.
+
+If the system's joerc file is newer than the user's joerc file, JOE will
+print a warning in the startup log.  Previous versions of JOE would prompt
+the user for this case- the idea was that JOE may be unusable with an out of
+date initialization file.
+
+### joerc file sections
+
 The __joerc__ file is broken up into a number of sections:
 
 * Global options
@@ -2325,7 +2351,7 @@ the following must be provided:
     * __shell__ Shell windows
     * __vtshell__ Terminal emulator shell windows
 
- Key binding tables can inherit bindings from already defined tables.  This
+Key binding tables can inherit bindings from already defined tables.  This
 allows you to group common key bindings into a single table which is
 inherited by the others.
 

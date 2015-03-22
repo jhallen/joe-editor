@@ -78,20 +78,56 @@ KMAP *ngetcontext(unsigned char *name)
 	return 0;
 }
 
+/* True if KMAP is empty */
+
+int kmap_empty(KMAP *k)
+{
+	int x;
+	for (x = 0; x != KEYS; ++x)
+		if  (k->keys[x].value.bind)
+			return 0;
+	return 1;
+}
+
 /* Validate joerc file */
 
 int validate_rc()
 {
-	KMAP *k = ngetcontext(USTR "main");
-	int x;
-	/* Make sure main exists */
-	if (!k)
+	KMAP *k;
+	if (!(k = ngetcontext(USTR "main")) || kmap_empty(k)) {
+		logerror_0(joe_gettext(_("Missing or empty :main keymap\n")));
 		return -1;
-	/* Make sure there is at least one key binding */
-	for (x = 0; x != KEYS; ++x)
-		if (k->keys[x].value.bind)
-			return 0;
-	return -1;
+	}
+
+	if (!(k = ngetcontext(USTR "prompt")) || kmap_empty(k)) {
+		logerror_0(joe_gettext(_("Missing or empty :prompt keymap\n")));
+		return -1;
+	}
+
+	if (!(k = ngetcontext(USTR "query")) || kmap_empty(k)) {
+		logerror_0(joe_gettext(_("Missing or empty :query keymap\n")));
+		return -1;
+	}
+
+	if (!(k = ngetcontext(USTR "querya")) || kmap_empty(k)) {
+		logerror_0(joe_gettext(_("Missing or empty :querya keymap\n")));
+		return -1;
+	}
+
+	if (!(k = ngetcontext(USTR "querysr")) || kmap_empty(k)) {
+		logerror_0(joe_gettext(_("Missing or empty :querysr keymap\n")));
+		return -1;
+	}
+
+	if (!(k = ngetcontext(USTR "shell")) || kmap_empty(k)) {
+		logerror_0(joe_gettext(_("Missing or empty :shell keymap\n")));
+	}
+
+	if (!(k = ngetcontext(USTR "vtshell")) || kmap_empty(k)) {
+		logerror_0(joe_gettext(_("Missing or empty :vtshell keymap\n")));
+	}
+
+	return 0;
 }
 
 unsigned char **get_keymap_list()
