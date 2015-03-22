@@ -2020,9 +2020,11 @@ sometimes have to make dummy states with
 just to get a color specification.
 
 Delimiter match buffer is for perl and shell: a regex in perl can be s<..>(...)
-and in shell you can say: <<EOS ....... EOS
+and in shell you can say: <<EOS ....... EOS.  The idea is that you capture
+the first delimiter into the match buffer (the &lt; or first "EOS") and then
+match it with "&" in a string or character list.
 
-#### New feature: subroutines
+#### Subroutines
 
 Highlighter state machines can now make subroutine calls.  This works by
 template instantiation: the called state machine is included in your
@@ -2031,6 +2033,9 @@ to the called.  There is still no run-time stack (the state is represented
 as a single integer plus the saved delimiter string).
 
 Recursion is allowed, but is self limited to 5 levels.
+
+__Note:__ this recursion limit is obsolete.  Subroutines now do use a stack
+so the call-depth is limitless.
 
 To call a subroutine, use the 'call' option:
 
@@ -2089,6 +2094,47 @@ of this file (which normally resides in __/etc/joe/joerc__) to
 __$HOME/.joerc__, you can customize these setting to your liking.  The
 syntax of the initialization file should be fairly obvious and there are
 further instructions in it.
+
+The __joerc__ file has a directive to include another file (:include).  This
+facility is used to inlcude a file called __ftyperc__ (usually located in
+__/etc/joe/ftyperc__).  __ftyperc__ has the file type table which determines
+which local options (including syntax for the highlighter) are applied to
+each file type.
+
+The __joerc__ file is broken up into a number of sections:
+
+* Global options
+  Options which are not file specific, like __noxon__.
+
+* File name and content dependent options
+  Options which depend on the file type, such as __autoindent__.  The
+  __ftyperc__ is included in this section.
+
+* __^T__ menu system definition
+  Use :defmenu to define a named menu of macros.  The __menu__ command
+brings up a specific named menu.  __^T__ is a macro which brings up the root
+menu: __mode,"root",rtn__.
+
+* Help screen contents
+  Each help screen is named.  The name is used to implement context
+  dependent help.
+
+* Key bindinds
+  Key binding tables are defined.  You can define as many as you like (you
+can switch to a specific one with the __keymap__ command), but
+the following must be provided:
+
+ * __main__ Editing windows
+ * __prompt__ Prompt windows
+ * __query__ Single-character query lines
+ * __querya__ Single-character query for quote
+ * __querysr__ Single-character query for search and replace
+ * __shell__ Shell windows
+ * __vtshell__ Terminal emulator shell windows
+
+ Key binding tables can inherit bindings from already defined tables.  This
+allows you to group common key bindings into a single table which is
+inherited by the others.
 
 ## Xterm Mouse support
 
