@@ -39,6 +39,8 @@
 
 * Remove ` as quote character from incremental search.
 
+* Clean up documentation, convert much of it to Markdown.
+
 ### JOE 3.8
 
 - Change default indent from 2 to 4.  Add quick menu to change to common
