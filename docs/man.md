@@ -1786,6 +1786,8 @@ j1, y0, y1</p>
 
 <tr valign="top"><td>argset</td><td>True if a repeat argument was given</td></tr>
 
+<tr valign="top"><td>is_shell</td><td>True if executed in an active shell window</td></tr>
+
 <tr valign="top"><td>no_windows</td><td>No. buffer windows on the screen</td></tr>
 
 <tr valign="top"><td>ans</td><td>Result of previous expression</td></tr>
