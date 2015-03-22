@@ -1561,12 +1561,16 @@ current buffer.  For example, the "\*\*" insert macro above looks like this:
 You could insert this into your .joerc file and change the key sequene (the
 __K 0__) to something more permanent.
 
-Macros can also be named in the joerc file using this syntax:
+### Define your own
+
+You can bind macros to key sequences or define your own named macros in the
+joerc file.  For example, this will define a macro called __foo__:
 
 	:def foo eof,bol
 
 __foo__ will position the cursor at the beginning of the last line of the
-file.  Once a macro has been named this way it will show up in the
+file.  __eof__ jumps to the end of the file.  __bol__ jumps to the beginning
+of a line.  Once a macro has been named this way it will show up in the
 completion list of the __ESC X__ command prompt.
 
 ### Command prompt
@@ -1576,11 +1580,6 @@ __ESC X__ to bring up the command prompt.  Hit tab at this prompt for a
 completion list of all available commands.
 
 Here is a [complete list of commands](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/list.md).
-
-### Define your own
-
-You can bind macros to key sequences or define your own named macros in the
-joerc file.
 
 ### Macro don't stop modifier
 
