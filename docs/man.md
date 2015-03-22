@@ -1207,24 +1207,56 @@ Address: England, London, S. Holmes, 221b Baker St.
 
 ## Goto matching delimiter
 
-Hit Ctrl-G to jump between matching delimiters.  This works on both
+Hit __^G__ to jump between matching delimiters.  This works on both
 character delimiters (like '(' and ')') and word delimiters for languages
-like Pascal and Verilog which use "begin" and "end" to delimit blocks.  If a
-word is not known, Ctrl-G starts a search with the word moved into the
-search prompt.
+like Pascal and Verilog which use "begin" and "end" to delimit blocks.  It
+also works for matching start and end tags in XML.  If a word is not known,
+__^G__ starts a search with the word moved into the search prompt.
 
-For Ctrl-G to work on word delimiters, the cursor must be positioned
+For __^G__ to work on word delimiters, the cursor must be positioned
 on the first letter of the word.  So in XML, if the cursor is on the &lt; in
 &lt;foo&gt;, it will jump to the &gt;.  But if it is one the 'f', it will
 jump to the matching &lt;/foo&gt;.  Likewise, in C, __^G__ will jump between #if, #else
 and #endif, but you need to position the cursor on the letter,
 not the '#'.
 
-Ctrl-G is smart enough to skip delimiters found in quoted or
+__^G__ is smart enough to skip delimiters found in quoted or
 commented-out matter.  You need to tell JOE how your language indicates
 this: see the __ftyperc__ file for examples of how this is done.
 
+The are a number of options which control the behavior of __^G__.  These
+options control which kinds of comments __^G__ can skip over:
 
+* c_comment
+* cpp_comment
+* pount_comment
+* semi_comment
+* vhdl_comment
+
+These options determine which kinds of strings __^G__ can skip over:
+
+* single_quoted
+* double_quoted
+
+This option allows an annotated syntax file to determine which text can be
+counted as comments or strings which can be skipped over by __^G__:
+
+* highlighter_context
+
+This option enables the use of syntax files to identify comments and strings
+which should be skipped over during __^G__ matching.  The syntax file states
+should be annotated with the string and comment keywords for this to work.
+
+* text_delimiters
+
+This option provides a list of word delimiters to match.  For example,
+"begin=end:if=elif=else=endif" means that __^G__ will jump between the
+matching if, elif, else and endif.  It will also jump between begin and end.
+
+__^G__ has a built-in table for matching character delimiters- it knows that
+__(__ goes with __)__.
+
+__^G__ has a built-in parser to handle start/end tag matching for XML.
 
 <a name="blocks"></a>
 
@@ -1976,11 +2008,30 @@ format).
 
 Each state begins with:
 
-    :<name> <color-name>
+    :<name> <color-name> <context>
 
 \<name\> is the state's name.
+
 \<color-name\> is the color used for characters eaten by the state
 (really a symbol for a user definable color).
+
+\<context\> tells JOE if the current character is part of a comment or a
+string.  This allows JOE to skip over comments and strings when matching
+characters such as parentheses.  To use this feature, the
+highlighter_context option must be applied to the files highlighted by the
+corresponding syntax.  To apply the option, add it to ftyperc for those file
+entries.
+
+The valid contexts are:
+
+  * comment  This character is part of a comment.  Example:  /* comment */
+
+  * string   This character is part of a string.  Examples: "string" 'c' 'string'
+
+The comment and string delimiters themselves should be marked with the
+appropriate context.  The context is considered to be part of the color, so
+the recolor=-N and recolormark options apply the context to previous
+characters.
 
 The first state defined is the initial state.
 
