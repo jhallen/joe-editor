@@ -2307,13 +2307,13 @@ menu: __mode,"root",rtn__.
 can switch to a specific one with the __keymap__ command), but
 the following must be provided:
 
- * __main__ Editing windows
- * __prompt__ Prompt windows
- * __query__ Single-character query prompts
- * __querya__ Single-character query for quote
- * __querysr__ Single-character query for search and replace
- * __shell__ Shell windows
- * __vtshell__ Terminal emulator shell windows
+    * __main__ Editing windows
+    * __prompt__ Prompt windows
+    * __query__ Single-character query prompts
+    * __querya__ Single-character query for quote
+    * __querysr__ Single-character query for search and replace
+    * __shell__ Shell windows
+    * __vtshell__ Terminal emulator shell windows
 
  Key binding tables can inherit bindings from already defined tables.  This
 allows you to group common key bindings into a single table which is
