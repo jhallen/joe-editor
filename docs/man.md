@@ -429,6 +429,11 @@ Enable __^G__ skipping of C-style comments /* ... */
 Sets list of characters which can indent paragraphs.
 <br>
 
+* cnotpara __characters__
+Sets list of characters which begin lines which are definitely not part of
+paragraphs.
+<br>
+
 * cpp_comment
 Enable __^G__ skipping of C++-style comments // ...
 <br>
@@ -840,6 +845,11 @@ word wrapper:
 * The __cpara__ option provides a list of characters which can indent a
   paragraph.  For example, in e-mail quoted matter is indicated by __\>__ 
   at the beginnings of line, so this character should be in the cpara list.
+
+k* The __cnotpara__ option provides a list of characters which, if they are
+  the first non-whitespace character of a line, indicate the line is not
+  included as part of a paragraph for formatting.  For example, lines
+  beginning with '.' in nroff can not be paragraph lines.
 
 * Autoindent mode effects the formatter.  If autoindent is disabled, only
   the first line will be indented.  If autoindent is enabled, the entire

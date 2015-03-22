@@ -270,6 +270,9 @@
 	-cpara >#!;*/%
 				Characters which can indent paragraphs.
 
+	-cnotpara .
+				Characters which begin non-paragraph lines.
+
 	-encoding name
 				Установить кодировку файла (например: utf-8, iso-8859-15)
 
@@ -480,6 +483,7 @@ mode,"csmode",rtn	% % Continued search %Zcsmode%
 mode,"french",rtn	% % French spacing %Zfrench%
 mode,"flowed",rtn	% % Flowed text %Zflowed%
 mode,"cpara",rtn	% % Paragraph indent chars %Zcpara%
+mode,"cnotpara",rtn	% % Not-paragraph chars %Zcnotpara%
 
 :defmenu file
 mode,"restore",rtn	% % Restore cursor %Zrestore%

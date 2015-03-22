@@ -163,6 +163,7 @@ OPTIONS pdefault = {
 	0,		/* hide ansi */
 	NULL,		/* text_delimiters */
 	NULL,		/* Characters which can indent paragraphs */
+	NULL,		/* Characters which begin non-paragraph lines */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
@@ -224,6 +225,7 @@ OPTIONS fdefault = {
 	0,		/* hide ansi */
 	NULL,		/* text_delimiters */
 	USTR ">;!#%/",	/* Characters which can indent paragraphs */
+	USTR ".",	/* Characters which begin non-paragraph lines */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -398,6 +400,7 @@ struct glopts {
 	{USTR "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, USTR _("Text delimiters (%s): "), 0, USTR _("  Text delimiters ") },
 	{USTR "language",	6, NULL, (unsigned char *) &fdefault.language, USTR _("Language (%s): "), 0, USTR _("V Language ") },
 	{USTR "cpara",		6, NULL, (unsigned char *) &fdefault.cpara, USTR _("Characters which can indent paragraphs (%s): "), 0, USTR _("  Paragraph indent chars ") },
+	{USTR "cnotpara",	6, NULL, (unsigned char *) &fdefault.cnotpara, USTR _("Characters which begin non-paragraph lines (%s): "), 0, USTR _("  Non-paragraph chars ") },
 	{USTR "floatmouse",	0, &floatmouse, 0, USTR _("Clicking can move the cursor past end of line"), USTR _("Clicking past end of line moves cursor to the end"), USTR _("  Click past end ") },
 	{USTR "rtbutton",	0, &rtbutton, 0, USTR _("Mouse action is done with the right button"), USTR _("Mouse action is done with the left button"), USTR _("  Right button ") },
 	{USTR "nonotice",	0, &nonotice, NULL, 0, 0, 0 },

@@ -96,6 +96,7 @@ struct options {
 	int	ansi;		/* Hide ansi sequences mode */
 	unsigned char *text_delimiters;	/* Define word delimiters */
 	unsigned char *cpara;	/* Characters which can indent paragraphcs */
+	unsigned char *cnotpara;/* Characters which begin non-paragraph lines */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */

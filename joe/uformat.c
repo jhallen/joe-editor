@@ -91,6 +91,19 @@ static int cpara(BW *bw, int c)
 #endif
 }
 
+/* Return true if this first non-whitespace character means
+   we are not a paragraph for sure (for example, '.' in nroff) */
+
+static int cnotpara(BW *bw, int c)
+{
+	int x;
+	if (bw->o.cnotpara)
+		for (x = 0; bw->o.cnotpara[x]; ++x)
+			if (bw->o.cnotpara[x] == c)
+				return 1;
+	return 0;
+}
+
 /* Return true if line is definitly not a paragraph line.
  * Lines which arn't paragraph lines:
  *  1) Blank lines
@@ -107,7 +120,7 @@ static int pisnpara(BW *bw, P *p)
 	while (cpara(bw, c = pgetc(q)))
 		/* do nothing */;
 	prm(q);
-	if (c == '.' || c == '\r' || c == '\n')
+	if (cnotpara(bw, c) || c == '\r' || c == '\n')
 		return 1;
 	else
 		return 0;
