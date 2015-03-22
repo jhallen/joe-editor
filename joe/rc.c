@@ -1470,6 +1470,10 @@ int procrc(CAP *cap, unsigned char *name)
 								joe_snprintf_2(bf,sizeof(bf),"%s%s",JOERC,buf + x);
 								rtn = procrc(cap, bf);
 							}
+							if (rtn == -1 && buf[x] != '/') {
+								joe_snprintf_1(bf,sizeof(bf),"*%s",buf + x);
+								rtn = procrc(cap, bf);
+							}
 							if (rtn == -1 && buf[x] == '/') {
 								joe_snprintf_1(bf,sizeof(bf),"%s",buf + x);
 								rtn = procrc(cap, bf);
