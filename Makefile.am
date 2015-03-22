@@ -4,7 +4,7 @@ SUBDIRS = man rc po syntax joe
 
 EXTRA_DIST = COPYING docs/hacking.md ChangeLog NEWS.md docs/README.old README.md INSTALL INSTALL.AMIGA \
 	docs/help-system.html charmaps/klingon.in \
-	cygbuild setup.hint xterm-patch xterm-readme autojoe docs/man.md
+	cygbuild setup.hint autojoe docs/man.md
 
 sysconf_joedir = $(sysconfdir)/joe
 data_joedir = $(datadir)/joe
