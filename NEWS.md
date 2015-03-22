@@ -2,7 +2,15 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
+### JOE 3.8 Native Windows Version
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/joewin.msi/download)
+
+* Thanks to John J. Jordan we now have a native Windows version of JOE
+
 ### JOE 4.0
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20sources/joe-4.0/joe-4.0.tar.gz/download)
 
 * JOE now has pop-up shell windows with full terminal emulation and shell commands
   that can control the editor.  Hit F1 - F4 to bring up a shell window.
@@ -42,6 +50,8 @@
 * Clean up documentation, convert much of it to Markdown.
 
 ### JOE 3.8
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20sources/joe-3.8/joe-3.8.tar.gz/download)
 
 - Search JOE image for :include files referenced by the joerc file.
   Include ftyperc file in the JOE image.
