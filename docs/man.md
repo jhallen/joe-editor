@@ -1342,8 +1342,59 @@ will be placed in a different window.
 You can change the height of the windows with the __^K G__ and __^K T__
 commands.
 
-## Keyboard macros 
+### Windowing system model
 
+JOE has an unsual model for its windowing system.  Basically you have a ring
+of windows, but only a section of this ring may fit on the screen.  The windows
+not on the screen still exist, they are just scrolled off.  When you hit
+__^K N__ on the bottom window of the screen, it scrolls further windows from
+the ring onto the screen, possibly letting the top window scroll out of
+view.
+
+Native JOE tries to keep each loaded buffer in a window, so users can find
+all of the buffers by scrolling through the windows.  The __explode__
+command (__^K I__) either expands all windows to the size of the screen so
+that only one window can fit on the screen, or shinks them all as much as
+possible to fit many on the screen.
+
+On the other hand, JOE supports "orphan" buffers- files loaded into the
+editor, but which are not in a window.  __^C__ normally closes a window and
+discards the buffer that was in it.  If you hit __^C__ on the last remaining
+window, it will normally exit the editor.  However, if there are orphan
+buffers, __^C__ will instead load them into this final window to give you
+chance to explicitly discard them.  If the __orphan__ options is given on
+the command line, as in __joe -orphan *.c__, then JOE only loads the first
+file into a window and leaves all the rest as orphans.
+
+__orphan__ also controls whether the edit command __^K E__ creates a new
+window for a newly loaded file, or reuses the current window (orphaning its
+previous occupant).
+
+The __bufed__ command prompts for a name of a buffer to switch into a window. 
+Its completion list will show all buffers, including orphans and buffers
+which appear in other windows.  __ESC V__ and __ESC U__ (__nbuf__ and
+__pbuf__ commands) allow you to cycle through all buffers within a single
+window.
+
+Windows maintain a stack of occupants to support the pop-up shell window
+feature.  When a pop-up window is dismissed, the previous buffer is returned
+to the window.
+
+### Scratch buffers
+
+Scratch buffers are buffers which JOE does not worry about trying to
+preserve.  JOE will not ask to save modified scratch buffers.  Pop-up shell
+windows, the startup log and compile and grep message windows are scratch
+buffers.  You can create your own scratch buffer with the __scratch__
+command.
+
+The following commands load scratch buffers:
+
+* __showlog__ Show startup log
+* __mwind__ Show message window (compile / grep messages from __ESC C__ and
+  __ESC G__ commands).
+
+## Keyboard macros 
 
 Macros allow you to record a series of keystrokes and replay them with the 
 press of two keys.  This is useful to automate repetitive tasks.  To start a 
@@ -2096,7 +2147,7 @@ syntax of the initialization file should be fairly obvious and there are
 further instructions in it.
 
 The __joerc__ file has a directive to include another file (:include).  This
-facility is used to inlcude a file called __ftyperc__ (usually located in
+facility is used to include a file called __ftyperc__ (usually located in
 __/etc/joe/ftyperc__).  __ftyperc__ has the file type table which determines
 which local options (including syntax for the highlighter) are applied to
 each file type.
@@ -2108,7 +2159,7 @@ The __joerc__ file is broken up into a number of sections:
 
 * File name and content dependent options
   Options which depend on the file type, such as __autoindent__.  The
-  __ftyperc__ is included in this section.
+  __ftyperc__ file is included in this section.
 
 * __^T__ menu system definition
   Use :defmenu to define a named menu of macros.  The __menu__ command
@@ -2119,14 +2170,14 @@ menu: __mode,"root",rtn__.
   Each help screen is named.  The name is used to implement context
   dependent help.
 
-* Key bindinds
+* Key bindings
   Key binding tables are defined.  You can define as many as you like (you
 can switch to a specific one with the __keymap__ command), but
 the following must be provided:
 
  * __main__ Editing windows
  * __prompt__ Prompt windows
- * __query__ Single-character query lines
+ * __query__ Single-character query prompts
  * __querya__ Single-character query for quote
  * __querysr__ Single-character query for search and replace
  * __shell__ Shell windows
@@ -2392,7 +2443,7 @@ These commands can be entered at the __ESC X__ prompt.
 <tr valign="top"><td>killproc</td><td>Kill program in current window</td></tr>
 <tr valign="top"><td>run</td><td>Run a UNIX command in a window</td></tr>
 <tr valign="top"><td>sys</td><td>Run a UNIX command and return to editor when done (I/O does
-not go through editor, be we get the command's return status).</td></tr>
+not go through editor, but we get the command's return status).</td></tr>
 </tbody>
 </table>
 
