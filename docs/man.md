@@ -1500,7 +1500,7 @@ press of two keys.  This is useful to automate repetitive tasks.  To start a
 macro recording, hit __^K \[__ followed by a number from 0 to 9.  The 
 status line will display (Macro n recording...).  Now, type in the series of 
 keystrokes that you want to be able to repeat.  The commands you type will 
-have their usual effectu. Hit __^K ]__ to stop recording the macro.  Hit 
+have their usual effects. Hit __^K ]__ to stop recording the macro.  Hit 
 __^K__ followed by the number you recorded the macro in to execute one 
 iteration of the key-strokes.   
 
@@ -1509,19 +1509,31 @@ type:
 
 __^K \[ 0 ^A \*\* __<down arrow\> __^K ]__
 
-
 Which starts the macro recording, moves the cursor to the beginning of the 
-line, inserts "**", moves the cursor down one line, and then ends the 
+line, inserts "\*\*", moves the cursor down one line, and then ends the 
 recording. Since we included the key-strokes needed to position the cursor 
 on the next line, we can repeatedly use this macro without having to move 
 the cursor ourselves, something you should always keep in mind when 
 recording a macro.
+
+### Keyboard macro subroutines
 
 If you find that the macro you are recording itself has a repeated set of
 key-strokes in it, you can record a macro within the macro, as long as you
 use a different macro number.  Also you can execute previously recorded
 macros from within new macros. 
 
+### Query suspend
+
+If your macro includes a prompt for user input, and you want the user to
+fill in the prompt every time the macro is executed, hit __^K ?__ at the
+point in the macro recording where the user action is required.  Keyboard
+input will not be recorded at this point.  When the user completes the
+prompt, macro recording will continue.
+
+When the macro is executed, the macro player will pause at the point where
+__^K ?__ was entered to allow user input.  When the user completes the
+prompt, the player continues with the rest of the macro.
 
 ### Repeat
 
