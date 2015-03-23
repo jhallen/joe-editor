@@ -2433,9 +2433,22 @@ does not work as it normally does in a shell window (left-click and drag to
 select, middle click to paste).  Instead, you have to hold the shift key
 down to do this: shift-left-click and drag to select, and shift-middle click
 to paste.  Note that pasting text into JOE this way has problems: any `
-characters will get messed up because ` means quote the following control
+characters will get messed up because \` means quote the following control
 character.  Also if auto-indent is enabled, pasted text will not be indented
 properly.
+
+__Note:__ these problems with pasting have been resolved in recent versions
+of JOE.
+
+* JOE enables "bracketed paste" mode in Xterm so that pasted text is
+bracketed with an escape sequence.  This sequence causes JOE to disable
+the autoindent, wordwrap and spaces modes for the paste, and retores them
+when the paste is complete.
+
+* Even if the terminal emulator does not have this bracketed paste mode,
+JOE detects pasted text by timing: If text arrives all at once (all in the
+same buffer), the text is assumed to be pasted text and autoindent and
+wordwrap are temporarily disabled.
 
 When -joexterm is set (and you have ./configured Xterm with
 --enable-paste64):
