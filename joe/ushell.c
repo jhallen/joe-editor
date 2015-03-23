@@ -332,6 +332,16 @@ static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
 	a = vaadd(a, cmd);
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
+	if (bw->b->current_dir && bw->b->current_dir[0]) {
+		// Change command to this: cd 'directory' && (command)
+		unsigned char *t = vsncpy(NULL, 0, sc("cd '"));
+		t = vsncpy(sv(t), sv(bw->b->current_dir));
+		t = vsncpy(sv(t), sc("' && ("));
+		t = vsncpy(sv(t), sv(s));
+		t = vsncpy(sv(t), sc(")"));
+		vsrm(s);
+		s = t;
+	}
 	a = vaadd(a, s);
 	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 1, 0, NULL, 0);
 }

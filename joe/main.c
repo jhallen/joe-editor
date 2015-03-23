@@ -301,6 +301,7 @@ int main(int argc, char **real_argv, char **envv)
 	vmem = vtmp();
 	startup_log = bfind_scratch(USTR "* Startup Log *");
 	startup_log->internal = 1;
+	startup_log->current_dir = vsncpy(NULL, 0, NULL, 0);
 
 #ifdef __MSDOS__
 	_fmode = O_BINARY;

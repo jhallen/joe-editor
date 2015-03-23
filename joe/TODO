@@ -1,9 +1,11 @@
-Timing fix for bracketed past should disable spaces.  We should have a mode
+
+Timing fix for bracketed paste should disable spaces.  We should have a mode
 to disable the timing fix.
 
-grep and build should switch to the current directory first.
+cd command: if you leave out the trailing / it ignores it
+cd command: should canonicalized version of path be stored in history?
 
-maybe grep and build need to clear the block
+in ^KE: any nicer way to clear the current path other than Ctrl-Y?
 
 Improvements:
 
@@ -56,6 +58,20 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+grep and build should switch to the current directory first.
+   "scratch" needs to inherit current directory
+     hmm..
+     [done- also load "* Startup Log *" first to prevent inheriting- for
+example when we start shell windows]
+
+   "grep" and "build" need to change directory before running
+     [fixed]
+   parse already does the right thing
+
+maybe grep and build need to clear the block?
+   they don't because they clear markb/markk in process of clearing scratch
+   buffer
+
  parsed file names with spaces not working correctly
  parse file names with no line numbers?
  [fixed]

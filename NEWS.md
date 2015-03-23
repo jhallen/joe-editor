@@ -2,6 +2,12 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
+### JOE.next (not yet released changes in Mercurial)
+
+* ESC g (grep) and ESC c (compile) now obey the current directory
+
+* If no locale set, default to C / POSIX, not ISO-8859-1
+
 ### JOE 3.8 Native Windows Version
 
 [Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/joewin.msi/download)

@@ -775,12 +775,17 @@ int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 	void *object;
 	W *w;
 	B *b;
-
+	unsigned char *current_dir = vsdup(bw->b->current_dir);
 	if (notify) {
 		*notify = 1;
 	}
 
 	b = bfind_scratch(s);
+	/* Propogate current directory to scratch buffer */
+	if (!b->current_dir)
+		b->current_dir = current_dir;
+	else
+		vsrm(current_dir);
 	er = berror;
 
 	if (!bw->b->scratch)
