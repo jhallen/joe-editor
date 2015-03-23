@@ -877,7 +877,7 @@ __Esc L__ to check the highlighted block or the entire file if no block is
 highlighted.
 
 JOE passes the language and character encoding to the spell checker.  To
-change the langauge, hit __^T V__.
+change the langauge, hit __^T V__.  For example, use en_US for English.
 
 ## Overtype mode
 
@@ -1289,7 +1289,8 @@ counted as comments or strings which can be skipped over by __^G__:
 
 This option enables the use of syntax files to identify comments and strings
 which should be skipped over during __^G__ matching.  The syntax file states
-should be annotated with the string and comment keywords for this to work.
+should be annotated with the __string__ and __comment__ keywords for this to
+work.
 
 * text_delimiters
 
@@ -1331,26 +1332,30 @@ highlighting on if you don't mind it (but don't accidently hit __^K Y__).
 If it really bothers you, however, just hit __^K B ^K K__, to turn the
 highlighting off.
 
-### Selecting blocks
+### New ways of selecting blocks
 
 The classic way is to hit __^K B__ at the beginning and __^K K__ at the
 end.  These set pointers called markb and markk.  Once these are set you
 can jump to markb with __Esc B__ and jump to markk with __Esc K__.
 
-New way: hit Ctrl-rtarw (right arrow) to start selecting rightward. 
-Each time you hit Ctrl-rtarw, the block is extended one more to the right. 
+New way: hit Ctrl-__Right Arrow__ to start selecting rightward.  Each time
+you hit Ctrl-__Right Arrow__, the block is extended one more to the right. 
 This uses a simple macro: "begin_marking,rtarw,toggle_marking".
 
 Unfortunately, there is no standard way to get the keysequence given by the
-terminal emulator when you hit Ctrl-rtarw.  Instead you have to determine
-this sequence yourself and enter it directly in the joerc file.  Some
-examples are given for Xterm and gnome-terminal.  Hit __Esc '__ ctrl-rtarw
-within JOE to have the sequence shown on your screen.  Note that Putty uses
-__Esc Esc \[ C__ which will not appear with __Esc ' rtarw__ (also
-__Esc Esc__ is set book mark, so you need to unbind it to do this in Putty).
+terminal emulator when you hit Ctrl-__Right Arrow__.  Instead you have to
+determine this sequence yourself and enter it directly in the joerc file. 
+Some examples are given for Xterm and gnome-terminal.  Hit __Esc '__
+Ctrl-__Right Arrow__ within JOE to have the sequence shown on your screen. 
+Note that Putty uses __Esc Esc \[ C__ which will not appear with __Esc '
+Right Arrow__ (also __Esc Esc__ is the set bookmark command, so you need to
+unbind it to do this in Putty).
 
-Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
+Also you can hit Ctrl-__Delete__ to cut and Ctrl-__Insert__ to paste if the
 sequence for these keys are known.
+
+The mouse can also be used to select text if mouse support is enabled in
+JOE.
 
 ### Indenting program blocks
 
