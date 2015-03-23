@@ -75,6 +75,9 @@ of __^@__.  __^\\__ and __^\]__ are interpreted by many communication
 programs, including telnet and kermit.  Usually you just hit the key twice
 to get it to pass through the communication program.
 
+On some keyboards, holding the __Alt__ key down while pressing another key
+is the same as typing __Esc__ before typing the other key.
+
 Once you have typed __^K H__, the first help window appears at the top of
 the screen.  You can continue to enter and edit text while the help window
 is on.  To page through other topics, hit __Esc ,__ and __Esc .__ (that is,
@@ -1359,32 +1362,33 @@ JOE.
 
 ### Indenting program blocks
 
-Auto-indent mode is toggled with the __^T I__ command.  The
-__joerc__ is normally set up so that files with names ending with .p, .c
-or .h have auto-indent mode enabled.  When auto-indent mode is enabled and
-you hit __Enter__, the cursor will be placed in the same column that the
-first non-__Space__/__Tab__ character was in on the original line.
+Auto-indent mode is toggled with the __^T I__ command.  The __joerc__ file
+is normally set up so that files with names ending with .p, .c or .h have
+auto-indent mode enabled.  When auto-indent mode is enabled and you hit
+__Enter__, the cursor will be placed in the same column that the first
+non-whitespace character was on in the original line.
 
-You can use the __^K ,__ and __^K .__ commands to shift a block of text 
-to the left or right.  If no highlighting is set when you give these 
-commands, the program block the cursor is located in will be selected, and 
-will be moved by subsequent __^K ,__ and __^K .__ commands.
+You can use the __^K ,__ and __^K .__ commands to shift a block of text to
+the left or right.  If no highlighting is set when you give these commands,
+the program block (as indicated by indentation) that the cursor is located in
+will be selected, and will be moved by subsequent __^K ,__ and __^K .__
+commands.
 
 The number of columns these commands shift by and the character used for
 shifting can be set through the istep and indentc options.  These options
 are available in the __^T__ menu.  Also, __^T =__ can be used to quickly
 select from a number of common values for indentation step and character.
 
-JOE has a bunch of additional options related to indenting programs:
+JOE has a number of additional options related to indenting programs:
 
 * smartbacks
-Enable smart backspace and tab.  When this mode is set backspace and tab
+Enable smart backspace and tab.  When this mode is set __Backspace__ and __Tab__
 indent or unindent based on the values of the istep and indentc options.
 <br>
 
 * smarthome
-Home key first moves cursor to beginning of line, then if hit again, to
-the first non-blank character.
+The __Home__ and __^A__ keys first move the cursor to the beginning of the
+line, then if hit again, to the first non-blank character.
 <br>
 
 * indentfirst
@@ -1409,10 +1413,11 @@ file.
 ### Rectangle mode
 
 Type __^T X__ to have __^K B__ and __^K K__ select rectangular blocks
-instead of stream-of-text blocks.  This mode is useful for moving, copying,
-deleting or saving columns of text.  You can also filter columns of text
-with the __^K /__ command- if you want to sort a column, for example.  The
-insert file command, __^K R__ is also affected.
+instead of stream-of-text blocks.  This is also known as columnar mode. 
+This mode is useful for moving, copying, deleting or saving columns of text. 
+You can also filter columns of text with the __^K /__ command- if you want
+to sort a column, for example.  The insert file command, __^K R__ is also
+affected.
 
 When rectangle mode is selected, overtype mode is also useful
 (__^T T__).  When overtype mode is selected, rectangles will replace
@@ -1483,7 +1488,7 @@ editor, but which are not in a window.  __^C__ normally closes a window and
 discards the buffer that was in it.  If you hit __^C__ on the last remaining
 window, it will normally exit the editor.  However, if there are orphan
 buffers, __^C__ will instead load them into this final window to give you
-chance to explicitly discard them.  If the __orphan__ option is given on
+a chance to explicitly discard them.  If the __orphan__ option is given on
 the command line, as in __joe -orphan *.c__, then JOE only loads the first
 file into a window and leaves all the rest as orphans.
 
@@ -1580,7 +1585,7 @@ current buffer.  For example, the "\*\*" insert macro above looks like this:
 
 	home,"**",dnarw	^K 0	Macro 0
 
-You could insert this into your .joerc file and change the key sequene (the
+You could insert this into your .joerc file and change the key sequence (the
 __K 0__) to something more permanent.
 
 ### Define your own
@@ -1735,9 +1740,9 @@ following special characters:
 
 Type __^K ;__ to bring up a tags search prompt.  If the cursor had been on an
 identifier, the prompt is pre-loaded with it.  Tab completion works in this
-prompt.
+prompt (it uses the tags file to find completions).
 
-When you hit return, the tags search commences:
+When you hit __Enter__, the tags search commences:
 
 If there is one and only one match, JOE will jump directly to the
 definition.
@@ -1876,7 +1881,7 @@ left side of &amp;&amp; is false, the right side is not evaluated.</p>
 
 Hit __^K '__ to run a command shell in one of JOE's windows.  When the
 cursor is at the end of a shell window (use __^K V__ if it's not),
-whatever you type is passed to the shell instead of the window.  Any output
+whatever you type is passed to the shell instead of the buffer.  Any output
 from the shell or from commands executed in the shell is appended to the
 shell window (the cursor will follow this output if it's at the end of the
 shell window).  This command is useful for recording the results of shell
@@ -1887,7 +1892,7 @@ __^D__ are passed to the shell.  Type the shell __exit__ command to stop recordi
 shell output.  If you press __^C__ in a shell window, when the cursor is
 not at the end of the window, the shell is __kill__ed.
 
-If you use Bash, you can hit: __Esc ' UP-ARROW__ and __Esc ' DOWN-ARROW__ to
+If you use Bash, you can hit: __Esc ' Up Arrow__ and __Esc ' Down Arrow__ to
 scroll through Bash's history buffer.  Other keys work as well: try
 __Esc ' ^A__ to go to beginning of line or __Esc ' ^E__ to go to end of line.
 Unfortunately JOE only emulates a dumb terminal, so you have to use a lot of
@@ -1902,16 +1907,16 @@ Also sent to the shell: __Tab__, __Backspace__, __Enter__, __^C__ and __^D__.
 
 Hit F1 - F4 to open and switch between shell windows.
 
-The terminal emulator is improved so that when you type "man ls" it's
-formatted correctly (it's improved enough so that some interactive programs
-will work in it).  Even so, the shell window is still an edit buffer.
+Pop-up shell windows use a full terminal emulator so that when you type "man ls" it's
+formatted correctly (it works well enough so that some interactive programs
+can be used).  Even so, the shell window is still an edit buffer.
 
 The old shell window (with no terminal emulation) still exists: use __^K '__ to
 invoke it as usual.  This is useful to see control sequences emitted by a
 program.
 
 More of the keys get passed to the running program in pop-up shell windows
-compared with the older one.  There is a :shell section of the joerc file to
+compared with the older one.  There is a :vtshell section of the joerc file to
 control which ones.  In particular arrow keys and Ctrl-C are passed to the
 program.  It means you can easily step through bash history with the arrow
 keys, or abort programs the normal way with Ctrl-C.
@@ -2052,7 +2057,7 @@ The file name needs to be made of numbers, letters, '/', '.' and '-'.  It
 must have at leat one '.' in it.  There needs to be a colon somewhere after
 the line number.  Lines not in this format are ignored.
 
-THe "gparse' command parses the entire buffer, or if the block is set, just
+The "gparse' command parses the entire buffer, or if the block is set, just
 the highlighted block for a list of filenames or filenames with line numbers
 from "grep -n", "find" and similar programs.
 
@@ -2079,8 +2084,8 @@ grep/find parser unless 'parserr' had been previously issued in the buffer.
 ## Grep-find
 
 Hit __Esc G__ to bring up the prompt.  Enter a command which results in file
-names with line numbers, for example: 'grep -n fred *.c'.  This will list all
-instances of 'fred' in the *.c files.  You need the '-n' to get the line
+names with line numbers, for example: 'grep -n fred \*.c'.  This will list all
+instances of 'fred' in the \*.c files.  You need the '-n' to get the line
 numbers.
 
 Now you can hit __Esc Space__ on one of the lines to jump to the selected
