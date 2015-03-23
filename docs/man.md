@@ -1032,7 +1032,7 @@ Hit __^K Space__ to have JOE report the line number, column number, and
 byte number on the last line of the screen.  The number associated with the
 character the cursor is on (its ASCII code) is also shown.  You can have the
 line number and/or column number always displayed on the status line by
-setting placing the appropriate escape sequences in the status line setup
+placing the appropriate escape sequences in the status line setup
 strings.  Edit the joerc file for details.
 
 ## What if I hit __^K__ by accident?
@@ -1084,6 +1084,9 @@ the next occurrence, __r__ to replace all of the remaining occurrences of
 the search text in the remainder of the file without asking for confirmation
 (subject to the __nnn__ option above), or __^C__ to stop searching and
 replacing.
+
+You can also hit __B__ or __Backspace__ to back up to previously
+found text (if it had been replaced, the replacement is undone).
 
 * __a__
 
