@@ -2442,7 +2442,7 @@ of JOE.
 
 * JOE enables "bracketed paste" mode in Xterm so that pasted text is
 bracketed with an escape sequence.  This sequence causes JOE to disable
-the autoindent, wordwrap and spaces modes for the paste, and retores them
+the autoindent, wordwrap and spaces modes for the paste, and restores them
 when the paste is complete.
 
 * Even if the terminal emulator does not have this bracketed paste mode,
@@ -2606,7 +2606,7 @@ allowing __^S__ and __^Q__ to be used as editor keys.
 * SHELL
 Path to shell (like /bin/sh).  This is
 used in several places: If you are on a system with no job control, this
-shell is invoked when you hit __^K Z__.  Also this is shell which is run in shell
+shell is invoked when you hit __^K Z__.  Also this is the shell which is run in shell
 windows.  If SHELL is not set (Cygwin) or if it's set to /bin/sh, JOE
 invokes the first of these which exists: /bin/bash, /usr/bin/bash, /bin/sh.
 <br>

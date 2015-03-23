@@ -58,6 +58,9 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+build should report return value of make
+[done]
+
 grep and build should switch to the current directory first.
    "scratch" needs to inherit current directory
      hmm..

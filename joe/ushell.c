@@ -328,20 +328,28 @@ static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	unsigned char **a = vamk(10);
 	unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+	unsigned char *t = NULL;
+
+
+	bw->b->o.ansi = 1;
+	bw->b->o.syntax = load_syntax(USTR "ansi");
+	/* Turn on shell mode for each window */
+	ansiall(bw->b);
 
 	a = vaadd(a, cmd);
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	if (bw->b->current_dir && bw->b->current_dir[0]) {
-		// Change command to this: cd 'directory' && (command)
-		unsigned char *t = vsncpy(NULL, 0, sc("cd '"));
+		// Change directory before we run
+		t = vsncpy(sv(t), sc("cd '"));
 		t = vsncpy(sv(t), sv(bw->b->current_dir));
-		t = vsncpy(sv(t), sc("' && ("));
-		t = vsncpy(sv(t), sv(s));
-		t = vsncpy(sv(t), sc(")"));
-		vsrm(s);
-		s = t;
+		t = vsncpy(sv(t), sc("' && "));
 	}
+	t = vsncpy(sv(t), sc("echo \"\nJOE: cd `pwd`\n\" && if ("));
+	t = vsncpy(sv(t), sv(s));
+	t = vsncpy(sv(t), sc("); then echo \"\nJOE: [32mPASS[0m (exit status = $?)\n\"; else echo \"\nJOE: [31mFAIL[0m (exit status = $?)\n\"; fi"));
+	vsrm(s);
+	s = t;
 	a = vaadd(a, s);
 	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 1, 0, NULL, 0);
 }

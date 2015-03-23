@@ -6,6 +6,9 @@
 
 * ESC g (grep) and ESC c (compile) now obey the current directory
 
+* ESC g (grep) and ESC c (compile) now show the current directory and print
+the exit status of the command
+
 * If no locale set, default to C / POSIX, not ISO-8859-1
 
 ### JOE 3.8 Native Windows Version
