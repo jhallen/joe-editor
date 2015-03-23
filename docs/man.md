@@ -62,7 +62,7 @@ Now for some obscure computer-lore:
 The __^__ means that you hold down the __Control__ key while pressing
 the following key (the same way the __Shift__ key works for uppercase
 letters).  A number of control-key sequences are duplicated on other keys,
-so that you don't need to press the control key: __ESC__ will work in
+so that you don't need to press the control key: __Esc__ will work in
 place of __^\[__, __Del__ will work in place of __^?__, __Backspace__
 will work in place of __^H__, __Tab__ will work in place of __^I__,
 __Return__ or __Enter__ will work in place of __^M__ and
@@ -70,15 +70,15 @@ __Linefeed__ will work in place of __^J__.  Some keyboards may give you
 trouble with some control keys.  __^___, __^^__ and __^@__ can usually
 be entered without pressing shift (i.e., try __^-__, __^6__ and
 __^2__).  Other keyboards may reassign these to other keys.  Try:
-__^.__, __^,__ and __^/__.  __^SPACE__ can usually be used in place
+__^.__, __^,__ and __^/__.  __^Space__ can usually be used in place
 of __^@__.  __^\\__ and __^\]__ are interpreted by many communication
 programs, including telnet and kermit.  Usually you just hit the key twice
 to get it to pass through the communication program.
 
 Once you have typed __^K H__, the first help window appears at the top of
 the screen.  You can continue to enter and edit text while the help window
-is on.  To page through other topics, hit __ESC ,__ and __ESC .__ (that is,
-__ESC ,__ and __ESC .__).  Use __^K H__ to dismiss the help window.
+is on.  To page through other topics, hit __Esc ,__ and __Esc .__ (that is,
+__Esc ,__ and __Esc .__).  Use __^K H__ to dismiss the help window.
 
 You can customize the keyboard layout, the help screens and a number of
 behavior defaults by copying JOE's initialization file (usually
@@ -163,7 +163,7 @@ mark a legal block during block copy/move commands.
 <br>
 
 * backpath path
-Sets bath to a directory where all backup files are
+Sets path to a directory where all backup files are
 to be stored.  If this is unset (the default) backup files are stored in the
 directory containing the file.
 <br>
@@ -295,7 +295,7 @@ to the path and the cursor jumps back to the prompt).
 <br>
 
 * menu_jump
-Jump into the file selection menu when tab tab is hit.
+Jump into the file selection menu when __Tab__ __Tab__ is hit.
 <br>
 
 * mid
@@ -417,7 +417,7 @@ The cursor starts on the specified line.
 <br>
 
 * autoindent
-Enable auto-indent mode.  When you hit Return on an indented line, the
+Enable auto-indent mode.  When you hit __Enter__ on an indented line, the
 indentation is duplicated onto the new line.
 <br>
 
@@ -475,7 +475,7 @@ skipped over during __^G__ matching.
 
 * indentc nnn
 Sets the indentation character for shift left and shift right (__^K ,__ and
-__^K .__).  Use 32 for SPACE, 9 for TAB.
+__^K .__).  Use 32 for __Space__, 9 for __Tab__.
 <br>
 
 * indentfirst
@@ -554,7 +554,7 @@ Define status command format when cursor is on a character.
 <br>
 
 * spaces
-Insert spaces when tab key is hit.
+Insert spaces when __Tab__ key is hit.
 <br>
 
 * syntax __syntax__
@@ -620,7 +620,7 @@ With a 256 color terminal emulator (export TERM=xterm-256color), these become av
 right-justified string.  The first character of -rmsg is the background fill
 character.
 
--smsg defines the status command (__^K SPACE__).  -zmsg defines it when the cursor
+-smsg defines the status command (__^K Space__).  -zmsg defines it when the cursor
 is at the end of the file.  The last character of smsg or zmsg is the fill character.
 
 The following escape sequences can be used in these strings:
@@ -682,7 +682,7 @@ for deleting text: move the cursor to right after the text you want to
 delete and hit __Backspace__ a number of times.
 
 Hit the __Enter__ or __Return__ key to insert a line-break.  For 
-example, if the cursor was in the middle of a line and you hit __Return__, 
+example, if the cursor was in the middle of a line and you hit __Enter__, 
 the line would be split into two lines with the cursor appearing at the 
 beginning of the second line.  Hit __Backspace__ at the beginning of a 
 line to eliminate a line-break.
@@ -698,11 +698,11 @@ up and down arrow keys move forwards and backwards by enough characters so
 that the cursor appears in the same column that it was in on the original
 line.
 
-If you want to indent the text you enter, you can use the __TAB__ key. 
+If you want to indent the text you enter, you can use the __Tab__ key. 
 This inserts a special control character which makes the characters which
-follow it begin at the next TAB STOP.  TAB STOPS normally occur every 8
+follow it begin at the next tab stop.  Tab stops normally occur every 8
 columns, but this can be changed with the __^T D__ command.  PASCAL and C
-programmers often set TAB STOPS on every 4 columns.
+programmers often set tab stops on every 4 columns.
 
 If for some reason your terminal screen gets messed up (for example, if
 you receive a mail notice from biff), you can have the editor refresh the
@@ -822,7 +822,7 @@ If you type past the right edge of the screen in a C language or PASCAL
 file, the screen will scroll to the right to follow the cursor.  If you type 
 past the right edge of the screen in a normal file (one whose name doesn't 
 end in .c, .h or .p), JOE will automatically wrap the last word onto the 
-next line so that you don't have to hit __Return__.  This is called 
+next line so that you don't have to hit __Enter__.  This is called 
 word-wrap mode.  Word-wrap can be turned on or off with the __^T W__ 
 command.  JOE's initialization file is usually set up so that this mode is 
 automatically turned on for all non-program files.  See the section below on 
@@ -870,9 +870,9 @@ command.
 
 ## Spell checker
 
-Hit __ESC N__ to check the spelling of the word the cursor is on using the
+Hit __Esc N__ to check the spelling of the word the cursor is on using the
 aspell program (or ispell program if you modify the joerc file).  Hit
-__ESC L__ to check the highlighted block or the entire file if no block is
+__Esc L__ to check the highlighted block or the entire file if no block is
 highlighted.
 
 JOE passes the language and character enoding to the spell checker.  To
@@ -892,7 +892,7 @@ way of dealing with text electronically, so you should go back to
 insert-mode as soon as possible by typing __^T T__ again. 
 
 If you need to insert while you're in over-type mode, hit __^@__.  This
-inserts a single SPACE into the text.
+inserts a single __Space__ into the text.
 
 ## Control and Meta characters
 
@@ -903,12 +903,12 @@ arbitrary assignment between characters and numbers is called the ASCII
 character set).  The numbers outside of this range, from 0 to 255, aren't
 usually displayed, but sometimes have other special meanings.  The number
 10, for example, is used for the line-breaks.  You can enter these special,
-non-displayed __control characters__ by first hitting __ESC '__ and then
+non-displayed __control characters__ by first hitting __Esc '__ and then
 hitting a character in the range __@ A B C ... X Y Z [ ^ ] \\ \___ to get
-the number 0 - 31, and ? to get 127.  For example, if you hit __ESC ' J__,
-you'll insert a line-break character, or if you hit __ESC ' I__, you'll insert
-a TAB character (which does the same thing the TAB key does).  A useful
-control character to enter is 12 (__ESC ' L__), which causes most printers to
+the number 0 - 31, and ? to get 127.  For example, if you hit __Esc ' J__,
+you'll insert a line-break character, or if you hit __Esc ' I__, you'll insert
+a __Tab__ character (which does the same thing the __Tab__ key does).  A useful
+control character to enter is 12 (__Esc ' L__), which causes most printers to
 advance to the top of the page.  You'll notice that JOE displays this
 character as an underlined L.  You can enter the characters above 127, the
 __meta characters__, by first hitting __^\___.  This adds 128
@@ -918,7 +918,7 @@ than English, use the meta characters for the rest of their alphabet.  You
 have to put the editor in __ASIS__ mode to have these
 passed untranslated to the terminal.
 
-When UTF-8 encoding is used, characters above 255 may be inserted with __ESC
+When UTF-8 encoding is used, characters above 255 may be inserted with __Esc
  '__.
 
 ## Character sets and UTF-8
@@ -953,7 +953,7 @@ If LC_ALL is set to:
 
 The character set will be UTF-8.
 
-Hit __^T E__ to change the coding for the file.  Hit &lt;tab&gt; &lt;tab&gt; at
+Hit __^T E__ to change the coding for the file.  Hit __Tab__ __Tab__ at
 this prompt to get a list of available codings.  There are a number of
 built-in character sets, plus you can install character sets in the
 ~/.joe/charmaps and /usr/local/etc/joe/charmaps directories.
@@ -964,18 +964,18 @@ gzipped (all of the charmap file in /usr/share/i18n/charmaps on my computer
 were compressed).  The parser is very bad, so basically the file has to look
 exactly like the example one in /usr/local/etc/joe/charmaps.
 
-You can hit __^K SPACE__ to see the current character set.
+You can hit __^K Space__ to see the current character set.
 
-You can hit __ESC ' x__ to enter a Unicode character if the file coding is
+You can hit __Esc ' x__ to enter a Unicode character if the file coding is
 UTF-8.
 
 ## Prompts
 
-If you hit __TAB__ at any file name prompt, JOE will attempt to complete
+If you hit __Tab__ at any file name prompt, JOE will attempt to complete
 the name you entered as much as possible.  If it couldn't complete the
 entire name, because there are more than one possible completions, JOE
-beeps.  If you hit __TAB__ again, JOE lists the completions.  You can use
-the arrow keys to move around this directory menu and press RETURN or SPACE
+beeps.  If you hit __Tab__ again, JOE lists the completions.  You can use
+the arrow keys to move around this directory menu and press __Enter__ or __Space__
 to select an item.  If you press the first letter of one of the directory
 entries, it will be selected, or if more than one entry has the same first
 letter, the cursor will jump between those entries.  If you select a
@@ -997,9 +997,9 @@ and __^K N__.
 
 ## Completion and selection menus
 
-You can hit TAB in just about any prompt to request JOE to complete the
+You can hit __Tab__ in just about any prompt to request JOE to complete the
 word you are typing.  If JOE beeps, there are either no completions or many. 
-As with the "bash" shell, hit TAB twice to bring up a list of all the
+As with the "bash" shell, hit __Tab__ twice to bring up a list of all the
 possibilities.  This list is actually a menu, but by default, the cursor
 does not jump into it since it is usually easier to just type in your
 selection. You can, however, jump into the menu window with __^K P__ (move to
@@ -1011,21 +1011,21 @@ this.
 If the menu is too large to fit in the window, you can hit Page Up and
 Page Down to scroll it (even if you have not jumped into it).
 
-TAB completion works in the search and replace prompts as well.  In this
+__Tab__ completion works in the search and replace prompts as well.  In this
 case, JOE tries to complete the word based on the contents of the buffer. 
-If you need search for the TAB character itself, you can enter it with __ESC '
-TAB__.
+If you need search for the __Tab__ character itself, you can enter it with __Esc '
+Tab__.
 
-Also, you can hit __ESC &lt;Enter&gt;__ in a text window to request JOE to
+Also, you can hit __Esc Enter__ in a text window to request JOE to
 complete the word you are typing.  As with the search prompt, JOE tries to
 complete the word based on the contents of the buffer.  It will bring up a
-menu of possibilities if you hit __ESC &lt;Enter&gt;__ twice.
+menu of possibilities if you hit __Esc Enter__ twice.
 
 
 ## Where am I?
 
 
-Hit __^K SPACE__ to have JOE report the line number, column number, and
+Hit __^K Space__ to have JOE report the line number, column number, and
 byte number on the last line of the screen.  The number associated with the
 character the cursor is on (its ASCII code) is also shown.  You can have the
 line number and/or column number always displayed on the status line by
@@ -1051,8 +1051,8 @@ to return to the editor.
 
 Hit __^K F__ to have the editor search forwards or backwards for a text 
 fragment (__string__) for you.  You will be prompted for the text to 
-search for.  After you hit __Return__, you are prompted to enter options.  
-You can just hit __Return__ again to have the editor immediately search 
+search for.  After you hit __Enter__, you are prompted to enter options.  
+You can just hit __Enter__ again to have the editor immediately search 
 forwards for the text, or you can enter one or more of these options:
 
 * __b__
@@ -1102,7 +1102,7 @@ begin with f.  You can also use "ls" and "find" instead of grep to create
 the file list.
 
 
-	ESC G
+	Esc G
 	  grep -n foo f*.c <Enter>
 	^K F
            foo <Enter>
@@ -1161,7 +1161,7 @@ parenthesis.
 
 This finds zero or more of the character which immediately follows the
 __\+__.  For example, if you give __\\\+\\\[ \]__, where the
-characters within the brackets are both SPACE and TAB, then JOE will find
+characters within the brackets are both __Space__ and __Tab__, then JOE will find
 whitespace.
 
 * __\\__
@@ -1222,16 +1222,16 @@ Address: England, London, S. Holmes, 221b Baker St.
 
 ## Incremental search
 
-Use __ESC S__ to start an increment search forwards, or __ESC R__ to start
+Use __Esc S__ to start an increment search forwards, or __Esc R__ to start
 an incremental search backwards.  As you type the search string, the cursor
 will jump to the first text that matches the regular expression you have
 entered so far.
 
-Hit __ESC S__ or __ESC R__ again to find the next occurance of the text or
+Hit __Esc S__ or __Esc R__ again to find the next occurance of the text or
 to switch the direction of the search.
 
-__^S__, __^\\__ and __^L__ have the same effect as __ESC S__. __^R__ has the same
-effect as __ESC R__.  These keys are to support JMACS.
+__^S__, __^\\__ and __^L__ have the same effect as __Esc S__. __^R__ has the same
+effect as __Esc R__.  These keys are to support JMACS.
 
 Hit __Backspace__ to undo the last incremental search action.  The last
 action could be a repeat of a previous search or the entering of a new
@@ -1328,7 +1328,7 @@ highlighting off.
 
 The classic way is to hit __^K B__ at the beginning and __^K K__ at the
 end.  These set pointers called markb and markk.  Once these are set you
-can jump to markb with __ESC B__ and jump to markk with __ESC K__.
+can jump to markb with __Esc B__ and jump to markk with __Esc K__.
 
 New way: hit Ctrl-rtarw (right arrow) to start selecting rightward. 
 Each time you hit Ctrl-rtarw, the block is extended one more to the right. 
@@ -1337,10 +1337,10 @@ This uses a simple macro: "begin_marking,rtarw,toggle_marking".
 Unfortunately, there is no standard way to get the keysequence given by the
 terminal emulator when you hit Ctrl-rtarw.  Instead you have to determine
 this sequence yourself and enter it directly in the joerc file.  Some
-examples are given for Xterm and gnome-terminal.  Hit __ESC '__ ctrl-rtarw
+examples are given for Xterm and gnome-terminal.  Hit __Esc '__ ctrl-rtarw
 within JOE to have the sequence shown on your screen.  Note that Putty uses
-__ESC ESC \[ C__ which will not appear with __ESC ' rtarw__ (also
-__ESC ESC__ is set book mark, so you need to unbind it to do this in Putty).
+__Esc Esc \[ C__ which will not appear with __Esc ' rtarw__ (also
+__Esc Esc__ is set book mark, so you need to unbind it to do this in Putty).
 
 Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
 sequence for these keys are known.
@@ -1350,8 +1350,8 @@ sequence for these keys are known.
 Auto-indent mode is toggled with the __^T I__ command.  The
 __joerc__ is normally set up so that files with names ending with .p, .c
 or .h have auto-indent mode enabled.  When auto-indent mode is enabled and
-you hit __Return__, the cursor will be placed in the same column that the
-first non-SPACE/TAB character was in on the original line.
+you hit __Enter__, the cursor will be placed in the same column that the
+first non-__Space__/__Tab__ character was in on the original line.
 
 You can use the __^K ,__ and __^K .__ commands to shift a block of text 
 to the left or right.  If no highlighting is set when you give these 
@@ -1405,7 +1405,7 @@ insert file command, __^K R__ is also affected.
 When rectangle mode is selected, over-type mode is also useful
 (__^T T__).  When over-type mode is selected, rectangles will replace
 existing text instead of getting inserted before it.  Also the delete block
-command (__^K Y__) will clear the selected rectangle with SPACEs and TABs
+command (__^K Y__) will clear the selected rectangle with __Spaces__ and __Tabs__
 instead of deleting it.  Over-type mode is especially useful for the filter
 block command (__^K /__), since it will maintain the original width of the
 selected column.
@@ -1481,7 +1481,7 @@ previous occupant).
 
 The __bufed__ command prompts for a name of a buffer to switch into a window. 
 Its completion list will show all buffers, including orphans and buffers
-which appear in other windows.  __ESC V__ and __ESC U__ (__nbuf__ and
+which appear in other windows.  __Esc V__ and __Esc U__ (__nbuf__ and
 __pbuf__ commands) allow you to cycle through all buffers within a single
 window.
 
@@ -1500,8 +1500,8 @@ command.
 The following commands load scratch buffers:
 
 * __showlog__ Show startup log
-* __mwind__ Show message window (compile / grep messages from __ESC C__ and
-  __ESC G__ commands).
+* __mwind__ Show message window (compile / grep messages from __Esc C__ and
+  __Esc G__ commands).
 
 ## Keyboard macros 
 
@@ -1550,7 +1550,7 @@ prompt, the player continues with the rest of the macro.
 You can use the repeat command, __^K \\__, to repeat a macro, or any other
 edit command or even a normal character, a specified number of times.  Hit
 __^K \\__, type in the number of times you want the command repeated and
-press __Return__.  The next edit command you now give will be repeated
+press __Enter__.  The next edit command you now give will be repeated
 that many times.
 For example, to delete the next 20 lines of text, type:
 
@@ -1563,7 +1563,7 @@ each command is executed until either the end of the list is reached, or one
 of the commands fails (non-zero return value from the command).  Failed
 commands beep if you have beeps enabled (__^T B__).
 
-Hit __ESC D__ to insert the current set of keyboard macros as text into the
+Hit __Esc D__ to insert the current set of keyboard macros as text into the
 current buffer.  For example, the "\*\*" insert macro above looks like this:
 
 	home,"**",dnarw	^K 0	Macro 0
@@ -1581,15 +1581,15 @@ joerc file.  For example, this will define a macro called __foo__:
 __foo__ will position the cursor at the beginning of the last line of the
 file.  __eof__ jumps to the end of the file.  __bol__ jumps to the beginning
 of a line.  Once a macro has been named this way it will show up in the
-completion list of the __ESC X__ command prompt.
+completion list of the __Esc X__ command prompt.
 
 ### Command prompt
 
 You can execute a macro directly by typing it into the command prompt.  Hit
-__ESC X__ to bring up the command prompt.  Hit tab at this prompt for a
+__Esc X__ to bring up the command prompt.  Hit __Tab__ at this prompt for a
 completion list of all available commands.
 
-Here is a [complete list of commands](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/list.md).
+Here is a [complete list of commands](#list).
 
 ### Macro don't stop modifier
 
@@ -1722,7 +1722,7 @@ following special characters:
 	\x quote x (suppress meaning of /, ?, ^ or $)
 
 Type __^K ;__ to bring up a tags search prompt.  If the cursor had been on an
-identifier, the prompt is pre-loaded with it.  TAB completion works in this
+identifier, the prompt is pre-loaded with it.  Tab completion works in this
 prompt.
 
 When you hit return, the tags search commences:
@@ -1750,7 +1750,7 @@ original file and the definition file loaded.
 
 ## Calulator
 
-JOE has a built-in calculator which can be invoked with __ESC M__.
+JOE has a built-in calculator which can be invoked with __Esc M__.
 
 <p><b>Math functions:</b></p>
 
@@ -1870,20 +1870,20 @@ shell window (the cursor will follow this output if it's at the end of the
 shell window).  This command is useful for recording the results of shell
 commands- for example the output of __make__, the result of __grep__ping
 a set of files for a string, or directory listings from __FTP__ sessions. 
-Besides typeable characters, the keys __^C__, Backspace, DEL, Return and
+Besides typeable characters, the keys __^C__, __Backspace__, __Del__, __Return__ and
 __^D__ are passed to the shell.  Type the shell __exit__ command to stop recording
 shell output.  If you press __^C__ in a shell window, when the cursor is
 not at the end of the window, the shell is __kill__ed.
 
-If you use Bash, you can hit: __ESC ' UP-ARROW__ and __ESC ' DOWN-ARROW__ to
+If you use Bash, you can hit: __Esc ' UP-ARROW__ and __Esc ' DOWN-ARROW__ to
 scroll through Bash's history buffer.  Other keys work as well: try
-__ESC ' ^A__ to go to beginning of line or __ESC ' ^E__ to go to end of line.
+__Esc ' ^A__ to go to beginning of line or __Esc ' ^E__ to go to end of line.
 Unfortunately JOE only emulates a dumb terminal, so you have to use a lot of
 imagination to do any editing beyond hitting backspace.
 
-In general, any character quoted with __ESC '__ is sent to the shell.
+In general, any character quoted with __Esc '__ is sent to the shell.
 
-Also sent to the shell: TAB, Backspace, Enter, __^C__ and __^D__.
+Also sent to the shell: __Tab__, __Backspace__, __Enter__, __^C__ and __^D__.
 
 <a name="popup"></a>
 ## Pop-up shell windows
@@ -1912,7 +1912,7 @@ can type 'pop' at the command prompt.
 If you need to pass a key to the shell that JOE normally uses, quote it.  For
 example, if you invoke "emacs -nw" in the shell window, you can exit it with:
 
-	ESC ' ^X ^C
+	Esc ' ^X ^C
 
 To quickly position the cursor back to the point where data is entered into
 the shell, hit __^K V__.
@@ -1937,7 +1937,7 @@ release       | release parsed errors
 pop           | dismiss shell window (same as ^K Q)
 
 These work by emitting an escape sequence recognized by the terminal
-emulator: __ESC { joe_macro }__.  When this is received, the macro is executed. 
+emulator: __Esc { joe_macro }__.  When this is received, the macro is executed. 
 For security, only macros defined in the joerc file which begin with
 "shell_" can be executed this way.
 
@@ -1981,8 +1981,8 @@ Pop-up shell windows have a number of nice use cases:
 	are passed as arguments to the parse command).
 
 	Now use __^P__ to position the cursor on one of the lines of the list. 
-	Hit __ESC SPACE__ to have JOE edit the file and jump to the specified
-	line (also you can use __ESC -__ and __ESC =__ to step through the list).
+	Hit __Esc Space__ to have JOE edit the file and jump to the specified
+	line (also you can use __Esc -__ and __Esc =__ to step through the list).
 
 * Use it in conjuction with search and replace to edit many files
 
@@ -2004,12 +2004,12 @@ Pop-up shell windows have a number of nice use cases:
 		parserr make
 ~~~~
 
-	Hit __ESC =__ and __ESC -__ to step through the errors.
+	Hit __Esc =__ and __Esc -__ to step through the errors.
 
 
 ### How it works..
 
-* There is a new mode "ansi".  (__ESC X__ mode ansi).  When this mode is
+* There is a new mode "ansi".  (__Esc X__ mode ansi).  When this mode is
 enabled, the screen updater hides escape sequences which are in the
 buffer.  Otherwise you get a big mess from the sequences surrounding
 colored output from 'ls'.
@@ -2053,43 +2053,43 @@ from "grep -n", "find" and similar programs.
 Once JOE has the error list, there are a number of things you can do with
 it:
 
-* Visit the files/locations in the list with __ESC -__ and __ESC =__
+* Visit the files/locations in the list with __Esc -__ and __Esc =__
 
 * Search and replace across all files in the list by using the 'e' search
   and replace option.
 
 * Clear the list by using the "release" command.
 
-Also, you can use __ESC SPACE__ ('jump' command) to parse the line the cursor is
+Also, you can use __Esc Space__ ('jump' command) to parse the line the cursor is
 on and jump to the parsed filename and line number.  'jump' uses the
 grep/find parser unless 'parserr' had been previously issued in the buffer.
 
 ## Grep-find
 
-Hit __ESC G__ to bring up the prompt.  Enter a command which results in file
+Hit __Esc G__ to bring up the prompt.  Enter a command which results in file
 names with line numbers, for example: 'grep -n fred *.c'.  This will list all
 instances of 'fred' in the *.c files.  You need the '-n' to get the line
 numbers.
 
-Now you can hit __ESC SPACE__ on one of the lines to jump to the selected
-file.  Also, you can use __ESC =__ and __ESC -__ to step through each line.
+Now you can hit __Esc Space__ on one of the lines to jump to the selected
+file.  Also, you can use __Esc =__ and __Esc -__ to step through each line.
 
 ## Compile
 
-Hit __ESC C__ to save all modified files and then bring up the compile prompt. 
+Hit __Esc C__ to save all modified files and then bring up the compile prompt. 
 Enter the command you want to use for the compiler (typically "make").  The
 compiler will run in a shell window.  When it's complete, the results are
 parsed.
 
 If there are any errors or warnings from the compiler you can hit
-__ESC SPACE__ on one of the lines to jump to the selected file.  Also,
-you can use __ESC =__ and __ESC -__ to step through each line.
+__Esc Space__ on one of the lines to jump to the selected file.  Also,
+you can use __Esc =__ and __Esc -__ to step through each line.
 
 ## Syntax highlighting
 
 To enable highlight use __^T H__.
 
-To select the syntax, use __^T Y__.  You can hit TAB at the prompt for a
+To select the syntax, use __^T Y__.  You can hit __Tab__ __Tab__ at the prompt for a
 completion list.
 
 JOE tries to determine the syntax to use based on the name and contents of
@@ -2362,19 +2362,19 @@ in the joerc file.  Each option in the __^T__ menu just executes a macro.
 Usually the macro is the mode command.  You can execute the mode command
 directly with:
 
-	ESC X mode <enter>
+	Esc X mode <enter>
 
-Hit tab for a completion list of all options.
+Hit __Tab__ __Tab__ for a completion list of all options.
 
 ### Menu command
 
 This command calls up a named menu of macros which was defined in the
 __joerc__ file.
 
-	ESC X menu <enter>
+	Esc X menu <enter>
 
-As usual, hit TAB at the prompt for a completion list of the menus which
-exist.
+As usual, hit __Tab__ __Tab__ at the prompt for a completion list of the
+menus which exist.
 
 __^T__ is bound to the simple macro __mode,"root",rtn__- it brings up the
 root of the options menu system.
@@ -2465,13 +2465,13 @@ but all of the editing commands operate the same way.  It is most useful to
 select overtype mode in conjunction with hex dump (hit __^T T__).  Then typing
 will not insert.
 
-- To enter the hex byte 0xF8 type __ESC ' x F 8__
+- To enter the hex byte 0xF8 type __Esc ' x F 8__
 
 - You can use __^K C__ to copy a block as usual.  If overtype mode is selected,
   the block will overwrite the destination data without changing the size of
   the file.  Otherwise it inserts.
 
-- Hit __ESC X byte &lt;Enter&gt;__, to jump to a particular byte offset.  Hex values
+- Hit __Esc X byte &lt;Enter&gt;__, to jump to a particular byte offset.  Hex values
   can be entered into this prompt like this: 0x2000.
 
 - Search, incremental search, and search &amp; replace all operate as usual.
@@ -2622,7 +2622,7 @@ Used to get user name for EMACS compatible file locks.
 <a name="list"></a>
 ## JOE commands grouped by function
 
-These commands can be entered at the __ESC X__ prompt.
+These commands can be entered at the __Esc X__ prompt.
 
 <p><b>Background programs</b></p>
 
@@ -2875,7 +2875,7 @@ known</td></tr>
 
 <tr valign="top"><td>quote8</td><td>Insert a meta character</td></tr>
 
-<tr valign="top"><td>rtn</td><td>Return key</td></tr>
+<tr valign="top"><td>rtn</td><td>__Return__ / __Enter__ key</td></tr>
 
 <tr valign="top"><td>type</td><td>Insert typed character</td></tr>
 
@@ -3015,7 +3015,7 @@ used to define the status line for the rmsg and lmsg options) and is formatted b
 <p>When you hit __^[ q__, if the character under the cursor is an 'A': "it's a A"
 is inserted into the buffer, otherwise "it's not an A" is inserted.</p>
 
-<p>"if" creates a math prompt (like __ESC M__).  "then" is like "rtn"- it hits the
+<p>"if" creates a math prompt (like __Esc M__).  "then" is like "rtn"- it hits the
 return key for this prompt.</p>
 
 <p>Within the math prompt, the following variables are available:</p>
@@ -3178,7 +3178,7 @@ characters)</td></tr>
 <tr valign="top"><td>paste</td><td>Insert base64 encoded text (for XTerm --enable-base64
 option).</td></tr>
 
-<tr valign="top"><td>brpaste</td><td>Insert text until __ESC [ 2 0 1 ~__ has been received. 
+<tr valign="top"><td>brpaste</td><td>Insert text until __Esc [ 2 0 1 ~__ has been received. 
 This is for bracketed paste support.</td></tr>
 
 </tbody>
