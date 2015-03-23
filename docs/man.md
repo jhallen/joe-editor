@@ -2349,7 +2349,7 @@ The __joerc__ file is broken up into a number of sections:
 * __^T__ menu system definition
   Use :defmenu to define a named menu of macros.  The __menu__ command
 brings up a specific named menu.  __^T__ is a macro which brings up the root
-menu: __mode,"root",rtn__.
+menu: __menu,"root",rtn__.
 
 * Help screen contents
   Each help screen is named.  The name is used to implement context
