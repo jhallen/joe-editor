@@ -2432,7 +2432,7 @@ Unfortunately, when -mouse is selected, cut and paste between X windows
 does not work as it normally does in a shell window (left-click and drag to
 select, middle click to paste).  Instead, you have to hold the shift key
 down to do this: shift-left-click and drag to select, and shift-middle click
-to paste.  Note that pasting text into JOE this way has problems: any `
+to paste.  Note that pasting text into JOE this way has problems: any \`
 characters will get messed up because \` means quote the following control
 character.  Also if auto-indent is enabled, pasted text will not be indented
 properly.
