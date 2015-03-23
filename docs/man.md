@@ -2393,7 +2393,7 @@ __joerc__ file.
 As usual, hit __Tab__ __Tab__ at the prompt for a completion list of the
 menus which exist.
 
-__^T__ is bound to the simple macro __mode,"root",rtn__- it brings up the
+__^T__ is bound to the simple macro __menu,"root",rtn__- it brings up the
 root of the options menu system.
 
 ## Xterm Mouse support
