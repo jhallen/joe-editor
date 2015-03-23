@@ -876,23 +876,23 @@ aspell program (or ispell program if you modify the joerc file).  Hit
 __Esc L__ to check the highlighted block or the entire file if no block is
 highlighted.
 
-JOE passes the language and character enoding to the spell checker.  To
+JOE passes the language and character encoding to the spell checker.  To
 change the langauge, hit __^T V__.
 
-## Over-type mode
+## Overtype mode
 
 Sometimes it's tiresome to have to delete old text before or after you 
 insert new text.  This happens, for example, when you are changing a table 
 and you want to maintain the column position of the right side of the table.  
-When this occurs, you can put the editor in over-type mode with __^T T__.  
+When this occurs, you can put the editor in overtype mode with __^T T__.  
 When the editor is in this mode, the characters you type in replace existing 
 characters, in the way an idealized typewriter would.  Also, __Backspace__ 
 simply moves left instead of deleting the character to the left, when it's 
-not at the end or beginning of a line.  Over-type mode is not the natural 
+not at the end or beginning of a line.  Overtype mode is not the natural 
 way of dealing with text electronically, so you should go back to 
 insert-mode as soon as possible by typing __^T T__ again. 
 
-If you need to insert while you're in over-type mode, hit __^@__.  This
+If you need to insert while you're in overtype mode, hit __^@__.  This
 inserts a single __Space__ into the text.
 
 ## Control and Meta characters
@@ -912,15 +912,17 @@ a __Tab__ character (which does the same thing the __Tab__ key does).  A useful
 control character to enter is 12 (__Esc ' L__), which causes most printers to
 advance to the top of the page.  You'll notice that JOE displays this
 character as an underlined L.  You can enter the characters above 127, the
-__meta characters__, by first hitting __^\___.  This adds 128
+__meta characters__, by first hitting __^\\__.  This adds 128
 to the next (possibly control) character entered.  JOE displays characters
 above 128 in inverse-video.  Some foreign languages, which have more letters
 than English, use the meta characters for the rest of their alphabet.  You
-have to put the editor in __ASIS__ mode to have these
+have to put the editor in __asis__ mode to have these
 passed untranslated to the terminal.
 
-When UTF-8 encoding is used, characters above 255 may be inserted with __Esc
- '__.
+__Note:__ JOE now normally passes all 8-bits to the terminal unless the
+locale is set to C or POSIX.  If the locale is C or POSIX, then the __asis__
+flag determines if __meta characters__ are shown in inverse video or passed
+directly to the terminal.
 
 ## Character sets and UTF-8
 
@@ -957,13 +959,13 @@ The character set will be UTF-8.
 Hit __^T E__ to change the coding for the file.  Hit __Tab__ __Tab__ at
 this prompt to get a list of available codings.  There are a number of
 built-in character sets, plus you can install character sets in the
-~/.joe/charmaps and /usr/local/etc/joe/charmaps directories.
+~/.joe/charmaps and /usr/share/joe/charmaps directories.
 
 Check: /usr/share/i18n/charmaps for example character set files.  Only
 byte oriented character sets will work.  Also, the file should not be
-gzipped (all of the charmap file in /usr/share/i18n/charmaps on my computer
+gzipped (all of the charmap files in /usr/share/i18n/charmaps on my computer
 were compressed).  The parser is very bad, so basically the file has to look
-exactly like the example one in /usr/local/etc/joe/charmaps.
+exactly like the example one in /usr/share/joe/charmaps.
 
 You can hit __^K Space__ to see the current character set.
 
@@ -1403,11 +1405,11 @@ deleting or saving columns of text.  You can also filter columns of text
 with the __^K /__ command- if you want to sort a column, for example.  The
 insert file command, __^K R__ is also affected.
 
-When rectangle mode is selected, over-type mode is also useful
-(__^T T__).  When over-type mode is selected, rectangles will replace
+When rectangle mode is selected, overtype mode is also useful
+(__^T T__).  When overtype mode is selected, rectangles will replace
 existing text instead of getting inserted before it.  Also the delete block
 command (__^K Y__) will clear the selected rectangle with __Spaces__ and __Tabs__
-instead of deleting it.  Over-type mode is especially useful for the filter
+instead of deleting it.  Overtype mode is especially useful for the filter
 block command (__^K /__), since it will maintain the original width of the
 selected column.
 

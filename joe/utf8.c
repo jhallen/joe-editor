@@ -359,7 +359,7 @@ void joe_locale()
 	if (s)
 		s=zdup(s);
 	else
-		s=USTR "ascii";
+		s=USTR "C";
 
 	if ((t=zrchr(s,'.')))
 		*t = 0;
@@ -377,7 +377,7 @@ void joe_locale()
 	if (s)
 		s=zdup(s);
 	else
-		s=USTR "ascii";
+		s=USTR "C";
 
 	u = zdup(s);
 
