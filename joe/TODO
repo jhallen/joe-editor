@@ -1,4 +1,7 @@
 
+grep and build should switch to the current directory first.
+
+
 Improvements:
 
  Long bash lines not quite working correctly...

@@ -1085,7 +1085,7 @@ the search text in the remainder of the file without asking for confirmation
 (subject to the __nnn__ option above), or __^C__ to stop searching and
 replacing.
 
-You can also hit __B__ or __Backspace__ to back up to previously
+You can also hit __B__ or __Backspace__ to back up to the previously
 found text (if it had been replaced, the replacement is undone).
 
 * __a__
@@ -1138,21 +1138,21 @@ the search text, JOE will find AXB, but not AB or AXXB.
 
 * __\^ \$__
 
-These match the beginning and end of a line.  For example, if you give
+These match the beginnings and endings of lines.  For example, if you give
 __\^test\$__, then JOE with find __test__ on a line by itself.
 
 * __\< \\\>__
 
-These match the beginning and end of a word.  For example, if you give
+These match the beginnings and endings of words.  For example, if you give
 __\<\\\*is\\\*\\\>__, then JOE will find whole words which have the
 sub-string __is__ within them.
 
 * __\\\[...]__
 
 This matches any single character which appears within the brackets.  For
-example, if __\[Tt]his__ is entered as the search string, then JOE finds
+example, if __\\\[Tt]his__ is entered as the search string, then JOE finds
 both __This__ and __this__.  Ranges of characters can be entered within
-the brackets.  For example, __\[A-Z]__ finds any uppercase letter.  If
+the brackets.  For example, __\\\[A-Z]__ finds any uppercase letter.  If
 the first character given in the brackets is __^__, then JOE tries to find
 any character not given in the the brackets.
 
@@ -1170,7 +1170,7 @@ __\+__.  For example, if you give __\\\+\\\[ \]__, where the
 characters within the brackets are both __Space__ and __Tab__, then JOE will find
 whitespace.
 
-* __\\__
+* __\\\\__
 
 Matches a single \\.
 
@@ -1186,12 +1186,13 @@ string:
 
 This gets replaced by the text which matched the search string.  For
 example, if the search string was __\<\\\*\\\>__, which matches words, and
-you give __"&"__, then JOE will put quote marks around words.
+you give __"\\&"__, then JOE will put quote marks around words.
 
 * __\0 - \9__
 
 These get replaced with the text which matched the Nth __\\\*__, __\?__,
-__\\\+__, __\c__, or __\\\[...]__ in the search string.
+__\\\+__, __\c__, or __\\\[...]__ in the search string.  __\0__ refers
+to the first one.
 
 * __\\\\__
 
