@@ -335,7 +335,7 @@ Disable periodic file modification check.
 <br>
 
 * nonotice
-This option prevent the copyright notice from being displayed when the
+This option prevents the copyright notice from being displayed when the
 editor starts.
 <br>
 
@@ -371,7 +371,7 @@ window size).
 <br>
 
 * restore
-Set to have cursor position restore to last position of previouly edited
+Set to have cursor positions restored to last positions of previously edited
 files.
 <br>
 
@@ -398,7 +398,7 @@ Transpose rows with columns in all menus.
 <br>
 
 * undo_keep nnn
-Sets number of UNDO records to keep (0 means infinite).
+Sets number of undo records to keep (0 means infinite).
 <br>
 
 * usetabs
@@ -472,6 +472,7 @@ Enable syntax highlighting.
 * highlighter_context
 Enable use of syntax file to identify comments and strings which should be
 skipped over during __^G__ matching.
+<br>
 
 * indentc nnn
 Sets the indentation character for shift left and shift right (__^K ,__ and
@@ -589,7 +590,7 @@ Combine attributes and up to one foreground color and one background color
 to create arguments for color options like text_color.  For example:
 bold+bg_green+blue
 
-* Attributes: bold, inverse, blink, dim, underlined, and italic
+* Attributes: bold, inverse, blink, dim, underline, and italic
 
 * Foreground colors: white, cyan, magenta, blue, yellow, green, red, or black
 
@@ -749,8 +750,8 @@ decide that you don't want the changes you made to a file during a
 particular edit session, you can hit __^C__ to exit the editor without
 saving them.
 
-If you edit a file and save the changes, a "backup" copy of that file is 
-created in the current directory, with a ~ appended to the name, which 
+If you edit a file and save the changes, a backup copy of that file is 
+created in the current directory, with a __~__ appended to the name, which 
 contains the original version of the file.
 
 ## File operations
@@ -774,7 +775,7 @@ or in prompts within the editor, you may also type:
 
 * !command
 
-Read or write data to or from a shell command.  For example,
+To read or write data to or from a shell command.  For example,
 use __joe '!ls'__ to get a copy of your directory listing to edit or from
 within the editor use __^K D !mail jhallen@world.std.com__ to send the
 file being edited to me.
@@ -808,7 +809,7 @@ need to pipe a file into JOE, as in:
 	echo "hi" | joe
 
 If you want to use JOE in a shell script which has its stdin/stdout
-redirected, but you do not need to pipe to it', you should simply redirect
+redirected, but you do not need to pipe to it, you should simply redirect
 JOE's stdin/stdout to /dev/tty:
 
 	joe filename  </dev/tty >/dev/tty
@@ -818,7 +819,7 @@ JOE's stdin/stdout to /dev/tty:
 
 ## Word wrap and formatting
 
-If you type past the right edge of the screen in a C language or PASCAL 
+If you type past the right edge of the screen in a C or PASCAL language 
 file, the screen will scroll to the right to follow the cursor.  If you type 
 past the right edge of the screen in a normal file (one whose name doesn't 
 end in .c, .h or .p), JOE will automatically wrap the last word onto the 
@@ -846,20 +847,20 @@ word wrapper:
   paragraph.  For example, in e-mail quoted matter is indicated by __\>__ 
   at the beginnings of line, so this character should be in the cpara list.
 
-k* The __cnotpara__ option provides a list of characters which, if they are
-  the first non-whitespace character of a line, indicate the line is not
-  included as part of a paragraph for formatting.  For example, lines
+* The __cnotpara__ option provides a list of characters which, if they are
+  the first non-whitespace character of a line, indicate that the line is not
+  to be included as part of a paragraph for formatting.  For example, lines
   beginning with '.' in nroff can not be paragraph lines.
 
-* Autoindent mode effects the formatter.  If autoindent is disabled, only
+* Autoindent mode affects the formatter.  If autoindent is disabled, only
   the first line will be indented.  If autoindent is enabled, the entire
   paragraph is indented.
 
 * __french__ determines how many spaces are inserted after periods.
 
-* When __flowed__ is enabled, a space is inserted after each line but the
-  last of paragraph.  This indicates that the lines belong together as a
-  single paragraph in some programs.
+* When __flowed__ is enabled, a space is inserted after each but the
+  last line of the paragraph.  This indicates that the lines belong together
+  as a single paragraph in some programs.
 
 * When __overtype__ is enabled, the word wrapper will not insert lines.
 
@@ -2796,7 +2797,7 @@ changed.</td></tr>
 
 <tr valign="top"><td>exsave</td><td>Save file and exit</td></tr>
 
-<tr valign="top"><td>lose</td><td>emacs kill buffer.  The buffer is deleted- any windows with
+<tr valign="top"><td>lose</td><td>EMACS kill buffer.  The buffer is deleted- any windows with
 		it get a replacement scratch buffer.</td></tr>
 
 <tr valign="top"><td>querysave</td><td>Prompt to save each modified buffer
