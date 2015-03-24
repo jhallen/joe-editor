@@ -749,11 +749,11 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 
  Compile macro
 
-:def compile querysave,query,scratch,"* Build Log *",rtn,markb,eof," ",markk,blkdel,build
+:def compile mfit!,querysave,query,scratch,"* Build Log *",rtn,markb,eof," ",markk,blkdel,build
 
  Grep
 
-:def grep_find mwind!,mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
+:def grep_find mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
 
  Man page
 

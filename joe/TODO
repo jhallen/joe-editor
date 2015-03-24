@@ -1,3 +1,6 @@
+Scratch always pushes.  Do we want this?  It's weird for ESC c.  Maybe have
+a no-push version of scratch.
+
 jmacs vs. mg vs gnu-emacs:
 
 	c-x b  jmacs: nbuf, gnu: offers prompt with next buffer [fixed, before in jmacs this was bufed]
