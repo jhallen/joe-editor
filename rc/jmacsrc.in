@@ -504,7 +504,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i\|\uSEARCH\u           \|^X[ prev page   \|^K  >line \|^[M math    \|^Y  paste  \|^XS  all   \|\i \i
 \i \i\|^S  forward      \|^X] next page   \|^[D >word \|^[X command \|^[Y switch \|^XI  insert\|\i \i
 \i \i\|^R  backward     \|^[G to line No. \|^[ DEL    \|^XL status  \|^XA file   \|^XK  kill  \|\i \i
-\i \i\|^[% find&replace \|^XG matching ([{\|    word< \|^U  repeat  \|^X| filter \|^Xb  switch\|\i \i
+\i \i\|^[% find&replace \|^XG matching ([{\|    word< \|^U  repeat  \|^X| filter \|^XB  switch\|\i \i
 }
 
 {Editing 
@@ -663,6 +663,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
  Macros may cross lines if they end with ,
 
+
 :windows		Bindings common to all windows
 type		^@ TO ÿ		Self insert
 abort		^G		Abort window
@@ -682,22 +683,28 @@ hprev		^X ,
 math		^[ m		Calculator
 math		^[ M
 nextw		^X o		Other window
+nextw		^X O		Other window
 pgdn		.kN		Screen down
 pgdn		^V
 pgdn		^[ [ 6 ~
  pgdn      ^# S
 pgup		.kP		Screen up
 pgup		^[ v
+pgup		^[ V
 pgup		^[ [ 5 ~
  pgup      ^# T
 play,"0"	^X e		Execute keyboard macro
+play,"0"	^X E		Execute keyboard macro
 prevw		^X p		Previous window (uemacs)
+prevw		^X P		Previous window (uemacs)
 query		^X q		Query insert
+query		^X Q		Query insert
 record,"0"	^X (		Record macro
 retype		^L		Refresh screen
 rtn		^M		Return
 shell		^Z		Suspend
 shell		^[ s		Suspend (uemacs)
+shell		^[ S		Suspend (uemacs)
 stop		^X )		Stop recording macro
   Mouse handling
 defmdown	MDOWN		Move the cursor to the mouse location
@@ -796,50 +803,48 @@ eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
  eol			^# SP @		Amiga
 
-  Macros for non-existant Emacs functions
+  Editor Macros (for EMACS)
 
  Better off not having this: JOE automatically figure out the fill
  prefix.  If you really want to set the left margin, use ^[ ^[ L.
  mode,"lmargin",rtn,"col",rtn	^X .			Left fill prefix (left margin)
 
-eof,drop,msg,"Mark set",rtn,bof	^X H			Select entire file
-eof,drop,msg,"Mark set",rtn,bof	^X h
+ Select entire file
+:def markall eof,drop,msg,"Mark set",rtn,bof
 
-psh,nextword-,markk,prevword-,markb,
-upper,nextword-	^[ u		Upcase word
+ Convert word to upper case
+:def upcaseword psh,nextword-,markk,prevword-,markb,upper,nextword-
 
-psh,nextword-,markk,prevword-,markb,
-lower,nextword-	^[ l		Downcase word
+ Convert word to lower case
+:def dncaseword psh,nextword-,markk,prevword-,markb,lower,nextword-
 
-psh,if,"arg>=0",then,
-  nextword,markk,prevword,markb,lower,
-  rtarw,markk,upper,nextword,
+ Capitalize word
+:def capword psh,if,"arg>=0",then,
+ nextword,markk,prevword,markb,lower,rtarw,markk,upper,nextword,
 else,
-  prevword,markb,nextword,markk,lower,
-  prevword,rtarw,markk,upper,ltarw,
-endif	^[ c			Capitalize word
+ prevword,markb,nextword,markk,lower,prevword,rtarw,markk,upper,ltarw,
+endif
 
-psh,markk,lower		^X ^L	Downcase region
-
-psh,markk,upper		^X ^U	Upcase region
-
-psh,if,"arg>=0",then,
+ Transpose characters
+:def transpc psh,if,"arg>=0",then,
   ltarw,markb,rtarw,markk,rtarw,
   blkmove,rtarw,
 else,
   markk,ltarw,markb,ltarw,blkmove,
   rtarw,
-endif	^T			Transpose chars
+endif
 
-psh,if,"arg>=0",then,
+ Transpose lines
+:def transpl psh,if,"arg>=0",then,
   uparw,bol,markb,dnarw,markk,dnarw,
   blkmove,dnarw,
 else,
   bol,markk,uparw,markb,uparw,blkmove,
   dnarw,
-endif	^X ^T			Transpose lines
+endif
 
-psh,if,"arg>=0",then,
+ Transpose words
+:def transpw psh,if,"arg>=0",then,
   prevword,nextword,nextword,markk,
   prevword,markb,setmark,":",prevword,
   nextword,blkmove,markk,prevword,
@@ -849,9 +854,70 @@ else,
   prevword,markb,setmark,":",prevword,
   nextword,blkmove,markk,prevword,
   markb,gomark,":",blkmove,prevword,nextword,
-endif	^[ t			Transpose words
+endif
 
-eop-,bop-,markb,eop-	^[ h			Mark paragraph
+ Mark paragraph
+:def markp eop-,bop-,markb,eop-
+
+ Cut to character
+:def cutc psh,drop,fwrdc-,query,markk,blkdel
+
+ Append to file
+:def appendtofile psh,markk,if,"markv",then,blksave,bol,">>",eol,query,else,save,bol,deleol,">>",query,endif
+
+ Recenter
+:def recenter retype,arg,"top+height/2-line",rtn,upslide
+
+ Move to center line
+:def midline arg,"top+height/2-line",rtn,dnarw
+
+ Count lines in region
+:def linesregn psh,markk,swap,math,"z=line",rtn,swap,math,"line-z",rtn,msg,math,"ans",rtn," lines in region",rtn
+
+ Next error, force windows on screen
+:def nxterrforce mwind,mfit,prevw,nxterr
+
+ Prev error, force windows on screen
+:def prverrforce mwind,mfit,prevw,prverr
+
+ Go to next page or eof
+:def nextpage ffirst,"",rtn,if,"!joe(\"bn\",rtn)",then,bof,msg,"Beginning of buffer",rtn,endif
+
+ Go to previous page or bof
+:def prevpage ffirst,"",rtn,if,"!joe(\"n\",rtn)",then,eof,msg,"End of buffer",rtn,endif
+
+ Indent region
+:def indentregion if,"markv",then,rindent-!,else,markk,rindent-!,endif
+
+ Tags search other window
+:def tagsother psh,nextword,prevword,markb,nextword,markk,copy,
+ensure_other,prevw,tag," ",bol,deleol,yank,yankpop,query!,nextw
+
+markall		^X H
+markall		^X h
+
+upcaseword	^[ u
+upcaseword	^[ U
+
+dncaseword	^[ l
+dncaseword	^[ L
+
+capword		^[ c
+capword		^[ C
+
+psh,markk,lower		^X ^L		Downcase region
+
+psh,markk,upper		^X ^U		Upcase region
+
+transpc		^T			Transpose chars
+
+transpl		^X ^T			Transpose lines
+
+transpw		^[ t			Transpose words
+transpw		^[ T			Transpose words
+
+markp		^[ h			Mark paragraph
+markp		^[ H			Mark paragraph
 
 nextword-,prevword-,markb,nextword-	^[ @	Mark word
 
@@ -861,9 +927,13 @@ nextword-,prevword-,markb,nextword-	^[ @	Mark word
 bol,insc,ltarw!,delw,if,"col != 1",then,insc,endif	^[ ^		Delete indentation
 
 psh,markk,copy,msg,"Region saved",rtn	^[ w	Yank copy
+psh,markk,copy,msg,"Region saved",rtn	^[ W	Yank copy
 
 mode,"rmargin",rtn,"col",rtn,
 msg,"Fill-column set",rtn		^X f	Set right margin
+
+mode,"rmargin",rtn,"col",rtn,
+msg,"Fill-column set",rtn		^X F	Set right margin
 
 bol,rtn,backw,rtn,rtn,uparw,delw	^X ^O	Delete blank lines
 
@@ -883,6 +953,8 @@ savenow			^X ^S			Save file
 
 querysave		^X s
 
+querysave		^X S
+
 drop,msg,"Mark set",rtn	^@			Drop anchor
 
 ensure_other,nextw,pgdn-!,prevw	^[ ^V			Scroll other window down
@@ -890,6 +962,7 @@ ensure_other,nextw,pgdn-!,prevw	^[ ^V			Scroll other window down
 ensure_other,nextw,pgup-!,prevw	^[ ^Z			Scroll other window up
 
  bol,nedge,pedge	^[ m			Gnu-emacs goto indentation
+ bol,nedge,pedge	^[ M			Gnu-emacs goto indentation
 						(prefer ESC m to be math)
 
 ensure_other,nextw,nbuf-!,prevw	^X 4 b			Switch buffers other window
@@ -898,35 +971,41 @@ ensure_other,nextw,edit,query,prevw	^X 4 f			Find file other window
 
 ensure_other,nextw,edit,query,prevw	^X 4 ^F
 
-psh,nextword,prevword,markb,nextword,markk,copy,
-ensure_other,prevw,tag," ",bol,deleol,yank,yankpop,query!,nextw	^X 4 .
+tagsother		^X 4 .		Tags search other windows
+
 
 querysave,query,killjoe	^X ^C			Query to save files, then exit
 
 lose,query		^X k			Kill buffer in window
 
+lose,query		^X K			Kill buffer in window
+
  lose,query,edit		^X ^V		Edit a file: no orphaned buffers
 reload			^X ^V			Reload current file
 
-psh,drop,fwrdc-,query,markk,blkdel	^[ z	Cut to char
+cutc		^[ z		Cut to character
+cutc		^[ Z		Cut to character
 
-psh,markk,if,"markv",then,blksave,bol,">>",eol,query,else,save,bol,deleol,">>",query,endif	^X a
+appendtofile	^X a
+appendtofile	^X A
 
-retype,
-arg,"top+height/2-line",rtn,upslide	^L	Recenter
+recenter	^L		Recenter
 
-arg,"top+height/2-line",rtn,dnarw	^[ r	Move to center line
+midline		^[ r		Move to center line
+midline		^[ R
 
-psh,markk,swap,math,"z=line",rtn,
-swap,math,"line-z",rtn,msg,math,"ans",rtn,
-" lines in region",rtn			^[ =	Count lines region
+linesregn	^[ =		Count lines region
 
 mode,"rdonly",rtn	^X ^Q	Toggle read-only
 
-compile					^X c	Compile
-mwind,mfit,prevw,nxterr					^X n
-mwind,mfit,prevw,nxterr					^X `
-mwind,mfit,prevw,prverr					^X p
+compile		^X c	Compile
+compile		^X C	Compile
+
+nxterrforce	^X n	Next error
+nxterrforce	^X N
+nxterrforce	^X `
+prverrforce	^X p	Previous error
+prverrforce	^X P
 
 backs		^?		Backspace
 backs		^H
@@ -934,13 +1013,14 @@ backw		^[ ^?		Backspace word
 backw		^[ ^H
 bknd		^X '		Shell window (joe)
 bof		^[ <		Goto beginning of file
-ffirst,"",rtn,if,"!joe(\"bn\",rtn)",then,bof,msg,"Beginning of buffer",rtn,endif	^X [	Go to next page or eof
+nextpage	^X [		Go to next page or eof
  bof		^X [
 home		.kh		Goto beginning of line
 home		^A
 home		^[ [ H
 home		^[ [ 1 ~
 bop		^[ p		(uemacs)
+bop		^[ P		(uemacs)
 bop		^[ {
 bufed		^X ^B
 bknd		^[ '		Shell window
@@ -950,6 +1030,7 @@ delch		.kD		Delete character
 delch		^D
 deleol		^K		Delete to end of line
 delw		^[ d		Delete word
+delw		^[ D		Delete word
 dnarw		.kd		Go down
 dnarw		^N
 dnarw		^[ O B
@@ -961,7 +1042,7 @@ edit		^X ^F		Edit a file: creates orphaned buffers
  edit		^X d		Should be dired, but maybe user wants to edit?
 eof		^[ >		Go to end of file
 
-ffirst,"",rtn,if,"!joe(\"n\",rtn)",then,eof,msg,"End of buffer",rtn,endif	^X ]	Go to next page or eof
+prevpage	^X ]		Go to next page or eof
 
  eof		^X ]
 eol		.kH		Go to end of line
@@ -970,20 +1051,26 @@ eol		^E
 eol		^[ [ F
 eol		^[ [ 4 ~
 eop		^[ n		(uemacs)
+eop		^[ N		(uemacs)
 eop		^[ }
 execmd		^[ x
+execmd		^[ X
 insc		^C		(uemacs)
  ffirst		^S		Search forward
 isrch		^S
 ffirst		^\
 psh,markk,filt,query	^[ |		Filter block
 format		^[ q		Format paragraph
+format		^[ Q		Format paragraph
 gomark		^X /		Goto bookmark
 groww		^X ^		Enlarge window
 groww		^X z		(uemacs)
+groww		^X Z		(uemacs)
 insf		^X i		Insert a file
+insf		^X I		Insert a file
 yapp		^[ ^W		Append next kill
 line		^[ g		Goto line (uemacs)
+line		^[ G		Goto line (uemacs)
 ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
@@ -992,23 +1079,28 @@ ltarw		^[ [ D
  mode		^[ ^[		Change modes
 menu,"root",rtn	^[ ^[
 nbuf		^X b		Next buffer in current window (but it should prompt)
+nbuf		^X B		Next buffer in current window (but it should prompt)
 nbuf		^X x		(uemacs)
+nbuf		^X X		(uemacs)
  nextpos		^K =		Goto next position in position history
 nextword	^[ f		Goto next word
+nextword	^[ F		Goto next word
 notmod		^[ ~		Not modified
 open		^O		Split line
 open		^[ ^O
  pbuf		^X b		Previous buffer in current window
  prevpos		^K -	Goto previous position in position history
 prevword	^[ b		Previous word
+prevword	^[ B		Previous word
 qrepl		^[ %		Query replace
  qrepl		^[ r		Query replace (uemacs)
 qrepl		^[ ^R		Query replace (uemacs)
 redo		^^		Redo changes
  rfirst		^R		Search backwards
 rsrch		^R		Incremental search backwards
-if,"markv",then,rindent-!,else,markk,rindent-!,endif	^X ^I
-if,"markv",then,rindent-!,else,markk,rindent-!,endif	^[ ^\
+
+indentregion	^X ^I
+indentregion	^[ ^\
  markk,rindent	^[ ^\
 rtarw		.kr		Go right
 rtarw		^F
@@ -1018,19 +1110,24 @@ rtarw		^[ [ C
 run		^[ !
 save		^X ^W		Write file
 setmark		^X j		Set bookmark
+setmark		^X J		Set bookmark
 shrinkw		^X ^Z		(uemacs)
 splitw		^X 2		Split window
 stat		^X l		Gnu-Emacs Show status
+stat		^X L		Gnu-Emacs Show status
 stat		^X ?		JED
 stat		^X =		Gnu-Emacs
 swap		^X ^X		Swap mark and cursor
 tag		^[ .		Tag search
 tagjump		^[ ,		Jump to next match
 tomatch		^X g		Goto matching parenthasis (joe)
+tomatch		^X G		Goto matching parenthasis (joe)
 tomatch		^[ ^F		(uemacs)
 txt		^X t		Prompt for text to insert
+txt		^X T		Prompt for text to insert
 undo		^_		Undo changes
 undo		^X u
+undo		^X U
 uparw		.ku		Go up
 uparw		^P
 uparw		^[ O A
@@ -1040,6 +1137,7 @@ upslide		^X ^P		Slide up (uemacs)
 upslide,upslide,upslide,upslide		MWUP
 yank		^Y		Yank deleted text
 yankpop		^[ y		Yank-pop
+yankpop		^[ Y		Yank-pop
 shell1		^[ [ 1 1 ~
 shell1		^[ O P
 shell1		^[ [ [ A
@@ -1121,6 +1219,7 @@ pgdnmenu	^[ [ 6 ~
  pgdnmenu  ^# S
 pgupmenu	.kP		Screen up
 pgupmenu	^[ v
+pgupmenu	^[ V
 pgupmenu	^[ [ 5 ~
  pgupmenu  ^# T
 rtarwmenu	.kr
