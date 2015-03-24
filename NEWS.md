@@ -16,6 +16,7 @@
 	* ^X 0 printed an exit message for no reason
 	* ^X 0 now can pop shell windows
 	* M-^ deleted indentation but did not join with previous line
+	* Ignore case for letter commands: ^X i and ^X I are the same
 
 * ESC g (grep/find) and ESC c (compile) improvements
 	* Change to the current directory before running the command
