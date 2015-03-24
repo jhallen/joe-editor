@@ -17,10 +17,11 @@
 	* ^X 0 now can pop shell windows
 	* M-^ deleted indentation but did not join with previous line
 
-* ESC g (grep) and ESC c (compile) improvements
-	* They now change to the current directory
-	* They show the current directory
-	* They show the exit status of the command
+* ESC g (grep/find) and ESC c (compile) improvements
+	* Change to the current directory before running the command
+	* Show the current directory compile window
+	* Show the exit status in the compile window
+	* More consistent window setup
 
 * Default locale
 	* If no locale set, default to C / POSIX, not ISO-8859-1
