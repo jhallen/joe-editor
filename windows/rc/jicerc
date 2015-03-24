@@ -55,7 +55,7 @@
  -option	Установка опции
  --option	Сброс опции
 
- -help_is_utf8	Установить, если текст подсказки - в кодировке UTF-8.  Иначе будет считаться, что она -
+-help_is_utf8	Установить, если текст подсказки - в кодировке UTF-8.  Иначе будет считаться, что она -
 		в обычной 8-битной кодировке.
 
  -mid		При скроллинге выполнять центрирование курсора
@@ -541,7 +541,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i\b\|^K]\b     Конец  \|\b^K\\\b Повтор      \|\b^[Z\b Вниз  \|\b^[!\b Команда \|\b^[K\b To ^KK \|\b^[S\b Вперед   \|\i \i
 \i \i\b\|^K 0-9\b  Выполн.\|\b^[M\b Калькулятор \|\b^K<\b Влево \|\uQUOTE\u       \|\uУДАЛЕНИЕ\u   \|\uМЕТКИ\u        \|\i \i
 \i \i\b\|^K?\b     Query  \|\b^KA\b Центриров.  \|\b^K>\b Вправо\|\b`\b  Ctrl-    \|\b^[Y\b отмена \|\b^[ 0-9\b Goto  \|\i \i
-\i \i\b\|^[D\b     Дамп   \|\b^[H\b Сообщение   \|          \|\b^\\\b Meta-    \|\b^[O\b стр.<  \|\b^[^[\b Установ.\i \|\i
+\i \i\b\|^[D\b     Дамп   \|\b^[H\b Сообщение   \|          \|\b^\\\b Meta-    \|\b^[O\b стр.<  \|\b^[^[\b Установ. \|\i \i
 }
 
 {Programs
@@ -568,7 +568,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {SearchOptions
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Окно ПОДСКАЗКИ - \|выключить по F1    пред.экран - ^P     след. экран ^N      \i
 \i \iSearch options:                                                              \|\i \i
 \i \i   r Replace                                                                 \|\i \i
 \i \i   k Restrict search to highlighted block, which can be rectangular          \|\i \i
@@ -582,7 +582,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Math
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Окно ПОДСКАЗКИ - \|выключить по F1    пред.экран - ^P     след. экран ^N      \i
 \i \i \uCOMMANDS\u (hit ESC m for math)  \uFUNCTIONS\u                                    \|\i \i
 \i \i     hex hex display mode       sin cos tab asin acos atan                   \|\i \i
 \i \i     dec decimal mode           sinh cosh tanh asinh acosh atanh             \|\i \i
@@ -618,7 +618,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {CharTable
-\i   Help Screen    \|turn off with F1     prev. screen ^P                         \i
+\i   Окно ПОДСКАЗКИ - \|выключить по F1    пред.экран - ^P     след. экран ^N      \i
 \i \i\| Dec  \u 0123 4567  8901 2345    0123 4567  8901 2345 \u  Dec \|\i \i
 \i \i\|     |                                              |     \|\i \i
 \i \i\|   0 | \u@ABC\u \uDEFG\u  \uHIJK\u \uLMNO\u    \i\u@ABC\u\i \i\uDEFG\u\i  \i\uHIJK\u\i \i\uLMNO\u\i | 128 \|\i \i
