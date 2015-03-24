@@ -2842,7 +2842,7 @@ unsigned char **getbufs(void)
 	B *b;
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name)
+		if (b->name && !b->internal)
 			s = vaadd(s, vsncpy(NULL, 0, sz(b->name)));
 	return s;
 }
