@@ -762,10 +762,10 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
  Shell windows
  We load the already existing Startup Log first so that Shell does not inherit the current directory.
 
-:def shell1 scratch,"* Startup Log *",rtn,scratch,"* Shell 1 *",rtn,vtbknd!,eof
-:def shell2 scratch,"* Startup Log *",rtn,scratch,"* Shell 2 *",rtn,vtbknd!,eof
-:def shell3 scratch,"* Startup Log *",rtn,scratch,"* Shell 3 *",rtn,vtbknd!,eof
-:def shell4 scratch,"* Startup Log *",rtn,scratch,"* Shell 4 *",rtn,vtbknd!,eof
+:def shell1 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 1 *",rtn,vtbknd!,eof
+:def shell2 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 2 *",rtn,vtbknd!,eof
+:def shell3 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 3 *",rtn,vtbknd!,eof
+:def shell4 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 4 *",rtn,vtbknd!,eof
 
  Macros allowed in shell window commands
 :def shell_clear psh,bof,markb,eof,markk,blkdel

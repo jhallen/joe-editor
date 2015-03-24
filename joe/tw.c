@@ -794,6 +794,8 @@ int utw0(BASE *b)
 {
 	BW *bw = b->parent->main->object;
 
+	if (bw->parent->bstack)
+		return uabort(bw, -1);
 	if (countmain(b->parent->t) == 1)
 		return -1;
 	if (bw->b->count == 1)

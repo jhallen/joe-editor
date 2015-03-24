@@ -788,6 +788,59 @@ int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 		vsrm(current_dir);
 	er = berror;
 
+	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) { /* Last reference on dirty buffer */
+		if (orphan || bw->b->scratch) {
+			orphit(bw);
+		} else {
+			if (uduptw(bw)) {
+				brm(b);
+				return -1;
+			}
+			bw = (BW *) maint->curwin->object;
+		}
+	}
+	if (er) {
+		msgnwt(bw->parent, joe_gettext(msgs[-er]));
+		if (er != -1) {
+			ret = -1;
+		}
+	}
+	object = bw->object;
+	w = bw->parent;
+	bwrm(bw);
+	w->object = (void *) (bw = bwmk(w, b, 0));
+	wredraw(bw->parent);
+	bw->object = object;
+	vsrm(s);
+	if (er == -1 && bw->o.mnew) {
+		exmacro(bw->o.mnew,1);
+	}
+	if (er == 0 && bw->o.mold) {
+		exmacro(bw->o.mold,1);
+	}
+	return ret;
+}
+
+int doscratchpush(BW *bw, unsigned char *s, void *obj, int *notify)
+{
+	int ret = 0;
+	int er;
+	void *object;
+	W *w;
+	B *b;
+	unsigned char *current_dir = vsdup(bw->b->current_dir);
+	if (notify) {
+		*notify = 1;
+	}
+
+	b = bfind_scratch(s);
+	/* Propogate current directory to scratch buffer */
+	if (!b->current_dir)
+		b->current_dir = current_dir;
+	else
+		vsrm(current_dir);
+	er = berror;
+
 	if (!bw->b->scratch)
 		wpush(bw);
 
@@ -827,6 +880,15 @@ int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 int uscratch(BW *bw)
 {
 	if (wmkpw(bw->parent, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, doscratch, USTR "Names", NULL, cmplt, NULL, NULL, locale_map, 1)) {
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+int uscratch_push(BW *bw)
+{
+	if (wmkpw(bw->parent, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, doscratchpush, USTR "Names", NULL, cmplt, NULL, NULL, locale_map, 1)) {
 		return 0;
 	} else {
 		return -1;
@@ -914,9 +976,9 @@ int get_buffer_in_window(BW *bw, B *b)
 int unbuf(BW *bw)
 {
 	B *b;
-	b = bnext();
+	b = bnext(); /* bnext() returns NULL if there are no non-internal buffers */
 	if (!b)
-		return -1;
+		return -1; /* No non-internal buffer to switch to */
 	if (b == bw->b) {
 		b = bnext();
 	}
@@ -1193,7 +1255,8 @@ static int doquerysave(BW *bw,int c,struct savereq *req,int *notify)
 			if (notify)
 				*notify = 1;
 			rmsavereq(req);
-			return -1;
+			genexmsgmulti(bw,1,req->not_saved);
+			return 0;
 		}
 		bw = w->object;
 		if (bw->b==req->first) {
@@ -1247,7 +1310,7 @@ int uquerysave(BW *bw)
 		if (bw->b->changed && !bw->b->scratch)
 			return doquerysave(bw,0,mksavereq(query_next,NULL,first,0,0),NULL);
 		else if (unbuf(bw))
-			return -1;
+			break;
 		bw = w->object;
 	} while(bw->b!=first);
 
