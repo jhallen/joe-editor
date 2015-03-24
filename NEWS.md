@@ -14,6 +14,7 @@
 * Minor jmacs fixes:
 	* ^X b / ^X ^B were reversed
 	* ^X 0 printed an exit message for no reason
+	* ^X 0 now can pop shell windows
 	* M-^ deleted indentation but did not join with previous line
 
 * ESC g (grep) and ESC c (compile) improvements
