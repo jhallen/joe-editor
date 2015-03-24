@@ -4,6 +4,10 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Allow macros after :def to cross lines
+
+* Make ^K ^SPACE same as ^K SPACE
+
 * Fix lockup which would happen if you try querysave when the only buffer
   left is the startup log.
 
@@ -12,14 +16,14 @@
 	* ^X 0 printed an exit message for no reason
 	* M-^ deleted indentation but did not join with previous line
 
-* ESC g (grep) and ESC c (compile) now obey the current directory
+* ESC g (grep) and ESC c (compile) improvements
+	* They now change to the current directory
+	* They show the current directory
+	* They show the exit status of the command
 
-* ESC g (grep) and ESC c (compile) now show the current directory and print
-the exit status of the command
-
-* If no locale set, default to C / POSIX, not ISO-8859-1
-
-* If no locale is C / POSIX, set language to en_US (for aspell).
+* Default locale
+	* If no locale set, default to C / POSIX, not ISO-8859-1
+	* If locale is C / POSIX, set language to en_US (for aspell).
 
 ### JOE 3.8 Native Windows Version
 
