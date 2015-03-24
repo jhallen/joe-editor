@@ -662,7 +662,8 @@ static int naborttw(BW *bw, int k, void *object, int *notify)
 	if (k != YES_CODE && !yncheck(yes_key, k))
 		return -1;
 
-	genexmsg(bw, 0, NULL);
+	if (bw->b->count == 1)
+		genexmsg(bw, 0, NULL);
 	return abortit(bw);
 }
 

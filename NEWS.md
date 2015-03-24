@@ -4,6 +4,11 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Minor jmacs fixes:
+	* ^X b / ^X ^B were reversed
+	* ^X 0 printed an exit message for no reason
+	* M-^ deleted indentation but did not join with previous line
+
 * ESC g (grep) and ESC c (compile) now obey the current directory
 
 * ESC g (grep) and ESC c (compile) now show the current directory and print

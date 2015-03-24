@@ -504,7 +504,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i\|\uSEARCH\u           \|^X[ prev page   \|^K  >line \|^[M math    \|^Y  paste  \|^XS  all   \|\i \i
 \i \i\|^S  forward      \|^X] next page   \|^[D >word \|^[X command \|^[Y switch \|^XI  insert\|\i \i
 \i \i\|^R  backward     \|^[G to line No. \|^[ DEL    \|^XL status  \|^XA file   \|^XK  kill  \|\i \i
-\i \i\|^[% find&replace \|^XG matching ([{\|    word< \|^U  repeat  \|^X| filter \|^X^B switch\|\i \i
+\i \i\|^[% find&replace \|^XG matching ([{\|    word< \|^U  repeat  \|^X| filter \|^Xb  switch\|\i \i
 }
 
 {Editing 
@@ -857,7 +857,8 @@ nextword-,prevword-,markb,nextword-	^[ @	Mark word
 
 "()",ltarw		^[ (			Insert ()
 
-bol,insc,delw		^[ ^			Delete indentation
+ bol,insc,delw		^[ ^			Delete indentation
+bol,insc,ltarw!,delw,if,"col != 1",then,insc,endif	^[ ^		Delete indentation
 
 psh,markk,copy,msg,"Region saved",rtn	^[ w	Yank copy
 
@@ -941,7 +942,7 @@ home		^[ [ H
 home		^[ [ 1 ~
 bop		^[ p		(uemacs)
 bop		^[ {
-bufed		^X b
+bufed		^X ^B
 bknd		^[ '		Shell window
 crawlr		^X >		Scroll to the right
 crawll		^X <		Scroll to the left
@@ -957,6 +958,7 @@ dnarw		^[ [ B
 dnslide		^X ^N		Slide down (uemacs)
 dnslide,dnslide,dnslide,dnslide		MWDOWN
 edit		^X ^F		Edit a file: creates orphaned buffers
+ edit		^X d		Should be dired, but maybe user wants to edit?
 eof		^[ >		Go to end of file
 
 ffirst,"",rtn,if,"!joe(\"n\",rtn)",then,eof,msg,"End of buffer",rtn,endif	^X ]	Go to next page or eof
@@ -989,7 +991,7 @@ ltarw		^[ [ D
  ltarw          ^# D
  mode		^[ ^[		Change modes
 menu,"root",rtn	^[ ^[
-nbuf		^X ^B		Next buffer in current window
+nbuf		^X b		Next buffer in current window (but it should prompt)
 nbuf		^X x		(uemacs)
  nextpos		^K =		Goto next position in position history
 nextword	^[ f		Goto next word

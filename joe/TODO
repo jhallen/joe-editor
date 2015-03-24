@@ -1,32 +1,23 @@
 jmacs vs. mg vs gnu-emacs:
 
-	c-x c-b  list buffers  (jmacs does nothing: maybe bring up bufed
-	prompt).
+	c-x b  jmacs: nbuf, gnu: offers prompt with next buffer [fixed, before in jmacs this was bufed]
+	c-x c-b	jmacs: bufed prompt.  gnu: menu. [fixed, before in jmacs this was nbuf]
+	c-x 0  (delete window) prints exit message even when we are not abandoning the file - why? [fixed]
+	M-^: jmacs: deletes indentation, blank lines below.  gnu: deletes indentation, blank line above- pulls current line to end of previous [fixed]
 
-	c-x c-r find file read only   (jmacs does nothing)
-
-	c-x c-v find alternate file (jmacs reloads original, gnu/mg unloads
-	original and prompts for name of new one, preloaded with original)
-
-	c-x c-w write file?  (prompts) compare with c-x c-s (saves to
-	original, but asks first) jmacs just saves
-
-	c-x 0  (delete window) prints exit message even when we are not
-	abandoning the file - why?
-
-	c-x d  dired (maybe do ^K E.. most likely user wants to edit a file)
-
-	esc ^   join-line? (deletes blank lines below in jmacs)
+	c-x c-s	jmacs: saves file.  gnu: prompts before saving.
+	c-x c-v jmacs: reload original.  gnu: prompts with original as default.
+	c-x d: jmacs: nothing.  gnu: menu.
+	c-x c-r: jmacs: nothing.  gnu: load file in read-only mode.
 
 	esc m  back to indentation (math in joe)
 
-	Don't care about these non-standard ones:
+	Non-standard:
 
 	c-x g  is goto line in mg, is goto matching delimiter in jmacs, udf gnu
 	c-x p  previous window in mg  (prev error in jmacs), udf gnu
 	c-x n  other window in mg   (next error in jmacs), udf gnu
 	esc s search forwards   (suspend in jmacs, submenus in gnu)
-
 	esc r  search backwards  (move to center line in jmacs and gnu)
 
 Timing fix for bracketed paste should disable spaces.  We should have a mode
