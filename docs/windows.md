@@ -20,10 +20,10 @@ appear to hang when run.  You may be able to stop them by moving the cursor
 away from the end of file and pressing ^C to terminate.  If that doesn't
 work, try task manager.
 
-Some programs can be made to work, for example Python needs the "-i" switch
-to function properly.  The shell windows interact with applications
-similarly to the way that mintty does.  If there is a workaround for mintty,
-it will likely work for JOE.
+Some programs can be made to work, for example Python will behave if given
+the "-i" switch.  The shell windows interact with applications similarly to
+the way that mintty does.  If there is a workaround for mintty, it will
+likely work for JOE.
 
 ### Appearance
 
@@ -50,8 +50,19 @@ You can override any of these files or settings by sticking a copy in your
 (where %LOCALAPPDATA% is the value of that environment variable -- it's
 usually C:\\Users\\(your user name)\\AppData\\Local\\JoeEditor).
 
-* Place any *rc files in the root of that directory
+* Place any \*rc files in the root of that directory
 
-* Place any *.jsf files in the syntax\\ subdirectory
+* Place any \*.jsf files in the syntax\\ subdirectory
 
-* Place any *.joecolor (color scheme) files in the schemes\\ subdirectory
+* Place any \*.joecolor (color scheme) files in the schemes\\ subdirectory
+
+### What is not implemented or different?
+
+JOE for Windows strives for feature parity with mainline JOE, but some
+things have not been implemented:
+
+* File locks
+* File open/save pipe syntax (load/save "!command")
+* Environment variables are completely ignored.  Most of them don't map well
+to Windows anyhow.
+* Probably more?
