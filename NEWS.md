@@ -16,6 +16,8 @@ the exit status of the command
 
 * If no locale set, default to C / POSIX, not ISO-8859-1
 
+* If no locale is C / POSIX, set language to en_US (for aspell).
+
 ### JOE 3.8 Native Windows Version
 
 [Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/joewin.msi/download)

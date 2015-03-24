@@ -92,6 +92,7 @@ void rm_zs PARAMS((ZS z));
 
 size_t zlen PARAMS((unsigned char *s));
 int zcmp PARAMS((unsigned char *a, unsigned char *b));
+int zicmp PARAMS((unsigned char *a, unsigned char *b));
 int zmcmp PARAMS((unsigned char *a, unsigned char *b));
 int zncmp PARAMS((unsigned char *a, unsigned char *b, size_t len));
 unsigned char *zdup PARAMS((unsigned char *s));

@@ -292,6 +292,33 @@ int zcmp(unsigned char *a, unsigned char *b)
 	return strcmp((char *)a, (char *)b);
 }
 
+/* Only if you know for sure that the text is ASCII */
+
+int zicmp(unsigned char *a, unsigned char *b)
+{
+	unsigned char ca;
+	unsigned char cb;
+	while (*a && *b) {
+		ca = *a;
+		cb = *b;
+		if (ca >= 'a' && ca <= 'z')
+			ca += 'A' - 'a';
+		if (cb >= 'a' && cb <= 'z')
+			cb += 'A' - 'a';
+		if (ca > cb)
+			return 1;
+		if (ca < cb)
+			return -1;
+		++a;
+		++b;
+	}
+	if (*a)
+		return 1;
+	if (*b)
+		return -1;
+	return 0;
+}
+
 /* Tags file string matcher */
 /* a can be something like: "class::subclass::member"
  * b can be:
