@@ -915,6 +915,8 @@ int unbuf(BW *bw)
 {
 	B *b;
 	b = bnext();
+	if (!b)
+		return -1;
 	if (b == bw->b) {
 		b = bnext();
 	}
@@ -925,6 +927,8 @@ int upbuf(BW *bw)
 {
 	B *b;
 	b = bprev();
+	if (!b)
+		return -1;
 	if (b == bw->b) {
 		b = bprev();
 	}

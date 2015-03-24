@@ -4,6 +4,9 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Fix lockup which would happen if you try querysave when the only buffer
+  left is the startup log.
+
 * Minor jmacs fixes:
 	* ^X b / ^X ^B were reversed
 	* ^X 0 printed an exit message for no reason

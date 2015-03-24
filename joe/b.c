@@ -156,8 +156,12 @@ void set_file_pos_orphaned()
 
 B *bafter(B *b)
 {
-	for (b = b->link.next; b->internal || b->scratch || b == &bufs; b = b->link.next);
-	return b;
+	B *first = b;
+	for (b = b->link.next; b != first && (b->internal || b->scratch || b == &bufs); b = b->link.next);
+	if (b == first)
+		return NULL;
+	else
+		return b;
 }
 
 int udebug_joe(BW *bw)
@@ -189,26 +193,34 @@ int udebug_joe(BW *bw)
 
 B *bnext(void)
 {
+	B *first = bufs.link.prev;
 	B *b;
 
 	do {
 		b = bufs.link.prev;
 		deque(B, link, &bufs);
 		enqueb(B, link, b, &bufs);
-	} while (b->internal);
-	return b;
+	} while (b->internal && bufs.link.prev != first);
+	if (bufs.link.prev == first)
+		return NULL;
+	else
+		return b;
 }
 
 B *bprev(void)
 {
+	B *first = bufs.link.next;
 	B *b;
 
 	do {
 		b = bufs.link.next;
 		deque(B, link, &bufs);
 		enquef(B, link, b, &bufs);
-	} while (b->internal);
-	return b;
+	} while (b->internal && bufs.link.next != first);
+	if (bufs.link.next == first)
+		return NULL;
+	else
+		return b;
 }
 
 /* Make a buffer out of a chain */
