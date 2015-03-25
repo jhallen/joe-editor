@@ -964,6 +964,7 @@ struct rc_menu {
 	int last_position;	/* Last cursor position */
 	int size;		/* Number of entries */
 	struct rc_menu_entry **entries;
+	MACRO *backs;		/* Macro to execute for backspace */
 } *menus;
 
 struct menu_instance {
@@ -989,7 +990,7 @@ struct rc_menu *find_menu(unsigned char *s)
 	return m;
 }
 
-struct rc_menu *create_menu(unsigned char *name)
+struct rc_menu *create_menu(unsigned char *name, MACRO *bs)
 {
 	struct rc_menu *menu = find_menu(name);
 	if (menu)
@@ -1001,6 +1002,7 @@ struct rc_menu *create_menu(unsigned char *name)
 	menu->last_position = 0;
 	menu->size = 0;
 	menu->entries = 0;
+	menu->backs = bs;
 	return menu;
 }
 
@@ -1167,6 +1169,19 @@ static int doabrt(MENU *m, int x, struct menu_instance *mi)
 
 int menu_flg; /* Key used to select menu entry */
 
+static int backsmenu(MENU *m, int x, struct menu_instance *mi)
+{
+	struct rc_menu *menu = mi->menu;
+	int *notify = m->parent->notify;
+	if (notify)
+		*notify = 1;
+	wabort(m->parent);
+	if (menu->backs)
+		return exmacro(menu->backs, 1);
+	else
+		return 0;
+}
+
 static int execmenu(MENU *m, int x, struct menu_instance *mi, int flg)
 {
 	struct rc_menu *menu = mi->menu;
@@ -1223,7 +1238,7 @@ int display_menu(BW *bw, struct rc_menu *menu, int *notify)
 	s[x] = 0;
 	m->menu = menu;
 	m->s = s;
-	if (mkmenu(bw->parent, bw->parent, m->s, execmenu, doabrt, NULL, menu->last_position, m, notify))
+	if (mkmenu(bw->parent, bw->parent, m->s, execmenu, doabrt, backsmenu, menu->last_position, m, notify))
 		return 0;
 	else
 		return -1;
@@ -1587,10 +1602,18 @@ int procrc(CAP *cap, unsigned char *name)
 							logerror_2((char *)joe_gettext(_("%s %d: :defmap missing name\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, USTR "defmenu")) {
+						MACRO *m = 0;
+						int y, d;
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
+						d = buf[c];
 						buf[c] = 0;
-						current_menu = create_menu(buf + x);
+						zlcpy(buf1, sizeof(buf1), buf + x);
+						buf[c] = d;
+						for (y = c; joe_isblank(locale_map, buf[y]); ++y);
+						if (!joe_isspace_eof(locale_map, buf[y]))
+							m = multiparse(fd, &line, buf, &y, &err, name);
+						current_menu = create_menu(buf1, m);
 						context = 0;
 					} else {
 						context = kmap_getcontext(buf + 1);

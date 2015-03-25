@@ -193,34 +193,28 @@ int udebug_joe(BW *bw)
 
 B *bnext(void)
 {
-	B *first = bufs.link.prev;
 	B *b;
-
-	do {
-		b = bufs.link.prev;
-		deque(B, link, &bufs);
-		enqueb(B, link, b, &bufs);
-	} while (b->internal && bufs.link.prev != first);
-	if (bufs.link.prev == first)
+	for (b = bufs.link.prev; b != &bufs; b = b->link.prev)
+		if (!b->internal)
+			break;
+	if (b == &bufs)
 		return NULL;
-	else
-		return b;
+	deque(B, link, &bufs);
+	enqueb(B, link, b, &bufs);
+	return b;
 }
 
 B *bprev(void)
 {
-	B *first = bufs.link.next;
 	B *b;
-
-	do {
-		b = bufs.link.next;
-		deque(B, link, &bufs);
-		enquef(B, link, b, &bufs);
-	} while (b->internal && bufs.link.next != first);
-	if (bufs.link.next == first)
+	for (b = bufs.link.next; b != &bufs; b = b->link.next)
+		if (!b->internal)
+			break;
+	if (b == &bufs)
 		return NULL;
-	else
-		return b;
+	deque(B, link, &bufs);
+	enquef(B, link, b, &bufs);
+	return b;
 }
 
 /* Make a buffer out of a chain */
