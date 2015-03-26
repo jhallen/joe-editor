@@ -4,6 +4,10 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Fix bug where position cursor history operations would mix
+  pointers between different buffers if user had switched buffers
+  in a window.
+
 * Backspace now jumps back to parent menu in ^T submenus.
 
 * Allow macros after :def to cross lines
