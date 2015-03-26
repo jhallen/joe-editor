@@ -1,3 +1,6 @@
+cursor position history probably not working
+when buffers switch in windows.
+
 Scratch always pushes.  Do we want this?  It's weird for ESC c.  Maybe have
 a no-push version of scratch.
 

@@ -7,6 +7,9 @@
  */
 #include "types.h"
 
+struct context *contexts; /* Global list of KMAPs */
+unsigned char **keymap_list; /* KMAP names array for completion */
+
 /* Create a KBD */
 
 KBD *mkkbd(KMAP *kmap)
@@ -343,6 +346,49 @@ int kdel(KMAP *kmap, unsigned char *seq)
 	return err;
 }
 
+/* Find a context of a given name- if not found, one with an empty kmap
+ * is created.
+ */
+
+KMAP *kmap_getcontext(unsigned char *name)
+{
+	struct context *c;
+
+	for (c = contexts; c; c = c->next)
+		if (!zcmp(c->name, name))
+			return c->kmap;
+	c = (struct context *) joe_malloc(sizeof(struct context));
+
+	c->next = contexts;
+	c->name = zdup(name);
+	contexts = c;
+	return c->kmap = mkkmap();
+}
+
+/* JM - ngetcontext(name) - like getcontext, but return NULL if it
+ * doesn't exist, instead of creating a new one.
+ */
+
+KMAP *ngetcontext(unsigned char *name)
+{
+	struct context *c;
+	for(c=contexts;c;c=c->next)
+		if(!zcmp(c->name,name))
+			return c->kmap;
+	return 0;
+}
+
+/* True if KMAP is empty */
+
+int kmap_empty(KMAP *k)
+{
+	int x;
+	for (x = 0; x != KEYS; ++x)
+		if  (k->keys[x].value.bind)
+			return 0;
+	return 1;
+}
+
 /* JM */
 
 B *keymaphist=0;
@@ -361,7 +407,15 @@ int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
 	return 0;
 }
 
-static unsigned char **keymap_list;
+static unsigned char **get_keymap_list()
+{
+	unsigned char **lst = 0;
+	struct context *c;
+	for (c=contexts; c; c=c->next)
+		lst = vaadd(lst, vsncpy(NULL,0,sz(c->name)));
+
+	return lst;
+}
 
 static int keymap_cmplt(BW *bw)
 {
