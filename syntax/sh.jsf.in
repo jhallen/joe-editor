@@ -122,7 +122,7 @@ done
 :toeof Constant
 	*		toeof
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"\n"		idle
 
@@ -147,59 +147,59 @@ done
 	"}"		idle
 
 # Simplest case: no quoting allowed
-:string_sq Constant
+:string_sq Constant string
 	*		string_sq
 	"\'"		idle
 
 
 # double-quote: quoting, backqoutes and substitution allowed
-:string_dq Constant
+:string_dq Constant string
 	*		string_dq
 	"$"		string_dq_subst	recolor=-1
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
 	"`"		string_dq_bq	recolor=-1
 
-:string_dq_subst Var
+:string_dq_subst Var string
 	*		string_dq	noeat recolor=-2
 	"$0-9!_\-?*@"	string_dq
 	"a-zA-Z_"	string_dq_subst_name
 	"{"		string_dq_subst_brack
 
-:string_dq_subst_name Var
+:string_dq_subst_name Var string
 	*		string_dq	recolor=-1 noeat
 	"a-zA-Z0-9_"	string_dq_subst_name
 
-:string_dq_subst_brack Var
+:string_dq_subst_brack Var string
 	*		string_dq_subst_brack
 	"}"		string_dq
 
-:string_dq_esc Escape
+:string_dq_esc Escape string
 	*		string_dq	recolor=-2
 	"$`\"\\"	string_dq
 	"\n"		string_dq	recolor=-2
 
-:string_dq_bq Constant
+:string_dq_bq Constant string
 	*		string_dq_bq
 	"$"		string_dq_bq_subst	recolor=-1
 	"\`"		string_dq
 	"\\"		string_dq_bq_esc	recolor=-1
 
-:string_dq_bq_subst Var
+:string_dq_bq_subst Var string
 	*		string_dq_bq	noeat recolor=-2
 	"$0-9!_\-?*@"	string_dq_bq
 	"a-zA-Z_"	string_dq_bq_subst_name
 	"{"		string_dq_bq_subst_brack
 
-:string_dq_bq_subst_name Var
+:string_dq_bq_subst_name Var string
 	*		string_dq_bq	recolor=-1 noeat
 	"a-zA-Z0-9_"	string_dq_bq_subst_name
 
-:string_dq_bq_subst_brack Var
+:string_dq_bq_subst_brack Var string
 	*		string_dq_bq_subst_brack
 	"}"		string_dq_bq
 
-:string_dq_bq_esc Escape
+:string_dq_bq_esc Escape string
 	*		string_dq_bq	recolor=-2
 	"$`\"\\"	string_dq_bq
 	"\n"		string_dq_bq	recolor=-2
@@ -340,3 +340,4 @@ done
 :bang Keyword
 	*	idle	noeat
 	"#"	idle
+	"!"	bang

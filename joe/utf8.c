@@ -359,12 +359,15 @@ void joe_locale()
 	if (s)
 		s=zdup(s);
 	else
-		s=USTR "ascii";
+		s=USTR "C";
 
 	if ((t=zrchr(s,'.')))
 		*t = 0;
 
-	locale_msgs = s;
+	if (!zicmp(s, USTR "C") || !zicmp(s, USTR "POSIX"))
+		locale_msgs = USTR "en_US"; /* Because aspell has no default */
+	else
+		locale_msgs = s;
 
 	s=(unsigned char *)getenv("LC_ALL");
 	if (!s || !*s) {
@@ -377,7 +380,7 @@ void joe_locale()
 	if (s)
 		s=zdup(s);
 	else
-		s=USTR "ascii";
+		s=USTR "C";
 
 	u = zdup(s);
 

@@ -25,6 +25,7 @@ struct bw {
 	int	linums;
 	int	top_changed;	/* Top changed */
 	struct lattr_db *db;	/* line attribute database */
+	int	shell_flag;	/* Cursor should follow shell cursor in this window */
 };
 
 extern int dspasis;	/* Display characters above 127 as-is */
@@ -56,5 +57,7 @@ void set_file_pos PARAMS((unsigned char *name, long pos));
 extern int restore_file_pos;
 
 void set_file_pos_all PARAMS((Screen *t));
+
+BW *vtmaster(Screen *t, B *b);
 
 #endif

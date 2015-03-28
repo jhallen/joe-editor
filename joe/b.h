@@ -39,6 +39,8 @@ struct point {
 	long	xcol;		/* cursor column (can be different from actual column) */
 	int	valcol;		/* bool: is col valid? */
 	int	end;		/* set if this is end of file pointer */
+	int	attr;		/* current ansi attribute */
+	int	valattr;	/* set if attr is still valid */
 
 	P	**owner;	/* owner of this pointer.  owner gets cleared if pointer is deleted. */
 	unsigned char *tracker;	/* Name of function who pdup()ed me */
@@ -62,6 +64,8 @@ struct options {
 	unsigned char	*context;
 	unsigned char	*lmsg;
 	unsigned char	*rmsg;
+	unsigned char	*smsg;
+	unsigned char	*zmsg;
 	int	linums;
 	int	readonly;
 	int	french;
@@ -79,6 +83,7 @@ struct options {
 	int	smartbacks;	/* Set for smart backspace key */
 	int	purify;		/* Purify indentation */
 	int	picture;	/* Picture mode */
+	int	highlighter_context;	/* Use the context annotations from the highlighter for ^G */
 	int	single_quoted;	/* Ignore '  ' for ^G */
 	int	no_double_quoted;	/* Don't ignore " " for ^G */
 	int	c_comment;	/* Ignore text in C comments */
@@ -88,8 +93,10 @@ struct options {
 	int	semi_comment;	/* Ignore text after ; comments */
 	int	tex_comment;	/* Ignore text after % comments */
 	int	hex;		/* Hex edit mode */
+	int	ansi;		/* Hide ansi sequences mode */
 	unsigned char *text_delimiters;	/* Define word delimiters */
 	unsigned char *cpara;	/* Characters which can indent paragraphcs */
+	unsigned char *cnotpara;/* Characters which begin non-paragraph lines */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */
@@ -119,12 +126,16 @@ struct buffer {
 	OPTIONS	o;		/* Options */
 	P	*oldcur;	/* Last cursor position before orphaning */
 	P	*oldtop;	/* Last top screen position before orphaning */
+	P	*err;		/* Last error line */
+	unsigned char *current_dir;
+	int shell_flag;		/* Set if last cursor position is same as vt cursor: if it is we keep it up to date */
 	int	rdonly;		/* Set for read-only */
 	int	internal;	/* Set for internal buffers */
 	int	scratch;	/* Set for scratch buffers */
 	int	er;		/* Error code when file was loaded */
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
+	VT	*vt;		/* video terminal emulator */
 	struct lattr_db *db;	/* Linked list of line attribute databases */
 	void (*parseone)(struct charmap *map,unsigned char *s,unsigned char **rtn_name,
 	                 long *rtn_line);
@@ -298,11 +309,16 @@ extern int guesscrlf; /* Try to guess line ending when set */
 extern int guessindent; /* Try to guess indent character and step when set */
 extern int break_links; /* Break hard links on write */
 extern int break_symlinks; /* Break symbolic links on write */
+extern int nodeadjoe; /* Prevent creation of DEADJOE files */
 
 void set_file_pos_orphaned();
 
 void breplace(B *b, B *n);
 
 unsigned char *dequote(unsigned char *);
+
+#define ANSI_BIT 0x40000000
+int ansi_code(unsigned char *s);
+unsigned char *ansi_string(int code);
 
 #endif

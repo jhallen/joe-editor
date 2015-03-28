@@ -25,7 +25,7 @@ SRCHREC fsr = { {&fsr, &fsr} };
 unsigned char **word_list;
 
 #define MAX_WORD_SIZE 64
-unsigned char **get_word_list(B *b,int ignore)
+unsigned char **get_word_list(B *b,long ignore)
 {
 	unsigned char buf[MAX_WORD_SIZE];
 	unsigned char *s;
@@ -35,17 +35,24 @@ unsigned char **get_word_list(B *b,int ignore)
 	P *p;
 	int c;
 	int idx;
-	int start = 0;
+	long start = 0;
 
 	h = htmk(1024);
 
 	p = pdup(b->bof, USTR "get_word_list");
 	idx = 0;
-	while ((c=pgetc(p))!=NO_MORE_DATA)
+	do {
+		c = pgetc(p);
 		if (idx) {
 			if (joe_isalnum_(b->o.charmap, c)) {
-				if (idx!=MAX_WORD_SIZE)
-					buf[idx++] = c;
+				if (b->o.charmap->type) {
+					if (idx + 8 < MAX_WORD_SIZE) {
+						idx += utf8_encode(buf+idx, c);
+					}
+				} else {
+					if (idx!=MAX_WORD_SIZE)
+						buf[idx++] = c;
+				}
 			} else {
 				if (idx!=MAX_WORD_SIZE && start!=ignore) {
 					buf[idx] = 0;
@@ -59,8 +66,13 @@ unsigned char **get_word_list(B *b,int ignore)
 		} else {
 			start=p->byte-1;
 			if (joe_isalpha_(b->o.charmap, c))
-				buf[idx++] = c;
+				if (b->o.charmap->type) {
+					idx += utf8_encode(buf+idx, c);
+				} else {
+					buf[idx++] = c;
+				}
 		}
+	} while (c != NO_MORE_DATA);
 	prm(p);
 
 	for (idx = 0;idx != h->len;++idx)
@@ -620,7 +632,7 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 				zlcat(bf1, sizeof(bf1), USTR "$");
 			joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Replace with (^C to abort) [%s]: ")),bf1);
 		} else */
-			zlcpy(buf, sizeof(buf), joe_gettext(_("Replace with (^C to abort): ")));
+			joe_snprintf_0(buf, sizeof(buf), joe_gettext(_("Replace with (^C to abort): ")));
 		if (wmkpw(bw->parent, buf, &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
 			return 0;
 		else
@@ -730,7 +742,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 		unesc_genfmt(bf1, sv(globalsrch->pattern), 30);
 		joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Find (^C to abort) [%s]: ")),bf1);
 	} else
-		zlcpy(buf, sizeof(buf), joe_gettext(_("Find (^C to abort): ")));
+		joe_snprintf_0(buf, sizeof(buf), joe_gettext(_("Find (^C to abort): ")));
 	if ((pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0))) {
 		if (hint) {
 			binss(pbw->cursor, hint);

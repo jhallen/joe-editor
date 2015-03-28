@@ -161,12 +161,12 @@ extern int skiptop;
  */
 SCRN *nopen PARAMS((CAP *cap));
 
-/* void nresize(SCRN *t,int w,int h);
+/* int nresize(SCRN *t,int w,int h);
  *
  * Change size of screen.  For example, call this when you find out that
  * the Xterm changed size.
  */
-void nresize PARAMS((SCRN *t, int w, int h));
+int nresize PARAMS((SCRN *t, int w, int h));
 
 /* void nredraw(SCRN *t);
  *
@@ -228,6 +228,10 @@ extern unsigned atab[];
 } while(0)
 
 #else
+
+#define CONTEXT_COMMENT	1
+#define CONTEXT_STRING	2
+#define CONTEXT_MASK	(CONTEXT_COMMENT+CONTEXT_STRING)
 
 #define ITALIC		 128
 #define INVERSE		 256
@@ -355,6 +359,7 @@ int fmtpos PARAMS((unsigned char *s, int goal));
 extern int bg_text;
 extern int columns;
 extern int notite;
+extern int nolinefeeds;
 extern int usetabs;
 extern int assume_color;
 extern int assume_256color;

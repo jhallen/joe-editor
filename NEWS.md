@@ -1,3 +1,163 @@
+## Release Notes
+
+[Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
+
+### JOE.next (not yet released changes in Mercurial)
+
+* Fix bug where position cursor history operations would mix
+  pointers between different buffers if user had switched buffers
+  in a window.
+
+* Backspace now jumps back to parent menu in ^T submenus.
+
+* Allow macros after :def to cross lines
+
+* Make ^K ^SPACE same as ^K SPACE
+
+* Fix lockup which would happen if you try querysave when the only buffer
+  left is the startup log.
+
+* Minor jmacs fixes:
+	* ^X b / ^X ^B were reversed
+	* ^X 0 printed an exit message for no reason
+	* ^X 0 now can pop shell windows
+	* M-^ deleted indentation but did not join with previous line
+	* Ignore case for letter commands: ^X i and ^X I are the same
+
+* ESC g (grep/find) and ESC c (compile) improvements
+	* Change to the current directory before running the command
+	* Show the current directory compile window
+	* Show the exit status in the compile window
+	* More consistent window setup
+
+* Default locale
+	* If no locale set, default to C / POSIX, not ISO-8859-1
+	* If locale is C / POSIX, set language to en_US (for aspell).
+
+### JOE 3.8 Native Windows Version
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/joewin.msi/download)
+
+* Thanks to John J. Jordan we now have a native Windows version of JOE
+
+### JOE 4.0
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20sources/joe-4.0/joe-4.0.tar.gz/download)
+
+* JOE now has pop-up shell windows with full terminal emulation and shell commands
+  that can control the editor.  Hit F1 - F4 to bring up a shell window.
+  See [Pop-up shell feature](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#popup) for a full description.
+
+* The status command (^K SPACE) can now be customized using the same syntax
+  as the status bar.  Look for smsg and zmsg in joerc to see how to do this.
+
+* parserr (the error parser) will parse only the highlighted block if it's set.  Before it always parsed the entire buffer.
+
+* Now there is a per-buffer concept of current directory.  This was added to
+  make the pop-up shell windows work better, but it's useful in general.
+
+* At file prompts you can begin a new anchored path without having to delete
+  the old one.  It means that ~jhallen/foo//etc/passwd is translated to /etc/passwd.
+  Prompt windows are now highighted to indicate which parts of the path are
+  being dropped.  There is a syntax file for this: filename.jsf
+
+* The error parser now ignores ANSI sequences (some versions of grep
+  color their results, now JOE can still parse it).
+
+* Temporary messages are now dismissed by keyboard input only.  Before, they
+  could also be dismissed by shell input.
+
+* Tags search now supports multiple matches.  ^K ; can be configured to
+  either provide a menu of the matches or to cycle through them.
+
+* Tags search will now match on the member name part of member functions
+  ('fred' will match 'myclass::fred').
+
+* Tags search will prepend the path to the tags file file name in the tags
+  file.  This is important when JOE finds the tags file via the TAGS
+  environment variable.
+
+* Remove ` as quote character from incremental search.
+
+* Clean up documentation, convert much of it to Markdown.
+
+### JOE 3.8
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20sources/joe-3.8/joe-3.8.tar.gz/download)
+
+- Search JOE image for :include files referenced by the joerc file.
+  Include ftyperc file in the JOE image.
+
+- Change default indent from 2 to 4.  Add quick menu to change to common
+  indent values: ^T = (1, 2, 4, or 8).  Switch to + and - for definitively
+  setting or clearing options so that 0 and 1 can be use for quick select.
+
+- Added option to suppress DEADJOE file
+
+- Jump to matching delimiter (Ctrl-G) has been improved.  It can now use the
+  syntax files to parse the document in order to identify strings and
+  comments which should be skipped during the matching delimiter search.
+  (patch by Charles Tabony).
+
+- When 'notite' mode is enabled, JOE now emits linefeeds to preserve the
+  screen contents in the terminal emulator's scrollback buffer.  This can be
+  suppressed with a new flag: nolinefeeds.
+
+- JOE now starts up quiet (prints no extra messages when starting). 
+  Messages are collected in a startup log (view with ESC x showlog).
+
+- There is a new flag 'noexmsg' which, when set, makes JOE quiet when it shuts
+  down (suppresses "File not changed so no update needed" message).
+
+- Use 80th column if terminal has xn capability (patch by pts and Egmont
+  Koblinger).
+
+- Support italic text (on some terminal emulators) with "\l" (patch by
+  Egmont Koblinger)
+
+- Support bracketed paste (patch by Egmont Koblinger)
+
+- Fix line number in syntax highlighter error output 
+
+- Prevent infinite loops caused by buggy syntax definitions.
+
+- New and improved syntax definitions for:
+    * Ant: contributed by Christian Nicolai
+    * Batch files: contributed by John Jordan
+    * C#: contributed by John Jordan
+    * Debian apt sources.list: contributed by Christian Nicolai
+    * Elixir: contributed by Andrew Lisin
+    * Erlang: contributed by Christian Nicolai, Jonas Rosling, Andrew Lisin
+    * git-commit messages: contributed by Christian Nicolai
+    * Go: contributed by Matthias S. Benkmann
+    * HAML: contributed by Christian Nicolai
+    * INI: contributed by Christian Nicolai
+    * iptables: contributed by Christian Nicolai
+    * Javascript: contributed by Rebecca Turner, Christian Nicolai
+    * json: contributed by Rebecca Turner
+    * Markdown: contributed by Christian Nicolai, Jonas Rosling
+    * Powershell: contributed by Oskar Liljeblad
+    * Prolog: contributed by Christian Nicolai
+    * Puppet: contributed by Christian Nicolai, Eric Eisenhart
+    * Sieve: contributed by Christian Nicolai
+    * YAML: contributed by Christian Nicolai
+    
+    (from github.com/cmur2/joe-syntax)
+
+- Syntax definition fixes for: C, Python, Java, Lua, sh, Ruby, PHP, TeX,
+  CSS, and XML
+
+- Save/restore utf-8 and crlf modes when changing in/out of hex edit for
+  better display
+
+- Fix autocomplete for paths containing spaces
+
+- Accept mouse events beyond column 208 (patch by Egmont Kobligner)
+
+- Adjust guess_indent behavior based on user feedback
+
+- Fix infinite loop in search and replace
+
 - Add a new command 'timer' which executes a macro every n seconds.  I use
   this for periodically injecting a command into a shell window for
   overnight testing of some device.
@@ -23,7 +183,7 @@
 
 - don't smartbackspace when smartbacks is off.
 
-JOE 3.7
+### JOE 3.7
 
 - backspace/DEL means 'n' in replace prompt for better emacs
   compatibility
@@ -31,15 +191,15 @@ JOE 3.7
 - Menus are now made up of macros instead of options.
 
 	New commands:
-		menu	Prompt for a menu to display with tab
-			completion.
 
-		mode	Prompt for an option to change with tab
-			completion.
+		* menu	Prompt for a menu to display with tab completion.
 
-	Menus are defined in joerc file with :defmenu command.
+		* mode	Prompt for an option to change with tab completion.
 
-	Menu entries are the pair: macro string.  String is a
+	Menus are defined in joerc with ':defmenu name' followed
+	by a set of menu entries.
+
+	Menu entries are the pair: 'macro string'.  String is a
 	format string displayed in the menu.  Macro is executed
 	when then menu entry is selected.
 
@@ -48,7 +208,7 @@ JOE 3.7
 - ^T is now a user definable menu system
 
 - Treat \ as a quote character for file I/O.  Now you can edit
-  files like !test with \!test
+  files like !test with \\!test
 
 - Print NULs in default search string.  Handle many \s properly.
 
@@ -84,7 +244,7 @@ JOE 3.7
 
 - Improve XML highlighter: allow \r in whitespace
 
-JOE 3.6
+### JOE 3.6
 
 - Preserve setuid bit
 
@@ -134,6 +294,7 @@ JOE 3.6
 - .js is Javascript
 
 - Fix ^G in perl mode when you hit it on second brace in:
+
 	{\'
 	\'}
 
@@ -181,7 +342,7 @@ JOE 3.6
 
 - Add Ukrainian .po file (yugk)
 
-JOE 3.5
+### JOE 3.5
 
 - Query windows now expand to multiple lines if necessary
 
@@ -208,7 +369,7 @@ JOE 3.5
 
 - You can give a path to the tags file in the TAGS environment variable.
 
-JOE 3.4
+### JOE 3.4
 
 - Paragraph reformatter and word wrap now handle '*' and '-' bullet lists.
 
@@ -304,7 +465,7 @@ JOE 3.4
 - New syntax files: troff, Haskell, Cadance SKILL, REXX, LUA, RUBY.  Many of
   the existing syntax files have been improved.
 
-JOE 3.3
+### JOE 3.3
 
 - The default background color can now be set.
 
@@ -327,7 +488,7 @@ JOE 3.3
 
 - Cygwin setup.exe support
 
-JOE 3.2
+### JOE 3.2
 
 - A Perforce SCM "p4 edit" macro has been supplied (along with the hooks
   within JOE which support it) so that when you make the first change to a
@@ -366,8 +527,8 @@ JOE 3.2
 
 - Tab completion works at tags search prompt ^K ;
 
-- ^G now jumps between word delimiters (begin..end in Verilog, #if #else
-  #endif in C, /* .. */ and XML tags).  If it doesn't know the word, it
+- ^G now jumps between word delimiters (begin..end in Verilog, #if #else #endif
+  in C, /* .. */ and XML tags).  If it doesn't know the word, it
   starts a search with the word seeding the prompt.  It is also much smarter
   about skipping over comments and quoted matter.
 
@@ -396,7 +557,7 @@ JOE 3.2
   sourceforge project page has been addressed).  Hopefully I didn't add
   too many new ones :-)
 
-JOE 3.1
+### JOE 3.1
 
 - Regex and incremental search (jmacs ^S) now work for UTF-8
 
@@ -453,7 +614,8 @@ JOE 3.1
 
 - aspell support.
 
-JOE 3.0 (23 APR 2004)
+### JOE 3.0 (23 APR 2004)
+
 - UTF-8
 - Syntax highlighting
 - Fixed ^C and ^D in shell windows
@@ -467,7 +629,8 @@ JOE 3.0 (23 APR 2004)
 - Added picture drawing mode (can hit right arrow at ends of lines)
 - Auto detect preferred indentation character TAB or SPACE
 
-Overview of changes in JOE 2.9.8 (5 May 2003)
+### Overview of changes in JOE 2.9.8 (5 May 2003)
+
 - fixed signal handling
 - return of the context help
 - fixed segfault when moving rectangular block
@@ -477,7 +640,8 @@ Overview of changes in JOE 2.9.8 (5 May 2003)
 - SECURITY: drop suid and sgid bits when creating backup files
 - fixed segfaults in isalpha()-like functions
 
-Overview of changes in JOE 2.9.8-pre1 (14 Dec 2001)
+### Overview of changes in JOE 2.9.8-pre1 (14 Dec 2001)
+
 - BUGFIX: don't exchange start and end point of the block in some cases
 - defaulting to turn off -asis (locales take care of this; if joe doesn't
   print characters with 8th bit set properly, check if you have properly
@@ -487,26 +651,30 @@ Overview of changes in JOE 2.9.8-pre1 (14 Dec 2001)
 - added "support" for End key
 - code cleanup: warnings removal (some still remaining, working on it)
 
-Overview of changes in JOE 2.9.7 (7 Nov 2001)
+### Overview of changes in JOE 2.9.7 (7 Nov 2001)
+
 - BUGFIX: always save (even not-modified) file
 - BUGFIX: solve problem with freezing after saving unmodified file
 - small documentation update
 
-Overview of Changes in JOE 2.9.7-pre3 (29 Oct 2001)
+### Overview of Changes in JOE 2.9.7-pre3 (29 Oct 2001)
+
 - BUGFIX: wordwrap bug fixed (again and I'm sure forever)
 - BUGFIX: don't change window when setting mark in multiwindow mode
 - BUGFIX: use automake-1.5 to make joe compile on irix-6.5 with non-GNU make
 - continuing code clean up: this code adds strict prototypes which raises
   a lot of warnings (they seem harmless) - we're working on their removal
 
-Overview of Changes in JOE 2.9.7-pre2 (10 Oct 2001)
+### Overview of Changes in JOE 2.9.7-pre2 (10 Oct 2001)
+
 - use automake and autoconf for configuration system (for now versions
   automake-1.4-p4 and autoconf-2.52)
 - a lot of warnings of compiler were removed
 - SECURITY:: use mkstemp() for temporary files if available
 - code clean up
     
-Overview of Changes in JOE 2.9.7pre1 (19 Jul 2001)
+### Overview of Changes in JOE 2.9.7pre1 (19 Jul 2001)
+
 - help system was slightly modified
 - a lot of warnings of compiler were removed
 - BUGFIX:: problem with freezing when save was solved (at least partially)
@@ -514,13 +682,14 @@ Overview of Changes in JOE 2.9.7pre1 (19 Jul 2001)
 - FEATURE:: suffix of backup copy from SIMPLE_BACKUP_SUFFIX environment 
   variable
 
-Overview of Changes in JOE 2.9.7pre0 (02 Jul 2001)
+### Overview of Changes in JOE 2.9.7pre0 (02 Jul 2001)
+
 - major BUGFIX:: wordwrap problem
 - BUGFIX:: indentation
 ??* JOE can be compiled on Windows platform again
 ??* BUGFIX:: problem with ${sysconfdir}/joerc was solved
 
-Overview of Changes in JOE 2.9.6 (13 Apr 2001)
+### Overview of Changes in JOE 2.9.6 (13 Apr 2001)
 
 - BUGFIX:: resizing window
 - JOE can be compiled on Windows platform again
@@ -546,36 +715,36 @@ Overview of Changes in JOE 2.9.6 (13 Apr 2001)
 - BUGFIX:: fixed problem with :include in rc files
 - BUGFIX (v2.9.5):: portability problem with is_blank on nonGNU systems
 
-Overview of Changes in JOE 2.9.5 (28 Mar 2001)
+### Overview of Changes in JOE 2.9.5 (28 Mar 2001)
 
 - new BUG:: can't be compiled on non-GNU systems (is_blank()) fixed in v2.9.6
 - BUGFIX:: Fixed problem with resizing. 
 - SECURITY:: .[joe|rjoe|jpico|..]rc in actual directory is ignored
              because in this file can be defined which program run.
 
-Overview of Changes in JOE 2.9.4 (27 Mar 2001)
+### Overview of Changes in JOE 2.9.4 (27 Mar 2001)
 
 - new BUG:: go to previous word; goes one character before this word 
             fixed in v2.9.6
 - FEATURE:: locale (LC_CTYPE) is accepted when skipping/deleting/... words	
 
-Overview of Changes in JOE 2.9  (22 Mar 2001)
+### Overview of Changes in JOE 2.9  (22 Mar 2001)
 
 - version 2.8 with patches from RedHat/Suse
 
-Overview of Changes in JOE 2.8
+### Overview of Changes in JOE 2.8
 
 - Fixed problem with TERMPATH string
 - Added stupid two-letter names to termcap file
 - Improved jmacs help and command set
 - Improved README file
 
-Overview of Changes in JOE 2.7
+### Overview of Changes in JOE 2.7
 
 - putenv() was not portable
 - utime was not portable
 - special utime handling for NeXT
-- forgot to \\ the \s in the default termcap entry
+- forgot to \\\\ the \s in the default termcap entry
 - changed some key defaults in jpicorc
 - add IXOFF in termio/termios list
 - left margin limit was incorrect
@@ -587,7 +756,7 @@ Overview of Changes in JOE 2.7
 - added '-crlf' option
 - looks for termcap file in JOERC/termcap
 
-Overview of Changes in JOE 2.6
+### Overview of Changes in JOE 2.6
 
 - Fixed stupid bug in termcap.c which prevented terminfo from working
 - ESC h was missing from jpicorc
@@ -597,7 +766,7 @@ Overview of Changes in JOE 2.6
      without this...)
    - Maybe change shell invocation name- have to check this more
 
-Overview of Changes in JOE 2.5
+### Overview of Changes in JOE 2.5
 
 - No longer use ^[ O, ^[ A, ^[ B, ^[ C, or ^[ D for anything because they
   interfere with arrow keys.
@@ -609,7 +778,7 @@ Overview of Changes in JOE 2.5
 - Changed incremental search so that whatever key the command is bound to
   can be used to repeat the search (used to only be able to use ^S)
 
-Overview of Changes in JOE 2.4
+### Overview of Changes in JOE 2.4
 
 - Closing message was incorrect when exit macros (macros where the last
   command is abortbuf) were used.
@@ -634,12 +803,12 @@ Overview of Changes in JOE 2.4
 - The JOETERM environment variable can be used to bypass the TERM
   environment variable setting.
 
-Overview of Changes in JOE 2.3
+### Overview of Changes in JOE 2.3
 
 - Search & Replace bugs fixed
    - replace would mess up the end mark of a marked block
    - a search would trash ^KB if only ^KB was set
-   - regex problem with \*
+   - regex problem with \\*
 - Was using TCSANOW in posix driver.  Should have been using TCSADRAIN
 - Format paragraph now correctly formats quoted news articles
 - Attempted fix for SCO
@@ -654,7 +823,7 @@ Overview of Changes in JOE 2.3
 - Restricted joe rc file added
 - Added ':def' feature for rc files
 
-Overview of Changes in JOE 2.2
+### Overview of Changes in JOE 2.2
 
 - First attempt at MS-DOS version of joe
    - Direct screen write
@@ -672,7 +841,7 @@ Overview of Changes in JOE 2.2
 - tabs not displayed right in nxterr/prverr messages
 - Block moves where the cursor was to the right of the block was broken
 
-Overview of Changes in JOE 2.1
+### Overview of Changes in JOE 2.1
 
 - rc file wasn't giving correct error messages for missing options
 - the '-nobackups' options was mispelled: '- nobackups'

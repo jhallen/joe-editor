@@ -35,6 +35,8 @@ int berror;
 int force = 0;
 VFILE *vmem;
 
+int nodeadjoe = 0;
+
 unsigned char *msgs[] = {
 	USTR _("No error"),
 	USTR _("New File"),
@@ -154,8 +156,12 @@ void set_file_pos_orphaned()
 
 B *bafter(B *b)
 {
-	for (b = b->link.next; b->internal || b->scratch || b == &bufs; b = b->link.next);
-	return b;
+	B *first = b;
+	for (b = b->link.next; b != first && (b->internal || b->scratch || b == &bufs); b = b->link.next);
+	if (b == first)
+		return NULL;
+	else
+		return b;
 }
 
 int udebug_joe(BW *bw)
@@ -188,24 +194,26 @@ int udebug_joe(BW *bw)
 B *bnext(void)
 {
 	B *b;
-
-	do {
-		b = bufs.link.prev;
-		deque(B, link, &bufs);
-		enqueb(B, link, b, &bufs);
-	} while (b->internal);
+	for (b = bufs.link.prev; b != &bufs; b = b->link.prev)
+		if (!b->internal)
+			break;
+	if (b == &bufs)
+		return NULL;
+	deque(B, link, &bufs);
+	enqueb(B, link, b, &bufs);
 	return b;
 }
 
 B *bprev(void)
 {
 	B *b;
-
-	do {
-		b = bufs.link.next;
-		deque(B, link, &bufs);
-		enquef(B, link, b, &bufs);
-	} while (b->internal);
+	for (b = bufs.link.next; b != &bufs; b = b->link.next)
+		if (!b->internal)
+			break;
+	if (b == &bufs)
+		return NULL;
+	deque(B, link, &bufs);
+	enquef(B, link, b, &bufs);
 	return b;
 }
 
@@ -223,7 +231,10 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->rdonly = 0;
 	b->orphan = 0;
 	b->oldcur = NULL;
-	b->oldtop = NULL;
+	b->err = NULL;
+ 	b->oldtop = NULL;
+ 	b->current_dir = NULL;
+	b->shell_flag = 0;
 	b->backup = 1;
 	b->internal = 1;
 	b->scratch = 0;
@@ -250,6 +261,8 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->bof->col = 0;
 	b->bof->xcol = 0;
 	b->bof->valcol = 1;
+	b->bof->attr = 0;
+	b->bof->valattr = 1;
 	b->bof->tracker = USTR "bmkchn";
 	b->eof = pdup(b->bof, USTR "bmkchn");
 	b->eof->end = 1;
@@ -260,8 +273,10 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->eof->byte = amnt;
 	b->eof->line = nlines;
 	b->eof->valcol = 0;
+	b->eof->valattr = 0;
 	b->pid = 0;
 	b->out = -1;
+	b->vt = 0;
 	b->db = 0;
 	b->parseone = 0;
 	enquef(B, link, &bufs, b);
@@ -298,6 +313,7 @@ void brm(B *b)
 			joe_free(b->name);
 		if (b->db)
 			rm_all_lattr_db(b->db);
+		vsrm(b->current_dir);
 		demote(B, link, &frebufs, b);
 	}
 }
@@ -360,6 +376,8 @@ void breplace(B *b, B *n)
 	b->bof->col = 0;
 	b->bof->xcol = 0;
 	b->bof->valcol = 1;
+	b->bof->attr = 0;
+	b->bof->valattr = 1;
 	b->bof->end = 0;
 
 	/* Take eof Pointer */
@@ -372,6 +390,8 @@ void breplace(B *b, B *n)
 	b->eof->col = n->eof->col;
 	b->eof->xcol = n->eof->xcol;
 	b->eof->valcol = n->eof->valcol;
+	b->eof->attr = n->eof->attr;
+	b->eof->valattr = n->eof->valattr;
 	b->eof->end = 1;
 
 	/* Reset other pointers */
@@ -507,6 +527,8 @@ P *pset(P *n, P *p)
 		n->line = p->line;
 		n->col = p->col;
 		n->valcol = p->valcol;
+		n->attr = p->attr;
+		n->valattr = p->valattr;
 	}
 	return n;
 }
@@ -558,14 +580,23 @@ int piseol(P *p)
 }
 
 /* is p at the beginning of line? */
+/* This needs to be fast and should not disturb valcol or valattr.  It's used by fixupins(). */
 int pisbol(P *p)
 {
-	int c;
+	unsigned char c;
 
 	if (pisbof(p))
 		return 1;
-	c = prgetb(p);
-	pgetb(p);
+
+	if (!p->ofst)
+		pprev(p);
+
+	--p->ofst;
+	c = GCHAR(p);
+
+	if (++p->ofst == GSIZE(p->hdr))
+		pnext(p);
+
 	return c == '\n';
 }
 
@@ -700,33 +731,98 @@ int pgetb(P *p)
 		++(p->line);
 		p->col = 0;
 		p->valcol = 1;
+		p->attr = 0;
+		p->valattr = 1;
 	} else if (p->b->o.crlf && c == '\r') {
 		if (brc(p) == '\n')
 			return pgetb(p);
-		else
+		else {
 			p->valcol = 0;
+			p->valattr = 0;
+		}
 	} else {
 		p->valcol = 0;
+		p->valattr = 0;
 	}
 	return c;
 }
+
+/* Interned string table for ansi sequences */
+
+HASH *ansi_hash;
+struct ansi_entry {
+	int code;
+	unsigned char *name;
+};
+struct ansi_entry **ansi_table;
+int ansi_siz;
+int ansi_len;
+
+int ansi_code(unsigned char *s)
+{
+	struct ansi_entry *e;
+	if (!ansi_hash)
+		ansi_hash = htmk(128);
+	e = htfind(ansi_hash, s);
+	if (!e) {
+		e = joe_malloc(sizeof(struct ansi_entry));
+		e->name = zdup(s);
+		e->code = ansi_len;
+		htadd(ansi_hash, e->name, e);
+		if (!ansi_siz)
+			ansi_table = (struct ansi_entry **)malloc(ansi_siz = 128);
+		if (ansi_siz == ansi_len)
+			ansi_table = (struct ansi_entry **)realloc(ansi_table, ansi_siz *= 2);
+		ansi_table[ansi_len++] = e;
+	}
+	return (e->code | ANSI_BIT);
+}
+
+unsigned char *ansi_string(int code)
+{
+	code &= ~ANSI_BIT;
+	if (code < 0 || code >= ansi_len)
+		return 0;
+	else
+		return ansi_table[code]->name;
+}
+
+#define ANSIMAX 64
 
 /* return current character and move p to the next character.  column will be updated if it was valid. */
 int pgetc(P *p)
 {
 	if (p->b->o.charmap->type) {
 		int val;
+		int valattr;
 		int c; /* , oc; */
 		int d;
 		int n; /* , m; */
 		int wid = 0;
 
 		val = p->valcol;	/* Remember if column number was valid */
+		valattr = p->valattr;
 		c = pgetb(p);		/* Get first byte */
 		/* oc = c; */
 
 		if (c==NO_MORE_DATA)
 			return c;
+
+                if (p->b->o.ansi && c == '\033') { /* Hide ansi */
+                	unsigned char buf[ANSIMAX];
+                	int bufx = 0;
+                	buf[bufx++] = c;
+                        while ((d = pgetb(p)) != NO_MORE_DATA) {
+                        	if (bufx < sizeof(buf) - 1)
+                        		buf[bufx++] = d;
+                                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') || d == '\n')
+                                        break;
+			}
+                        p->valcol |= val;
+                        p->valattr = 0;
+                        buf[bufx] = 0;
+                        return ansi_code(buf);
+                }
 
 		if ((c&0xE0)==0xC0) { /* Two bytes */
 			n = 1;
@@ -783,6 +879,7 @@ int pgetc(P *p)
 			else
 				p->col += wid;
 		}
+		p->valattr |= valattr;
 
 		return c;
 	} else {
@@ -799,6 +896,24 @@ int pgetc(P *p)
 			++(p->line);
 			p->col = 0;
 			p->valcol = 1;
+			p->attr = 0;
+			p->valattr = 1;
+                } else if (p->b->o.ansi && c == '\033') { /* Hide ansi */
+                        int d;
+                        int v = p->valcol;
+                        unsigned char buf[ANSIMAX];
+                        int bufx = 0;
+                        buf[bufx++] = c;
+                        while ((d = pgetb(p)) != NO_MORE_DATA) {
+                        	if (bufx < sizeof(buf) - 1)
+                        		buf[bufx++] = d;
+                                if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') || d == '\n')
+                                        break;
+			}
+			buf[bufx] = 0;
+                        p->valcol |= v;
+                        p->valattr = 0;
+                        return ansi_code(buf);
 		} else if (p->b->o.crlf && c == '\r') {
 			if (brc(p) == '\n')
 				return pgetc(p);
@@ -820,6 +935,7 @@ P *pfwrd(P *p, long n)
 	if (!n)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	do {
 		if (p->ofst == GSIZE(p->hdr))
 			do {
@@ -853,6 +969,7 @@ static int prgetb1(P *p)
 	c = GCHAR(p);
 	--p->byte;
 	p->valcol = 0;
+	p->valattr = 0;
 	if (c == '\n')
 		--p->line;
 	return c;
@@ -877,7 +994,7 @@ int prgetb(P *p)
 /* move p to the previous character (try to keep col updated) */
 int prgetc(P *p)
 {
-	if (p->b->o.charmap->type) {
+	if (p->b->o.charmap->type || p->b->o.ansi) {
 
 		if (pisbol(p))
 			return prgetb(p);
@@ -950,6 +1067,7 @@ P *pbkwd(P *p, long n)
 	if (!n)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	do {
 		if (!p->ofst)
 			do {
@@ -997,6 +1115,8 @@ P *p_goto_bol(P *p)
 		pgetb(p);
 	p->col = 0;
 	p->valcol = 1;
+	p->attr = 0;
+	p->valattr = 1;
 	return p;
 }
 
@@ -1013,7 +1133,7 @@ P *p_goto_indent(P *p, int c)
 /* move p to the end of line */
 P *p_goto_eol(P *p)
 {
-	if (p->b->o.crlf || p->b->o.charmap->type)
+	if (p->b->o.crlf || p->b->o.charmap->type || p->b->o.ansi)
 		while (!piseol(p))
 			pgetc(p);
 	else
@@ -1056,6 +1176,8 @@ P *pnextl(P *p)
 	++p->line;
 	p->col = 0;
 	p->valcol = 1;
+	p->attr = 0;
+	p->valattr = 1;
 	if (p->ofst == GSIZE(p->hdr))
 		pnext(p);
 	return p;
@@ -1067,6 +1189,7 @@ P *pprevl(P *p)
 	int c;
 
 	p->valcol = 0;
+	p->valattr = 0;
 	do {
 		if (!p->ofst)
 			do {
@@ -1120,7 +1243,7 @@ P *pline(P *p, long line)
 P *pcol(P *p, long goalcol)
 {
 	p_goto_bol(p);
-	if(p->b->o.charmap->type) {
+	if(p->b->o.charmap->type || p->b->o.ansi) {
 		do {
 			int c;
 			int wid;
@@ -1192,7 +1315,7 @@ P *pcolwse(P *p, long goalcol)
 P *pcoli(P *p, long goalcol)
 {
 	p_goto_bol(p);
-	if (p->b->o.charmap->type) {
+	if (p->b->o.charmap->type || p->b->o.ansi) {
 		while (p->col < goalcol) {
 			int c;
 			c = brc(p);
@@ -1298,6 +1421,7 @@ static P *ffind(P *p, unsigned char *s, int len)
 	if (!len)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	mset(table, 255, 256);
 	for (x = 0; x != len - 1; ++x)
 		table[s[x]] = x;
@@ -1338,6 +1462,7 @@ static P *fifind(P *p, unsigned char *s, int len)
 	if (!len)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	mset(table, 255, 256);
 	for (x = 0; x != len - 1; ++x)
 		table[s[x]] = x;
@@ -1457,6 +1582,7 @@ static P *frfind(P *p, unsigned char *s, int len)
 	if (!len)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	mset(table, 255, 256);
 	for (x = len; --x; table[s[x]] = len - x - 1) ;
 	x = 0;
@@ -1500,6 +1626,7 @@ static P *frifind(P *p, unsigned char *s, int len)
 	if (!len)
 		return p;
 	p->valcol = 0;
+	p->valattr = 0;
 	mset(table, 255, 256);
 	for (x = len; --x; table[s[x]] = len - x - 1) ;
 	x = 0;
@@ -1856,8 +1983,10 @@ static B *bcut(P *from, P *to)
 	/* Fix pointers */
 
 	for (p = from->link.next; p != from; p = p->link.next)
-		if (p->line == from->line && p->byte > from->byte)
+		if (p->line == from->line && p->byte > from->byte) {
 			p->valcol = 0;
+			p->valattr = 0;
+		}
 	for (p = from->link.next; p != from; p = p->link.next) {
 		if (p->byte >= from->byte) {
 			if (p->byte <= from->byte + amnt) {
@@ -2022,8 +2151,10 @@ static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 	inserr(p->b->name, p->line, nlines, pisbol(p));	/* FIXME: last arg ??? */
 
 	for (pp = p->link.next; pp != p; pp = pp->link.next)
-		if (pp->line == p->line && (pp->byte > p->byte || (pp->end && pp->byte == p->byte)))
+		if (pp->line == p->line && (pp->byte > p->byte || (pp->end && pp->byte == p->byte))) {
 			pp->valcol = 0;
+			pp->valattr = 0;
+		}
 	for (pp = p->link.next; pp != p; pp = pp->link.next)
 		if (pp->byte == p->byte && !pp->end)
 			if (pp->ptr)
@@ -2101,7 +2232,10 @@ P *binsbyte(P *p, unsigned char c)
 /* UTF-8 encode a character and insert it */
 P *binsc(P *p, int c)
 {
-	if (c>127 && p->b->o.charmap->type) {
+	if ((c & ANSI_BIT) && p->b->o.ansi) {
+		unsigned char *s = ansi_string(c);
+		return binsm(p, s, zlen(s));
+	} else if (c>127 && p->b->o.charmap->type) {
 		unsigned char buf[8];
 		int len = utf8_encode(buf,c);
 		return binsm(p,buf,len);
@@ -2255,13 +2389,23 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 
 unsigned char *canonical(unsigned char *n)
 {
+	int y = 0;
 #ifndef __MSDOS__
 	int x;
 	unsigned char *s;
-	if (n[0] == '~') {
-		for (x = 1; n[x] && n[x] != '/'; ++x) ;
+	for (y = zlen(n); ; --y)
+		if (y <= 2) {
+			y = 0;
+			break;
+		} else if (n[y-2] == '/' && (n[y-1] == '/' || n[y-1] == '~')) {
+			y -= 1;
+			break;
+		}
+	
+	if (n[y] == '~') {
+		for (x = y + 1; n[x] && n[x] != '/'; ++x) ;
 		if (n[x] == '/') {
-			if (x == 1) {
+			if (x == y + 1) {
 				unsigned char *z;
 
 				s = (unsigned char *)getenv("HOME");
@@ -2269,11 +2413,12 @@ unsigned char *canonical(unsigned char *n)
 				z = vsncpy(z, sLEN(z), sz(n + x));
 				vsrm(n);
 				n = z;
+				y = 0;
 			} else {
 				struct passwd *passwd;
 
 				n[x] = 0;
-				passwd = getpwnam((char *)(n + 1));
+				passwd = getpwnam((char *)(n + y + 1));
 				n[x] = '/';
 				if (passwd) {
 					unsigned char *z = vsncpy(NULL, 0,
@@ -2282,12 +2427,18 @@ unsigned char *canonical(unsigned char *n)
 					z = vsncpy(z, sLEN(z), sz(n + x));
 					vsrm(n);
 					n = z;
+					y = 0;
 				}
 			}
 		}
 	}
 #endif
-	return n;
+	if (y) {
+		unsigned char *z = vsncpy(NULL, 0, n + y, zlen(n + y));
+		vsrm(n);
+		return z;
+	} else
+		return n;
 }
 
 int euclid(int a, int b)
@@ -2685,7 +2836,7 @@ unsigned char **getbufs(void)
 	B *b;
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name)
+		if (b->name && !b->internal)
 			s = vaadd(s, vsncpy(NULL, 0, sz(b->name)));
 	return s;
 }
@@ -2696,7 +2847,7 @@ B *borphan(void)
 	B *b;
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->orphan && !b->scratch) {
+		if (b->orphan && (!b->scratch || b->pid)) {
 			b->orphan = 0;
 			return b;
 		}
@@ -2962,18 +3113,24 @@ unsigned char *brzs(P *p, unsigned char *buf, int size)
 
 /* Save edit buffers when editor dies */
 
-FILE *ttsig_f = 0;
+static int ttsig_handled = 0;
 
 RETSIGTYPE ttsig(int sig)
 {
+        FILE *ttsig_f = 0;
 	time_t tim = time(NULL);
 	B *b;
 	int tmpfd;
 	struct stat sbuf;
 
 	/* Do not allow double-fault */
-	if (ttsig_f)
+	if (ttsig_handled)
 		_exit(1);
+        
+        ttsig_handled = 1;
+        
+        if (nodeadjoe)
+                goto skipfile;
 
 	if ((tmpfd = open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
 		if (lstat("DEADJOE", &sbuf) < 0)
@@ -3014,14 +3171,27 @@ RETSIGTYPE ttsig(int sig)
 			fflush(ttsig_f);
 			bsavefd(b->bof, fileno(ttsig_f), b->eof->byte);
 		}
+
+skipfile:
 	if (sig)
 		ttclsn();
-	if (sig == -2)
+	if (sig == -2) {
 		fprintf(stderr,"\n*** JOE was aborted due to swap file I/O error\n");
-	else if (sig == -1)
-		fprintf(stderr,"\n*** JOE was aborted due to malloc returning NULL.  Buffers saved in DEADJOE\n");
-	else if (sig)
-		fprintf(stderr,"\n*** JOE was aborted by UNIX signal %d.  Buffers saved in DEADJOE\n", sig);
+	} else if (sig == -1) {
+		fprintf(stderr,"\n*** JOE was aborted due to malloc returning NULL.");
+		if (nodeadjoe) {
+		        fprintf(stderr, "\n");
+		} else {
+		        fprintf(stderr, "  Buffers saved in DEADJOE\n");
+		}
+	} else if (sig) {
+		fprintf(stderr,"\n*** JOE was aborted by UNIX signal %d.", sig);
+		if (nodeadjoe) {
+		        fprintf(stderr, "\n");
+		} else {
+		        fprintf(stderr, "  Buffers saved in DEADJOE\n");
+		}
+	}
 	_exit(1);
 }
 

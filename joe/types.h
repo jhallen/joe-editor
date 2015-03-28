@@ -63,7 +63,7 @@ typedef int pid_t;
 
 #ifdef HAVE_SNPRINTF
 
-#define joe_snprintf_0(buf,len,fmt) snprintf((char *)(buf),(len),(char *)(fmt))
+#define joe_snprintf_0(buf,len,fmt) zlcpy((buf),(len),(unsigned char *)(fmt))
 #define joe_snprintf_1(buf,len,fmt,a) snprintf((char *)(buf),(len),(char *)(fmt),(a))
 #define joe_snprintf_2(buf,len,fmt,a,b) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b))
 #define joe_snprintf_3(buf,len,fmt,a,b,c) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c))
@@ -75,11 +75,17 @@ typedef int pid_t;
 #define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
 #define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
 
-#define i_printf_0(fmt) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt)), internal_msg(i_msg))
-#define i_printf_1(fmt,a) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a)), internal_msg(i_msg))
-#define i_printf_2(fmt,a,b) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg))
-#define i_printf_3(fmt,a,b,c) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg))
-#define i_printf_4(fmt,a,b,c,d) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
+#define logmessage_0(fmt) (zlcpy((i_msg),sizeof(i_msg),(unsigned char *)(fmt)), internal_msg(i_msg))
+#define logmessage_1(fmt,a) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a)), internal_msg(i_msg))
+#define logmessage_2(fmt,a,b) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg))
+#define logmessage_3(fmt,a,b,c) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg))
+#define logmessage_4(fmt,a,b,c,d) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
+
+#define logerror_0(fmt) (zlcpy((i_msg),sizeof(i_msg),(unsigned char *)(fmt)), internal_msg(i_msg), setlogerrs())
+#define logerror_1(fmt,a) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a)), internal_msg(i_msg), setlogerrs())
+#define logerror_2(fmt,a,b) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg), setlogerrs())
+#define logerror_3(fmt,a,b,c) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg), setlogerrs())
+#define logerror_4(fmt,a,b,c,d) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg), setlogerrs())
 
 #else
 
@@ -95,11 +101,17 @@ typedef int pid_t;
 #define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
 #define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
 
-#define i_printf_0(fmt) (sprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg))
-#define i_printf_1(fmt,a) (sprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg))
-#define i_printf_2(fmt,a,b) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg))
-#define i_printf_3(fmt,a,b,c) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg))
-#define i_printf_4(fmt,a,b,c,d) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
+#define logmessage_0(fmt) (sprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg))
+#define logmessage_1(fmt,a) (sprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg))
+#define logmessage_2(fmt,a,b) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg))
+#define logmessage_3(fmt,a,b,c) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg))
+#define logmessage_4(fmt,a,b,c,d) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
+
+#define logerror_0(fmt) (sprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg), setlogerrs())
+#define logerror_1(fmt,a) (sprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg), setlogerrs())
+#define logerror_2(fmt,a,b) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg), setlogerrs())
+#define logerror_3(fmt,a,b,c) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg), setlogerrs())
+#define logerror_4(fmt,a,b,c,d) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg), setlogerrs())
 
 #endif
 
@@ -230,6 +242,7 @@ typedef struct vfile VFILE;
 typedef struct highlight_state HIGHLIGHT_STATE;
 typedef struct mpx MPX;
 typedef struct jfile JFILE;
+typedef struct vt_context VT;
 
 /* Structure which are passed by value */
 
@@ -287,3 +300,7 @@ struct highlight_state {
 #include "w.h"
 #include "gettext.h"
 #include "builtin.h"
+#include "vt.h"
+#include "mmenu.h"
+#include "state.h"
+#include "options.h"

@@ -37,7 +37,7 @@ MACRO *macsta PARAMS((MACRO *m, int a));
 void chmac PARAMS((void));
 
 /* Text to macro / Macro to text */
-MACRO *mparse PARAMS((MACRO *m, unsigned char *buf, int *sta));
+MACRO *mparse PARAMS((MACRO *m, unsigned char *buf, int *sta, int secure));
 unsigned char *mtext PARAMS((unsigned char *s, MACRO *m));
 
 /* Execute a macro */

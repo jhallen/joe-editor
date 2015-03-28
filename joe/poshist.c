@@ -76,6 +76,11 @@ int unextpos(BW *bw)
 		if (!curpos->p || !curpos->w) {
 			goto lp;
 		}
+		if (!(curpos->w->watom->what & (TYPETW|TYPEPW)))
+			goto lp;
+		bw = (BW *)curpos->w->object;
+		if (bw->b != curpos->p->b)
+			goto lp;
 		if (w->t->curwin == curpos->w && curpos->p->byte == ((BW *) w->t->curwin->object)->cursor->byte) {
 			goto lp;
 		}
@@ -106,6 +111,11 @@ int uprevpos(BW *bw)
 		if (!curpos->p || !curpos->w) {
 			goto lp;
 		}
+		if (!(curpos->w->watom->what & (TYPETW|TYPEPW)))
+			goto lp;
+		bw = (BW *)curpos->w->object;
+		if (bw->b != curpos->p->b)
+			goto lp;
 		if (w->t->curwin == curpos->w && curpos->p->byte == ((BW *) w->t->curwin->object)->cursor->byte) {
 			goto lp;
 		}

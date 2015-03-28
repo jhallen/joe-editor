@@ -102,7 +102,29 @@ void rmkbd PARAMS((KBD *k));
 */
 void *dokey PARAMS((KBD *kbd, int n));
 
+/* A list of named KMAPs */
+struct context {
+	struct context *next;
+	unsigned char *name;
+	KMAP *kmap;
+};
+
 /* JM - user command handler */
 int ukeymap();
+
+/* True is KMAP is empty */
+int kmap_empty(KMAP *k);
+
+/* KMAP *kmap_getcontext(char *name);
+ * Find and return the KMAP for a given context name.  If none is found, an
+ * empty kmap is created, bound to the context name, and returned.
+ */
+KMAP *kmap_getcontext PARAMS((unsigned char *name));
+
+/* KMAP *ngetcontext(char *name);
+ * JM - Find and return the KMAP for a given context name.  If none is found,
+ * NULL is returned.
+ */
+KMAP *ngetcontext PARAMS((unsigned char *name));
 
 #endif

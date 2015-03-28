@@ -61,6 +61,7 @@
  -nomodcheck	Disable periodic checking of disk file newer than buffer
 		(this checking happens on save even with this option).
  -nobackups	If you don't want backup files to be created
+ -nodeadjoe	If you don't want DEADJOE files to be created
  -nocurdir	Do not prompt with current directory
  -break_hardlinks
 		Delete file before writing, to break hard links
@@ -86,6 +87,8 @@
  -floatmouse	Clicking past end of line moves the cursor past the end
  -rtbutton	Use the right mouse button for action, instead of the left
  -nonotice	Disable copyright notice
+ -noexmsg	Disable exiting message ("File not changed so no updated needed")
+
 -noxon		Attempt to turn off ^S/^Q processing
 -orphan		Put extra files given on command line in orphaned buffers
 		instead of in windows
@@ -98,6 +101,9 @@
 
 -notite         Don't send terminal initialization and termination strings: prevents
                 restoration of screen on exit.
+
+ -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
+                emulator's scroll-back buffer.
 
  -usetabs       Use tabs to help optimize screen update.
 
@@ -186,13 +192,20 @@
   %O  Byte offset into file in hex
   %a  Ascii value of character under cursor
   %A  Ascii value of character under cursor in hex
+  %w  Width of character under cursor
   %k  Entered prefix keys
   %p  Percent of file cursor is at
   %l  No. lines in file
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
   %y  Syntax
+  %e  Encoding
   %x  Context (first non-indented line going backwards)
+  %dd day
+  %dm month
+  %dY year
+  %Ename%  value of environment variable
+  %Tname%  value of option (ON or OFF for boolean options)
 
  The formatting escape sequences may also be given:
  
@@ -204,7 +217,10 @@
   \l  Italic
 
 -lmsg \i%k%T%W%I%X %* [%n] %y %M
--rmsg  %S Row %r Col %c %t  ^X^H for help
+-rmsg  %S Row %4r Col %3c %t  ^X^H for help
+-smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
+-zmsg ** Line %r Col %c Offset %o(0x%O) ** 
+
 
  SECOND SECTION: File name dependant local option settings:
 
@@ -216,6 +232,10 @@
 
 	-cpara >#!;*/%
 				Characters which can indent paragraphs.
+
+	-cnotpara .
+				Characters which begin non-paragraph lines.
+
 
 	-encoding name
 				Set file coding (for example: utf-8, iso-8859-15)
@@ -303,6 +323,8 @@
 
 	These define the language syntax for ^G (goto matching delimiter):
 
+	-highlighter_context	Use the highlighter context for ^G
+
 	-single_quoted		Text between '  ' should be ignored (this is
 				not good for regular text since ' is
 				normally used alone as an apostrophe)
@@ -323,7 +345,7 @@
 
  Default local options
 -highlight
--istep 2
+-istep 4
 
  Use this macro (put in first column) to have joe "p4 edit" a file you're about to change.
 
@@ -335,7 +357,9 @@
 
  SECOND and 1/2 SECTION: Option menu layout
 
-	:defmenu name	Defines a menu.
+	:defmenu name [macro]
+			Defines a menu.
+			The macro here is executed when the user hits backspace.
 
 	macro string comment
 			A menu entry.  Macro is any JOE macro- see "Macros:"
@@ -348,17 +372,18 @@
 
 :defmenu root
 mode,"overwrite",rtn	T Overtype %Zoverwrite%
-mode,"hex",rtn	% % Hex edit mode
+mode,"hex",rtn	' Hex edit mode
 mode,"autoindent",rtn	I Autoindent %Zautoindent%
 mode,"wordwrap",rtn	W Word wrap %Zwordwrap%
 mode,"tab",rtn	D Tab width %Ztab%
 mode,"lmargin",rtn	L Left margin %Zlmargin%
 mode,"rmargin",rtn	R Right margin %Zrmargin%
-mode,"square",rtn	X Rectangle mode %Zsquare%
+mode,"square",rtn	X Column mode %Zsquare%
 mode,"indentc",rtn	% % Indent char %Zindentc%
 mode,"istep",rtn	% % Indent step %Zistep%
+menu,"indent",rtn	= Indent select
 mode,"highlight",rtn	H Highlighting %Zhighlight%
-mode,"crlf",rtn	Z CR-LF (MS-DOS) %Zcrlf%
+mode,"crlf",rtn	Z CR-LF/MS-DOS %Zcrlf%
 mode,"linums",rtn	N Line numbers %Zlinums%
 mode,"beep",rtn	B Beep %Zbeep%
 mode,"rdonly",rtn	O Read only %Zrdonly%
@@ -369,7 +394,7 @@ mode,"language",rtn	V Language
 mode,"picture",rtn	P picture %Zpicture%
 menu,"more-options",rtn	  % % More options...
 
-:defmenu more-options
+:defmenu more-options menu,"root",rtn
 menu,"^G",rtn	% % ^G options
 menu,"search",rtn	% % search options
 menu,"paragraph",rtn	% % paragraph options
@@ -380,13 +405,24 @@ menu,"cursor",rtn	% % cursor options
 menu,"marking",rtn	% % marking options
 menu,"tab",rtn	% % tab/indent options
 
-:defmenu menu
+:defmenu indent menu,"root",rtn
+mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 1, Indent character = 32",rtn	1 Space
+mode,"istep",rtn,"2",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 2, Indent character = 32",rtn	2 Spaces
+mode,"istep",rtn,"3",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 3, Indent character = 32",rtn	3 Spaces
+mode,"istep",rtn,"4",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 4, Indent character = 32",rtn	4 Spaces
+mode,"istep",rtn,"5",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 5, Indent character = 32",rtn	5 Spaces
+mode,"istep",rtn,"8",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 8, Indent character = 32",rtn	8 Spaces
+mode,"istep",rtn,"10",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 10, Indent character = 32",rtn	0 Ten
+mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"9",rtn,msg,"Indent step = 1, Indent character = 9",rtn	T Tab
+
+:defmenu menu menu,"more-options",rtn
 mode,"menu_explorer",rtn	% % Menu explorer %Zmenu_explorer%
 mode,"menu_above",rtn	% % Menu position %Zmenu_above%
 mode,"menu_jump",rtn	% % Jump into menu %Zmenu_jump%
 mode,"transpose",rtn	% % Transpose menus %Ztranspose%
 
-:defmenu ^G
+:defmenu ^G menu,"more-options",rtn
+mode,"highlighter_context",rtn	% % ^G uses highlighter context %Zhighlighter_context%
 mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
 mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
 mode,"c_comment",rtn	% % ^G ignores /*...*/ %Zc_comment%
@@ -397,18 +433,19 @@ mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
 mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
 mode,"text_delimiters",rtn % % Text delimiters %Ztext_delimiters%
 
-:defmenu search
+:defmenu search menu,"more-options",rtn
 mode,"icase",rtn	% % Case insensitivity %Zicase%
 mode,"wrap",rtn	% % Search wraps %Zwrap%
 mode,"search_prompting",rtn	% % Search prompting %Zsearch_prompting%
 mode,"csmode",rtn	% % Continued search %Zcsmode%
 
-:defmenu paragraph
+:defmenu paragraph menu,"more-options",rtn
 mode,"french",rtn	% % French spacing %Zfrench%
 mode,"flowed",rtn	% % Flowed text %Zflowed%
 mode,"cpara",rtn	% % Paragraph indent chars %Zcpara%
+mode,"cnotpara",rtn	% % Not-paragraph chars %Zcnotpara%
 
-:defmenu file
+:defmenu file menu,"more-options",rtn
 mode,"restore",rtn	% % Restore cursor %Zrestore%
 mode,"guess_crlf",rtn	% % Auto detect CR-LF %Zguess_crlf%
 mode,"guess_indent",rtn	% % Guess indent %Zguess_indent%
@@ -417,9 +454,10 @@ mode,"guess_utf8",rtn	% % Guess UTF-8 %Zguess_utf8%
 mode,"force",rtn	% % Force last NL %Zforce%
 mode,"nobackup",rtn	% % No backup %Znobackup%
 
-:defmenu global
+:defmenu global menu,"more-options",rtn
 mode,"nolocks",rtn	% % Disable locks %Znolocks%
 mode,"nobackups",rtn	% % Disable backups %Znobackups%
+mode,"nodeadjoe",rtn	% % Disable DEADJOE %Znodeadjoe%
 mode,"nomodcheck",rtn	% % Disable mtime check %Znomodcheck%
 mode,"nocurdir",rtn	% % Disable current dir %Znocurdir%
 mode,"exask",rtn	% % Exit ask %Zexask%
@@ -431,18 +469,18 @@ mode,"joe_state",rtn	% % Joe_state file %Zjoe_state%
 mode,"undo_keep",rtn	% % No. undo records %Zundo_keep%
 mode,"backpath",rtn	% % Path to backup files %Zbackpath%
 
-:defmenu cursor
+:defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
 mode,"mid",rtn	C Center on scroll %Zmid%
 mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
 mode,"rtbutton",rtn	% % Right button %Zrtbutton%
 
-:defmenu marking
+:defmenu marking menu,"more-options",rtn
 mode,"autoswap",rtn	% % Autoswap mode %Zautoswap%
 mode,"marking",rtn	% % Marking %Zmarking%
 mode,"lightoff",rtn	% % Auto unmask %Zlightoff%
 
-:defmenu tab
+:defmenu tab menu,"more-options",rtn
 mode,"smarthome",rtn	% % Smart home key %Zsmarthome%
 mode,"smartbacks",rtn	% % Smart backspace %Zsmartbacks%
 mode,"indentfirst",rtn	% % To indent first %Zindentfirst%
@@ -468,7 +506,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i\|\uSEARCH\u           \|^X[ prev page   \|^K  >line \|^[M math    \|^Y  paste  \|^XS  all   \|\i \i
 \i \i\|^S  forward      \|^X] next page   \|^[D >word \|^[X command \|^[Y switch \|^XI  insert\|\i \i
 \i \i\|^R  backward     \|^[G to line No. \|^[ DEL    \|^XL status  \|^XA file   \|^XK  kill  \|\i \i
-\i \i\|^[% find&replace \|^XG matching ([{\|    word< \|^U  repeat  \|^X| filter \|^X^B switch\|\i \i
+\i \i\|^[% find&replace \|^XG matching ([{\|    word< \|^U  repeat  \|^X| filter \|^XB  switch\|\i \i
 }
 
 {Editing 
@@ -580,6 +618,8 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 	:query		For single-character query lines
 	:querya		Singe-character query for quote
 	:querysr	Search & Replace single-character query
+	:shell		For shell windows
+	:vtshell	For terminal emulator windows
 
  Other sections may be given as well for organization purposes or for
  use with the '-keymap' option.
@@ -625,6 +665,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
  Macros may cross lines if they end with ,
 
+
 :windows		Bindings common to all windows
 type		^@ TO ÿ		Self insert
 abort		^G		Abort window
@@ -636,7 +677,7 @@ uarg		^U		Repeat prefix
 uarg		^[ -
 uarg		^[ 0 TO 9
 help		^X ^H
-help		.k1
+ help		.k1
 help		^[ O P
 help		^[ [ 1 1 ~
 hnext		^X .
@@ -644,22 +685,28 @@ hprev		^X ,
 math		^[ m		Calculator
 math		^[ M
 nextw		^X o		Other window
+nextw		^X O		Other window
 pgdn		.kN		Screen down
 pgdn		^V
 pgdn		^[ [ 6 ~
  pgdn      ^# S
 pgup		.kP		Screen up
 pgup		^[ v
+pgup		^[ V
 pgup		^[ [ 5 ~
  pgup      ^# T
 play,"0"	^X e		Execute keyboard macro
+play,"0"	^X E		Execute keyboard macro
 prevw		^X p		Previous window (uemacs)
+prevw		^X P		Previous window (uemacs)
 query		^X q		Query insert
+query		^X Q		Query insert
 record,"0"	^X (		Record macro
 retype		^L		Refresh screen
 rtn		^M		Return
 shell		^Z		Suspend
 shell		^[ s		Suspend (uemacs)
+shell		^[ S		Suspend (uemacs)
 stop		^X )		Stop recording macro
   Mouse handling
 defmdown	MDOWN		Move the cursor to the mouse location
@@ -680,15 +727,44 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 
   ESC-x compile
 
-:def compile mwind!,mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
+:def compile mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
 
  Grep
 
-:def grep_find mwind!,mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
+:def grep_find mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
 
  Man page
 
 :def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
+
+ Shell windows
+ We load the already existing Startup Log first so that Shell does not inherit the current directory.
+
+:def shell1 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 1 *",rtn,vtbknd!,eof
+:def shell2 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 2 *",rtn,vtbknd!,eof
+:def shell3 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 3 *",rtn,vtbknd!,eof
+:def shell4 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 4 *",rtn,vtbknd!,eof
+
+ Macros allowed in shell window commands
+:def shell_clear psh,bof,markb,eof,markk,blkdel
+:def shell_parse parserr
+:def shell_gparse gparse
+:def shell_release release
+:def shell_math maths
+:def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn
+:def shell_rtn rtn
+:def shell_edit edit
+:def shell_dellin dellin
+:def shell_cd cd
+:def shell_pop popabort
+:def shell_markb markb
+:def shell_markk markk
+
+ Split window version
+ :def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,vtbknd!,eof
+ :def shell2 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 2 *",rtn,vtbknd!,eof
+ :def shell3 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 3 *",rtn,vtbknd!,eof
+ :def shell4 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 4 *",rtn,vtbknd!,eof
 
 :def ensure_other if,"no_windows<2",then,splitw,endif
 
@@ -729,50 +805,48 @@ eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
  eol			^# SP @		Amiga
 
-  Macros for non-existant Emacs functions
+  Editor Macros (for EMACS)
 
  Better off not having this: JOE automatically figure out the fill
  prefix.  If you really want to set the left margin, use ^[ ^[ L.
  mode,"lmargin",rtn,"col",rtn	^X .			Left fill prefix (left margin)
 
-eof,drop,msg,"Mark set",rtn,bof	^X H			Select entire file
-eof,drop,msg,"Mark set",rtn,bof	^X h
+ Select entire file
+:def markall eof,drop,msg,"Mark set",rtn,bof
 
-psh,nextword-,markk,prevword-,markb,
-upper,nextword-	^[ u		Upcase word
+ Convert word to upper case
+:def upcaseword psh,nextword-,markk,prevword-,markb,upper,nextword-
 
-psh,nextword-,markk,prevword-,markb,
-lower,nextword-	^[ l		Downcase word
+ Convert word to lower case
+:def dncaseword psh,nextword-,markk,prevword-,markb,lower,nextword-
 
-psh,if,"arg>=0",then,
-  nextword,markk,prevword,markb,lower,
-  rtarw,markk,upper,nextword,
+ Capitalize word
+:def capword psh,if,"arg>=0",then,
+ nextword,markk,prevword,markb,lower,rtarw,markk,upper,nextword,
 else,
-  prevword,markb,nextword,markk,lower,
-  prevword,rtarw,markk,upper,ltarw,
-endif	^[ c			Capitalize word
+ prevword,markb,nextword,markk,lower,prevword,rtarw,markk,upper,ltarw,
+endif
 
-psh,markk,lower		^X ^L	Downcase region
-
-psh,markk,upper		^X ^U	Upcase region
-
-psh,if,"arg>=0",then,
+ Transpose characters
+:def transpc psh,if,"arg>=0",then,
   ltarw,markb,rtarw,markk,rtarw,
   blkmove,rtarw,
 else,
   markk,ltarw,markb,ltarw,blkmove,
   rtarw,
-endif	^T			Transpose chars
+endif
 
-psh,if,"arg>=0",then,
+ Transpose lines
+:def transpl psh,if,"arg>=0",then,
   uparw,bol,markb,dnarw,markk,dnarw,
   blkmove,dnarw,
 else,
   bol,markk,uparw,markb,uparw,blkmove,
   dnarw,
-endif	^X ^T			Transpose lines
+endif
 
-psh,if,"arg>=0",then,
+ Transpose words
+:def transpw psh,if,"arg>=0",then,
   prevword,nextword,nextword,markk,
   prevword,markb,setmark,":",prevword,
   nextword,blkmove,markk,prevword,
@@ -782,20 +856,86 @@ else,
   prevword,markb,setmark,":",prevword,
   nextword,blkmove,markk,prevword,
   markb,gomark,":",blkmove,prevword,nextword,
-endif	^[ t			Transpose words
+endif
 
-eop-,bop-,markb,eop-	^[ h			Mark paragraph
+ Mark paragraph
+:def markp eop-,bop-,markb,eop-
+
+ Cut to character
+:def cutc psh,drop,fwrdc-,query,markk,blkdel
+
+ Append to file
+:def appendtofile psh,markk,if,"markv",then,blksave,bol,">>",eol,query,else,save,bol,deleol,">>",query,endif
+
+ Recenter
+:def recenter retype,arg,"top+height/2-line",rtn,upslide
+
+ Move to center line
+:def midline arg,"top+height/2-line",rtn,dnarw
+
+ Count lines in region
+:def linesregn psh,markk,swap,math,"z=line",rtn,swap,math,"line-z",rtn,msg,math,"ans",rtn," lines in region",rtn
+
+ Next error, force windows on screen
+:def nxterrforce mwind,mfit,prevw,nxterr
+
+ Prev error, force windows on screen
+:def prverrforce mwind,mfit,prevw,prverr
+
+ Go to next page or eof
+:def nextpage ffirst,"",rtn,if,"!joe(\"bn\",rtn)",then,bof,msg,"Beginning of buffer",rtn,endif
+
+ Go to previous page or bof
+:def prevpage ffirst,"",rtn,if,"!joe(\"n\",rtn)",then,eof,msg,"End of buffer",rtn,endif
+
+ Indent region
+:def indentregion if,"markv",then,rindent-!,else,markk,rindent-!,endif
+
+ Tags search other window
+:def tagsother psh,nextword,prevword,markb,nextword,markk,copy,
+ensure_other,prevw,tag," ",bol,deleol,yank,yankpop,query!,nextw
+
+markall		^X H
+markall		^X h
+
+upcaseword	^[ u
+upcaseword	^[ U
+
+dncaseword	^[ l
+dncaseword	^[ L
+
+capword		^[ c
+capword		^[ C
+
+psh,markk,lower		^X ^L		Downcase region
+
+psh,markk,upper		^X ^U		Upcase region
+
+transpc		^T			Transpose chars
+
+transpl		^X ^T			Transpose lines
+
+transpw		^[ t			Transpose words
+transpw		^[ T			Transpose words
+
+markp		^[ h			Mark paragraph
+markp		^[ H			Mark paragraph
 
 nextword-,prevword-,markb,nextword-	^[ @	Mark word
 
 "()",ltarw		^[ (			Insert ()
 
-bol,insc,delw		^[ ^			Delete indentation
+ bol,insc,delw		^[ ^			Delete indentation
+bol,insc,ltarw!,delw,if,"col != 1",then,insc,endif	^[ ^		Delete indentation
 
 psh,markk,copy,msg,"Region saved",rtn	^[ w	Yank copy
+psh,markk,copy,msg,"Region saved",rtn	^[ W	Yank copy
 
 mode,"rmargin",rtn,"col",rtn,
 msg,"Fill-column set",rtn		^X f	Set right margin
+
+mode,"rmargin",rtn,"col",rtn,
+msg,"Fill-column set",rtn		^X F	Set right margin
 
 bol,rtn,backw,rtn,rtn,uparw,delw	^X ^O	Delete blank lines
 
@@ -815,6 +955,8 @@ savenow			^X ^S			Save file
 
 querysave		^X s
 
+querysave		^X S
+
 drop,msg,"Mark set",rtn	^@			Drop anchor
 
 ensure_other,nextw,pgdn-!,prevw	^[ ^V			Scroll other window down
@@ -822,6 +964,7 @@ ensure_other,nextw,pgdn-!,prevw	^[ ^V			Scroll other window down
 ensure_other,nextw,pgup-!,prevw	^[ ^Z			Scroll other window up
 
  bol,nedge,pedge	^[ m			Gnu-emacs goto indentation
+ bol,nedge,pedge	^[ M			Gnu-emacs goto indentation
 						(prefer ESC m to be math)
 
 ensure_other,nextw,nbuf-!,prevw	^X 4 b			Switch buffers other window
@@ -830,35 +973,41 @@ ensure_other,nextw,edit,query,prevw	^X 4 f			Find file other window
 
 ensure_other,nextw,edit,query,prevw	^X 4 ^F
 
-psh,nextword,prevword,markb,nextword,markk,copy,
-ensure_other,prevw,tag," ",bol,deleol,yank,yankpop,query!,nextw	^X 4 .
+tagsother		^X 4 .		Tags search other windows
+
 
 querysave,query,killjoe	^X ^C			Query to save files, then exit
 
 lose,query		^X k			Kill buffer in window
 
+lose,query		^X K			Kill buffer in window
+
  lose,query,edit		^X ^V		Edit a file: no orphaned buffers
 reload			^X ^V			Reload current file
 
-psh,drop,fwrdc-,query,markk,blkdel	^[ z	Cut to char
+cutc		^[ z		Cut to character
+cutc		^[ Z		Cut to character
 
-psh,markk,if,"markv",then,blksave,bol,">>",eol,query,else,save,bol,deleol,">>",query,endif	^X a
+appendtofile	^X a
+appendtofile	^X A
 
-retype,
-arg,"top+height/2-line",rtn,upslide	^L	Recenter
+recenter	^L		Recenter
 
-arg,"top+height/2-line",rtn,dnarw	^[ r	Move to center line
+midline		^[ r		Move to center line
+midline		^[ R
 
-psh,markk,swap,math,"z=line",rtn,
-swap,math,"line-z",rtn,msg,math,"ans",rtn,
-" lines in region",rtn			^[ =	Count lines region
+linesregn	^[ =		Count lines region
 
 mode,"rdonly",rtn	^X ^Q	Toggle read-only
 
-compile					^X c	Compile
-mwind,mfit,prevw,nxterr					^X n
-mwind,mfit,prevw,nxterr					^X `
-mwind,mfit,prevw,prverr					^X p
+compile		^X c	Compile
+compile		^X C	Compile
+
+nxterrforce	^X n	Next error
+nxterrforce	^X N
+nxterrforce	^X `
+prverrforce	^X p	Previous error
+prverrforce	^X P
 
 backs		^?		Backspace
 backs		^H
@@ -866,15 +1015,16 @@ backw		^[ ^?		Backspace word
 backw		^[ ^H
 bknd		^X '		Shell window (joe)
 bof		^[ <		Goto beginning of file
-ffirst,"",rtn,if,"!joe(\"bn\",rtn)",then,bof,msg,"Beginning of buffer",rtn,endif	^X [	Go to next page or eof
+nextpage	^X [		Go to next page or eof
  bof		^X [
 home		.kh		Goto beginning of line
 home		^A
 home		^[ [ H
 home		^[ [ 1 ~
 bop		^[ p		(uemacs)
+bop		^[ P		(uemacs)
 bop		^[ {
-bufed		^X b
+bufed		^X ^B
 bknd		^[ '		Shell window
 crawlr		^X >		Scroll to the right
 crawll		^X <		Scroll to the left
@@ -882,6 +1032,7 @@ delch		.kD		Delete character
 delch		^D
 deleol		^K		Delete to end of line
 delw		^[ d		Delete word
+delw		^[ D		Delete word
 dnarw		.kd		Go down
 dnarw		^N
 dnarw		^[ O B
@@ -890,9 +1041,10 @@ dnarw		^[ [ B
 dnslide		^X ^N		Slide down (uemacs)
 dnslide,dnslide,dnslide,dnslide		MWDOWN
 edit		^X ^F		Edit a file: creates orphaned buffers
+ edit		^X d		Should be dired, but maybe user wants to edit?
 eof		^[ >		Go to end of file
 
-ffirst,"",rtn,if,"!joe(\"n\",rtn)",then,eof,msg,"End of buffer",rtn,endif	^X ]	Go to next page or eof
+prevpage	^X ]		Go to next page or eof
 
  eof		^X ]
 eol		.kH		Go to end of line
@@ -901,20 +1053,26 @@ eol		^E
 eol		^[ [ F
 eol		^[ [ 4 ~
 eop		^[ n		(uemacs)
+eop		^[ N		(uemacs)
 eop		^[ }
 execmd		^[ x
+execmd		^[ X
 insc		^C		(uemacs)
  ffirst		^S		Search forward
 isrch		^S
 ffirst		^\
 psh,markk,filt,query	^[ |		Filter block
 format		^[ q		Format paragraph
+format		^[ Q		Format paragraph
 gomark		^X /		Goto bookmark
 groww		^X ^		Enlarge window
 groww		^X z		(uemacs)
+groww		^X Z		(uemacs)
 insf		^X i		Insert a file
+insf		^X I		Insert a file
 yapp		^[ ^W		Append next kill
 line		^[ g		Goto line (uemacs)
+line		^[ G		Goto line (uemacs)
 ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
@@ -922,24 +1080,29 @@ ltarw		^[ [ D
  ltarw          ^# D
  mode		^[ ^[		Change modes
 menu,"root",rtn	^[ ^[
-nbuf		^X ^B		Next buffer in current window
+nbuf		^X b		Next buffer in current window (but it should prompt)
+nbuf		^X B		Next buffer in current window (but it should prompt)
 nbuf		^X x		(uemacs)
+nbuf		^X X		(uemacs)
  nextpos		^K =		Goto next position in position history
 nextword	^[ f		Goto next word
+nextword	^[ F		Goto next word
 notmod		^[ ~		Not modified
 open		^O		Split line
 open		^[ ^O
  pbuf		^X b		Previous buffer in current window
  prevpos		^K -	Goto previous position in position history
 prevword	^[ b		Previous word
+prevword	^[ B		Previous word
 qrepl		^[ %		Query replace
  qrepl		^[ r		Query replace (uemacs)
 qrepl		^[ ^R		Query replace (uemacs)
 redo		^^		Redo changes
  rfirst		^R		Search backwards
 rsrch		^R		Incremental search backwards
-if,"markv",then,rindent-!,else,markk,rindent-!,endif	^X ^I
-if,"markv",then,rindent-!,else,markk,rindent-!,endif	^[ ^\
+
+indentregion	^X ^I
+indentregion	^[ ^\
  markk,rindent	^[ ^\
 rtarw		.kr		Go right
 rtarw		^F
@@ -949,18 +1112,24 @@ rtarw		^[ [ C
 run		^[ !
 save		^X ^W		Write file
 setmark		^X j		Set bookmark
+setmark		^X J		Set bookmark
 shrinkw		^X ^Z		(uemacs)
 splitw		^X 2		Split window
 stat		^X l		Gnu-Emacs Show status
+stat		^X L		Gnu-Emacs Show status
 stat		^X ?		JED
 stat		^X =		Gnu-Emacs
 swap		^X ^X		Swap mark and cursor
 tag		^[ .		Tag search
+tagjump		^[ ,		Jump to next match
 tomatch		^X g		Goto matching parenthasis (joe)
+tomatch		^X G		Goto matching parenthasis (joe)
 tomatch		^[ ^F		(uemacs)
 txt		^X t		Prompt for text to insert
+txt		^X T		Prompt for text to insert
 undo		^_		Undo changes
 undo		^X u
+undo		^X U
 uparw		.ku		Go up
 uparw		^P
 uparw		^[ O A
@@ -970,6 +1139,23 @@ upslide		^X ^P		Slide up (uemacs)
 upslide,upslide,upslide,upslide		MWUP
 yank		^Y		Yank deleted text
 yankpop		^[ y		Yank-pop
+yankpop		^[ Y		Yank-pop
+shell1		^[ [ 1 1 ~
+shell1		^[ O P
+shell1		^[ [ [ A
+shell1		.k1
+shell2		^[ [ 1 2 ~
+shell2		^[ O Q
+shell2		^[ [ [ B
+shell2		.k2
+shell3		^[ [ 1 3 ~
+shell3		^[ O R
+shell3		^[ [ [ C
+shell3		.k3
+shell4		^[ [ 1 4 ~
+shell4		^[ O S
+shell4		^[ [ [ D
+shell4		.k4
 
 :prompt			Prompt windows
 :inherit main
@@ -1035,6 +1221,7 @@ pgdnmenu	^[ [ 6 ~
  pgdnmenu  ^# S
 pgupmenu	.kP		Screen up
 pgupmenu	^[ v
+pgupmenu	^[ V
 pgupmenu	^[ [ 5 ~
  pgupmenu  ^# T
 rtarwmenu	.kr
@@ -1063,3 +1250,31 @@ type		^@ TO ÿ
 
 :querya			Single-key query window for quoting
 type		^@ TO ÿ
+
+:shell			Input to shell windows
+:inherit main
+""		^C		Abort
+""		^D		Eof
+"	"	^I		Tab
+""		^H		Backspace
+""		^M		Return
+""		^?		Backspace
+
+:vtshell		Input to ANSI shell windows
+:inherit main
+"[A"		 [ A
+"[A"		.ku
+"[B"		 [ B
+"[B"		.kd
+"[C"		 [ C
+"[C"		.kr
+"[D"		 [ D
+"[D"		.kl
+""		^A		BOL for bash
+""		^C		Abort
+""		^D		Eof
+""		^E		EOL for bash
+"	"	^I		Tab
+""		^H		Backspace
+""		^M		Return
+""		^?		Backspace

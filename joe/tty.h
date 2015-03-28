@@ -33,7 +33,7 @@ struct mpx {
  *     Place tty in character at a time mode.
  *     (basically, disable all processing except for XON/XOFF if it's set)
  *
- * (4) Set this new tty state without loosing any typeahead (by using the
+ * (4) Set this new tty state without losing any typeahead (by using the
  *     proper ioctl).
  *
  * (5) Store the baud rate in the global variable 'baud'
@@ -65,7 +65,7 @@ extern unsigned baud; /* Baud rate */
  * (1) ttyflsh()
  *
  * (2) Restore the original tty mode which aopen() had saved.  Do this without
- *     loosing any typeahead.
+ *     losing any typeahead.
  *
  * (3) Call signrm().  There is also 'void ttyclsn(void)' which does not do
  *     the this step.
@@ -83,6 +83,8 @@ void ttclsn PARAMS((void));
  * (3) Clear 'have'
  */
 int ttgetc PARAMS((void));
+
+int ttcheck PARAMS((void));
 
 /* void ttputc(char c);  Write a character to the output buffer.  If it becomes
  * full, call ttflsh()
@@ -139,6 +141,7 @@ void ttsusp PARAMS((void));
 int ttflsh PARAMS((void));
 
 extern int have; /* Set if we have typeahead */
+extern unsigned char havec; /* typeahead character */
 extern int leave; /* Set if we're exiting (so don't check for typeahead) */
 
 #ifdef __MSDOS__
@@ -185,7 +188,7 @@ void signrm PARAMS((void));
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only));
+MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int w, int h));
 
 /* int subshell(int *ptyfd);
  * Execute a subshell.  Returns 'pid' of shell or zero if there was a
@@ -201,5 +204,8 @@ void tickon PARAMS((void));
 
 extern long last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */
+
+void ttstsz(int fd, int w, int h); /* Set window size */
+extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */
 
 #endif

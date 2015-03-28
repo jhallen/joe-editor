@@ -226,7 +226,7 @@
 	"!--"		comment_start	recolor=-5
 	"![CDATA["	cdata_start	recolor=-10
 done
-	"<"		decl_nest
+#	"<"		decl_nest
 	">"		content
 
 # We allow one level of <...> nesting within declarations

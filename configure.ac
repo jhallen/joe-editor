@@ -4,7 +4,7 @@
 AC_PREREQ(2.54)
 
 #### Here's the only place where to change version number ####
-AC_INIT(joe, 3.7)
+AC_INIT(joe, 4.0)
 AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD
@@ -184,16 +184,21 @@ AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
 AC_CONFIG_FILES([Makefile joe/Makefile rc/Makefile man/Makefile man/ru/Makefile
 syntax/Makefile po/Makefile charmaps/klingon
-syntax/4gl.jsf syntax/ada.jsf syntax/asm.jsf syntax/awk.jsf syntax/batch.jsf
-syntax/c.jsf syntax/cobol.jsf syntax/conf.jsf syntax/csharp.jsf
-syntax/csh.jsf syntax/css.jsf syntax/diff.jsf syntax/fortran.jsf
-syntax/go.jsf syntax/haskell.jsf syntax/html.jsf syntax/ini.jsf
-syntax/java.jsf syntax/javascript.jsf syntax/joerc.jsf syntax/jsf_check.jsf
-syntax/jsf.jsf syntax/lisp.jsf syntax/lua.jsf syntax/m4.jsf syntax/mail.jsf
-syntax/mason.jsf syntax/matlab.jsf syntax/ocaml.jsf syntax/pascal.jsf
-syntax/perl.jsf syntax/php.jsf syntax/ps.jsf syntax/python.jsf
-syntax/rexx.jsf syntax/ruby.jsf syntax/sed.jsf syntax/sh.jsf
-syntax/skill.jsf syntax/sml.jsf syntax/spec.jsf syntax/sql.jsf
-syntax/tcl.jsf syntax/tex.jsf syntax/troff.jsf syntax/typescript.jsf
-syntax/verilog.jsf syntax/vhdl.jsf syntax/xml.jsf])
+syntax/4gl.jsf syntax/ada.jsf syntax/ant.jsf syntax/asm.jsf syntax/awk.jsf
+syntax/batch.jsf syntax/c.jsf syntax/cobol.jsf syntax/comment_todo.jsf
+syntax/conf.jsf syntax/csharp.jsf syntax/csh.jsf syntax/css.jsf
+syntax/debian.jsf syntax/diff.jsf syntax/elixir.jsf syntax/erb.jsf
+syntax/erlang.jsf syntax/fortran.jsf syntax/git-commit.jsf syntax/go.jsf
+syntax/haml.jsf syntax/haskell.jsf syntax/html.jsf syntax/htmlerb.jsf
+syntax/ini.jsf syntax/iptables.jsf syntax/java.jsf syntax/joerc.jsf
+syntax/js.jsf syntax/jsf_check.jsf syntax/jsf.jsf syntax/json.jsf
+syntax/lisp.jsf syntax/lua.jsf syntax/m4.jsf syntax/mail.jsf
+syntax/mason.jsf syntax/matlab.jsf syntax/md.jsf syntax/ocaml.jsf
+syntax/pascal.jsf syntax/perl.jsf syntax/php.jsf syntax/powershell.jsf
+syntax/prolog.jsf syntax/properties.jsf syntax/ps.jsf syntax/puppet.jsf
+syntax/python.jsf syntax/rexx.jsf syntax/ruby.jsf syntax/sed.jsf
+syntax/sh.jsf syntax/sieve.jsf syntax/skill.jsf syntax/sml.jsf
+syntax/spec.jsf syntax/sql.jsf syntax/tcl.jsf syntax/tex.jsf
+syntax/troff.jsf syntax/typescript.jsf syntax/verilog.jsf syntax/vhdl.jsf
+syntax/whitespace.jsf syntax/xml.jsf syntax/yaml.jsf syntax/filename.jsf])
 AC_OUTPUT

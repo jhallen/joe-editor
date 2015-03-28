@@ -172,7 +172,7 @@ void sresize(Screen *t)
 	w = t->topwin;
 	do {
 		w->y = -1;
-		w->w = t->w - 1;
+		w->w = t->w;
 		w = w->link.next;
 	} while (w != t->topwin);
 	wfit(t);
@@ -192,7 +192,7 @@ void scrins(B *b, long l, long n, int flg)
 {
 	W *w;
 
-	if ((w = scr->topwin) != NULL) {
+	if (scr && (w = scr->topwin) != NULL) {
 		do {
 			if (w->y >= 0) {
 				if (w->object && w->watom->ins)
@@ -353,12 +353,6 @@ void wfit(Screen *t)
 	w = t->topwin;
 	do {
 		if (w->ny >= 0) {
-			if (w->object) {
-				if (w->watom->move)
-					w->watom->move(w->object, w->x, w->ny);
-				if (w->watom->resize)
-					w->watom->resize(w->object, w->w, w->nh);
-			}
 			if (w->y == -1) {
 				msetI(t->t->updtab + w->ny, 1, w->nh);
 			}
@@ -367,6 +361,20 @@ void wfit(Screen *t)
 			w->y = -1;
 		w->h = w->nh;
 		w->reqh = 0;
+		w = w->link.next;
+	} while (w != t->topwin);
+
+	/* Call move and resize in a second pass so that they see valid positions for all windows */
+	w = t->topwin;
+	do {
+		if (w->y >= 0) {
+			if (w->object) {
+				if (w->watom->move)
+					w->watom->move(w->object, w->x, w->y);
+				if (w->watom->resize)
+					w->watom->resize(w->object, w->w, w->h);
+			}
+		}
 		w = w->link.next;
 	} while (w != t->topwin);
 }
@@ -575,7 +583,7 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height
 	new = (W *) joe_malloc(sizeof(W));
 	new->notify = notify;
 	new->t = t;
-	new->w = t->w - 1;
+	new->w = t->w;
 	seth(new, height);
 	new->h = new->reqh;
 	new->y = -1;
@@ -588,6 +596,7 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height
 	new->object = NULL;
 	new->msgb = NULL;
 	new->msgt = NULL;
+	new->bstack = 0;
 	/* Set window's target and family */
 /* was:	if (new->win = target) {	which may be mistyped == */
 	if ((new->win = target) != NULL) {	/* A subwindow */
@@ -691,12 +700,16 @@ int wabort(W *w)
 		if (!leave)
 			wfit(t);
 	} else {
+		unsigned char *msgt = w->msgt;
+		unsigned char *msgb = w->msgb;
 		doabort(w, &ret);
 		if (!leave) {
 			if (lastw(t)->link.next != t->topwin)
 				wfit(t);
 			else
 				wspread(t);
+			if (msgt && !maint->curwin->msgt) maint->curwin->msgt = msgt;
+			if (msgb && !maint->curwin->msgb) maint->curwin->msgb = msgb;
 		}
 	}
 	return ret;
@@ -712,10 +725,10 @@ static void mdisp(SCRN *t, int y, unsigned char *s)
 	int len;
 
 	len = fmtlen(s);
-	if (len <= (t->co - 1))
+	if (len <= (t->co))
 		ofst = 0;
 	else
-		ofst = len - (t->co - 1);
+		ofst = len - (t->co);
 	genfmt(t, 0, y, ofst, s, BG_COLOR(bg_msg), 1);
 	t->updtab[y] = 1;
 }
@@ -726,12 +739,18 @@ void msgout(W *w)
 
 	if (w->msgb) {
 		mdisp(t, w->y + w->h - 1, w->msgb);
-		w->msgb = 0;
+		// w->msgb = 0;
 	}
 	if (w->msgt) {
 		mdisp(t, w->y + ((w->h > 1 && (w->y || !staen)) ? 1 : 0), w->msgt);
-		w->msgt = 0;
+		// w->msgt = 0;
 	}
+}
+
+void msgclr(W *w)
+{
+	w->msgb = 0;
+	w->msgt = 0;
 }
 
 /* Set temporary message */
@@ -819,7 +838,7 @@ int umwind(BW *bw)
 {
 	W *msgw;
 	if (!errbuf) {
-		msgnw(bw->parent, joe_gettext(_("There is no message buffer")));
+		msgnw(bw->parent, joe_gettext(_("There are no messages")));
 		return -1;
 	}
 
@@ -860,9 +879,9 @@ int umfit(BW *bw)
 		return -1;
 	}
 	/* Request size */
-	if (p->t->h - 6 < 3)
+	if ((p->t->h >> 1) < 3) /* -6 */
 		return -1;
-	seth(p, p->t->h - 6);
+	seth(p, (p->t->h >> 1)); /* -6 */
 	t->topwin = p;
 	t->curwin = p;
 	/* Fit them on the screen */

@@ -1,3 +1,252 @@
+cursor position history probably not working
+when buffers switch in windows.
+
+Scratch always pushes.  Do we want this?  It's weird for ESC c.  Maybe have
+a no-push version of scratch.
+
+jmacs vs. mg vs gnu-emacs:
+
+	c-x b  jmacs: nbuf, gnu: offers prompt with next buffer [fixed, before in jmacs this was bufed]
+	c-x c-b	jmacs: bufed prompt.  gnu: menu. [fixed, before in jmacs this was nbuf]
+	c-x 0  (delete window) prints exit message even when we are not abandoning the file - why? [fixed]
+	M-^: jmacs: deletes indentation, blank lines below.  gnu: deletes indentation, blank line above- pulls current line to end of previous [fixed]
+
+	c-x c-s	jmacs: saves file.  gnu: prompts before saving.
+	c-x c-v jmacs: reload original.  gnu: prompts with original as default.
+	c-x d: jmacs: nothing.  gnu: menu.
+	c-x c-r: jmacs: nothing.  gnu: load file in read-only mode.
+
+	esc m  back to indentation (math in joe)
+
+	Non-standard:
+
+	c-x g  is goto line in mg, is goto matching delimiter in jmacs, udf gnu
+	c-x p  previous window in mg  (prev error in jmacs), udf gnu
+	c-x n  other window in mg   (next error in jmacs), udf gnu
+	esc s search forwards   (suspend in jmacs, submenus in gnu)
+	esc r  search backwards  (move to center line in jmacs and gnu)
+
+Timing fix for bracketed paste should disable spaces.  We should have a mode
+to disable the timing fix.
+
+cd command: if you leave out the trailing / it ignores it
+cd command: should canonicalized version of path be stored in history?
+
+in ^KE: any nicer way to clear the current path other than Ctrl-Y?
+
+Improvements:
+
+ Long bash lines not quite working correctly...
+
+ Should ^K E pop the shell window?
+    if current is scratch it should pop
+    popedit will not be needed then..
+
+
+ 'parse' can't be used with commands with pipe symbol
+
+ Keys for parserr and release?
+
+ Preserve position in parser in case we re-parse (for very long compile we
+want to start looking at errors before it's done)
+
+ It would be nice if ^G was goto instead of ESC space (when parserr is active?)
+  (no good way to do this.)
+
+ edit command in shell window does not work with '!pgm' if there is a
+current directory set.
+
+ joe command in shell only works as an alias, not a real program.  This
+means when mercurial or p4 invokes an editor the wrong thing is done.
+
+ We don't use lattr for ansi mode since we are not allowing colors to cross
+ lines.  Save CPU cycles by not generating lattr for this case.
+
+ Ansi effects not crossing lines means text doesn't remain properly colored
+over edit operations, like insert new line (para format).
+
+ Mode to start joe with shell window.
+
+ Save per-shell window current directory in joe state file and
+ restore it next time?
+
+ Would be nice if there was history for each virtual console.
+    Can be done with environement variable HISTFILE.
+    We need an argument to be passed to shell.sh for this: maybe vtbknd
+    asks for an argument?
+
+ Add magic joe command: append list of buffers.  Some way for ESC SP to jump
+ to one of them.
+
+ Context help for shell window?
+
+ check querysave and nbuf/pbuf interactions with new buffer stack
+
+Hex mode probably doesn't mix correctly with vt
+
+- - - -
+build should report return value of make
+[done]
+
+grep and build should switch to the current directory first.
+   "scratch" needs to inherit current directory
+     hmm..
+     [done- also load "* Startup Log *" first to prevent inheriting- for
+example when we start shell windows]
+
+   "grep" and "build" need to change directory before running
+     [fixed]
+   parse already does the right thing
+
+maybe grep and build need to clear the block?
+   they don't because they clear markb/markk in process of clearing scratch
+   buffer
+
+ parsed file names with spaces not working correctly
+ parse file names with no line numbers?
+ [fixed]
+
+ add shell commands to other rc files
+ [done]
+
+ status command should use status line escape sequences
+ [done]
+
+ messages from shell windows sometimes do not show up.  The issue is that
+when we close a prompt window, we resize the shell window.  This causes bash
+to redraw the line.  This input counts as typing and causes the message to
+be erased (it just causes a screen update which notices the updtab flag
+set).. We need some other way (than setting updtab) to clear the message-
+maybe set updtab on next user input.
+ [fixed- now we remove message only on user input, not shell input]
+
+ security hole with "math"
+ [fixed]
+
+ parserr - it would be nice if parsing was limited to a block
+ [done]
+
+ parserr - no way to turn off highlighting line (but ESC space is OK).
+ [fixed: added release command]
+
+ 'parserr' leaving many copies of buffer?
+ [fixed]
+
+ message printed when we close last window and switch to orphan buffer
+ [fixed- now we always do it, but can turn off with noexmsg]
+
+ shell joe command doesn't work with absolute path if prefix is added.
+ this doesn't work well with ^KE either (need to clear path manually)
+   emacs does some magic here.. if it detects // it ignores prefix
+     two parts:
+       it displays prefix with { }
+       when opening file, it starts with the /
+ [fixed- now we do same as emacs]
+
+ when we 'edit' in a shell window, it should pop before loading the new one.
+  otherwise we get a bunch of copies of the shell window I think
+ [fixed]
+
+ Esc sequences could be optimized out: delete one if it results in same
+ attributes that already exist
+ [done]
+
+ check for n^2 algorithms
+ [done]
+
+Pgetc() does not now always return a character... this breaks paragraph
+formatter and anything that expect binsc(pgetc) to work.
+ [fixed: we assign a code for each ansi sequence]
+
+ clean up macro execute for magic shell commands:
+   only execute shell_ ones...
+   only execute if window is on screen...
+   how do we allow "file"?  it should only be allowed in prompts, and not
+   allowed to be typed into the shell.
+ [done]
+
+ Need per-shell window current directory.
+  Logbuf?  Sometimes?
+ [done: the buffer records the current directory]
+
+ color on status line gets messed up when shell text is colored.. how can
+this even happen?
+ [fixed] 
+
+ cursor in wrong position when I abort a window and shell window gets pulled
+on.. need EFIXXCOL, but joe crashes when I enable it for abort command.
+ abort a window and shell window replaces it:
+   cursor is wrong. we need EFFIXCOL on abort.. any others?
+  [fixed]
+
+ 'joe' in a shell window should edit a file.
+[done]
+
+[done: buffer stack]
+ Not sure about switching to orphan mode.. but how can we have F1.F4 without it?
+
+   If we keep orphan mode, make it more like regular joe:
+    Do better when hitting ^C.. pop back to previous buffer in window?  Keep
+    history list for this?
+
+    Trouble when we switch to orphan mode:
+	^K I does not put orphaned buffers on screen...
+	Have to get users used to ^[ u and ^[ v
+
+When you use grep in a buffer, you can parserr.. but grep output can be
+highlighted with escape sequences.. parserr includes them in the file names.
+	(done- you can now hit ESC SPACE in a shell window: would like it to
+be ^G.. also it would be nice buffer was parsed... maybe with progressive
+parsing?)
+
+Who owns keyboard, application or joe?
+	Usually we want it to work the old way..
+	It was nice when ` uparw actually worked..
+		(there is one sneaky way to make ` work the old way...  have
+		it mean quote only if it's the first thing in the read buffer)
+	(done- but check other rc files...)
+
+Need ^K ' to make a new window... (how to go to it? Have one for grep?
+Compile?)
+	We have F1 - F4
+		If you exit shell and hit F2 again it messes up... (need
+better way to detect it's a shell window- filename compare, perhaps).
+
+Note: termcap emulation functions are gone from curses..
+	No, ncurses-devel was missing on ubuntu..
+
+Think more about keeping cursor in sync: from shell window, edit file, ^C,
+we're back in shell window but cursor is in the wrong place.
+ [fixed- we were not keeping cursor up to date in orphan windows]
+
+nbuf/pbuf do not call resize, so swapping in a shell window is not properly resized.
+ [seems to be fixed, but not sure where resize is getting called..]
+
+multiple windows open on one shell window is kind of broken (you get
+conflicting resize events from each of them).  There should be a concept
+of the master window.
+ [fixed, we use the last one]
+
+Even then, a window should only be a master if the cursor matches the vt
+cursor.  This helps with the problem of closing a window and switching to
+another where cursor is far away.
+
+  - using vtmaster to pick one to be the master...
+     - how to switch it (for example if a window is closed)? maybe overall screen refresh has to watch for this?
+
+Need raw mode which works the old way.. (mostly for debugging joe..)
+  [done]
+
+Resize needs more testing.  Resize with 'man ls' not quite working.
+Weird things will happen with multiple window with synchronized cursors.
+   [fixed- was due to scrolling region not being resized]
+
+Resize not working when you kill other window?
+ [seems to be ok]
+
+^K V should jump to vt cursor... (done)
+- - - -
+
 For JOE-3.6
 
 	auto reload of modified files?  a mode for this?

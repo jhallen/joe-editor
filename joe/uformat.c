@@ -91,6 +91,19 @@ static int cpara(BW *bw, int c)
 #endif
 }
 
+/* Return true if this first non-whitespace character means
+   we are not a paragraph for sure (for example, '.' in nroff) */
+
+static int cnotpara(BW *bw, int c)
+{
+	int x;
+	if (bw->o.cnotpara)
+		for (x = 0; bw->o.cnotpara[x]; ++x)
+			if (bw->o.cnotpara[x] == c)
+				return 1;
+	return 0;
+}
+
 /* Return true if line is definitly not a paragraph line.
  * Lines which arn't paragraph lines:
  *  1) Blank lines
@@ -107,7 +120,7 @@ static int pisnpara(BW *bw, P *p)
 	while (cpara(bw, c = pgetc(q)))
 		/* do nothing */;
 	prm(q);
-	if (c == '.' || c == '\r' || c == '\n')
+	if (cnotpara(bw, c) || c == '\r' || c == '\n')
 		return 1;
 	else
 		return 0;
@@ -375,9 +388,9 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 			while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
 				--y;
 			/* Don't duplicate bullet */
-/*			if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
+			if (y && ((indents[y - 1] == '*' && !cpara(bw, '*')) || (indents[y - 1] == '-' && !cpara(bw, '-'))) &&
 			    (y == 1 || indents[y - 2] == ' ' || indents[y - 2] == '\t'))
-			    	indents[y - 1] = ' '; */
+			    	indents[y - 1] = ' ';
 			/* Fix C comment */
 			if (indents[x] == '/' && indents[x + 1] == '*')
 				indents[x] = ' ';
@@ -578,9 +591,9 @@ int uformat(BW *bw)
 		while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
 			--y;
 		/* Don't duplicate if it looks like a bullet */
-/*		if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
+		if (y && ((indents[y - 1] == '*' && !cpara(bw, '*')) || (indents[y - 1] == '-' && !cpara(bw, '-'))) &&
 		    (y == 1 || indents[y - 2] == ' ' || indents[y - 2] == '\t'))
-			indents[y - 1] = ' '; */
+			indents[y - 1] = ' ';
 		/* Fix C comment */
 		if (indents[x] == '/' && indents[x + 1] == '*')
 			indents[x] = ' ';
@@ -611,41 +624,62 @@ int uformat(BW *bw)
 
 	/* text is in buffer.  insert it at cursor */
 
-	/* Do first line */
 	b = pdup(buf->bof, USTR "uformat");
 
+	/* First line: preserve whitespace within this line
+	   (but still apply french spacing after periods) */
 	while (!piseof(b)) {
-		/* Set cursor position if we're at original offset */
-		if (b->byte == curoff)
-			pset(bw->cursor, p);
+		c = brch(b);
+		if (joe_isblank(b->b->o.charmap,c) || c == '\n') {
+			int f = 0;
 
-		/* Get character from buffer */
-		c = pgetc(b);
+			/* Stop if we're at end of line */
+			if (c == '\n' || piseolblank(b))
+				break;
 
-		/* Stop if we found end of line */
-		if (c == '\n') {
-			prgetc(b);
-			break;
-		}
+			/* Set f if previous character was '.', '?' or '!' */
+			if (!pisbof(b)) {
+				P *d = pdup(b, USTR "uformat");
+				int g = prgetc(d);
+				if (g=='.' || g=='?' || g=='!') {
+					f = 1;
+				}
+				prm(d);
+			}
+			
+			if (f) {
+				/* Skip past the whitespace. */
+				while (joe_isblank(b->b->o.charmap, brch(b))) {
+					if(b->byte == curoff) 
+						pset(bw->cursor, p);
+					pgetc(b);
+				}
 
-		/* Stop if we found white-space followed by end of line */
-		if (joe_isblank(b->b->o.charmap, c) && piseolblank(b)) {
-			prgetc(b);
-			break;
-		}
+				/* Insert proper amount of whitespace */
+				if (!piseof(b)) {
+					if (!bw->o.french)
+						binsc(p, ' '), pgetc(p);
+					binsc(p, ' ');
+					pgetc(p);
+				}
+			} else {
+				/* Insert whitespace character, advance pointer */
+				binsc(p, pgetc(b));
+				pgetc(p);
+			}
+		} else {
+			/* Insert characters of word and wrap if necessary */
+			if (b->byte == curoff)
+				pset(bw->cursor, p);
 
-		/* Insert character, advance pointer */
-		binsc(p, c);
-		pgetc(p);
-
-		/* Do word wrap if we reach right margin */
-		if (piscol(p) > bw->o.rmargin && !joe_isblank(p->b->o.charmap,c)) {
-			wrapword(bw, p, indent, bw->o.french, 1, indents);
-			break;
+			binsc(p, pgetc(b));
+			pgetc(p);
+			if (piscol(p) > bw->o.rmargin)
+				wrapword(bw, p, indent, bw->o.french, 1, indents);
 		}
 	}
 
-	/* Do rest */
+	/* Remaining lines: collapse whitespace */
 
 	while (!piseof(b)) {
 		c = brch(b);
@@ -654,18 +688,11 @@ int uformat(BW *bw)
 			P *d;
 			int g;
 
-			/* Set f if there are two spaces after . ? or ! instead of one */
-			/* (What is c was '\n'?) */
+			/* Detect end of sentence */
 			d=pdup(b, USTR "uformat");
 			g=prgetc(d);
 			if (g=='.' || g=='?' || g=='!') {
 				f = 1;
-/*				pset(d,b);
-				pgetc(d);
-				if (c == '\n' || piseol(d) || joe_isspace(bw->b->o.charmap,brch(d))) {
-					f = 1;
-				}
-*/
 			}
 			prm(d);
 			

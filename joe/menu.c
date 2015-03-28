@@ -154,7 +154,7 @@ static int mlines(unsigned char **s, int w)
 			width = d;
 	}
 	nitems = x;
-	if (width > w)
+	if (width > w - 1)
 		width = w - 1;
 	perline = w / (width + 1);
 
@@ -177,7 +177,7 @@ static void mconfig(MENU *m)
 				m->width = d;
 		}
 		m->nitems = x;
-		if (m->width > m->w)
+		if (m->width > m->w - 1)
 			m->width = m->w - 1;
 
 		m->fitline = m->w / (m->width + 1);
@@ -518,32 +518,45 @@ int umbacks(MENU *m)
 		return -1;
 }
 
+/* Fold upper, lower and Ctrl-letter to the same values */
+
+static int menufold(int c)
+{
+	if (c >= 'a' && c <= 'z')
+		return c & 0x1f;
+	else if (c >= 'A' && c <= 'Z')
+		return c & 0x1f;
+	else
+		return c;
+}
+
 static int umkey(MENU *m, int c)
 {
 	int x;
 	int n = 0;
 
-	if (c == '0') {
+	if (c == '-' && m->func) {
 		if (m->func)
 			return m->func(m, m->cursor, m->object, -1);
 		else
 			return -1;
 	}
-	if (c == '1') {
+	if (c == '+' && m->func) {
 		if (m->func)
 			return m->func(m, m->cursor, m->object, 1);
 		else
 			return -1;
 	}
-	c &= 0x1F;
+
+	c = menufold(c);
 	for (x = 0; x != m->nitems; ++x)
-		if ((m->list[x][0] & 0x1F) == c)
+		if (menufold(m->list[x][0]) == c)
 			++n;
 	if (!n)
 		return -1;
 	if (n == 1)
 		for (x = 0; x != m->nitems; ++x)
-			if ((m->list[x][0] & 0x1F) == c) {
+			if (menufold(m->list[x][0]) == c) {
 				m->cursor = x;
 				return umrtn(m);
 			}
@@ -551,7 +564,7 @@ static int umkey(MENU *m, int c)
 		++m->cursor;
 		if (m->cursor == m->nitems)
 			m->cursor = 0;
-	} while ((m->list[m->cursor][0] & 0x1F) != c);
+	} while (menufold(m->list[m->cursor][0]) != c);
 
 	return -1;
 }
@@ -604,7 +617,7 @@ MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*ab
 		h = 1;
 	
 	if (s) {
-		lines = mlines(s,w->t->w-1);
+		lines = mlines(s, w->t->w);
 		if (lines < h)
 			h = lines;
 	}
