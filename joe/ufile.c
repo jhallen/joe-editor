@@ -1299,9 +1299,8 @@ int uquerysave(BW *bw)
 	W *w = bw->parent;
 	B *first;
 
-	/* Avoid infinite loop if this is an internal buffer- unbuf will never find it again */
-	if (bw->b->internal)
-		unbuf(bw);
+	/* Synchronize current window with buffer ring so that first is currect */
+	unbuf(bw);
 	bw = w->object;
 	first = bw->b;
 
