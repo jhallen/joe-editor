@@ -11,6 +11,6 @@ data_syntax_DATA = c.jsf perl.jsf verilog.jsf conf.jsf python.jsf php.jsf sh.jsf
 	js.jsf json.jsf typescript.jsf ant.jsf comment_todo.jsf debian.jsf elixir.jsf \
 	erb.jsf git-commit.jsf haml.jsf htmlerb.jsf iptables.jsf md.jsf prolog.jsf \
 	properties.jsf sieve.jsf whitespace.jsf yaml.jsf erlang.jsf powershell.jsf \
-	puppet.jsf
+	puppet.jsf filename.jsf
 
 EXTRA_DIST = $(data_syntax_DATA)

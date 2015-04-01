@@ -53,13 +53,13 @@ static struct var *get(unsigned char *str)
 
 unsigned char *ptr;
 struct var *dumb;
-static double eval(unsigned char *s);
+static double eval(unsigned char *s, int secure);
 
 int recur=0;
 
 /* en means enable evaluation */
 
-static double expr(int prec, int en,struct var **rtv)
+static double expr(int prec, int en,struct var **rtv, int secure)
 {
 	double x = 0.0, y, z;
 	struct var *v = NULL;
@@ -78,7 +78,7 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 		c = *ptr;
 		*ptr = 0;
-		if (!zcmp(s,USTR "joe")) {
+		if (!secure && !zcmp(s,USTR "joe")) {
 			*ptr = c;
 			v = 0;
 			x = 0.0;
@@ -96,7 +96,7 @@ static double expr(int prec, int en,struct var **rtv)
 				} else
 					*q++ = 0;
 				if (en) {
-					m = mparse(NULL,ptr,&sta);
+					m = mparse(NULL,ptr,&sta,0);
 					ptr = q;
 					if (m) {
 						x = !exmacro(m,1);
@@ -172,7 +172,7 @@ static double expr(int prec, int en,struct var **rtv)
 			unsigned char *e = blkget();
 			if (e) {
 				v = 0;
-				x = eval(e);
+				x = eval(e,secure);
 				joe_free(e);
 				ptr = save;
 			} else if (!merr) {
@@ -202,7 +202,7 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 	} else if (*ptr == '(') {
 		++ptr;
-		x = expr(0, en, &v);
+		x = expr(0, en, &v, secure);
 		if (*ptr == ')')
 			++ptr;
 		else {
@@ -211,17 +211,17 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 	} else if (*ptr == '-') {
 		++ptr;
-		x = -expr(10, en, &dumb);
+		x = -expr(10, en, &dumb, secure);
 	} else if (*ptr == '!') {
 		++ptr;
-		x = !expr(10, en, &dumb);
+		x = !expr(10, en, &dumb, secure);
 	}
       loop:
 	while (*ptr == ' ' || *ptr == '\t')
 		++ptr;
 	if (*ptr == '(' && 11 > prec) {
 		++ptr;
-		y = expr(0, en, &dumb);
+		y = expr(0, en, &dumb, secure);
 		if (*ptr == ')')
 			++ptr;
 		else {
@@ -252,81 +252,81 @@ static double expr(int prec, int en,struct var **rtv)
 		goto loop;
 	} else if (*ptr == '*' && ptr[1] == '*' && 8 > prec) {
 		ptr+=2;
-		x = pow(x, expr(8, en, &dumb));
+		x = pow(x, expr(8, en, &dumb, secure));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '^' && 8 > prec) {
 		++ptr;
-		x = pow(x, expr(8, en, &dumb));
+		x = pow(x, expr(8, en, &dumb, secure));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '*' && 7 > prec) {
 		++ptr;
-		x *= expr(7, en, &dumb);
+		x *= expr(7, en, &dumb, secure);
 		v = 0;
 		goto loop;
 	} else if (*ptr == '/' && 7 > prec) {
 		++ptr;
-		x /= expr(7, en, &dumb);
+		x /= expr(7, en, &dumb, secure);
 		v = 0;
 		goto loop;
 	} else if(*ptr=='%' && 7>prec) {
 		++ptr;
-		y = expr(7, en, &dumb);
+		y = expr(7, en, &dumb, secure);
 		if ((int)y == 0) x = 1.0/vzero;
 		else x = ((int) x) % (int)y;
 		v = 0;
 		goto loop;
 	} else if (*ptr == '+' && 6 > prec) {
 		++ptr;
-		x += expr(6, en, &dumb);
+		x += expr(6, en, &dumb, secure);
 		v = 0;
 		goto loop;
 	} else if (*ptr == '-' && 6 > prec) {
 		++ptr;
-		x -= expr(6, en, &dumb);
+		x -= expr(6, en, &dumb, secure);
 		v = 0;
 		goto loop;
 	} else if (*ptr == '<' && 5 > prec) {
 		++ptr;
-		if (*ptr == '=') ++ptr, x = (x <= expr(5, en, &dumb));
-		else x = (x < expr(5,en,&dumb));
+		if (*ptr == '=') ++ptr, x = (x <= expr(5, en, &dumb, secure));
+		else x = (x < expr(5,en,&dumb, secure));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '>' && 5 > prec) {
 		++ptr;
-		if (*ptr == '=') ++ptr, x=(x >= expr(5,en,&dumb));
-		else x = (x > expr(5,en,&dumb));
+		if (*ptr == '=') ++ptr, x=(x >= expr(5,en,&dumb, secure));
+		else x = (x > expr(5,en,&dumb, secure));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '=' && ptr[1] == '=' && 5 > prec) {
 		++ptr, ++ptr;
-		x = (x == expr(5,en,&dumb));
+		x = (x == expr(5,en,&dumb, secure));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '!' && ptr[1] == '=' && 5 > prec) {
 		++ptr, ++ptr;
-		x = (x != expr(5,en,&dumb));
+		x = (x != expr(5,en,&dumb,secure));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '&' && ptr[1] == '&' && 3 > prec) {
 		++ptr, ++ptr;
-		y = expr(3,x!=0.0 && en,&dumb);
+		y = expr(3,x!=0.0 && en,&dumb,secure);
 		x = (int)x && (int)y;
 		v = 0;
 		goto loop;
 	} else if (*ptr=='|' && ptr[1]=='|' &&  3 > prec) {
 		++ptr, ++ptr;
-		y = expr(3,x==0.0 && en,&dumb);
+		y = expr(3,x==0.0 && en,&dumb,secure);
 		x = (int)x || (int)y;
 		v= 0;
 		goto loop;
 	} else if (*ptr=='?' && 2 >= prec) {
 		++ptr;
-		y = expr(2,x!=0.0 && en,&dumb);
+		y = expr(2,x!=0.0 && en,&dumb,secure);
 		if (*ptr==':') {
 			++ptr;
-			z = expr(2,x==0.0 && en,&dumb);
+			z = expr(2,x==0.0 && en,&dumb,secure);
 			if (x != 0.0)
 				x = y;
 			else
@@ -338,7 +338,7 @@ static double expr(int prec, int en,struct var **rtv)
 		goto loop;
 	} else if (*ptr == '=' && 1 >= prec) {
 		++ptr;
-		x = expr(1, en,&dumb);
+		x = expr(1, en,&dumb,secure);
 		if (v) {
 			v->val = x;
 			v->set = 1;
@@ -353,7 +353,7 @@ static double expr(int prec, int en,struct var **rtv)
 	return x;
 }
 
-static double eval(unsigned char *s)
+static double eval(unsigned char *s, int secure)
 {
 	double result = 0.0;
 	struct var *v;
@@ -364,7 +364,7 @@ static double eval(unsigned char *s)
 	}
 	ptr = s;
 	while (!merr && *ptr) {
-		result = expr(0, 1, &dumb);
+		result = expr(0, 1, &dumb,secure);
 		v = get(USTR "ans");
 		v->val = result;
 		v->set = 1;
@@ -599,8 +599,7 @@ double m_y1(double n) { return y1(n); }
 
 double m_int(double n) { return (int)(n); }
 
-
-double calc(BW *bw, unsigned char *s)
+double calc(BW *bw, unsigned char *s, int secure)
 {
 	/* BW *tbw = bw->parent->main->object; */
 	BW *tbw = bw;
@@ -850,14 +849,18 @@ double calc(BW *bw, unsigned char *s)
 	v->val = countmain(bw->parent->t);
 	v->set = 1;
 	merr = 0;
-	return eval(s);
+	v = get(USTR "is_shell");
+	v->val = tbw->b->pid;
+	v->set = 1;
+	merr = 0;
+	return eval(s, secure);
 }
 
 /* Main user interface */
 
 B *mathhist = NULL;
 
-int umath(BW *bw)
+int domath(BW *bw, int secure)
 {
 	unsigned char *s;
 	joe_set_signal(SIGFPE, fperr);
@@ -865,7 +868,7 @@ int umath(BW *bw)
 	s = ask(bw->parent, USTR "=", &mathhist, USTR "Math", utypebw, locale_map, 0, 0, NULL);
 	if (s) {
 		unsigned char buf[128];
-		double result = calc(bw, s);
+		double result = calc(bw, s, secure);
 
 		if (merr) {
 			msgnw(bw->parent, merr);
@@ -890,8 +893,21 @@ int umath(BW *bw)
 		}
 		mode_ins = 0;
 		goto again;
+
 		return 0;
 	} else {
 		return -1;
 	}
+}
+
+int umath(BW *bw)
+{
+	return domath(bw, 0);
+}
+
+/* Secure version: no macros allowed */
+
+int usmath(BW *bw)
+{
+	return domath(bw, 1);
 }

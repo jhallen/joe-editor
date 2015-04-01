@@ -248,6 +248,7 @@ typedef struct highlight_state HIGHLIGHT_STATE;
 typedef struct mpx MPX;
 typedef struct jfile JFILE;
 typedef struct obj Obj;
+typedef struct vt_context VT;
 typedef struct coroutine Coroutine;
 
 /* Structure which are passed by value */
@@ -306,3 +307,4 @@ struct highlight_state {
 #include "w.h"
 #include "gettext.h"
 #include "builtin.h"
+#include "vt.h"

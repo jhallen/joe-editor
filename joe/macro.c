@@ -101,9 +101,12 @@ MACRO *macsta(MACRO *m, int a)
  * sta is set to:  ending position in buffer for no error.
  *                 -1 for syntax error
  *                 -2 for need more input
+ *
+ * Set secure to allow only commands which being with "shell_".
+ * Also, secure_type will be used instead of type.
  */
 
-MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
+MACRO *mparse(MACRO *m, unsigned char *buf, int *sta, int secure)
 {
 	int y, c, x = 0;
 
@@ -184,7 +187,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 				}
 			} else
 				m = mkmacro(-1, 0, 0, NULL);
-			addmacro(m, mkmacro(buf[x], 0, 0, findcmd(USTR "type")));
+			addmacro(m, mkmacro(buf[x], 0, 0, secure ? findcmd(USTR "secure_type") : findcmd(USTR "type")));
 			++x;
 		}
 		if (buf[x] == '\"')
@@ -203,7 +206,10 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 
 			c = buf[y];
 			buf[y] = 0;
-			cmd = findcmd(buf + x);
+			if (!secure || !zncmp(buf + x, USTR "shell_", 6))
+				cmd = findcmd(buf + x);
+			else
+				cmd = 0;
 			buf[x = y] = c;
 
 			/* Parse flags */
@@ -611,7 +617,7 @@ int utimer(BW *bw)
 	
 	s = ask(bw->parent, joe_gettext(_("Delay in seconds between macro invocation (^C to abort): ")), NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 	if (s) {
-		long num = calc(bw, s);
+		long num = calc(bw, s, 0);
 		if (merr) {
 			msgnw(bw->parent, merr);
 			return -1;
@@ -691,7 +697,7 @@ void load_macros(FILE *f)
 			parse_ws(&p, '#');
 			len = parse_string(&p,&bf);
 			if (len>0)
-				kbdmacro[n] = mparse(NULL,bf,&sta);
+				kbdmacro[n] = mparse(NULL,bf,&sta,0);
 		}
 	}
 }
@@ -723,7 +729,7 @@ int uarg(BW *bw)
 	NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 	if (s) {
 		long num;
-		num = calc(bw, s);
+		num = calc(bw, s, 1);
 		if (merr) {
 			msgnw(bw->parent, merr);
 			return -1;
@@ -741,7 +747,7 @@ int iftest(BW *bw, unsigned char *prompt)
 	unsigned char *s = ask(bw->parent,prompt,NULL,NULL,utypebw,locale_map,0,0,NULL);
 	if (s) {
 		long num;
-		num=calc(bw,s);
+		num=calc(bw,s,0);
 		if(merr) {
 			msgnw(bw->parent,merr);
 			return -1;

@@ -18,6 +18,9 @@ void setopt PARAMS((B *b, unsigned char *name));
  */
 KMAP *kmap_getcontext PARAMS((unsigned char *name));
 
+/* Return true if kmap is empty */
+int kmap_empty PARAMS((KMAP *k));
+
 /* KMAP *ngetcontext(char *name);
  * JM - Find and return the KMAP for a given context name.  If none is found,
  * NULL is returned.

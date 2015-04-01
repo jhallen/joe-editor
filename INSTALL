@@ -1,61 +1,38 @@
-This is Joe's Own Editor.  See the INFO file if you don't know what this is.
+Joe's Own Editor Installation Instructions
 
 =-=-=-=-=
 Mercurial
 =-=-=-=-=
 
+	[Skip if you downloaded the source .tgz distribution file]
+
 Developer checkout:
 
-	hg clone ssh://jhallen@joe-editor.hg.sourceforge.net/hgroot/joe-editor/joe-editor
+	hg clone ssh://jhallen@hg.code.sf.net/p/joe-editor/mercurial joe-editor-mercurial
 
 Read-only checkout:
 
-	hg clone http://joe-editor.hg.sourceforge.net:8000/hgroot/joe-editor/joe-editor
+	hg clone http://hg.code.sf.net/p/joe-editor/mercurial joe-editor-mercurial
 
-=-=
-CVS
-=-=
+Update to the branch you want to build:
 
+	hg update -C default	Not yet released main-line branch
 
-You can downlaod sources of the JOE editor by various ways. One of them is
-CVS. You have to have cvs package installed to properly access the CVS
-server. CVS package can be downloaded from http://www.cvshome.org/.
+	hg update -C joe-3	Released branch for joe-3.x
 
-Downloading of joe sources via CVS can be done by issuing following command:
+Run autotools to build configure scripts:
 
-cvs -d :pserver:anonymous@joe-editor.cvs.sourceforge.net:/cvsroot/joe-editor co joe-current
-
-To reduce bandwidth and needless updates, the CVS repository does not
-contain automatically-generated files, even when those files are normally
-present in the distribution tarballs.
-
-Therefore, if you're building from the CVS sources, you'll need to have GNU
-autoconf and GNU automake installed on your machine (these do the afore
-mentioned automatic generation). These packages are available from
-<ftp://ftp.gnu.org/pub/gnu/<package>/> and its mirrors (please choose one
-close to you), listed at <http://www.gnu.org/order/ftp.html>.
-
-!!! Important note !!!
-Versions of autoconf and automake used by maintainers and confirmed to do
-the right thing are:
-
-	automake version >= 1.8.4
-	autoconf version >= 2.59
-
-Failing to use above mentioned version may cause malfunction of building
-system or even malfunction of joe itself.
-
-In case you aren't used to running autoconf manually to generate the
-necessary configure script, here are necessary steps:
-
-	cd directory_with_sources
 	./autojoe
+
+	(You might find that you need to install automake and autoconf
+	first).
 
 =-=-=-=-=-=-=-=-=-=-=-
 Installation procedure
 =-=-=-=-=-=-=-=-=-=-=-
 
-  To create a Cygwin binary distribution, use the 'cygbuild' script.
+  [To create a Cygwin binary distribution, use the 'cygbuild' script
+  instead of these instructions.]
 
   JOE uses the GNU Automake and Autoconf suites to build itself.
 
@@ -63,33 +40,40 @@ Installation procedure
   a termcap emulation library to do this.  In modern versions of
   UNIX, this library is part of ncurses so you need the ncurses
   library:
+
 	apt-get install ncurses-dev
 
   Run configure script, type one of these:
 
+    Normal installation:
+
 	./configure --prefix=/usr --sysconfdir=/etc
 
-	  (normal system installation)
 		- executables in /usr/bin
 		- man pages in /usr/man
 		- configuration files in /etc/joe
+		- syntax files in /usr/share/joe
+
+    Install into your home directory:
 
 	./configure --prefix=$HOME
 
-	  (install into your home directory)
 		- executables in ~/bin
 		- man pages in ~/man
 		- configuration files in ~/etc/joe
+		- syntax files in ~/share/joe
+
+    Install into /usr/local:
 
 	./configure
 
-	  (install into /local)
 		- executables in /usr/local/bin
 		- man pages in /usr/local/man
-		- configuration files in /usr/local/etc
+		- configuration files in /usr/local/etc/joe
+		- syntax files in /usr/local/share/joe
 
-  For Cygwin, I've found that you need to add
-  "--disable-curses --disable-termcap" to the above commands.
+  [For Cygwin, I've found that you need to add
+  "--disable-curses --disable-termcap" to the above commands.]
 
   Build JOE, type:
 
@@ -99,10 +83,11 @@ Installation procedure
 
 	strip joe
 
-  Install JOE, type:
+  Install JOE, type one of:
 
-	su root (leave out if installing into home directory)
-	make install
+	sudo make install	(system installation)
+
+	make install		(home directory)
 
   Delete or update user custom configuration files (otherwise new features
   will not work):
@@ -480,17 +465,3 @@ doing this:
 Then put the 'setenv TERMINFO $HOME/.info' line into your .login file or
 'TERMINFO=$HOME/.info; export TERMINFO' in your .profile.  Now all of your
 programs should look up the 'TERM' in your own personal terminfo database.
-
-USING JOE IN A SHELL SCRIPT
-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-Joe used to use /dev/tty to access the terminal.  This caused a problem with
-idle-session killers (they would kill joe because the real tty device was
-not being accessed for a long time), so now joe only uses /dev/tty if you
-need to pipe a file into joe, as in:  echo "hi" | joe -
-
-If you want to use joe in a shell script which has its stdin/stdout
-redirected, but you don't need to do 'joe -', you should simply redirect
-joe's stdin/stdout to /dev/tty:
-
-	joe filename  </dev/tty >/dev/tty

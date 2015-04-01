@@ -25,7 +25,7 @@ SRCHREC fsr = { {&fsr, &fsr} };
 unsigned char **word_list;
 
 #define MAX_WORD_SIZE 64
-unsigned char **get_word_list(B *b,int ignore)
+unsigned char **get_word_list(B *b,long ignore)
 {
 	unsigned char buf[MAX_WORD_SIZE];
 	unsigned char *s;
@@ -35,17 +35,24 @@ unsigned char **get_word_list(B *b,int ignore)
 	P *p;
 	int c;
 	int idx;
-	int start = 0;
+	long start = 0;
 
 	h = htmk(1024);
 
 	p = pdup(b->bof, USTR "get_word_list");
 	idx = 0;
-	while ((c=pgetc(p))!=NO_MORE_DATA)
+	do {
+		c = pgetc(p);
 		if (idx) {
 			if (joe_isalnum_(b->o.charmap, c)) {
-				if (idx!=MAX_WORD_SIZE)
-					buf[idx++] = c;
+				if (b->o.charmap->type) {
+					if (idx + 8 < MAX_WORD_SIZE) {
+						idx += utf8_encode(buf+idx, c);
+					}
+				} else {
+					if (idx!=MAX_WORD_SIZE)
+						buf[idx++] = c;
+				}
 			} else {
 				if (idx!=MAX_WORD_SIZE && start!=ignore) {
 					buf[idx] = 0;
@@ -58,9 +65,15 @@ unsigned char **get_word_list(B *b,int ignore)
 			}
 		} else {
 			start=p->byte-1;
-			if (joe_isalpha_(b->o.charmap, c))
-				buf[idx++] = c;
+			if (joe_isalpha_(b->o.charmap, c)) {
+				if (b->o.charmap->type) {
+					idx += utf8_encode(buf+idx, c);
+				} else {
+					buf[idx++] = c;
+				}
+			}
 		}
+	} while (c != NO_MORE_DATA);
 	prm(p);
 
 	list = vatrunc(list, 0);

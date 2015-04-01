@@ -1,4 +1,50 @@
+## Release Notes
+
+[Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
+
+### JOE 4.0
+
+* JOE now has pop-up shell windows with full terminal emulation and shell commands
+  that can control the editor.  Hit F1 - F4 to bring up a shell window.
+  See [Pop-up shell feature](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#popup) for a full description.
+
+* The status command (^K SPACE) can now be customized using the same syntax
+  as the status bar.  Look for smsg and zmsg in joerc to see how to do this.
+
+* parserr (the error parser) will parse only the highlighted block if it's set.  Before it always parsed the entire buffer.
+
+* Now there is a per-buffer concept of current directory.  This was added to
+  make the pop-up shell windows work better, but it's useful in general.
+
+* At file prompts you can begin a new anchored path without having to delete
+  the old one.  It means that ~jhallen/foo//etc/passwd is translated to /etc/passwd.
+  Prompt windows are now highighted to indicate which parts of the path are
+  being dropped.  There is a syntax file for this: filename.jsf
+
+* The error parser now ignores ANSI sequences (some versions of grep
+  color their results, now JOE can still parse it).
+
+* Temporary messages are now dismissed by keyboard input only.  Before, they
+  could also be dismissed by shell input.
+
+* Tags search now supports multiple matches.  ^K ; can be configured to
+  either provide a menu of the matches or to cycle through them.
+
+* Tags search will now match on the member name part of member functions
+  ('fred' will match 'myclass::fred').
+
+* Tags search will prepend the path to the tags file file name in the tags
+  file.  This is important when JOE finds the tags file via the TAGS
+  environment variable.
+
+* Remove ` as quote character from incremental search.
+
+* Clean up documentation, convert much of it to Markdown.
+
 ### JOE 3.8
+
+- Search JOE image for :include files referenced by the joerc file.
+  Include ftyperc file in the JOE image.
 
 - Change default indent from 2 to 4.  Add quick menu to change to common
   indent values: ^T = (1, 2, 4, or 8).  Switch to + and - for definitively

@@ -1,16 +1,14 @@
 # Joe's Own Editor
 
-[Editing Tasks](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/tasks.md) 
+[User manual](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md) 
 
 [Release Notes](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/NEWS.md)
 
-[List of Commands](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/list.md)
+[List of Commands](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#list)
 
-[List of Options](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/options.md)
+[List of Options](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#options)
 
 [Hacking](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/hacking.md)
-
-[Man page](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md)
 
 [Project page](http://www.sourceforge.net/projects/joe-editor)
 
@@ -29,8 +27,7 @@ and comes standard with many Linux distributions.</p>
 <p>JOE is being maintained by its original author Joseph Allen, plus all of
 the people who send bug reports, feature suggestions and patches to the
 project web site.  JOE is hosted by SourceForge.net and its source code is
-controlled under CVS.  Over the last few years there has been about one
-major new release a year, usually in the April-May timeframe.</p>
+controlled under Mercurial.</p>
 
 <p>JOE is a blending of MicroPro's venerable microcomputer word processor
 WordStar and Richard Stallman's famous LISP based text editor GNU-EMACS (but
@@ -158,12 +155,12 @@ commands.
 
 * Termcap/Terminfo support allows JOE to use any terminal or terminal emulator.
 
-* Can accept data from a pipe, for example: ls \| joe
+* Can accept data from a pipe, for example: ls | joe
 
 <p>JOE does not have these features (yet):</p>
 <ul>
 
-<li>Vertical windows, but JOE will probably have this in version 3.6</li>
+<li>Vertical windows</li>
 
 <li>Folding</li>
 
@@ -192,59 +189,55 @@ commands.
 <p>Here are some other editors to consider:</p>
 <a href="http://www.gnu.org/software/emacs">http://www.gnu.org/software/emacs</a>
 Richard Stallman's powerful LISP-based editor.
-<br><br>
+
 <a href="http://www.jedsoft.org/jed">http://www.jedsoft.org/jed</a> John E.
 Davis' version of EMACS using the S-Lang language.
-<br><br>
+
 <a href="http://www.jasspa.com">http://www.jasspa.com</a> Micro Emacs
-<br><br>
+
 <a href="http://www.vile.cx">http://www.vile.cx</a> Paul Fox's vi clone
 (built on top of Micro Emacs).  Now maintained by Tom Dickey and others.
-<br><br>
+
 <a href="http://www.nano-editor.org">http://www.nano-editor.org</a> An open
 source PICO clone.
-<br><br>
+
 <a
 href="http://www.washington.edu/pine/faq/whatis.html">http://www.washington.edu.pine/faq/whatis.html</a>
 PICO: A simple editor built on Micro Emacs.
-<br><br>
+
 <a href="http://www.vim.org">http://www.vim.org</a> Bram Moolenaar's vi
 clone</a>
-<br><br>
+
 <a href="http://elvis.the-little-red-haired-girl.org/whatiselvis/index.html">
 http://elvis.the-little-red-haired-girl.org</a> Elvis: A
 small vi clone
-<br><br>
+
 <a href="http://www.jedit.org">http://www.jedit.org</a> Powerful editor
 written in Java
-<br><br>
+
 <a href="http://www.nedit.org">http://www.nedit.org</a> X-Windowing System
 editor
-<br><br>
+
 <a href="http://www.ibiblio.org/mc">http://www.ibiblio.org/mc</a> Midnight
 Commander file manager with built-in text editor with highlighting.  Can
 browse ZIP and TAR files.
-<br><br>
+<br>
 
 <a href="http://www.cs.yorku.ca/~oz/wily">http://www.cs.yorku.ca/~oz/wily</a> A
 UNIX/X clone of Rob Pike's Plan9 editor ACME.  Originally written by Gary
 Capell, but now maintained by Ozan Yigit.  This is an interesting minimalist
 IDE.
-<br><br>
 
 <a
 href="http://www.eclipse.org/downloads">http://www.eclipse.org/downloads</a>
 Huge IDE written in Java.  Performs same function as Wily, but is literally
 1300 times larger.
-<br><br>
 
 <a href="ftp://netlib.bell-labs.com/netlib/research/sam.shar.gz">ftp://netlib.bell-labs.com/netlib/research/sam.shar.gz</a>
 UNIX/X port of Rob Pike's Plan9 editor SAM.  This interesting editor
 supports multi-file regular expression search &amp; replace with unlimited
 undo.
-<br><br>
 
 <a href="http://sed.sourceforge.net">http://sed.sourceforge.net</a>
 UNIX Stream EDitor.  If you're on UNIX, you already have this editor, but follow
 this link to see the amazing things that can be done with it.
-<br><br>

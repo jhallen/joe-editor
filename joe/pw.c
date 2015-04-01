@@ -11,22 +11,34 @@
 
 int bg_prompt;
 int nocurdir;
-unsigned char *current_dir;
 
-void set_current_dir(unsigned char *s,int simp)
+unsigned char *get_cd(W *w)
 {
+	BW *bw;
+	w = w->main;
+	bw = w->object;
+	return bw->b->current_dir;
+}
+
+void set_current_dir(BW *bw, unsigned char *s,int simp)
+{
+	W *w = bw->parent->main;
+	B *b;
+	bw = w->object;
+	b = bw->b;
+	
 	if (s[0]=='!' || (s[0]=='>' && s[1]=='>'))
 		return;
-	obj_free(current_dir);
+	obj_free(b->current_dir);
 	if (s) {
-		current_dir=dirprt(s);
+		b->current_dir=dirprt(s);
 		if (simp) {
-			current_dir = simplify_prefix(current_dir);
+			b->current_dir = simplify_prefix(b->current_dir);
 		}
 	}
 	else
-		current_dir = 0;
-	obj_perm(current_dir);
+		b->current_dir = 0;
+	obj_perm(b->current_dir);
 }
 
 static void disppw(BW *bw, int flg)
@@ -152,6 +164,10 @@ static int rtnpw(BW *bw)
 	p_goto_bol(bw->cursor);
 	s = brvs(NULL, bw->cursor, (int) (byte - bw->cursor->byte));
 
+	if (pw->file_prompt) {
+		s = canonical(s);
+	}
+
 	/* Save text into history buffer */
 	if (pw->hist) {
 		if (bw->b->changed) {
@@ -163,11 +179,7 @@ static int rtnpw(BW *bw)
 
 	/* Do ~ expansion and set new current directory */
 	if (pw->file_prompt&2) {
-		set_current_dir(s,1);
-	}
-
-	if (pw->file_prompt) {
-		s = canonical(s);
+		set_current_dir(bw, s,1);
 	}
 
 	win = w->win;
@@ -271,6 +283,12 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	pw->promptofst = 0;
 	pw->pfunc = func;
 	pw->file_prompt = file_prompt;
+	if (pw->file_prompt) {
+		bw->b->o.syntax = load_syntax(USTR "filename");
+		bw->b->o.highlight = 1;
+		bw->o.syntax = bw->b->o.syntax;
+		bw->o.highlight = bw->b->o.highlight;
+	}
 	if (history) {
 		setup_history(history);
 		pw->hist = *history;
@@ -284,7 +302,8 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	}
 	/* Install current directory */
 	if ((file_prompt&4) && !nocurdir) {
-		binsm (bw->cursor, sv(current_dir));
+		unsigned char *curd = get_cd(w);
+		binsm (bw->cursor, sv(curd));
 		p_goto_eof(bw->cursor);
 		bw->cursor->xcol = piscol(bw->cursor);
 	}

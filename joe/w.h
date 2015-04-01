@@ -35,6 +35,15 @@ struct screen {
 	int	w, h;		/* Width and height of this screen */
 };
 
+/* Buffer stack entry */
+
+struct bstack {
+	struct bstack *next;
+	B *b;
+	P *top;
+	P *cursor;
+};
+
 /* A window (base class) */
 
 struct window {
@@ -83,6 +92,7 @@ struct window {
 	unsigned char	*msgb;		/* Message at bottom of window */
 	unsigned char	*huh;		/* Name of window for context sensitive hlp */
 	Coroutine *coro;	/* Coroutine which is resumed when this prompt window is finished */
+	struct bstack *bstack;	/* Pushed buffer stack */
 };
 
 /* Anything which goes in window.object must start like this: */
@@ -239,6 +249,7 @@ void msgnw PARAMS((W *w, unsigned char *s));
 void msgnwt PARAMS((W *w, unsigned char *s));
 
 void msgout PARAMS((W *w));			/* Output msgnw/msgnwt messages */
+void msgclr();					/* Clear them */
 
 /* Common user functions */
 
