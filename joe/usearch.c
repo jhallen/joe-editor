@@ -65,12 +65,13 @@ unsigned char **get_word_list(B *b,long ignore)
 			}
 		} else {
 			start=p->byte-1;
-			if (joe_isalpha_(b->o.charmap, c))
+			if (joe_isalpha_(b->o.charmap, c)) {
 				if (b->o.charmap->type) {
 					idx += utf8_encode(buf+idx, c);
 				} else {
 					buf[idx++] = c;
 				}
+			}
 		}
 	} while (c != NO_MORE_DATA);
 	prm(p);

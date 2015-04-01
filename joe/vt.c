@@ -113,18 +113,18 @@ void psetattr(P *p, int attr, int cur, int adv)
 	if (!adv)
 		p = pdup(p, USTR "psetattr");
 	if (e) {
-		binss(p, "\033[m"); pfwrd(p, 3);
+		binss(p, USTR "\033[m"); pfwrd(p, 3);
 		cur = 0;
 	}
 	e = (attr & ~cur);
 	if (e & INVERSE) {
-		binss(p, "\033[7m"); pfwrd(p, 4);
+		binss(p, USTR "\033[7m"); pfwrd(p, 4);
 	}
 	if (e & BOLD) {
-		binss(p, "\033[1m"); pfwrd(p, 4);
+		binss(p, USTR "\033[1m"); pfwrd(p, 4);
 	}
 	if (e & UNDERLINE) {
-		binss(p, "\033[4m"); pfwrd(p, 4);
+		binss(p, USTR "\033[4m"); pfwrd(p, 4);
 	}
 	if ((cur & FG_MASK) != (attr & FG_MASK)) {
 		int color = ((attr & FG_VALUE) >> FG_SHIFT);

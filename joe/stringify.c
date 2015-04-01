@@ -1,5 +1,5 @@
 /* Convert files into a C strings */
-/* Use to create built in rc and .jsf files in JOE with: ./stringify ../rc/*rc ../syntax/*.jsf >builtins.c */
+/* Use to create built in rc and .jsf files in JOE with: ./stringify ../rc/ *rc ../syntax/ *.jsf >builtins.c */
 
 #include <stdio.h>
 #include <string.h>
