@@ -15,56 +15,56 @@ extern int pgamnt; /* Amount of pgup/pgdn lines to keep */
  *	return 0 if action was done
  *	return -1 otherwise
  */
-int u_goto_bol PARAMS((BW *bw));	/* move cursor to beginning of line */
-int u_goto_eol PARAMS((BW *bw));	/* move cursor to end of line */
-int u_goto_bof PARAMS((BW *bw));	/* move cursor to beginning of file */
-int u_goto_eof PARAMS((BW *bw));	/* move cursor to end of file */
-int u_goto_left PARAMS((BW *bw));	/* move cursor to left (left arrow) */
-int u_goto_right PARAMS((BW *bw));	/* move cursor to right (right arrow) */
-int u_goto_prev PARAMS((BW *bw));	/* move cursor to prev. word, edge,
+int u_goto_bol(BW *bw);	/* move cursor to beginning of line */
+int u_goto_eol(BW *bw);	/* move cursor to end of line */
+int u_goto_bof(BW *bw);	/* move cursor to beginning of file */
+int u_goto_eof(BW *bw);	/* move cursor to end of file */
+int u_goto_left(BW *bw);	/* move cursor to left (left arrow) */
+int u_goto_right(BW *bw);	/* move cursor to right (right arrow) */
+int u_goto_prev(BW *bw);	/* move cursor to prev. word, edge,
 					   or beginning of line */
-int u_goto_next PARAMS((BW *bw));	/* move cursor to next word, edge,
+int u_goto_next(BW *bw);	/* move cursor to next word, edge,
 					   or end of line */
 
-int utomatch PARAMS((BW *bw));
-int uuparw PARAMS((BW *bw));
-int udnarw PARAMS((BW *bw));
-int utos PARAMS((BW *bw));
-int ubos PARAMS((BW *bw));
-void scrup PARAMS((BW *bw, int n, int flg));
-void scrdn PARAMS((BW *bw, int n, int flg));
-int upgup PARAMS((BW *bw));
-int upgdn PARAMS((BW *bw));
-int uupslide PARAMS((BW *bw));
-int udnslide PARAMS((BW *bw));
-int uline PARAMS((BW *bw));
-int udelch PARAMS((BW *bw));
-int ubacks PARAMS((BW *bw, int k));
-int u_word_delete PARAMS((BW *bw));
-int ubackw PARAMS((BW *bw));
-int udelel PARAMS((BW *bw));
-int udelbl PARAMS((BW *bw));
-int udelln PARAMS((BW *bw));
-int uinsc PARAMS((BW *bw));
-int utypebw PARAMS((BW *bw, int k));
-int uquote PARAMS((BW *bw));
-int uquote8 PARAMS((BW *bw));
-int rtntw PARAMS((BW *bw));
-int uopen PARAMS((BW *bw));
-int usetmark PARAMS((BW *bw, int c));
-int ugomark PARAMS((BW *bw, int c));
-int ufwrdc PARAMS((BW *bw, int k));
-int ubkwdc PARAMS((BW *bw, int k));
-int umsg PARAMS((BASE *b));
-int uctrl PARAMS((BW *bw));
-int unedge PARAMS((BW *bw));
-int upedge PARAMS((BW *bw));
-int ubyte PARAMS((BW *bw));
-int ucol PARAMS((BW *bw));
-int utxt PARAMS((BW *bw));
-int uhome PARAMS((BW *bw));
-int uname_joe PARAMS((BW *bw));
-int upaste PARAMS((BW *bw, int k));
-int ubrpaste PARAMS((BW *bw, int k));
+int utomatch(BW *bw);
+int uuparw(BW *bw);
+int udnarw(BW *bw);
+int utos(BW *bw);
+int ubos(BW *bw);
+void scrup(BW *bw, int n, int flg);
+void scrdn(BW *bw, int n, int flg);
+int upgup(BW *bw);
+int upgdn(BW *bw);
+int uupslide(BW *bw);
+int udnslide(BW *bw);
+int uline(BW *bw);
+int udelch(BW *bw);
+int ubacks(BW *bw, int k);
+int u_word_delete(BW *bw);
+int ubackw(BW *bw);
+int udelel(BW *bw);
+int udelbl(BW *bw);
+int udelln(BW *bw);
+int uinsc(BW *bw);
+int utypebw(BW *bw, int k);
+int uquote(BW *bw);
+int uquote8(BW *bw);
+int rtntw(BW *bw);
+int uopen(BW *bw);
+int usetmark(BW *bw, int c);
+int ugomark(BW *bw, int c);
+int ufwrdc(BW *bw, int k);
+int ubkwdc(BW *bw, int k);
+int umsg(BASE *b);
+int uctrl(BW *bw);
+int unedge(BW *bw);
+int upedge(BW *bw);
+int ubyte(BW *bw);
+int ucol(BW *bw);
+int utxt(BW *bw);
+int uhome(BW *bw);
+int uname_joe(BW *bw);
+int upaste(BW *bw, int k);
+int ubrpaste(BW *bw, int k);
 
 #endif

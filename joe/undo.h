@@ -33,23 +33,23 @@ struct undo {
 extern int inundo; /* Set if inserts/deletes are part of an undo operation */
 extern int justkilled; /* Last edit was a delete, so store data in yank buffer */
 
-UNDO *undomk PARAMS((B *b));
-void undorm PARAMS((UNDO *undo));
-int uundo PARAMS((BW *bw));
-int uredo PARAMS((BW *bw));
-void umclear PARAMS((void)); /* Call this to finalize current undo records.  New changes will create new records. */
-void undomark PARAMS((void));
-void undoins PARAMS((UNDO *undo, P *p, long int size));
-void undodel PARAMS((UNDO *undo, long int where, B *b));
-int uyank PARAMS((BW *bw));
-int uyankpop PARAMS((BW *bw));
-int uyapp PARAMS((BW *bw));
-int unotmod PARAMS((BW *bw));
-int ucopy PARAMS((BW *bw));
+UNDO *undomk(B *b);
+void undorm(UNDO *undo);
+int uundo(BW *bw);
+int uredo(BW *bw);
+void umclear(void); /* Call this to finalize current undo records.  New changes will create new records. */
+void undomark(void);
+void undoins(UNDO *undo, P *p, long int size);
+void undodel(UNDO *undo, long int where, B *b);
+int uyank(BW *bw);
+int uyankpop(BW *bw);
+int uyapp(BW *bw);
+int unotmod(BW *bw);
+int ucopy(BW *bw);
 
-void load_yank PARAMS((FILE *f));
-void save_yank PARAMS((FILE *f));
-void bw_unlock PARAMS((BW *bw));
+void load_yank(FILE *f);
+void save_yank(FILE *f);
+void bw_unlock(BW *bw);
 
 extern int undo_keep;
 

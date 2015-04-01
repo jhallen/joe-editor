@@ -42,25 +42,25 @@ struct search {
 	B	*current;	/* Current buffer */
 };
 
-SRCH *mksrch PARAMS((unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all));
-void rmsrch PARAMS((SRCH *srch));
+SRCH *mksrch(unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all);
+void rmsrch(SRCH *srch);
 
-int dopfnext PARAMS((BW *bw, SRCH *srch, int *notify));
+int dopfnext(BW *bw, SRCH *srch, int *notify);
 
-int pffirst PARAMS((BW *bw));
-int pfnext PARAMS((BW *bw));
+int pffirst(BW *bw);
+int pfnext(BW *bw);
 
-int pqrepl PARAMS((BW *bw));
-int prfirst PARAMS((BW *bw));
+int pqrepl(BW *bw);
+int prfirst(BW *bw);
 
-int ufinish PARAMS((BW *bw));
-int dofirst PARAMS((BW *bw, int back, int repl, unsigned char *hint));
+int ufinish(BW *bw);
+int dofirst(BW *bw, int back, int repl, unsigned char *hint);
 
 extern B *findhist; /* Search history buffer */
 extern B *replhist; /* Replace history buffer */
 
-void save_srch PARAMS((FILE *f));
-void load_srch PARAMS((FILE *f));
+void save_srch(FILE *f);
+void load_srch(FILE *f);
 
 extern int smode;
 extern int csmode;
@@ -73,6 +73,6 @@ extern SRCH *globalsrch;
 extern unsigned char *rest_key;
 extern unsigned char *backup_key;
 
-int fwrd_c PARAMS((unsigned char **s));
+int fwrd_c(unsigned char **s);
 
 #endif
