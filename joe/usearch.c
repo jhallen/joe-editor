@@ -956,8 +956,6 @@ int dopfnext(BW *bw, SRCH *srch)
 	int orgmid = mid;	/* Original mid status */
 	int ret = 0;
 
-	printf("dopfnext\n"); fflush(stdout); sleep(1);
-
 	mid = 1;		/* Screen recenters mode during search */
 	if (csmode)
 		smode = 2;	/* We have started a search mode */
@@ -1036,7 +1034,6 @@ bye:		if (!srch->flg && !srch->rest) {
 	bw->cursor->xcol = piscol(bw->cursor);
 	dofollows();
 	mid = orgmid;
-	printf("update\n"); fflush(stdout); sleep(1);
 	if (srch)
 		pfsave(bw, srch);
 	else
