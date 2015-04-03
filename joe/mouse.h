@@ -32,27 +32,27 @@ void mouseopen();	/* initialize mouse */
 void mouseclose();	/* de-initialize mouse */
 
 /* mousedn(int x, int y) - handle a mouse-down event */
-void mousedn PARAMS((int x, int y));
+void mousedn(int x, int y);
 
 /* mouseup(int x, int y) - handle a mouse-up event */
-void mouseup PARAMS((int x, int y));
+void mouseup(int x, int y);
 
 /* mousedrag(int x, int y) - handle a mouse drag event */
-void mousedrag PARAMS((int x, int y));
+void mousedrag(int x, int y);
 
 /* user command handlers */
-int uxtmouse PARAMS((BW *));		/* handle an xterm mouse control sequence */
-int uextmouse PARAMS((BW *));		/* handle an extended xterm mouse control sequence */
-int utomouse PARAMS((BW *));		/* move the pointer to the mouse */
-int udefmdown PARAMS((BW *));	/* default mouse click handlers */
-int udefmup PARAMS((BW *));
-int udefmdrag PARAMS((BW *));
-int udefm2down PARAMS((BW *));
-int udefm2up PARAMS((BW *));
-int udefm2drag PARAMS((BW *));
-int udefm3down PARAMS((BW *));
-int udefm3up PARAMS((BW *));
-int udefm3drag PARAMS((BW *));
+int uxtmouse(BW *);		/* handle an xterm mouse control sequence */
+int uextmouse(BW *);		/* handle an extended xterm mouse control sequence */
+int utomouse(BW *);		/* move the pointer to the mouse */
+int udefmdown(BW *);	/* default mouse click handlers */
+int udefmup(BW *);
+int udefmdrag(BW *);
+int udefm2down(BW *);
+int udefm2up(BW *);
+int udefm2drag(BW *);
+int udefm3down(BW *);
+int udefm3up(BW *);
+int udefm3drag(BW *);
 
 int mnow();
 void reset_trig_time();

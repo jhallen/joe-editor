@@ -134,13 +134,13 @@ int sicmp(unsigned char a, unsigned char b);
 /* sELEMENT *vsmk(int len);
  * Create a variable length array.  Space for 'len' elements is preallocated.
  */
-sELEMENT *vsmk PARAMS((size_t len));
+sELEMENT *vsmk(size_t len);
 
 /* void vsrm(sELEMENT *vary);
  * Free an array and everything which is in it.  Does nothing if 'vary' is
  * 0.
  */
-void vsrm PARAMS((sELEMENT *vary));
+void vsrm(sELEMENT *vary);
 
 /********************/
 /* Space management */
@@ -177,7 +177,7 @@ void vsrm PARAMS((sELEMENT *vary));
  * Compute length of char or variable length array by searching for termination
  * element.  Returns 0 if 'vary' is 0.
  */
-size_t slen PARAMS((sELEMENT *ary));
+size_t slen(sELEMENT *ary);
 
 /* sELEMENT *vsensure(sELEMENT *vary, int len);
  * Make sure there's enough space in the array for 'len' elements.  Whenever
@@ -185,13 +185,13 @@ size_t slen PARAMS((sELEMENT *ary));
  * minimum space in anticipation of future expansion.  If 'vary' is 0,
  * it creates a new array.
  */
-sELEMENT *vsensure PARAMS((sELEMENT *vary, size_t len));
+sELEMENT *vsensure(sELEMENT *vary, size_t len);
 
 /* sELEMENT *vstrunc(sELEMENT *vary, int len));
  * Truncate array to indicated size.  This zaps or expands with blank elements
  * and sets the LEN() of the array.  A new array is created if 'vary' is 0.
  */
-sELEMENT *vstrunc PARAMS((sELEMENT *vary, size_t len));
+sELEMENT *vstrunc(sELEMENT *vary, size_t len);
 
 /************************************/
 /* Function which write to an array */
@@ -205,7 +205,7 @@ sELEMENT *vstrunc PARAMS((sELEMENT *vary, size_t len));
  * This does not zap previous values.  If you need that to happen, call
  * vszap first.  It does move the terminator around properly though.
  */
-sELEMENT *vsfill PARAMS((sELEMENT *vary, size_t pos, sELEMENT el, size_t len));
+sELEMENT *vsfill(sELEMENT *vary, size_t pos, sELEMENT el, size_t len);
 
 /* sELEMENT *vsncpy(sELEMENT *vary, int pos, sELEMENT *array, int len));
  * Copy 'len' elements from 'array' onto 'vary' beginning at position 'pos'.
@@ -213,14 +213,14 @@ sELEMENT *vsfill PARAMS((sELEMENT *vary, size_t pos, sELEMENT el, size_t len));
  * elements are copied, not duplicated.  A new array is created if 'vary' is
  * 0.  This does not zap previous elements.
  */
-sELEMENT *vsncpy PARAMS((sELEMENT *vary, size_t pos, sELEMENT *array, size_t len));
+sELEMENT *vsncpy(sELEMENT *vary, size_t pos, sELEMENT *array, size_t len);
 
 /* sELEMENT *vsndup(sELEMENT *vary, int pos, sELEMENT *array, int len));
  * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
  * 'pos'.  'array' can be a char array since its length is passed seperately.  A
  * new array is created if 'vary' is 0.
  */
-sELEMENT *vsndup PARAMS((sELEMENT *vary, size_t pos, sELEMENT *array, size_t len));
+sELEMENT *vsndup(sELEMENT *vary, size_t pos, sELEMENT *array, size_t len);
 
 /* sELEMENT *vsdup(sELEMENT *vary));
  * Duplicate array.  This is just a functionalized version of:
@@ -235,7 +235,7 @@ sELEMENT *vsndup PARAMS((sELEMENT *vary, size_t pos, sELEMENT *array, size_t len
  * functionalized instances of the ones you use most often - especially since
  * the macros aren't safe).
  */
-sELEMENT *vsdup PARAMS((sELEMENT *vary));
+sELEMENT *vsdup(sELEMENT *vary);
 
 /* sELEMENT *vsset(sELEMENT *vary, int pos, sELEMENT element);
  * Set an element in an array.  Any value of 'pos' is valid.  A new array
@@ -243,7 +243,7 @@ sELEMENT *vsdup PARAMS((sELEMENT *vary));
  * deleted.    This does not duplicate 'element'.  If you need 'element'
  * duplicated, call: vsset(vary,pos,sdup(element));
  */
-sELEMENT *_vsset PARAMS((sELEMENT *vary, size_t pos, sELEMENT el));
+sELEMENT *_vsset(sELEMENT *vary, size_t pos, sELEMENT el);
 
 #define vsset(v, p, el)  \
  (!(v) || (p) > sLen(v) || (p) >= sSiz(v) ?  \
@@ -323,13 +323,13 @@ sELEMENT *_vsset PARAMS((sELEMENT *vary, size_t pos, sELEMENT el));
  * This does not set the elements in the created hole to any particular
  * value: use vsfill if you need that to occur.
  */
-sELEMENT *vsins PARAMS((sELEMENT *vary, size_t pos, size_t n));
+sELEMENT *vsins(sELEMENT *vary, size_t pos, size_t n);
 
 /* sELEMENT *vsdel(sELEMENT *vary, int pos, int n));
  * Delete n slots from the array.  This does not zap the elements first; call
  * vszap first if you need this to happen.
  */
-sELEMENT *vsdel PARAMS((SELEMENT *vary, size_t pos, size_t n));
+sELEMENT *vsdel(SELEMENT *vary, size_t pos, size_t n);
 
 /*************************/
 /* Searching and Sorting */
@@ -338,7 +338,7 @@ sELEMENT *vsdel PARAMS((SELEMENT *vary, size_t pos, size_t n));
 /* sELEMENT *vssort(sELEMENT *ary, int len))
  * Sort the elements of an array (char or variable length) using qsort().
  */
-sELEMENT *vssort PARAMS((sELEMENT *ary, size_t len));
+sELEMENT *vssort(sELEMENT *ary, size_t len);
 #endif
 /* int vsbsearch(sELEMENT *ary, int len, sELEMENT element);
  * Do a binary search on a sorted variable length or char array.  Returns position
@@ -347,24 +347,24 @@ sELEMENT *vssort PARAMS((sELEMENT *ary, size_t len));
  *
  * Hmm... this should really indicate whether or not the element was found.
  */
-size_t vsbsearch PARAMS((sELEMENT *ary, size_t len, sELEMENT el));
+int vsbsearch(sELEMENT *ary, size_t len, sELEMENT el);
 
 #ifdef junk
 /* int vsfirst(sELEMENT *ary, int len, sELEMENT element);
  * Find offset to first matching element in 'vary' or return ~0 if not found.
  */
-size_t vsfirst PARAMS((sELEMENT *ary, size_t len, sELEMENT element));
+int vsfirst(sELEMENT *ary, size_t len, sELEMENT element);
 
 /* int vslast(sELEMENT *ary, int len, sELEMENT element);
  * Find offset to last matching element in 'vary' or return ~0 if none found.
  */
-size_t vslast PARAMS((sELEMENT *ary, size_t len, sELEMENT element));
+int vslast(sELEMENT *ary, size_t len, sELEMENT element);
 
 /* int vss(sELEMENT *a, int alen, sELEMENT *b, int blen);
  * Do a substring search on 'a'.  Return offset from 'a' to first matching
  * occurance of 'b' in 'a' or return ~0 if none found.
  */
-size_t vss PARAMS((sELEMENT *a, size_t alen, sELEMENT *b, size_t blen));
+int vss(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
 #endif
 /* int vscmpn(sELEMENT *a, int alen, sELEMENT *b, int blen);
  *
@@ -372,13 +372,13 @@ size_t vss PARAMS((sELEMENT *a, size_t alen, sELEMENT *b, size_t blen));
  * return 0.  If 'a' < 'b', return -1.  Longer strings are > shorter ones if
  * their beginning match.
  */
-int vscmpn PARAMS((sELEMENT *a, size_t alen, sELEMENT *b, size_t blen));
+int vscmpn(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
 
 /* int vscmp(sELEMENT *a, sELEMENT *b);
  *
  * Functionalized version of: vscmpn(sv(a), sv(b));
  */
-int vscmp PARAMS((sELEMENT *a, sELEMENT *b));
+int vscmp(sELEMENT *a, sELEMENT *b);
 
 #ifdef junk
 /* int vsicmpn(sELEMENT *a, int alen, sELEMENT *b, int blen);
@@ -389,13 +389,13 @@ int vscmp PARAMS((sELEMENT *a, sELEMENT *b));
  *
  * This is same as vscmpn except that it is case insensitive.
  */
-int vsicmpn PARAMS((sELEMENT *a, size_t alen, sELEMENT *b, size_t blen));
+int vsicmpn(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
 
 /* int vsicmp(sELEMENT *a, sELEMENT *b);
  *
  * Functionalized version of: vsicmpn(sv(a), sv(b));
  */
-int vsicmp PARAMS((sELEMENT *a, sELEMENT *b));
+int vsicmp(sELEMENT *a, sELEMENT *b);
 #endif
 /* int vsscan(sELEMENT *a, int alen, sELEMENT *b, int blen);
  * Find offset of first matching element in 'a' which matches any
@@ -403,13 +403,13 @@ int vsicmp PARAMS((sELEMENT *a, sELEMENT *b));
  *
  * Hmm... this really needs to return what the found element is.
  */
-size_t vsscan PARAMS((sELEMENT *a, size_t alen, sELEMENT *b, size_t blen));
+int vsscan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
 
 /* int vsspan(sELEMENT *a, int alen, sELEMENT *b, int blen);
  * Find offset of first matching element in 'a' which does not match any
  * of the elements passed in 'b'.  Array 'b' must be sorted.
  */
-size_t vsspan PARAMS((sELEMENT *a, size_t alen, sELEMENT *b, size_t blen));
+int vsspan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
 
 /***************/
 /* Other stuff */
@@ -423,7 +423,7 @@ size_t vsspan PARAMS((sELEMENT *a, size_t alen, sELEMENT *b, size_t blen));
  * 'ptr' is passed as the first arg to 'getC'.  'getC' should return -1 if
  * there is no more input.
  */
-unsigned char *vsread PARAMS(());
+unsigned char *vsread();
 
 /* char *vwords(char *s, char **a, int len, char t);
  *
@@ -437,6 +437,6 @@ unsigned char *vsread PARAMS(());
  * }
  *
  */
-unsigned char *vwords PARAMS(());
+unsigned char *vwords();
 #endif
 #endif

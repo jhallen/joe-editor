@@ -72,12 +72,13 @@ static int dotagjump(BW *bw, int flag)
 	}
 	bw = (BW *)maint->curwin->object;
 	p_goto_bof(bw->cursor);
-	if (notagsmenu)
+	if (notagsmenu) {
 		if (last) {
 			msgnw(bw->parent, joe_gettext(_("Last match")));
 		} else {
 			msgnw(bw->parent, joe_gettext(_("There are more matches")));
 		}
+	}
 	if (!srch) {
 		int omid = mid;
 		mid = 1;
@@ -166,9 +167,9 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 		/* if there's no tags file in the current dir, then query
 		   for the environment variable TAGS.
 		*/
-		char *tagspath = getenv("TAGS");
+		unsigned char *tagspath = (unsigned char *)getenv("TAGS");
 		if(tagspath) {
-			f = fopen(tagspath, "r");
+			f = fopen((char *)tagspath, "r");
 			prefix = dirprt(tagspath);
 		}
 		if(!f) {
@@ -326,14 +327,14 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 	for (ta = tags.link.next; ta != &tags; ta=ta->link.next) {
 		unsigned char buf[1024];
 		if (ta->srch) {
-			char *a;
+			unsigned char *a;
 			joe_snprintf_2(buf, sizeof(buf), "%s%s",ta->file,ta->srch /* ,(ta->cmnt ? ta->cmnt : USTR "") */);
-			a = zstr(buf, "\\^");
+			a = zstr(buf, USTR "\\^");
 			if (a) {
 				a[0] = ':';
 				a[1] = '"';
 			}
-			a = zstr(buf, "\\$");
+			a = zstr(buf, USTR "\\$");
 			if (a) {
 				a[0] = '"';
 				a[1] = ' ';

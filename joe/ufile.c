@@ -1299,7 +1299,7 @@ int uquerysave(BW *bw)
 	W *w = bw->parent;
 	B *first;
 
-	/* Synchronize current window with buffer ring so that first is currect */
+	/* Synchronize current window with buffer ring so that first is correct */
 	unbuf(bw);
 	bw = w->object;
 	first = bw->b;

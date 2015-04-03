@@ -22,19 +22,19 @@ struct hash {
 };
 
 /* Compute hash code for a string */
-size_t hash PARAMS((unsigned char *s));
+size_t long hash(unsigned char *s);
 
 /* Create a hash table of specified size, which must be a power of 2 */
-HASH *htmk PARAMS((size_t len));
+HASH *htmk(size_t len);
 
 /* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
-void htrm PARAMS((HASH *ht));
+void htrm(HASH *ht);
 
 /* Add an entry to a hash table.
   Note: 'name' is _not_ strdup()ed */
-void *htadd PARAMS((HASH *ht, unsigned char *name, void *val));
+void *htadd(HASH *ht, unsigned char *name, void *val);
 
 /* Look up an entry in a hash table, returns NULL if not found */
-void *htfind PARAMS((HASH *ht, unsigned char *name));
+void *htfind(HASH *ht, unsigned char *name);
 
 #endif

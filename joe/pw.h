@@ -30,26 +30,26 @@ struct pw {
  *   bit 1: update directory
  *   bit 2: seed with directory
  */
-BW *wmkpw PARAMS((W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify, struct charmap *map, int file_prompt));
+BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify, struct charmap *map, int file_prompt);
 
-int ucmplt PARAMS((BW *bw, int k));
+int ucmplt(BW *bw, int k);
 
 /* Function for TAB completion */
 
-unsigned char **regsub PARAMS((unsigned char **z, int len, unsigned char *s));
+unsigned char **regsub(unsigned char **z, int len, unsigned char *s);
 
-void cmplt_ins PARAMS((BW *bw,unsigned char *line));
+void cmplt_ins(BW *bw,unsigned char *line);
 
-int cmplt_abrt PARAMS((BW *bw,int x, unsigned char *line));
+int cmplt_abrt(BW *bw,int x, unsigned char *line);
 
-int cmplt_rtn PARAMS((MENU *m,int x,unsigned char *line));
+int cmplt_rtn(MENU *m,int x,unsigned char *line);
 
-int simple_cmplt PARAMS((BW *bw,unsigned char **list));
+int simple_cmplt(BW *bw,unsigned char **list);
 
-void setup_history PARAMS((B **history));
-void append_history PARAMS((B *hist,unsigned char *s,int len));
-void promote_history PARAMS((B *hist, long line));
-void set_current_dir PARAMS((BW *bw, unsigned char *s,int simp));
+void setup_history(B **history);
+void append_history(B *hist,unsigned char *s,int len);
+void promote_history(B *hist, long line);
+void set_current_dir(BW *bw, unsigned char *s,int simp);
 
 extern int bg_prompt;
 extern int nocurdir;

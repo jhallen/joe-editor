@@ -62,8 +62,8 @@ struct charmap {
 #define joe_isspace(map,c) ((map)->is_space((map),(c)))
 #define joe_isalpha_(map,c) ((map)->is_alpha_((map),(c)))
 #define joe_isalnum_(map,c) ((map)->is_alnum_((map),(c)))
-int joe_isblank PARAMS((struct charmap *map,int c));
-int joe_isspace_eof PARAMS((struct charmap *map,int c));
+int joe_isblank(struct charmap *map,int c);
+int joe_isspace_eof(struct charmap *map,int c);
 
 /* Conversion functions */
 
@@ -71,15 +71,15 @@ int joe_isspace_eof PARAMS((struct charmap *map,int c));
 #define joe_toupper(map,c) ((map)->to_upper((map),(c)))
 #define joe_to_uni(map,c) ((map)->to_uni((map),(c)))
 #define joe_from_uni(map,c) ((map)->from_uni((map),(c)))
-unsigned char *lowerize PARAMS((unsigned char *s));
+unsigned char *lowerize(unsigned char *s);
 
 /* Find (load if necessary) a character set */
-struct charmap *find_charmap PARAMS((unsigned char *name));
+struct charmap *find_charmap(unsigned char *name);
 
 /* Get available encodings */
-unsigned char **get_encodings PARAMS((void));
+unsigned char **get_encodings(void);
 
-int from_uni PARAMS((struct charmap *cset, int c));
-int to_uni PARAMS((struct charmap *cset, int c));
+int from_uni(struct charmap *cset, int c);
+int to_uni(struct charmap *cset, int c);
 
 #endif

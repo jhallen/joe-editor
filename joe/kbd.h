@@ -33,12 +33,12 @@ struct kbd {
 /* KMAP *mkkmap(void);
  * Create an empty keymap
  */
-KMAP *mkkmap PARAMS((void));
+KMAP *mkkmap(void);
 
 /* void rmkmap(KMAP *kmap);
  * Free a key map
  */
-void rmkmap PARAMS((KMAP *kmap));
+void rmkmap(KMAP *kmap);
 
 /* int kadd(KMAP *kmap,char *seq,void *bind);
  * Add a key sequence binding to a key map
@@ -66,12 +66,12 @@ void rmkmap PARAMS((KMAP *kmap));
  * is speicified, then the key sequences
  * ^K A, ^K B, ^K C, ... ^K Z are all bound.
  */
-int kadd PARAMS((CAP *cap, KMAP *kmap, unsigned char *seq, void *bind));
+int kadd(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind);
 
 /* void kcpy(KMAP *dest,KMAP *src);
  * Copy all of the entries in the 'src' keymap into the 'dest' keymap
  */
-void kcpy PARAMS((KMAP *dest, KMAP *src));
+void kcpy(KMAP *dest, KMAP *src);
 
 /* int kdel(KMAP *kmap,char *seq);
  * Delete a binding from a keymap
@@ -80,18 +80,18 @@ void kcpy PARAMS((KMAP *dest, KMAP *src));
  *        -1 if the given key sequence was invalid
  *         1 if the given key sequence did not exist
  */
-int kdel PARAMS((KMAP *kmap, unsigned char *seq));
+int kdel(KMAP *kmap, unsigned char *seq);
 
 /* KBD *mkkbd(KMAP *kmap);
    Create a keyboard handler which uses the given keymap
 */
-KBD *mkkbd PARAMS((KMAP *kmap));
+KBD *mkkbd(KMAP *kmap);
 
 /* void rmkbd(KBD *);
  *
  * Eliminate a keyboard handler
  */
-void rmkbd PARAMS((KBD *k));
+void rmkbd(KBD *k);
 
 /* void *dokey(KBD *kbd,int k);
    Handle a key for a KBD:
@@ -100,7 +100,7 @@ void rmkbd PARAMS((KBD *k));
 
      Returns binding for a completed key sequence
 */
-void *dokey PARAMS((KBD *kbd, int n));
+void *dokey(KBD *kbd, int n);
 
 /* A list of named KMAPs */
 struct context {
@@ -119,12 +119,12 @@ int kmap_empty(KMAP *k);
  * Find and return the KMAP for a given context name.  If none is found, an
  * empty kmap is created, bound to the context name, and returned.
  */
-KMAP *kmap_getcontext PARAMS((unsigned char *name));
+KMAP *kmap_getcontext(unsigned char *name);
 
 /* KMAP *ngetcontext(char *name);
  * JM - Find and return the KMAP for a given context name.  If none is found,
  * NULL is returned.
  */
-KMAP *ngetcontext PARAMS((unsigned char *name));
+KMAP *ngetcontext(unsigned char *name);
 
 #endif

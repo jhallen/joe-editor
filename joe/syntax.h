@@ -83,12 +83,12 @@ struct high_syntax {
 
 /* Find a syntax.  Load it if necessary. */
 
-struct high_syntax *load_syntax PARAMS((unsigned char *name));
+struct high_syntax *load_syntax(unsigned char *name);
 
 /* Parse a lines.  Returns new state. */
 
 extern int *attr_buf;
-HIGHLIGHT_STATE parse PARAMS((struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state));
+HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state);
 
 #define clear_state(s) (((s)->saved_s[0] = 0), ((s)->state = 0), ((s)->stack = 0))
 #define invalidate_state(s) ((s)->state = -1)
@@ -96,8 +96,8 @@ HIGHLIGHT_STATE parse PARAMS((struct high_syntax *syntax,P *line,HIGHLIGHT_STATE
 #define eq_state(x,y) ((x)->state == (y)->state && (x)->stack == (y)->stack && !zcmp((x)->saved_s, (y)->saved_s))
 
 extern struct high_color *global_colors;
-void parse_color_def PARAMS((struct high_color **color_list,unsigned char *p,unsigned char *name,int line));
+void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned char *name,int line);
 
-void dump_syntax PARAMS((BW *bw));
+void dump_syntax(BW *bw);
 
 #endif

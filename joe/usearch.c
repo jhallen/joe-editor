@@ -65,12 +65,13 @@ unsigned char **get_word_list(B *b,long ignore)
 			}
 		} else {
 			start=p->byte-1;
-			if (joe_isalpha_(b->o.charmap, c))
+			if (joe_isalpha_(b->o.charmap, c)) {
 				if (b->o.charmap->type) {
 					idx += utf8_encode(buf+idx, c);
 				} else {
 					buf[idx++] = c;
 				}
+			}
 		}
 	} while (c != NO_MORE_DATA);
 	prm(p);
@@ -88,7 +89,7 @@ unsigned char **get_word_list(B *b,long ignore)
 
 void fcmplt_ins(BW *bw, unsigned char *line)
 {
-	P *p = pdup(bw->cursor, USTR "fcmplt_ins");
+	P *p;
 	int c;
 
 	if (!piseol(bw->cursor)) {

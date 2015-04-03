@@ -8,7 +8,7 @@
 #ifndef _JOE_UISRCH_H
 #define _JOE_UISRCH_H 1
 
-int uisrch PARAMS((BW *bw));
-int ursrch PARAMS((BW *bw));
+int uisrch(BW *bw);
+int ursrch(BW *bw);
 
 #endif

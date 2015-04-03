@@ -9,7 +9,7 @@
 #define _JOE_UTAG_H 1
 
 extern int notagsmenu;
-int utagjump PARAMS((BW *bw));
-int utag PARAMS((BW *bw));
+int utagjump(BW *bw);
+int utag(BW *bw);
 
 #endif
