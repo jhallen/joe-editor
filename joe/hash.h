@@ -5,36 +5,32 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_HASH_H
-#define _JOE_HASH_H 1
 
 struct entry {
 	HENTRY *next;
-	unsigned char *name;
-	size_t hash_val;
+	char *name;
+	unsigned hash_val;
 	void *val;
 };
 
 struct hash {
-	size_t len;
+	int len;
 	HENTRY **tab;
-	size_t nentries;
+	int nentries;
 };
 
 /* Compute hash code for a string */
-size_t hash(unsigned char *s);
+int hash(char *s);
 
 /* Create a hash table of specified size, which must be a power of 2 */
-HASH *htmk(size_t len);
+HASH *htmk(int len);
 
 /* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
 void htrm(HASH *ht);
 
 /* Add an entry to a hash table.
   Note: 'name' is _not_ strdup()ed */
-void *htadd(HASH *ht, unsigned char *name, void *val);
+void *htadd(HASH *ht, char *name, void *val);
 
 /* Look up an entry in a hash table, returns NULL if not found */
-void *htfind(HASH *ht, unsigned char *name);
-
-#endif
+void *htfind(HASH *ht, char *name);

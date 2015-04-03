@@ -1,6 +1,3 @@
-#ifndef _Isyntax
-#define _Isyntax 1
-
 /*
  *	Syntax highlighting DFA interpreter
  *	Copyright
@@ -13,7 +10,7 @@
 
 struct high_color {
 	struct high_color *next;
-	unsigned char *name;		/* Symbolic name of color */
+	char *name;		/* Symbolic name of color */
 	int color;			/* Color value */
 };
 
@@ -21,7 +18,7 @@ struct high_color {
 
 struct high_state {
 	int no;				/* State number */
-	unsigned char *name;		/* Highlight state name */
+	char *name;		/* Highlight state name */
 	int color;			/* Color for this state */
 	struct high_cmd *cmd[256];	/* Character table */
 	struct high_cmd *delim;		/* Matching delimiter */
@@ -31,7 +28,7 @@ struct high_state {
 
 struct high_param {
 	struct high_param *next;
-	unsigned char *name;
+	char *name;
 };
 
 /* Command (transition) */
@@ -69,8 +66,8 @@ struct high_frame {
 
 struct high_syntax {
 	struct high_syntax *next;	/* Linked list of loaded syntaxes */
-	unsigned char *name;		/* Name of this syntax */
-	unsigned char *subr;		/* Name of the subroutine (or NULL for whole file) */
+	char *name;		/* Name of this syntax */
+	char *subr;		/* Name of the subroutine (or NULL for whole file) */
 	struct high_param *params;	/* Parameters defined */
 	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
 	HASH *ht_states;		/* Hash table of states */
@@ -83,7 +80,7 @@ struct high_syntax {
 
 /* Find a syntax.  Load it if necessary. */
 
-struct high_syntax *load_syntax(unsigned char *name);
+struct high_syntax *load_syntax(char *name);
 
 /* Parse a lines.  Returns new state. */
 
@@ -96,8 +93,6 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state);
 #define eq_state(x,y) ((x)->state == (y)->state && (x)->stack == (y)->stack && !zcmp((x)->saved_s, (y)->saved_s))
 
 extern struct high_color *global_colors;
-void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned char *name,int line);
+void parse_color_def(struct high_color **color_list,char *p,char *name,int line);
 
 void dump_syntax(BW *bw);
-
-#endif

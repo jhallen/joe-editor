@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_SCRN_H
-#define _JOE_SCRN_H 1
 
 struct hentry {
 	int	next;
@@ -37,13 +35,13 @@ struct scrn {
 	int	li;		/* Screen height */
 	int	co;		/* Screen width */
 
-	unsigned char	*ti;		/* Initialization string */
-	unsigned char	*cl;		/* Home and clear screen... really an
+	char	*ti;		/* Initialization string */
+	char	*cl;		/* Home and clear screen... really an
 				   init. string */
-	unsigned char	*cd;		/* Clear to end of screen */
-	unsigned char	*te;		/* Restoration string */
-	unsigned char	*brp;		/* Bracketed paste mode */
-	unsigned char	*bre;		/* Stop bracketed paste */
+	char	*cd;		/* Clear to end of screen */
+	char	*te;		/* Restoration string */
+	char	*brp;		/* Bracketed paste mode */
+	char	*bre;		/* Stop bracketed paste */
 
 	int	haz;		/* Terminal can't print ~s */
 	int	os;		/* Terminal overstrikes */
@@ -52,77 +50,77 @@ struct scrn {
 	int	am;		/* Terminal has autowrap, but not magicwrap */
 	int	xn;		/* Terminal has magicwrap */
 
-	unsigned char	*so;		/* Enter standout (inverse) mode */
-	unsigned char	*se;		/* Exit standout mode */
+	char	*so;		/* Enter standout (inverse) mode */
+	char	*se;		/* Exit standout mode */
 
-	unsigned char	*us;		/* Enter underline mode */
-	unsigned char	*ue;		/* Exit underline mode */
-	unsigned char	*uc;		/* Single time underline character */
+	char	*us;		/* Enter underline mode */
+	char	*ue;		/* Exit underline mode */
+	char	*uc;		/* Single time underline character */
 
 	int	ms;		/* Ok to move when in standout/underline mode */
 
-	unsigned char	*mb;		/* Enter blinking mode */
-	unsigned char	*md;		/* Enter bold mode */
-	unsigned char	*mh;		/* Enter dim mode */
-	unsigned char	*mr;		/* Enter inverse mode */
-	unsigned char	*me;		/* Exit above modes */
+	char	*mb;		/* Enter blinking mode */
+	char	*md;		/* Enter bold mode */
+	char	*mh;		/* Enter dim mode */
+	char	*mr;		/* Enter inverse mode */
+	char	*me;		/* Exit above modes */
 
-	unsigned char	*ZH;		/* Enter italic mode */
-	unsigned char	*ZR;		/* Exit italic mode */
+	char	*ZH;		/* Enter italic mode */
+	char	*ZR;		/* Exit italic mode */
 
-	unsigned char	*Sb;		/* Set background color */
-	unsigned char	*Sf;		/* Set foregrond color */
+	char	*Sb;		/* Set background color */
+	char	*Sf;		/* Set foregrond color */
 	int	Co;			/* No. of colors */
 	int	ut;		/* Screen erases with background color */
 
 	int	da, db;		/* Extra lines exist above, below */
-	unsigned char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
-	unsigned char	*cs;		/* Set scrolling region */
+	char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
+	char	*cs;		/* Set scrolling region */
 	int	rr;		/* Set for scrolling region relative addressing */
-	unsigned char	*sf, *SF, *sr, *SR;	/* Scroll */
+	char	*sf, *SF, *sr, *SR;	/* Scroll */
 
-	unsigned char	*dm, *dc, *DC, *ed;	/* Delete characters */
-	unsigned char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
+	char	*dm, *dc, *DC, *ed;	/* Delete characters */
+	char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
 	int	mi;		/* Set if ok to move while in insert mode */
 
-	unsigned char	*bs;		/* Move cursor left 1 */
+	char	*bs;		/* Move cursor left 1 */
 	int	cbs;
-	unsigned char	*lf;		/* Move cursor down 1 */
+	char	*lf;		/* Move cursor down 1 */
 	int	clf;
-	unsigned char	*up;		/* Move cursor up 1 */
+	char	*up;		/* Move cursor up 1 */
 	int	cup;
-	unsigned char	*nd;		/* Move cursor right 1 */
+	char	*nd;		/* Move cursor right 1 */
 
-	unsigned char	*ta;		/* Move cursor to next tab stop */
+	char	*ta;		/* Move cursor to next tab stop */
 	int	cta;
-	unsigned char	*bt;		/* Move cursor to previous tab stop */
+	char	*bt;		/* Move cursor to previous tab stop */
 	int	cbt;
 	int	tw;		/* Tab width */
 
-	unsigned char	*ho;		/* Home cursor to upper left */
+	char	*ho;		/* Home cursor to upper left */
 	int	cho;
-	unsigned char	*ll;		/* Home cursor to lower left */
+	char	*ll;		/* Home cursor to lower left */
 	int	cll;
-	unsigned char	*cr;		/* Move cursor to left edge */
+	char	*cr;		/* Move cursor to left edge */
 	int	ccr;
-	unsigned char	*RI;		/* Move cursor right n */
+	char	*RI;		/* Move cursor right n */
 	int	cRI;
-	unsigned char	*LE;		/* Move cursor left n */
+	char	*LE;		/* Move cursor left n */
 	int	cLE;
-	unsigned char	*UP;		/* Move cursor up n */
+	char	*UP;		/* Move cursor up n */
 	int	cUP;
-	unsigned char	*DO;		/* Move cursor down n */
+	char	*DO;		/* Move cursor down n */
 	int	cDO;
-	unsigned char	*ch;		/* Set cursor column */
+	char	*ch;		/* Set cursor column */
 	int	cch;
-	unsigned char	*cv;		/* Set cursor row */
+	char	*cv;		/* Set cursor row */
 	int	ccv;
-	unsigned char	*cV;		/* Goto beginning of specified line */
+	char	*cV;		/* Goto beginning of specified line */
 	int	ccV;
-	unsigned char	*cm;		/* Set cursor row and column */
+	char	*cm;		/* Set cursor row and column */
 	int	ccm;
 
-	unsigned char	*ce;		/* Clear to end of line */
+	char	*ce;		/* Clear to end of line */
 	int	cce;
 
 	int assume_256;		/* Assume terminal has 256 color mode, but use
@@ -298,8 +296,8 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c
 /*
  * translate character and its attribute into something printable
  */
-void xlat(int *attr, unsigned char *c);
-void xlat_utf_ctrl(int *attr, unsigned char *c);
+void xlat(int *attr, char *c);
+void xlat_utf_ctrl(int *attr, char *c);
 
 /* int eraeol(SCRN *t,int x,int y);
  *
@@ -337,31 +335,30 @@ void magic(SCRN *t, int y, int *cs, int *ca, int *s, int *a,int placex);
 
 int clrins(SCRN *t);
 
-int meta_color(unsigned char *s);
+int meta_color(char *s);
 
 /* Generate a field */
-void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,int len,int atr,int width,int flg,int *fmt);
+void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,char *s,int len,int atr,int width,int flg,int *fmt);
 
 /* Column width of a string takes into account utf-8) */
-int txtwidth(unsigned char *s,int len);
+int txtwidth(char *s,int len);
 
-int txtwidth1(struct charmap *map, int tabwidth, unsigned char *s, int len);
+int txtwidth1(struct charmap *map, int tabwidth, char *s, int len);
 
 /* Generate a field: formatted */
-void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg);
+void genfmt(SCRN *t, int x, int y, int ofst, char *s, int atr, int flg);
 
 /* Column width of formatted string */
-int fmtlen(unsigned char *s);
+int fmtlen(char *s);
 
 /* Offset within formatted string of particular column */
-int fmtpos(unsigned char *s, int goal);
+int fmtpos(char *s, int goal);
 
 extern int bg_text;
 extern int columns;
+extern int lines;
 extern int notite;
 extern int nolinefeeds;
 extern int usetabs;
 extern int assume_color;
 extern int assume_256color;
-
-#endif

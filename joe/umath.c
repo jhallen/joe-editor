@@ -7,7 +7,7 @@
  */
 #include "types.h"
 
-unsigned char *merr;
+char *merr;
 
 int mode_hex;
 int mode_eng;
@@ -24,14 +24,14 @@ static RETSIGTYPE fperr(int unused)
 }
 
 struct var {
-	unsigned char *name;
+	char *name;
 	double (*func)(double n);
 	int set;
 	double val;
 	struct var *next;
 } *vars = NULL;
 
-static struct var *get(unsigned char *str)
+static struct var *get(char *str)
 {
 	struct var *v;
 
@@ -40,7 +40,7 @@ static struct var *get(unsigned char *str)
 			return v;
 		}
 	}
-	v = (struct var *) joe_malloc(sizeof(struct var));
+	v = (struct var *) joe_malloc(SIZEOF(struct var));
 
 	v->set = 0;
 	v->func = 0;
@@ -51,9 +51,9 @@ static struct var *get(unsigned char *str)
 	return v;
 }
 
-unsigned char *ptr;
+char *ptr;
 struct var *dumb;
-static double eval(unsigned char *s, int secure);
+static double eval(char *s, int secure);
 
 int recur=0;
 
@@ -69,7 +69,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 	}
 	if ((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')
 	    || *ptr == '_') {
-		unsigned char *s = ptr, c;
+		char *s = ptr, c;
 
 		while ((*ptr >= 'a' && *ptr <= 'z')
 		       || (*ptr >= 'A' && *ptr <= 'Z')
@@ -78,14 +78,14 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 		}
 		c = *ptr;
 		*ptr = 0;
-		if (!secure && !zcmp(s,USTR "joe")) {
+		if (!secure && !zcmp(s,"joe")) {
 			*ptr = c;
 			v = 0;
 			x = 0.0;
 			while (*ptr==' ' || *ptr=='\t')
 				++ptr;
 			if (*ptr=='(') {
-				unsigned char *q = ++ptr;
+				char *q = ++ptr;
 				MACRO *m;
 				int sta;
 				while (*q && *q!=')')
@@ -116,39 +116,39 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 		} else if (!en) {
 			v = 0;
 			x = 0.0;
-		} else if (!zcmp(s,USTR "hex")) {
+		} else if (!zcmp(s,"hex")) {
 			mode_hex = 1;
 			mode_eng = 0;
-			v = get(USTR "ans");
+			v = get("ans");
 			x = v->val;
-		} else if (!zcmp(s,USTR "dec")) {
+		} else if (!zcmp(s,"dec")) {
 			mode_hex = 0;
 			mode_eng = 0;
-			v = get(USTR "ans");
+			v = get("ans");
 			x = v->val;
-		} else if (!zcmp(s,USTR "eng")) {
+		} else if (!zcmp(s,"eng")) {
 			mode_hex = 0;
 			mode_eng = 1;
-			v = get(USTR "ans");
+			v = get("ans");
 			x = v->val;
-		} else if (!zcmp(s,USTR "ins")) {
+		} else if (!zcmp(s,"ins")) {
 			mode_ins = 1;
-			v = get(USTR "ans");
+			v = get("ans");
 			x = v->val;
-		} else if (!zcmp(s,USTR "sum")) {
+		} else if (!zcmp(s,"sum")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
-		} else if (!zcmp(s,USTR "cnt")) {
+		} else if (!zcmp(s,"cnt")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			x = cnt;
-		} else if (!zcmp(s,USTR "avg")) {
+		} else if (!zcmp(s,"avg")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
@@ -156,7 +156,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			v = 0;
 			if (cnt)
 				x /= (double)cnt;
-		} else if (!zcmp(s,USTR "dev")) {
+		} else if (!zcmp(s,"dev")) {
 			double xsq;
 			double avg;
 			int cnt = blksum(&x, &xsq);
@@ -167,9 +167,9 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 				avg = x / (double)cnt;
 				x = sqrt(xsq + (double)cnt*avg*avg - 2.0*avg*x);
 			}
-		} else if (!zcmp(s,USTR "eval")) {
-			unsigned char *save = ptr;
-			unsigned char *e = blkget();
+		} else if (!zcmp(s,"eval")) {
+			char *save = ptr;
+			char *e = blkget();
 			if (e) {
 				v = 0;
 				x = eval(e,secure);
@@ -185,8 +185,8 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 		*ptr = c;
 	} else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
 		char *eptr;
-		x = strtod((char *)ptr,&eptr);
-		ptr = (unsigned char *)eptr;
+		x = strtod(ptr,&eptr);
+		ptr = eptr;
 	} else if (*ptr == '(') {
 		++ptr;
 		x = expr(0, en, &v, secure);
@@ -320,7 +320,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 				x = z;
 			v = 0;  
 		} else if (!merr) {
-			merr = USTR ": missing after ?";
+			merr = ": missing after ?";
 		}
 		goto loop;
 	} else if (*ptr == '=' && 1 >= prec) {
@@ -340,7 +340,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 	return x;
 }
 
-static double eval(unsigned char *s, int secure)
+static double eval(char *s, int secure)
 {
 	double result = 0.0;
 	struct var *v;
@@ -352,7 +352,7 @@ static double eval(unsigned char *s, int secure)
 	ptr = s;
 	while (!merr && *ptr) {
 		result = expr(0, 1, &dumb,secure);
-		v = get(USTR "ans");
+		v = get("ans");
 		v->val = result;
 		v->set = 1;
 		if (!merr) {
@@ -586,7 +586,7 @@ double m_y1(double n) { return y1(n); }
 
 double m_int(double n) { return (int)(n); }
 
-double calc(BW *bw, unsigned char *s, int secure)
+double calc(BW *bw, char *s, int secure)
 {
 	/* BW *tbw = bw->parent->main->object; */
 	BW *tbw = bw;
@@ -595,248 +595,248 @@ double calc(BW *bw, unsigned char *s, int secure)
 
 	if (!vars) {
 #ifdef HAVE_SIN
-		v = get(USTR "sin"); v->func = m_sin;
+		v = get("sin"); v->func = m_sin;
 #else
 #ifdef sin
-		v = get(USTR "sin"); v->func = m_sin;
+		v = get("sin"); v->func = m_sin;
 #endif
 #endif
 #ifdef HAVE_COS
-		v = get(USTR "cos"); v->func = m_cos;
+		v = get("cos"); v->func = m_cos;
 #else
 #ifdef cos
-		v = get(USTR "cos"); v->func = m_cos;
+		v = get("cos"); v->func = m_cos;
 #endif
 #endif
 #ifdef HAVE_TAN
-		v = get(USTR "tan"); v->func = m_tan;
+		v = get("tan"); v->func = m_tan;
 #else
 #ifdef tan
-		v = get(USTR "tan"); v->func = m_tan;
+		v = get("tan"); v->func = m_tan;
 #endif
 #endif
 #ifdef HAVE_EXP
-		v = get(USTR "exp"); v->func = m_exp;
+		v = get("exp"); v->func = m_exp;
 #else
 #ifdef exp
-		v = get(USTR "exp"); v->func = m_exp;
+		v = get("exp"); v->func = m_exp;
 #endif
 #endif
 #ifdef HAVE_SQRT
-		v = get(USTR "sqrt"); v->func = m_sqrt;
+		v = get("sqrt"); v->func = m_sqrt;
 #else
 #ifdef sqrt
-		v = get(USTR "sqrt"); v->func = m_sqrt;
+		v = get("sqrt"); v->func = m_sqrt;
 #endif
 #endif
 #ifdef HAVE_CBRT
-		v = get(USTR "cbrt"); v->func = m_cbrt;
+		v = get("cbrt"); v->func = m_cbrt;
 #else
 #ifdef cbrt
-		v = get(USTR "cbrt"); v->func = m_cbrt;
+		v = get("cbrt"); v->func = m_cbrt;
 #endif
 #endif
 #ifdef HAVE_LN
-		v = get(USTR "ln"); v->func = m_log;
+		v = get("ln"); v->func = m_log;
 #else
 #ifdef ln
-		v = get(USTR "ln"); v->func = m_log;
+		v = get("ln"); v->func = m_log;
 #endif
 #endif
 #ifdef HAVE_LOG
-		v = get(USTR "log"); v->func = m_log10;
+		v = get("log"); v->func = m_log10;
 #else
 #ifdef log
-		v = get(USTR "log"); v->func = m_log10;
+		v = get("log"); v->func = m_log10;
 #endif
 #endif
 #ifdef HAVE_ASIN
-		v = get(USTR "asin"); v->func = m_asin;
+		v = get("asin"); v->func = m_asin;
 #else
 #ifdef asin
-		v = get(USTR "asin"); v->func = m_asin;
+		v = get("asin"); v->func = m_asin;
 #endif
 #endif
 #ifdef HAVE_ACOS
-		v = get(USTR "acos"); v->func = m_acos;
+		v = get("acos"); v->func = m_acos;
 #else
 #ifdef acos
-		v = get(USTR "acos"); v->func = m_acos;
+		v = get("acos"); v->func = m_acos;
 #endif
 #endif
 #ifdef HAVE_ATAN
-		v = get(USTR "atan"); v->func = m_atan;
+		v = get("atan"); v->func = m_atan;
 #else
 #ifdef atan
-		v = get(USTR "atan"); v->func = m_atan;
+		v = get("atan"); v->func = m_atan;
 #endif
 #endif
 #ifdef HAVE_M_PI
-		v = get(USTR "pi"); v->val = M_PI; v->set = 1;
+		v = get("pi"); v->val = M_PI; v->set = 1;
 #else
 #ifdef m_pi
-		v = get(USTR "pi"); v->val = M_PI; v->set = 1;
+		v = get("pi"); v->val = M_PI; v->set = 1;
 #endif
 #endif
 #ifdef HAVE_M_E
-		v = get(USTR "e"); v->val = M_E; v->set = 1;
+		v = get("e"); v->val = M_E; v->set = 1;
 #else
 #ifdef m_e
-		v = get(USTR "e"); v->val = M_E; v->set = 1;
+		v = get("e"); v->val = M_E; v->set = 1;
 #endif
 #endif
 #ifdef HAVE_SINH
-		v = get(USTR "sinh"); v->func = m_sinh;
+		v = get("sinh"); v->func = m_sinh;
 #else
 #ifdef sinh
-		v = get(USTR "sinh"); v->func = m_sinh;
+		v = get("sinh"); v->func = m_sinh;
 #endif
 #endif
 #ifdef HAVE_COSH
-		v = get(USTR "cosh"); v->func = m_cosh;
+		v = get("cosh"); v->func = m_cosh;
 #else
 #ifdef cosh
-		v = get(USTR "cosh"); v->func = m_cosh;
+		v = get("cosh"); v->func = m_cosh;
 #endif
 #endif
 #ifdef HAVE_TANH
-		v = get(USTR "tanh"); v->func = m_tanh;
+		v = get("tanh"); v->func = m_tanh;
 #else
 #ifdef tanh
-		v = get(USTR "tanh"); v->func = m_tanh;
+		v = get("tanh"); v->func = m_tanh;
 #endif
 #endif
 #ifdef HAVE_ASINH
-		v = get(USTR "asinh"); v->func = m_asinh;
+		v = get("asinh"); v->func = m_asinh;
 #else
 #ifdef asinh
-		v = get(USTR "asinh"); v->func = m_asinh;
+		v = get("asinh"); v->func = m_asinh;
 #endif
 #endif
 #ifdef HAVE_ACOSH
-		v = get(USTR "acosh"); v->func = m_acosh;
+		v = get("acosh"); v->func = m_acosh;
 #else
 #ifdef acosh
-		v = get(USTR "acosh"); v->func = m_acosh;
+		v = get("acosh"); v->func = m_acosh;
 #endif
 #endif
 #ifdef HAVE_ATANH
-		v = get(USTR "atanh"); v->func = m_atanh;
+		v = get("atanh"); v->func = m_atanh;
 #else
 #ifdef atanh
-		v = get(USTR "atanh"); v->func = m_atanh;
+		v = get("atanh"); v->func = m_atanh;
 #endif
 #endif
 #ifdef HAVE_FLOOR
-		v = get(USTR "floor"); v->func = m_floor;
+		v = get("floor"); v->func = m_floor;
 #else
 #ifdef floor
-		v = get(USTR "floor"); v->func = m_floor;
+		v = get("floor"); v->func = m_floor;
 #endif
 #endif
 #ifdef HAVE_CEIL
-		v = get(USTR "ceil"); v->func = m_ceil;
+		v = get("ceil"); v->func = m_ceil;
 #else
 #ifdef ceil
-		v = get(USTR "ceil"); v->func = m_ceil;
+		v = get("ceil"); v->func = m_ceil;
 #endif
 #endif
 #ifdef HAVE_ABS
-		v = get(USTR "abs"); v->func = m_fabs;
+		v = get("abs"); v->func = m_fabs;
 #else
 #ifdef abs
-		v = get(USTR "abs"); v->func = m_fabs;
+		v = get("abs"); v->func = m_fabs;
 #endif
 #endif
 #ifdef HAVE_ERF
-		v = get(USTR "erf"); v->func = m_erf;
+		v = get("erf"); v->func = m_erf;
 #else
 #ifdef erf
-		v = get(USTR "erf"); v->func = m_erf;
+		v = get("erf"); v->func = m_erf;
 #endif
 #endif
 #ifdef HAVE_ERFC
-		v = get(USTR "erfc"); v->func = m_erfc;
+		v = get("erfc"); v->func = m_erfc;
 #else
 #ifdef erfc
-		v = get(USTR "erfc"); v->func = m_erfc;
+		v = get("erfc"); v->func = m_erfc;
 #endif
 #endif
 #ifdef HAVE_J0
-		v = get(USTR "j0"); v->func = m_j0;
+		v = get("j0"); v->func = m_j0;
 #else
 #ifdef j0
-		v = get(USTR "j0"); v->func = m_j0;
+		v = get("j0"); v->func = m_j0;
 #endif
 #endif
 #ifdef HAVE_J1
-		v = get(USTR "j1"); v->func = m_j1;
+		v = get("j1"); v->func = m_j1;
 #else
 #ifdef j1
-		v = get(USTR "j1"); v->func = m_j1;
+		v = get("j1"); v->func = m_j1;
 #endif
 #endif
 #ifdef HAVE_Y0
-		v = get(USTR "y0"); v->func = m_y0;
+		v = get("y0"); v->func = m_y0;
 #else
 #ifdef y0
-		v = get(USTR "y0"); v->func = m_y0;
+		v = get("y0"); v->func = m_y0;
 #endif
 #endif
 #ifdef HAVE_Y1
-		v = get(USTR "y1"); v->func = m_y1;
+		v = get("y1"); v->func = m_y1;
 #else
 #ifdef y1
-		v = get(USTR "y1"); v->func = m_y1;
+		v = get("y1"); v->func = m_y1;
 #endif
 #endif
-		v = get(USTR "int"); v->func = m_int;
+		v = get("int"); v->func = m_int;
 	}
 
-	v = get(USTR "top");
+	v = get("top");
 	v->val = tbw->top->line + 1;
 	v->set = 1;
-	v = get(USTR "lines");
+	v = get("lines");
 	v->val = tbw->b->eof->line + 1;
 	v->set = 1;
-	v = get(USTR "line");
+	v = get("line");
 	v->val = tbw->cursor->line + 1;
 	v->set = 1;
-	v = get(USTR "col");
+	v = get("col");
 	v->val = tbw->cursor->col + 1;
 	v->set = 1;
-	v = get(USTR "byte");
+	v = get("byte");
 	v->val = tbw->cursor->byte + 1;
 	v->set = 1;
-	v = get(USTR "size");
+	v = get("size");
 	v->val = tbw->b->eof->byte;
 	v->set = 1;
-	v = get(USTR "height");
+	v = get("height");
 	v->val = tbw->h;
 	v->set = 1;
-	v = get(USTR "width");
+	v = get("width");
 	v->val = tbw->w;
 	v->set = 1;
-	v = get(USTR "char");
+	v = get("char");
 	v->val = (c == NO_MORE_DATA ? -1.0 : c);
 	v->set = 1;
-	v = get(USTR "markv");
+	v = get("markv");
 	v->val = markv(1) ? 1.0 : 0.0;
 	v->set = 1;
-	v = get(USTR "rdonly");
+	v = get("rdonly");
 	v->val = tbw->b->rdonly;
 	v->set = 1;
-	v = get(USTR "arg");
+	v = get("arg");
 	v->val = current_arg;
 	v->set = 1;
-	v = get(USTR "argset");
+	v = get("argset");
 	v->val = current_arg_set;
 	v->set = 1;
-	v = get(USTR "no_windows");
+	v = get("no_windows");
 	v->val = countmain(bw->parent->t);
 	v->set = 1;
 	merr = 0;
-	v = get(USTR "is_shell");
+	v = get("is_shell");
 	v->val = tbw->b->pid;
 	v->set = 1;
 	merr = 0;
@@ -844,7 +844,7 @@ double calc(BW *bw, unsigned char *s, int secure)
 }
 
 /* Main user interface */
-static int domath(BW *bw, unsigned char *s, void *object, int *notify, int secure)
+static int domath(BW *bw, char *s, void *object, int *notify, int secure)
 {
 	double result = calc(bw, s, secure);
 
@@ -877,12 +877,12 @@ static int domath(BW *bw, unsigned char *s, void *object, int *notify, int secur
 	return 0;
 }
 
-static int doumath(BW *bw, unsigned char *s, void *object, int *notify)
+static int doumath(BW *bw, char *s, void *object, int *notify)
 {
 	return domath(bw, s, object, notify, 0);
 }
 
-static int dosmath(BW *bw, unsigned char *s, void *object, int *notify)
+static int dosmath(BW *bw, char *s, void *object, int *notify)
 {
 	return domath(bw, s, object, notify, 1);
 }
@@ -893,7 +893,7 @@ B *mathhist = NULL;
 int umath(BW *bw)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, USTR "=", &mathhist, doumath, USTR "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(bw->parent, "=", &mathhist, doumath, "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;
@@ -905,7 +905,7 @@ int umath(BW *bw)
 int usmath(BW *bw)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, USTR "=", &mathhist, dosmath, USTR "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(bw->parent, "=", &mathhist, dosmath, "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

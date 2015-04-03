@@ -5,10 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_REGEX_H
-#define _JOE_REGEX_H 1
 
-int escape(int utf8,unsigned char **a, int *b);
-int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, int icase);
-
-#endif
+int escape(int utf8,char **a, int *b);
+int pmatch(char **pieces, char *regex, int len, P *p, int n, int icase);

@@ -18,7 +18,7 @@ MACRO *mkmacro(int k, int flg, int n, CMD *cmd)
 	if (!freemacros) {
 		int x;
 
-		macro = (MACRO *) joe_malloc(sizeof(MACRO) * 64);
+		macro = (MACRO *) joe_malloc(SIZEOF(MACRO) * 64);
 		for (x = 0; x != 64; ++x) {
 			macro[x].steps = (MACRO **) freemacros;
 			freemacros = macro + x;
@@ -58,9 +58,9 @@ void addmacro(MACRO *macro, MACRO *m)
 {
 	if (macro->n == macro->size) {
 		if (macro->steps)
-			macro->steps = (MACRO **) joe_realloc(macro->steps, (macro->size += 8) * sizeof(MACRO *));
+			macro->steps = (MACRO **) joe_realloc(macro->steps, (macro->size += 8) * SIZEOF(MACRO *));
 		else
-			macro->steps = (MACRO **) joe_malloc((macro->size = 8) * sizeof(MACRO *));
+			macro->steps = (MACRO **) joe_malloc((macro->size = 8) * SIZEOF(MACRO *));
 	}
 	macro->steps[macro->n++] = m;
 }
@@ -74,7 +74,7 @@ MACRO *dupmacro(MACRO *mac)
 	if (mac->steps) {
 		int x;
 
-		m->steps = (MACRO **) joe_malloc((m->size = mac->n) * sizeof(MACRO *));
+		m->steps = (MACRO **) joe_malloc((m->size = mac->n) * SIZEOF(MACRO *));
 		for (x = 0; x != m->n; ++x)
 			m->steps[x] = dupmacro(mac->steps[x]);
 	}
@@ -106,9 +106,10 @@ MACRO *macsta(MACRO *m, int a)
  * Also, secure_type will be used instead of type.
  */
 
-MACRO *mparse(MACRO *m, unsigned char *buf, int *sta, int secure)
+MACRO *mparse(MACRO *m, char *buf, int *sta, int secure)
 {
-	int y, c, x = 0;
+	char c;
+	int y, x = 0;
 
       macroloop:
 
@@ -157,7 +158,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta, int secure)
 						c = c * 16 + buf[++x] - '0';
 					else if ((buf[x + 1] >= 'a' && buf[x + 1] <= 'f') || (buf[x + 1] >= 'A' && buf[x + 1] <= 'F'))
 						c = c * 16 + (buf[++x] & 0xF) + 9;
-					buf[x] = c;
+					buf[x] = TO_CHAR_OK(c);
 					break;
 				case '0':
 				case '1':
@@ -174,7 +175,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta, int secure)
 						c = c * 8 + buf[++x] - '0';
 					if (buf[x + 1] >= '0' && buf[x + 1] <= '7')
 						c = c * 8 + buf[++x] - '0';
-					buf[x] = c;
+					buf[x] = TO_CHAR_OK(c);
 					break;
 				}
 			}
@@ -187,7 +188,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta, int secure)
 				}
 			} else
 				m = mkmacro(-1, 0, 0, NULL);
-			addmacro(m, mkmacro(buf[x], 0, 0, secure ? findcmd(USTR "secure_type") : findcmd(USTR "type")));
+			addmacro(m, mkmacro(buf[x], 0, 0, secure ? findcmd("secure_type") : findcmd("type")));
 			++x;
 		}
 		if (buf[x] == '\"')
@@ -206,7 +207,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta, int secure)
 
 			c = buf[y];
 			buf[y] = 0;
-			if (!secure || !zncmp(buf + x, USTR "shell_", 6))
+			if (!secure || !zncmp(buf + x, "shell_", 6))
 				cmd = findcmd(buf + x);
 			else
 				cmd = 0;
@@ -262,11 +263,11 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta, int secure)
 
 /* Convert macro to text */
 
-static unsigned char *ptr;
+static char *ptr;
 static int first;
 static int instr;
 
-unsigned char *unescape(unsigned char *ptr, int c)
+char *unescape(char *ptr, int c)
 {
 	if (c == '"') {
 		*ptr++ = '\\';
@@ -281,10 +282,10 @@ unsigned char *unescape(unsigned char *ptr, int c)
 		/* FIXME: what if c > 256 or c < 0 ? */
 		*ptr++ = '\\';
 		*ptr++ = 'x';
-		*ptr++ = "0123456789ABCDEF"[c >> 4];
-		*ptr++ = "0123456789ABCDEF"[c & 15];
+		*ptr++ = "0123456789ABCDEF"[15 & (c >> 4)];
+		*ptr++ = "0123456789ABCDEF"[15 & c];
 	} else
-		*ptr++ = c;
+		*ptr++ = TO_CHAR_OK(c);
 	return ptr;
 }
 
@@ -298,7 +299,7 @@ static void domtext(MACRO *m)
 		for (x = 0; x != m->n; ++x)
 			domtext(m->steps[x]);
 	else {
-		if (instr && zcmp(m->cmd->name, USTR "type")) {
+		if (instr && zcmp(m->cmd->name, "type")) {
 			*ptr++ = '\"';
 			instr = 0;
 		}
@@ -306,7 +307,7 @@ static void domtext(MACRO *m)
 			first = 0;
 		else if (!instr)
 			*ptr++ = ',';
-		if (!zcmp(m->cmd->name, USTR "type")) {
+		if (!zcmp(m->cmd->name, "type")) {
 			if (!instr) {
 				*ptr++ = '\"';
 				instr = 1;
@@ -315,7 +316,7 @@ static void domtext(MACRO *m)
 		} else {
 			for (x = 0; m->cmd->name[x]; ++x)
 				*ptr++ = m->cmd->name[x];
-			if (!zcmp(m->cmd->name, USTR "play") || !zcmp(m->cmd->name, USTR "gomark") || !zcmp(m->cmd->name, USTR "setmark") || !zcmp(m->cmd->name, USTR "record") || !zcmp(m->cmd->name, USTR "uarg")) {
+			if (!zcmp(m->cmd->name, "play") || !zcmp(m->cmd->name, "gomark") || !zcmp(m->cmd->name, "setmark") || !zcmp(m->cmd->name, "record") || !zcmp(m->cmd->name, "uarg")) {
 				*ptr++ = ',';
 				*ptr++ = '"';
 				ptr = unescape(ptr, m->k);
@@ -325,7 +326,7 @@ static void domtext(MACRO *m)
 	}
 }
 
-unsigned char *mtext(unsigned char *s, MACRO *m)
+char *mtext(char *s, MACRO *m)
 {
 	ptr = s;
 	first = 1;
@@ -661,7 +662,7 @@ static int dorecord(BW *bw, int c, void *object, int *notify)
 	for (n = 0; n != 10; ++n)
 		if (playmode[n])
 			return -1;
-	r = (struct recmac *) joe_malloc(sizeof(struct recmac));
+	r = (struct recmac *) joe_malloc(SIZEOF(struct recmac));
 
 	r->m = mkmacro(0, 0, 0, NULL);
 	r->next = recmac;
@@ -683,12 +684,12 @@ int urecord(BW *bw, int c)
 extern time_t timer_macro_delay;
 extern MACRO *timer_macro;
 
-static int dotimer1(BW *bw, unsigned char *s, void *object, int *notify)
+static int dotimer1(BW *bw, char *s, void *object, int *notify)
 {
 	long num;
 	if (notify)
 		*notify = 1;
-	num = calc(bw, s, 0);
+	num = (long)calc(bw, s, 0);
 	if (merr) {
 		msgnw(bw->parent, merr);
 		return -1;
@@ -744,7 +745,7 @@ int ustop(void)
 			rmmacro(kbdmacro[r->n]);
 		kbdmacro[r->n] = r->m;
 		if (recmac)
-			record(m = mkmacro(r->n + '0', 0, 0, findcmd(USTR "play"))), rmmacro(m);
+			record(m = mkmacro(r->n + '0', 0, 0, findcmd("play"))), rmmacro(m);
 		joe_free(r);
 	}
 	return 0;
@@ -773,7 +774,7 @@ static int doplay(BW *bw, int c, void *object, int *notify)
 int umacros(BW *bw)
 {
 	int x;
-	unsigned char buf[1024];
+	char buf[1024];
 
 	p_goto_eol(bw->cursor);
 	for (x = 0; x != 10; ++x)
@@ -793,7 +794,7 @@ int umacros(BW *bw)
 void save_macros(FILE *f)
 {
 	int x;
-	unsigned char buf[1024];
+	char buf[1024];
 	for(x = 0; x!= 10; ++x)
 		if(kbdmacro[x]) {
 			mtext(buf, kbdmacro[x]);
@@ -806,17 +807,17 @@ void save_macros(FILE *f)
 
 void load_macros(FILE *f)
 {
-	unsigned char buf[1024];
-	unsigned char bf[1024];
-	while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n")) {
-		unsigned char *p = buf;
+	char buf[1024];
+	char bf[1024];
+	while(fgets(buf,1023,f) && zcmp(buf,"done\n")) {
+		char *p = buf;
 		int n;
 		int len;
 		int sta;
 		parse_ws(&p, '#');
 		if(!parse_int(&p,&n)) {
 			parse_ws(&p, '#');
-			len = parse_string(&p,bf,sizeof(bf));
+			len = parse_string(&p,bf,SIZEOF(bf));
 			if (len>0)
 				kbdmacro[n] = mparse(NULL,bf,&sta,0);
 		}
@@ -835,13 +836,13 @@ int uplay(BW *bw, int c)
 
 /* Repeat-count setting */
 
-static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
+static int doarg(BW *bw, char *s, void *object, int *notify)
 {
-	long num;
+	int num;
 
 	if (notify)
 		*notify = 1;
-	num = calc(bw, s, 1);
+	num = (int)calc(bw, s, 1);
 	if (merr) {
 		msgnw(bw->parent, merr);
 		return -1;
@@ -860,14 +861,17 @@ int uarg(BW *bw)
 		return -1;
 }
 
-static int doif(BW *bw,unsigned char *s,void *object,int *notify)
+static int doif(BW *bw,char *s,void *object,int *notify)
 {
-	long num;
-	if(notify) *notify=1;
-	num=calc(bw,s,0);
-	if(merr) { msgnw(bw->parent,merr); return -1; }
-	ifflag=(num?1:0);
-	iffail=ifdepth;
+	int num;
+	if (notify) *notify=1;
+	num = (int)calc(bw, s, 0);
+	if (merr) {
+		msgnw(bw->parent, merr);
+		return -1;
+	}
+	ifflag = (num ? 1 : 0);
+	iffail = ifdepth;
 	vsrm(s);
 	return 0;
 }

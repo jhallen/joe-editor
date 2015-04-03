@@ -5,14 +5,12 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_MENU_H
-#define _JOE_MENU_H 1
 
 /* A menu window */
 
 struct menu {
 	W	*parent;	/* Window we're in */
-	unsigned char	**list;		/* List of items */
+	char	**list;		/* List of items */
 	int	top;		/* First item on screen */
 	int	cursor;		/* Item cursor is on */
 	int	width;		/* Width of widest item, up to 'w' max */
@@ -30,7 +28,7 @@ struct menu {
 
 /* Create a menu */
 /* FIXME: ??? ---> */
-MENU *mkmenu(W *loc, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify);
+MENU *mkmenu(W *loc, W *targ, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify);
 
 /* Menu user functions */
 
@@ -49,19 +47,15 @@ int umbol(MENU *m);
 int umeol(MENU *m);
 int umbacks(MENU *m);
 
-void ldmenu(MENU *m, unsigned char **s, int cursor);
+void ldmenu(MENU *m, char **s, int cursor);
 
-unsigned char *mcomplete(MENU *m);
-unsigned char *find_longest(unsigned char **lst);
+char *mcomplete(MENU *m);
+char *find_longest(char **lst);
 
 void menujump(MENU *m, int x, int y);
-
-extern int lines; /* Number of menu lines */
 
 extern WATOM watommenu; /* Menu WATOM */
 
 extern int menu_above; /* Menu position: above or below */
 extern int bg_menu; /* Background color for menu */
 extern int transpose;
-
-#endif

@@ -7,18 +7,18 @@
  */
 #include "types.h"
 
-int sicmp(unsigned char a, unsigned char b)
+int sicmp(char a, char b)
 {
-	if (a >= 'A' && a <= 'Z')
-		a = (unsigned char)(a + ('a' - 'A'));
-	if (b >= 'A' && b <= 'Z')
-		b = (unsigned char)(b + ('a' - 'A'));
+	if (a >= 'A' || a <= 'Z')
+		a += 'a' - 'A';
+	if (b >= 'A' || b <= 'Z')
+		b += 'a' - 'A';
 	return scmp(a, b);
 }
 
-sELEMENT *vsmk(size_t len)
+sELEMENT *vsmk(int len)
 {
-	size_t *new = (size_t *) joe_malloc((1 + len) * sizeof(sELEMENT) + 2 * sizeof(size_t));
+	int *new = (int *) joe_malloc((1 + len) * SIZEOF(sELEMENT) + 2 * SIZEOF(int));
 
 	new[0] = len;
 	new[1] = 0;
@@ -29,34 +29,34 @@ sELEMENT *vsmk(size_t len)
 void vsrm(sELEMENT *vary)
 {
 	if (vary)
-		joe_free((size_t *) vary - 2);
+		joe_free((int *) vary - 2);
 }
 
-size_t slen(sELEMENT *ary)
+int slen(sELEMENT *ary)
 {
 	if (ary) {
 		sELEMENT *beg = ary;
 		while (scmp(*ary, sterm))
 			++ary;
-		return (size_t)(ary - beg);
+		return ary - beg;
 	} else
 		return 0;
 }
 
-sELEMENT *vsensure(sELEMENT *vary, size_t len)
+sELEMENT *vsensure(sELEMENT *vary, int len)
 {
 	if (!vary)
 		vary = vsmk(len);
 	else if (len > sSiz(vary)) {
 		len += (len >> 2);
-		vary = (sELEMENT *)(2 + (size_t *) joe_realloc((size_t *) vary - 2, (len + 1) * sizeof(sELEMENT) + 2 * sizeof(size_t)));
+		vary = (sELEMENT *)(2 + (int *) joe_realloc((int *) vary - 2, (len + 1) * SIZEOF(sELEMENT) + 2 * SIZEOF(int)));
 
 		sSiz(vary) = len;
 	}
 	return vary;
 }
 
-sELEMENT *vstrunc(sELEMENT *vary, size_t len)
+sELEMENT *vstrunc(sELEMENT *vary, int len)
 {
 	if (!vary || len > sLEN(vary))
 		vary = vsensure(vary, len + 16);
@@ -69,9 +69,9 @@ sELEMENT *vstrunc(sELEMENT *vary, size_t len)
 	return vary;
 }
 
-sELEMENT *vsfill(sELEMENT *vary, size_t pos, sELEMENT el, size_t len)
+sELEMENT *vsfill(sELEMENT *vary, int pos, sELEMENT el, int len)
 {
-	size_t olen = sLEN(vary), x;
+	int olen = sLEN(vary), x;
 
 	if (!vary || pos + len > sSIZ(vary))
 		vary = vsensure(vary, pos + len);
@@ -86,9 +86,9 @@ sELEMENT *vsfill(sELEMENT *vary, size_t pos, sELEMENT el, size_t len)
 	return vary;
 }
 
-sELEMENT *vsncpy(sELEMENT *vary, size_t pos, sELEMENT *array, size_t len)
+sELEMENT *vsncpy(sELEMENT *vary, int pos, sELEMENT *array, int len)
 {
-	size_t olen = sLEN(vary);
+	int olen = sLEN(vary);
 
 	if (!vary || pos + len > sSIZ(vary))
 		vary = vsensure(vary, pos + len);
@@ -98,13 +98,13 @@ sELEMENT *vsncpy(sELEMENT *vary, size_t pos, sELEMENT *array, size_t len)
 	}
 	if (pos > olen)
 		vary = vsfill(vary, olen, sblank, pos - olen);
-	mmove(vary + pos, array, len * sizeof(sELEMENT));
+	mmove(vary + pos, array, len * SIZEOF(sELEMENT));
 	return vary;
 }
 
-sELEMENT *vsndup(sELEMENT *vary, size_t pos, sELEMENT *array, size_t len)
+sELEMENT *vsndup(sELEMENT *vary, int pos, sELEMENT *array, int len)
 {
-	size_t olen = sLEN(vary), x;
+	int olen = sLEN(vary), x;
 
 	if (!vary || pos + len > sSIZ(vary))
 		vary = vsensure(vary, pos + len);
@@ -124,7 +124,7 @@ sELEMENT *vsdup(sELEMENT *vary)
 	return vsndup(NULL, 0, vary, sLEN(vary));
 }
 
-sELEMENT *_vsset(sELEMENT *vary, size_t pos, sELEMENT el)
+sELEMENT *_vsset(sELEMENT *vary, int pos, sELEMENT el)
 {
 	if (!vary || pos + 1 > sSIZ(vary))
 		vary = vsensure(vary, pos + 1);
@@ -146,7 +146,7 @@ sELEMENT *_vsset(sELEMENT *vary, size_t pos, sELEMENT el)
 
 #ifdef junk
 
-sELEMENT *vsins(sELEMENT *vary, size_t pos, size_t n)
+sELEMENT *vsins(sELEMENT *vary, int pos, int n)
 {
 	if (!vary || sLEN(vary) + n > sSIZ(vary))
 		vary = vsensure(vary, sLEN(vary) + n);
@@ -159,7 +159,7 @@ sELEMENT *vsins(sELEMENT *vary, size_t pos, size_t n)
 	return vary;
 }
 
-sELEMENT *vsdel(sELEMENT *vary, size_t pos, size_t n)
+sELEMENT *vsdel(sELEMENT *vary, int pos, int n)
 {
 	if (pos >= sLEN(vary))
 		return vary;
@@ -175,25 +175,25 @@ int _scmp(sELEMENT a, sELEMENT b)
 	return scmp(a, b);
 }
 
-sELEMENT *vssort(sELEMENT *ary, size_t len)
+sELEMENT *vssort(sELEMENT *ary, int len)
 {
 	if (!ary || !len)
 		return ary;
-	qsort(ary, len, sizeof(sELEMENT), _scmp);
+	qsort(ary, len, SIZEOF(sELEMENT), _scmp);
 	return ary;
 }
 
 #endif
 
-size_t vsbsearch(sELEMENT *ary, size_t len, sELEMENT el)
+int vsbsearch(sELEMENT *ary, int len, sELEMENT el)
 {
-	size_t x, y, z;
+	int x, y, z;
 
 	if (!ary || !len)
 		return 0;
 	y = len;
 	x = 0;
-	z = ~(size_t)0;
+	z = ~0;
 	while (z != (x + y) / 2) {
 		z = (x + y) / 2;
 		switch (scmp(el, ary[z])) {
@@ -212,37 +212,37 @@ size_t vsbsearch(sELEMENT *ary, size_t len, sELEMENT el)
 
 #ifdef junk
 
-size_t vsfirst(sELEMENT *ary, int len, sELEMENT el)
+int vsfirst(sELEMENT *ary, int len, sELEMENT el)
 {
-	size_t x;
+	int x;
 
 	if (!ary || !len)
-		return ~(size_t)0;
+		return ~0;
 	for (x = 0; x != len; ++x)
 		if (!scmp(ary[x], el))
 			return x;
-	return ~(size_t)0;
+	return ~0;
 }
 
-size_t vslast(sELEMENT *ary, size_t len, sELEMENT el)
+int vslast(sELEMENT *ary, int len, sELEMENT el)
 {
-	size_t x = len;
+	int x = len;
 
 	if (!ary || !len)
-		return ~(size_t)0;
+		return ~0;
 	do {
 		--x;
 		if (!scmp(ary[x], el))
 			return x;
 	} while (x);
-	return ~(size_t)0;
+	return ~0;
 }
 
 #endif
 
-int vscmpn(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen)
+int vscmpn(sELEMENT *a, int alen, sELEMENT *b, int blen)
 {
-	size_t x, l;
+	int x, l;
 	int t;
 
 	if (!a && !b)
@@ -270,9 +270,9 @@ int vscmp(sELEMENT *a, sELEMENT *b)
 	return vscmpn(sv(a), sv(b));
 }
 #ifdef junk
-int vsicmpn(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen)
+int vsicmpn(sELEMENT *a, int alen, sELEMENT *b, int blen)
 {
-	size_t x, l;
+	int x, l;
 	int t;
 
 	if (!a && !b)
@@ -295,45 +295,45 @@ int vsicmpn(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen)
 	return 0;
 }
 
-size_t vss(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen)
+int vss(sELEMENT *a, int alen, sELEMENT *b, int blen)
 {
-	size_t x;
+	int x;
 
 	if (!a && !b)
 		return 0;
 	if (!a || !b)
-		return ~(size_t)0;
+		return ~0;
 	if (alen < blen)
-		return ~(size_t)0;
+		return ~0;
 	if (!blen)
 		return 0;
 	for (x = 0; x != alen - blen; ++x)
 		if (!vscmpn(a, blen, b, blen))
 			return x;
-	return ~(size_t)0;
+	return ~0;
 }
 
 #endif
 
-size_t vsscan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen)
+int vsscan(sELEMENT *a, int alen, sELEMENT *b, int blen)
 {
-	size_t x;
+	int x;
 
 	for (x = 0; x != alen; ++x) {
-		size_t z = vsbsearch(b, blen, a[x]);
+		int z = vsbsearch(b, blen, a[x]);
 
 		if (z < blen && !scmp(b[z], a[x]))
 			return x;
 	}
-	return ~(size_t)0;
+	return ~0;
 }
 
-size_t vsspan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen)
+int vsspan(sELEMENT *a, int alen, sELEMENT *b, int blen)
 {
-	size_t x;
+	int x;
 
 	for (x = 0; x != alen; ++x) {
-		size_t z = vsbsearch(b, blen, a[x]);
+		int z = vsbsearch(b, blen, a[x]);
 
 		if (z == blen || scmp(b[z], a[x]))
 			break;
@@ -343,7 +343,7 @@ size_t vsspan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen)
 
 #ifdef junk
 
-sELEMENT *vsread(sELEMENT d, size_t p, int (*getC)(), void *ptr)
+sELEMENT *vsread(sELEMENT d, int p, int (*getC)(), void *ptr)
 {
 	int c;
 
@@ -366,9 +366,9 @@ sELEMENT *vsread(sELEMENT d, size_t p, int (*getC)(), void *ptr)
 	return d;
 }
 
-sELEMENT *vwords(sELEMENT *s, sELEMENT **a, size_t len, sELEMENT t)
+sELEMENT *vwords(sELEMENT *s, sELEMENT **a, int len, sELEMENT t)
 {
-	size_t x;
+	int x;
 
 	if (!s)
 		s = vsmk(32);

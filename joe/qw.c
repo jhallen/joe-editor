@@ -9,7 +9,7 @@
 
 /* Return width of a string */
 
-int joe_wcswidth(struct charmap *map,unsigned char *s, int len)
+int joe_wcswidth(struct charmap *map,char *s, int len)
 {
 	if (!map->type) {
 		return len;
@@ -30,9 +30,9 @@ int joe_wcswidth(struct charmap *map,unsigned char *s, int len)
    Also this finds the nth line and returns the position of the substring which is
    that line. Set n to -1 if you just want the height. */
 
-int break_height(struct charmap *map,unsigned char **src,int *src_len,int wid,int n)
+int break_height(struct charmap *map,char **src,int *src_len,int wid,int n)
 {
-	unsigned char *s = *src;
+	char *s = *src;
 	int len = *src_len;
 	int h = 1; /* Number of lines */
 	int col = 0; /* Current column */
@@ -78,7 +78,7 @@ static void dispqw(QW *qw)
 
 	/* Generate prompt */
 	for (y = 0; y != w->h; ++y) {
-		unsigned char *s = qw->prompt;
+		char *s = qw->prompt;
 		int l = qw->promptlen;
 		break_height(locale_map, &s, &l, qw->org_w, y);
 		w->t->t->updtab[w->y + y] = 1;
@@ -113,7 +113,7 @@ static void dispqwn(QW *qw)
 
 	/* Generate prompt */
 	for (y = 0; y != w->h; ++y) {
-		unsigned char *s = qw->prompt;
+		char *s = qw->prompt;
 		int l = qw->promptlen;
 		break_height(locale_map, &s, &l, qw->org_w, y);
 		w->t->t->updtab[w->y + y] = 1;
@@ -144,8 +144,8 @@ static int utypeqw(QW *qw, int c)
 	void *object = qw->object;
 
 	if (locale_map->type) {
-		c = utf8_decode(&qw_sm, c);
-		if (c<0)
+		c = utf8_decode(&qw_sm, TO_CHAR_OK(c));
+		if (c < 0)
 			return 0;
 	}
 
@@ -176,7 +176,7 @@ static int abortqw(QW *qw)
 }
 
 static WATOM watomqw = {
-	USTR "query",
+	"query",
 	dispqw,
 	NULL,
 	abortqw,
@@ -190,7 +190,7 @@ static WATOM watomqw = {
 };
 
 static WATOM watqwn = {
-	USTR "querya",
+	"querya",
 	dispqwn,
 	NULL,
 	abortqw,
@@ -204,7 +204,7 @@ static WATOM watqwn = {
 };
 
 static WATOM watqwsr = {
-	USTR "querysr",
+	"querysr",
 	dispqwn,
 	NULL,
 	abortqw,
@@ -219,11 +219,11 @@ static WATOM watqwsr = {
 
 /* Create a query window */
 
-QW *mkqw(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
-	unsigned char *s = prompt;
+	char *s = prompt;
 	int l = len;
 	int h = break_height(locale_map, &s, &l, w->w, -1);
 
@@ -234,7 +234,7 @@ QW *mkqw(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*ab
 		return NULL;
 	}
 	wfit(new->t);
-	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
+	new->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;
@@ -250,11 +250,11 @@ QW *mkqw(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*ab
 /* Same as above, but cursor is left in original window */
 /* For Ctrl-Meta thing */
 
-QW *mkqwna(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
-	unsigned char *s = prompt;
+	char *s = prompt;
 	int l = len;
 	int h = break_height(locale_map, &s, &l, w->w, -1);
 
@@ -265,7 +265,7 @@ QW *mkqwna(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*
 		return NULL;
 	}
 	wfit(new->t);
-	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
+	new->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;
@@ -281,11 +281,11 @@ QW *mkqwna(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*
 /* Same as above, but cursor is left in original window */
 /* For search and replace thing */
 
-QW *mkqwnsr(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwnsr(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
-	unsigned char *s = prompt;
+	char *s = prompt;
 	int l = len;
 	int h = break_height(locale_map, &s, &l, w->w, -1);
 
@@ -296,7 +296,7 @@ QW *mkqwnsr(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (
 		return NULL;
 	}
 	wfit(new->t);
-	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
+	new->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;

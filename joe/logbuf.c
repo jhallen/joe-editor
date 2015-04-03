@@ -33,12 +33,12 @@ int u_log_rtn(BW *bw)
 {
 	W *w = bw->parent;
 	PW *pw = (PW *) bw->object;
-	unsigned char *s;
+	char *s;
 	W *win;
 	int *notify;
 	int (*pfunc) ();
 	void *object;
-	long byte;
+	off_t byte;
 
 	/* Extract entered text from buffer */
 	p_goto_eol(bw->cursor);

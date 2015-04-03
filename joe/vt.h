@@ -14,7 +14,7 @@ struct vt_context {
 	enum vt_state state;
 
 	/* Record attribute sequence */
-	unsigned char buf[100];
+	char buf[100];
 	int bufx;
 
 	/* Numeric arguments */
@@ -42,6 +42,6 @@ struct vt_context {
 VT *mkvt(B *b, P *top, int height, int width);
 void vtrm(VT *vt);
 
-MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz);
+MACRO *vt_data(VT *vt, char **indat, int *insiz);
 
 void vt_resize(VT *vt, P *top, int height, int width);

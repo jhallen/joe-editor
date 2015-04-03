@@ -5,28 +5,26 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_USEARCH_H
-#define _JOE_USEARCH_H 1
 
 struct srchrec {
 	LINK(SRCHREC)	link;	/* Linked list of search & replace locations */
 	int	yn;		/* Did we replace? */
 	int	wrap_flag;	/* Did we wrap? */
-	long	addr;		/* Where we were */
+	off_t	addr;		/* Where we were */
 	B *b;			/* Buffer address is in */
-	long	last_repl;
+	off_t	last_repl;
 };
 
 struct search {
-	unsigned char	*pattern;	/* Search pattern */
-	unsigned char	*replacement;	/* Replacement string */
+	char	*pattern;	/* Search pattern */
+	char	*replacement;	/* Replacement string */
 	int	backwards;	/* Set if search should go backwards */
 	int	ignore;		/* Set if we should ignore case */
 	int	repeat;		/* Set with repeat count (or -1 for no repeat count) */
 	int	replace;	/* Set if this is search & replace */
 	int	rest;		/* Set to do remainder of search & replace w/o query */
-	unsigned char	*entire;	/* Entire matched string */
-	unsigned char	*pieces[26];	/* Peices of the matched string */
+	char	*entire;	/* Entire matched string */
+	char	*pieces[26];	/* Peices of the matched string */
 	int	flg;		/* Set after prompted for first replace */
 	SRCHREC	recs;		/* Search & replace position history */
 	P	*markb, *markk;	/* Original marks */
@@ -34,15 +32,15 @@ struct search {
 	int	wrap_flag;	/* Set if we've wrapped */
 	int	allow_wrap;	/* Set to allow wrapping */
 	int	valid;		/* Set if original marks are a valid block */
-	long	addr;		/* Where to place cursor after failed restruct_to_block() test */
-	long	last_repl;	/* Address of last replacement (prevents infinite loops) */
+	off_t	addr;		/* Where to place cursor after failed restruct_to_block() test */
+	off_t	last_repl;	/* Address of last replacement (prevents infinite loops) */
 	int	block_restrict;	/* Search restricted to marked block */
 	int	all;		/* Set to continue in other windows */
 	B	*first;		/* Starting buffer */
 	B	*current;	/* Current buffer */
 };
 
-SRCH *mksrch(unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all);
+SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all);
 void rmsrch(SRCH *srch);
 
 int dopfnext(BW *bw, SRCH *srch, int *notify);
@@ -54,7 +52,7 @@ int pqrepl(BW *bw);
 int prfirst(BW *bw);
 
 int ufinish(BW *bw);
-int dofirst(BW *bw, int back, int repl, unsigned char *hint);
+int dofirst(BW *bw, int back, int repl, char *hint);
 
 extern B *findhist; /* Search history buffer */
 extern B *replhist; /* Replace history buffer */
@@ -67,12 +65,10 @@ extern int csmode;
 extern int icase;
 extern int wrap;
 extern int pico;
-extern unsigned char srchstr[];
+extern char srchstr[];
 extern SRCH *globalsrch;
 
-extern unsigned char *rest_key;
-extern unsigned char *backup_key;
+extern char *rest_key;
+extern char *backup_key;
 
-int fwrd_c(unsigned char **s);
-
-#endif
+int fwrd_c(char **s);

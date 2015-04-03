@@ -7,8 +7,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_UTILS_H
-#define _JOE_UTILS_H 1
 
 /* Destructors */
 
@@ -43,7 +41,7 @@ extern void *ITEM; /* Temporary global variable (from queue.c) */
 
 /* Allocate item from free-list.  If free-list empty, replenish it. */
 
-void *replenish(void **list,size_t size);
+void *replenish(void **list,int size);
 
 #define al_single(list,type) ( \
 	(ITEM = *(void **)(list)) ? \
@@ -59,7 +57,7 @@ void *replenish(void **list,size_t size);
 	*(void **)(list) = (void *)(item); \
 } while(0)
 
-/* JOE uses 'unsigned char *', never 'char *'.  This is that when a
+/* JOE uses 'char *', never 'char *'.  This is that when a
    character is loaded into an 'int', the codes 0-255 are used,
    not -128 - 127. */
 
@@ -68,7 +66,7 @@ void *replenish(void **list,size_t size);
 typedef struct zs ZS;
 
 struct zs {
-	unsigned char *s;
+	char *s;
 };
 
 /* Create zs in local gc */
@@ -78,7 +76,7 @@ struct zs {
 	gc_add(&gc, &(var), rm_zs); \
 } while(0)
 
-ZS raw_mk_zs(GC **gc,unsigned char *s,size_t len);
+ZS raw_mk_zs(GC **gc,char *s,int len);
 
 /* Destructor for zs */
 
@@ -86,25 +84,25 @@ void rm_zs(ZS z);
 
 /* Unsigned versions of regular string functions */
 
-/* JOE uses 'unsigned char *', never 'char *'.  This is so that when a
+/* JOE uses 'char *', never 'char *'.  This is so that when a
    character is loaded from a string into an 'int', the codes 0-255 are
    used, not -128 - 127. */
 
-size_t zlen(unsigned char *s);
-int zcmp(unsigned char *a, unsigned char *b);
-int zicmp(unsigned char *a, unsigned char *b);
-int zmcmp(unsigned char *a, unsigned char *b);
-int zncmp(unsigned char *a, unsigned char *b, size_t len);
-unsigned char *zdup(unsigned char *s);
-/* unsigned char *zcpy(unsigned char *a, unsigned char *b); */
-unsigned char *mcpy(unsigned char *a, unsigned char *b, size_t len);
-unsigned char *zncpy(unsigned char *a, unsigned char *b,size_t len);
-unsigned char *zlcpy(unsigned char *a, size_t siz, unsigned char *b);
-unsigned char *zstr(unsigned char *a, unsigned char *b);
-unsigned char *zchr(unsigned char *s, int c);
-unsigned char *zrchr(unsigned char *s, int c);
-/* unsigned char *zcat(unsigned char *a, unsigned char *b); */
-unsigned char *zlcat(unsigned char *a, size_t siz, unsigned char *b);
+int zlen(char *s);
+int zcmp(char *a, char *b);
+int zicmp(char *a, char *b);
+int zmcmp(char *a, char *b);
+int zncmp(char *a, char *b, int len);
+char *zdup(char *s);
+/* char *zcpy(char *a, char *b); */
+char *mcpy(char *a, char *b, int len);
+char *zncpy(char *a, char *b, int len);
+char *zlcpy(char *a, int siz, char *b);
+char *zstr(char *a, char *b);
+char *zchr(char *s, int c);
+char *zrchr(char *s, int c);
+/* char *zcat(char *a, char *b); */
+char *zlcat(char *a, int siz, char *b);
 
 /*
  * Functions which return minimum/maximum of two numbers  
@@ -113,17 +111,19 @@ unsigned int uns_min(unsigned int a, unsigned int b);
 signed int int_min(signed int a, int signed b);
 signed long long_max(signed long a, signed long b);
 signed long long_min(signed long a, signed long b);
+off_t off_max(off_t a, off_t b);
+off_t off_min(off_t a, off_t b);
 
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
-ssize_t joe_read(int fd, void *buf, size_t siz);
-ssize_t joe_write(int fd, void *buf, size_t siz);
+int joe_read(int fd, void *buf, int siz);
+int joe_write(int fd, void *buf, int siz);
 int joe_ioctl(int fd, int req, void *ptr);
 
 /* wrappers to *alloc routines */
-void *joe_malloc(size_t size);
-unsigned char *joe_strdup(unsigned char *ptr);
-void *joe_calloc(size_t nmemb, size_t size);
-void *joe_realloc(void *ptr, size_t size);
+void *joe_malloc(int size);
+char *joe_strdup(char *ptr);
+void *joe_calloc(int nmemb, int size);
+void *joe_realloc(void *ptr, int size);
 void joe_free(void *ptr);
 
 #ifndef HAVE_SIGHANDLER_T
@@ -140,17 +140,20 @@ typedef RETSIGTYPE (*sighandler_t)(int);
 int joe_set_signal(int signum, sighandler_t handler);
 
 /* Simple parsers */
-int parse_ws(unsigned char **p,int cmt);
-int parse_ident(unsigned char **p,unsigned char *buf,size_t len);
-int parse_kw(unsigned char **p,unsigned char *kw);
-long parse_num(unsigned char **p);
-int parse_tows(unsigned char **p,unsigned char *buf);
-int parse_field(unsigned char **p,unsigned char *field);
-int parse_char(unsigned char  **p,unsigned char c);
-int parse_int(unsigned char **p,int *buf);
-int parse_long(unsigned char **p,long  *buf);
-ssize_t parse_string(unsigned char **p,unsigned char *buf,size_t len);
-int parse_range(unsigned char **p,int *first,int *second);
-void emit_string(FILE *f,unsigned char *s,size_t len);
-
-#endif
+int parse_ws(char **p,int cmt);
+int parse_ident(char **p,char *buf,int len);
+int parse_kw(char **p,char *kw);
+int parse_tows(char **p,char *buf);
+int parse_field(char **p,char *field);
+int parse_char(char  **p,char c);
+int parse_int(char **p,int *buf);
+int parse_off_t(char **p,off_t *buf);
+off_t ztoo(char *s);
+off_t zhtoo(char *s);
+long ztol(char *s);
+long zhtol(char *s);
+int ztoi(char *s);
+int zhtoi(char *s);
+int parse_string(char **p,char *buf,int len);
+int parse_range(char **p,int *first,int *second);
+void emit_string(FILE *f,char *s,int len);

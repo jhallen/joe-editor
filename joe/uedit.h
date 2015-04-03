@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_UEDIT_H
-#define _JOE_UEDIT_H 1
 
 extern int pgamnt; /* Amount of pgup/pgdn lines to keep */
 
@@ -31,8 +29,8 @@ int uuparw(BW *bw);
 int udnarw(BW *bw);
 int utos(BW *bw);
 int ubos(BW *bw);
-void scrup(BW *bw, int n, int flg);
-void scrdn(BW *bw, int n, int flg);
+void scrup(BW *bw, off_t n, int flg);
+void scrdn(BW *bw, off_t n, int flg);
 int upgup(BW *bw);
 int upgdn(BW *bw);
 int uupslide(BW *bw);
@@ -66,5 +64,3 @@ int uhome(BW *bw);
 int uname_joe(BW *bw);
 int upaste(BW *bw, int k);
 int ubrpaste(BW *bw, int k);
-
-#endif

@@ -8,10 +8,10 @@
 
 struct direct {
 	short d_ino;
-	unsigned char d_name[14];
+	char d_name[14];
 };
 
-void *opendir(unsigned char *name)
+void *opendir(char *name)
 {
 	return fopen(name, "r");
 }
@@ -20,7 +20,7 @@ struct direct *readdir(void *f)
 {
 	static struct direct direct;
 
-	while (1 == fread(&direct, sizeof(struct direct), 1, (FILE *) f)) {
+	while (1 == fread(&direct, SIZEOF(struct direct), 1, (FILE *) f)) {
 		if (direct.d_ino) {
 			return &direct;
 		}
@@ -33,9 +33,9 @@ void closedir(FILE *f)
 	fclose(f);
 }
 
-int mkdir(unsigned char *s)
+int mkdir(char *s)
 {
-	unsigned char *y = NULL;
+	char *y = NULL;
 	int rtval;
 
 	y = vsncpy(sv(y), sc("/bin/mkdir "));

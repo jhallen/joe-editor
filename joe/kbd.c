@@ -8,13 +8,13 @@
 #include "types.h"
 
 struct context *contexts; /* Global list of KMAPs */
-unsigned char **keymap_list; /* KMAP names array for completion */
+char **keymap_list; /* KMAP names array for completion */
 
 /* Create a KBD */
 
 KBD *mkkbd(KMAP *kmap)
 {
-	KBD *kbd = (KBD *) joe_malloc(sizeof(KBD));
+	KBD *kbd = (KBD *) joe_malloc(SIZEOF(KBD));
 
 	kbd->topmap = kmap;
 	kbd->curmap = kmap;
@@ -57,7 +57,7 @@ void *dokey(KBD *kbd, int n)
 
 /* Return key code for key name or -1 for syntax error */
 
-static int keyval(unsigned char *s)
+static int keyval(char *s)
 {
 	if (s[0] == '^' && s[1] && !s[2])
 		switch (s[1])
@@ -73,29 +73,29 @@ static int keyval(unsigned char *s)
 		 && (s[1] == 'P' || s[1] == 'p') && !s[2])
 		return ' ';
 	else if((s[0]=='M'||s[0]=='m') && s[1]) {
-		if(!zcmp(s,USTR "MDOWN")) return KEY_MDOWN;
-		else if(!zcmp(s,USTR "MWDOWN")) return KEY_MWDOWN;
-		else if(!zcmp(s,USTR "MWUP")) return KEY_MWUP;
-		else if(!zcmp(s,USTR "MUP")) return KEY_MUP;
-		else if(!zcmp(s,USTR "MDRAG")) return KEY_MDRAG;
-		else if(!zcmp(s,USTR "M2DOWN")) return KEY_M2DOWN;
-		else if(!zcmp(s,USTR "M2UP")) return KEY_M2UP;
-		else if(!zcmp(s,USTR "M2DRAG")) return KEY_M2DRAG;
-		else if(!zcmp(s,USTR "M3DOWN")) return KEY_M3DOWN;
-		else if(!zcmp(s,USTR "M3UP")) return KEY_M3UP;
-		else if(!zcmp(s,USTR "M3DRAG")) return KEY_M3DRAG;
+		if(!zcmp(s,"MDOWN")) return KEY_MDOWN;
+		else if(!zcmp(s,"MWDOWN")) return KEY_MWDOWN;
+		else if(!zcmp(s,"MWUP")) return KEY_MWUP;
+		else if(!zcmp(s,"MUP")) return KEY_MUP;
+		else if(!zcmp(s,"MDRAG")) return KEY_MDRAG;
+		else if(!zcmp(s,"M2DOWN")) return KEY_M2DOWN;
+		else if(!zcmp(s,"M2UP")) return KEY_M2UP;
+		else if(!zcmp(s,"M2DRAG")) return KEY_M2DRAG;
+		else if(!zcmp(s,"M3DOWN")) return KEY_M3DOWN;
+		else if(!zcmp(s,"M3UP")) return KEY_M3UP;
+		else if(!zcmp(s,"M3DRAG")) return KEY_M3DRAG;
 		else return s[0];
 	} else if (s[1] || !s[0])
 		return -1;
 	else
-		return (unsigned char) s[0];
+		return ((unsigned char *)s)[0];
 }
 
 /* Create an empty keymap */
 
 KMAP *mkkmap(void)
 {
-	KMAP *kmap = (KMAP *) joe_calloc(sizeof(KMAP), 1);
+	KMAP *kmap = (KMAP *) joe_calloc(SIZEOF(KMAP), 1);
 
 	return kmap;
 }
@@ -116,9 +116,9 @@ void rmkmap(KMAP *kmap)
 
 /* Parse a range */
 
-static unsigned char *range(unsigned char *seq, int *vv, int *ww)
+static char *range(char *seq, int *vv, int *ww)
 {
-	unsigned char c;
+	char c;
 	int x, v, w;
 
 	for (x = 0; seq[x] && seq[x] != ' '; ++x) ;	/* Skip to a space */
@@ -154,13 +154,13 @@ static unsigned char *range(unsigned char *seq, int *vv, int *ww)
 
 /* Add a binding to a keymap */
 
-static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *err, unsigned char *capseq, int seql)
+static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char *capseq, int seql)
 {
 	int v, w;
 
 	if (!seql && seq[0] == '.' && seq[1]) {
 		int x, c;
-		unsigned char *s;
+		char *s;
 
 		for (x = 0; seq[x] && seq[x] != ' '; ++x) ;
 		c = seq[x];
@@ -169,61 +169,61 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 		if (!zcmp(seq + 1, "ku")) {
 			capseq = "\0H";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kd")) {
+		} else if (!zcmp(seq + 1, "kd")) {
 			capseq = "\0P";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kl")) {
+		} else if (!zcmp(seq + 1, "kl")) {
 			capseq = "\0K";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kr")) {
+		} else if (!zcmp(seq + 1, "kr")) {
 			capseq = "\0M";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kI")) {
+		} else if (!zcmp(seq + 1, "kI")) {
 			capseq = "\0R";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kD")) {
+		} else if (!zcmp(seq + 1, "kD")) {
 			capseq = "\0S";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kh")) {
+		} else if (!zcmp(seq + 1, "kh")) {
 			capseq = "\0G";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kH")) {
+		} else if (!zcmp(seq + 1, "kH")) {
 			capseq = "\0O";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kP")) {
+		} else if (!zcmp(seq + 1, "kP")) {
 			capseq = "\0I";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kN")) {
+		} else if (!zcmp(seq + 1, "kN")) {
 			capseq = "\0Q";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k1")) {
+		} else if (!zcmp(seq + 1, "k1")) {
 			capseq = "\0;";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k2")) {
+		} else if (!zcmp(seq + 1, "k2")) {
 			capseq = "\0<";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k3")) {
+		} else if (!zcmp(seq + 1, "k3")) {
 			capseq = "\0=";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k4")) {
+		} else if (!zcmp(seq + 1, "k4")) {
 			capseq = "\0>";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k5")) {
+		} else if (!zcmp(seq + 1, "k5")) {
 			capseq = "\0?";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k6")) {
+		} else if (!zcmp(seq + 1, "k6")) {
 			capseq = "\0@";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k7")) {
+		} else if (!zcmp(seq + 1, "k7")) {
 			capseq = "\0A";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k8")) {
+		} else if (!zcmp(seq + 1, "k8")) {
 			capseq = "\0B";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k9")) {
+		} else if (!zcmp(seq + 1, "k9")) {
 			capseq = "\0C";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k0")) {
+		} else if (!zcmp(seq + 1, "k0")) {
 			capseq = "\0D";
 			seql = 2;
 		}
@@ -248,7 +248,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 	}
 
 	if (seql) {
-		v = w = (unsigned char) *capseq++;
+		v = w = *capseq++;
 		--seql;
 	} else {
 		seq = range(seq, &v, &w);
@@ -285,7 +285,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 	return kmap;
 }
 
-int kadd(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind)
+int kadd(CAP *cap, KMAP *kmap, char *seq, void *bind)
 {
 	int err = 0;
 
@@ -314,7 +314,7 @@ void kcpy(KMAP *dest, KMAP *src)
 
 /* Remove a binding from a keymap */
 
-int kdel(KMAP *kmap, unsigned char *seq)
+int kdel(KMAP *kmap, char *seq)
 {
 	int err = 1;
 	int v, w;
@@ -350,14 +350,14 @@ int kdel(KMAP *kmap, unsigned char *seq)
  * is created.
  */
 
-KMAP *kmap_getcontext(unsigned char *name)
+KMAP *kmap_getcontext(char *name)
 {
 	struct context *c;
 
 	for (c = contexts; c; c = c->next)
 		if (!zcmp(c->name, name))
 			return c->kmap;
-	c = (struct context *) joe_malloc(sizeof(struct context));
+	c = (struct context *) joe_malloc(SIZEOF(struct context));
 
 	c->next = contexts;
 	c->name = zdup(name);
@@ -369,7 +369,7 @@ KMAP *kmap_getcontext(unsigned char *name)
  * doesn't exist, instead of creating a new one.
  */
 
-KMAP *ngetcontext(unsigned char *name)
+KMAP *ngetcontext(char *name)
 {
 	struct context *c;
 	for(c=contexts;c;c=c->next)
@@ -393,7 +393,7 @@ int kmap_empty(KMAP *k)
 
 B *keymaphist=0;
 
-int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
+int dokeymap(BW *bw,char *s,void *object,int *notify)
 {
 	KMAP *k=ngetcontext(s);
 	vsrm(s);
@@ -407,9 +407,9 @@ int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
 	return 0;
 }
 
-static unsigned char **get_keymap_list()
+static char **get_keymap_list()
 {
-	unsigned char **lst = 0;
+	char **lst = 0;
 	struct context *c;
 	for (c=contexts; c; c=c->next)
 		lst = vaadd(lst, vsncpy(NULL,0,sz(c->name)));
@@ -436,6 +436,6 @@ static int keymap_cmplt(BW *bw)
 
 int ukeymap(BASE *bw)
 {
-	if (wmkpw(bw->parent,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,USTR "keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
+	if (wmkpw(bw->parent,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,"keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }

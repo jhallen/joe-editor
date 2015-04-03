@@ -12,7 +12,7 @@ static VPAGE *freepages = NULL;	/* Linked list of free pages */
 static VPAGE *htab[HTSIZE];	/* Hash table of page headers */
 static long curvalloc = 0;	/* Amount of memory in use */
 static long maxvalloc = ILIMIT;	/* Maximum allowed */
-unsigned char *vbase;			/* Data first entry in vheader refers to */
+char *vbase;			/* Data first entry in vheader refers to */
 VPAGE **vheaders = NULL;	/* Array of header addresses */
 static int vheadsz = 0;		/* No. entries allocated to vheaders */
 
@@ -40,7 +40,7 @@ void vflsh(void)
 			if (!vfile->name)
 				vfile->name = mktmp(NULL);
 			if (!vfile->fd)
-				vfile->fd = open((char *)(vfile->name), O_RDWR);
+				vfile->fd = open((vfile->name), O_RDWR);
 			if (vfile->fd < 0)
 				ttsig(-2);
 			lseek(vfile->fd, addr, 0);
@@ -81,7 +81,7 @@ void vflshf(VFILE *vfile)
 		if (!vfile->name)
 			vfile->name = mktmp(NULL);
 		if (!vfile->fd) {
-			vfile->fd = open((char *)(vfile->name), O_RDWR);
+			vfile->fd = open((vfile->name), O_RDWR);
 		}
 		if (vfile->fd < 0)
 			ttsig(-2);
@@ -101,14 +101,14 @@ void vflshf(VFILE *vfile)
 	}
 }
 
-static unsigned char *mema(int align, int size)
+static char *mema(int align, int size)
 {
-	unsigned char *z = (unsigned char *) joe_malloc(align + size);
+	char *z = joe_malloc(align + size);
 
 	return z + align - physical(z) % align;
 }
 
-unsigned char *vlock(VFILE *vfile, off_t addr)
+char *vlock(VFILE *vfile, off_t addr)
 {
 	VPAGE *vp, *pp;
 	int x, y;
@@ -129,28 +129,28 @@ unsigned char *vlock(VFILE *vfile, off_t addr)
 	}
 
 	if (curvalloc + PGSIZE <= maxvalloc) {
-		vp = (VPAGE *) joe_malloc(sizeof(VPAGE) * INC);
+		vp = (VPAGE *) joe_malloc(SIZEOF(VPAGE) * INC);
 		if (vp) {
-			vp->data = (unsigned char *) mema(PGSIZE, PGSIZE * INC);
+			vp->data = mema(PGSIZE, PGSIZE * INC);
 			if (vp->data) {
 				int q;
 
 				curvalloc += PGSIZE * INC;
 				if (!vheaders) {
-					vheaders = (VPAGE **) joe_malloc((vheadsz = INC) * sizeof(VPAGE *));
+					vheaders = (VPAGE **) joe_malloc((vheadsz = INC) * SIZEOF(VPAGE *));
 					vbase = vp->data;
 				} else if (physical(vp->data) < physical(vbase)) {
 					VPAGE **t = vheaders;
 					int amnt = (physical(vbase) - physical(vp->data)) >> LPGSIZE;
 
-					vheaders = (VPAGE **) joe_malloc((amnt + vheadsz) * sizeof(VPAGE *));
-					mmove(vheaders + amnt, t, vheadsz * sizeof(VPAGE *));
+					vheaders = (VPAGE **) joe_malloc((amnt + vheadsz) * SIZEOF(VPAGE *));
+					mmove(vheaders + amnt, t, vheadsz * SIZEOF(VPAGE *));
 					vheadsz += amnt;
 					vbase = vp->data;
 					joe_free(t);
 				} else if (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE) > vheadsz) {
 					vheaders = (VPAGE **)
-					    joe_realloc(vheaders, (vheadsz = (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE))) * sizeof(VPAGE *));
+					    joe_realloc(vheaders, (vheadsz = (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE))) * SIZEOF(VPAGE *));
 				}
 				for (q = 1; q != INC; ++q) {
 					vp[q].next = freepages;
@@ -194,7 +194,7 @@ unsigned char *vlock(VFILE *vfile, off_t addr)
 
 	if (addr < vfile->size) {
 		if (!vfile->fd) {
-			vfile->fd = open((char *)(vfile->name), O_RDWR);
+			vfile->fd = open((vfile->name), O_RDWR);
 		}
 		if (vfile->fd < 0)
 			ttsig(-2);
@@ -214,7 +214,7 @@ unsigned char *vlock(VFILE *vfile, off_t addr)
 
 VFILE *vtmp(void)
 {
-	VFILE *new = (VFILE *) joe_malloc(sizeof(VFILE));
+	VFILE *new = (VFILE *) joe_malloc(SIZEOF(VFILE));
 
 	new->fd = 0;
 	new->name = NULL;
@@ -232,15 +232,15 @@ VFILE *vtmp(void)
 #ifdef junk
 
 VFILE *vopen(name)
-unsigned char *name;
+char *name;
 {
 	struct stat buf;
-	VFILE *new = (VFILE *) joe_malloc(sizeof(VFILE));
+	VFILE *new = (VFILE *) joe_malloc(SIZEOF(VFILE));
 
 	new->name = vsncpy(NULL, 0, sz(name));
 	new->fd = open(name, O_RDWR);
 	if (!new->fd) {
-		fprintf(stderr, (char *)joe_gettext(_("Couldn\'t open file \'%s\'\n")), name);
+		fprintf(stderr, joe_gettext(_("Couldn\'t open file \'%s\'\n")), name);
 		joe_free(new);
 		return NULL;
 	}
@@ -274,7 +274,7 @@ void vclose(VFILE *vfile)
 		                close(vfile->fd);
 		                vfile->fd = 0;
 		        }
-			unlink((char *)vfile->name);
+			unlink(vfile->name);
 		} else
 			vflshf(vfile);
 		vsrm(vfile->name);
@@ -360,7 +360,7 @@ off_t my_valloc(VFILE *vfile, off_t size)
 
 void vseek(vfile, addr)
 VFILE *vfile;
-long addr;
+off_t addr;
 {
 	vfile->alloc = vsize(vfile);
 	if (addr > vfile->alloc)
@@ -407,7 +407,7 @@ VFILE *v;
 
 int _vputc(vfile, c)
 VFILE *vfile;
-unsigned char c;
+char c;
 {
 	vseek(vfile, vtell(vfile));
 	return vputc(vfile, c);
@@ -461,7 +461,7 @@ long w;
 
 int _rc(vfile, addr)
 VFILE *vfile;
-long addr;
+off_t addr;
 {
 	if (vfile->vpage1)
 		vunlock(vfile->vpage1);
@@ -471,8 +471,8 @@ long addr;
 
 int _wc(vfile, addr, c)
 VFILE *vfile;
-long addr;
-unsigned char c;
+off_t addr;
+char c;
 {
 	if (addr + 1 > vsize(vfile))
 		my_valloc(vfile, addr + 1 - vsize(vfile));
@@ -484,7 +484,7 @@ unsigned char c;
 
 short rw(vfile, addr)
 VFILE *vfile;
-long addr;
+off_t addr;
 {
 	short c;
 
@@ -497,7 +497,7 @@ long addr;
 
 short ww(vfile, addr, c)
 VFILE *vfile;
-long addr;
+off_t addr;
 short c;
 {
 	if (addr + 2 > vsize(vfile))
@@ -509,7 +509,7 @@ short c;
 
 long rl(vfile, addr)
 VFILE *vfile;
-long addr;
+off_t addr;
 {
 	long c;
 
@@ -524,7 +524,7 @@ long addr;
 
 long wl(vfile, addr, c)
 VFILE *vfile;
-long addr;
+off_t addr;
 long c;
 {
 	if (addr + 4 > vsize(vfile))
@@ -538,11 +538,11 @@ long c;
 
 void vread(v, blk, size)
 VFILE *v;
-unsigned char *blk;
+char *blk;
 int size;
 {
-	long addr = vtell(v);
-	unsigned char *src;
+	off_t addr = vtell(v);
+	char *src;
 	int x;
 
 	while (size) {
@@ -565,11 +565,11 @@ int size;
 
 void vwrite(v, blk, size)
 VFILE *v;
-unsigned char *blk;
+char *blk;
 int size;
 {
-	long addr = vtell(v);
-	unsigned char *src;
+	off_t addr = vtell(v);
+	char *src;
 	int x;
 
 	if (addr + size > vsize(v))
@@ -598,7 +598,7 @@ int size;
 
 void vputs(v, s)
 VFILE *v;
-unsigned char *s;
+char *s;
 {
 	while (*s) {
 		vputc(v, *s);
@@ -608,11 +608,11 @@ unsigned char *s;
 
 /* Read a line from a file.  Remove '\n' if there was any */
 
-unsigned char *vgets(v, s)
+char *vgets(v, s)
 VFILE *v;
-unsigned char *s;
+char *s;
 {
-	unsigned char *b, *a, *x, *y;
+	char *b, *a, *x, *y;
 	int cnt;
 
 	/* Return with NULL if at end of file */

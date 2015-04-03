@@ -146,7 +146,7 @@ Screen *scr;
 
 Screen *screate(SCRN *scrn)
 {
-	Screen *t = (Screen *) joe_malloc(sizeof(Screen));
+	Screen *t = (Screen *) joe_malloc(SIZEOF(Screen));
 
 	t->t = scrn;
 	t->w = scrn->co;
@@ -188,7 +188,7 @@ void updall(void)
 	}
 }
 
-void scrins(B *b, long l, long n, int flg)
+void scrins(B *b, off_t l, off_t n, int flg)
 {
 	W *w;
 
@@ -203,7 +203,7 @@ void scrins(B *b, long l, long n, int flg)
 	}
 }
 
-void scrdel(B *b, long l, long n, int flg)
+void scrdel(B *b, off_t l, off_t n, int flg)
 {
 	W *w;
 
@@ -572,7 +572,7 @@ void wshowone(W *w)
 
 /* Create a window */
 
-W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify)
+W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height, char *huh, int *notify)
 {
 	W *new;
 
@@ -580,7 +580,7 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height
 		return NULL;
 
 	/* Create the window */
-	new = (W *) joe_malloc(sizeof(W));
+	new = (W *) joe_malloc(SIZEOF(W));
 	new->notify = notify;
 	new->t = t;
 	new->w = t->w;
@@ -700,8 +700,8 @@ int wabort(W *w)
 		if (!leave)
 			wfit(t);
 	} else {
-		unsigned char *msgt = w->msgt;
-		unsigned char *msgb = w->msgb;
+		char *msgt = w->msgt;
+		char *msgb = w->msgb;
 		doabort(w, &ret);
 		if (!leave) {
 			if (lastw(t)->link.next != t->topwin)
@@ -719,7 +719,7 @@ int wabort(W *w)
 
 int bg_msg;
 
-static void mdisp(SCRN *t, int y, unsigned char *s)
+static void mdisp(SCRN *t, int y, char *s)
 {
 	int ofst;
 	int len;
@@ -755,15 +755,15 @@ void msgclr(W *w)
 
 /* Set temporary message */
 
-unsigned char msgbuf[JOE_MSGBUFSIZE];
+char msgbuf[JOE_MSGBUFSIZE];
 
 /* display message on bottom line of window */
-void msgnw(W *w, unsigned char *s)
+void msgnw(W *w, char *s)
 {
 	w->msgb = s;
 }
 
-void msgnwt(W *w, unsigned char *s)
+void msgnwt(W *w, char *s)
 {
 	w->msgt = s;
 }
@@ -877,7 +877,7 @@ int umfit(BW *bw)
 		if (p == w) {
 			return -1;
 		}
-		get_buffer_in_window((BW *)p->object, bfind(USTR ""));
+		get_buffer_in_window((BW *)p->object, bfind(""));
 	}
 	/* Request size */
 	if ((p->t->h >> 1) < 3) /* -6 */

@@ -5,19 +5,17 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_UNDO_H
-#define _JOE_UNDO_H 1
 
 struct undorec {
 	LINK(UNDOREC)	link;	/* Doubly-linked list of undo records */
 	UNDOREC	*unit;		/* If this is first record of a unit: points to last.  If this is last record of a unit: points to first. */
 	int	min;		/* Set to allow merging of undo information with this record (like to small inserts) */
 	int	changed;	/* Status of modified flag before this record */
-	long	where;		/* Buffer address of this record */
-	long	len;		/* Length of insert or delete */
+	off_t	where;		/* Buffer address of this record */
+	off_t	len;		/* Length of insert or delete */
 	int	del;		/* Set if this is a delete */
 	B	*big;		/* Set to buffer containing a large amount of deleted data */
-	unsigned char	*small;		/* Set to malloc block containg a small amount of deleted data */
+	char	*small;		/* Set to malloc block containg a small amount of deleted data */
 };
 
 struct undo {
@@ -39,8 +37,8 @@ int uundo(BW *bw);
 int uredo(BW *bw);
 void umclear(void); /* Call this to finalize current undo records.  New changes will create new records. */
 void undomark(void);
-void undoins(UNDO *undo, P *p, long int size);
-void undodel(UNDO *undo, long int where, B *b);
+void undoins(UNDO *undo, P *p, off_t size);
+void undodel(UNDO *undo, off_t where, B *b);
 int uyank(BW *bw);
 int uyankpop(BW *bw);
 int uyapp(BW *bw);
@@ -52,5 +50,3 @@ void save_yank(FILE *f);
 void bw_unlock(BW *bw);
 
 extern int undo_keep;
-
-#endif

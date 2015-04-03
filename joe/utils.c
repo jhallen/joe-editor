@@ -51,6 +51,16 @@ signed long int long_min(signed long int a, signed long int b)
 	return a < b ? a : b;
 }
 
+off_t off_max(off_t a, off_t b)
+{
+	return a > b ? a : b;
+}
+
+off_t off_min(off_t a, off_t b)
+{
+	return a < b ? a : b;
+}
+
 #if 0
 /* 
  * Characters which are considered as word characters 
@@ -94,9 +104,9 @@ int isalpha_(int wide,struct charmap *map,int c)
 #endif
 
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
-ssize_t joe_read(int fd, void *buf, size_t size)
+int joe_read(int fd, void *buf, int size)
 {
-	ssize_t rt;
+	int rt;
 
 	do {
 		rt = read(fd, buf, size);
@@ -104,9 +114,9 @@ ssize_t joe_read(int fd, void *buf, size_t size)
 	return rt;
 }
 
-ssize_t joe_write(int fd, void *buf, size_t size)
+int joe_write(int fd, void *buf, int size)
 {
-	ssize_t rt;
+	int rt;
 
 	do {
 		rt = write(fd, buf, size);
@@ -118,7 +128,7 @@ int joe_ioctl(int fd, int req, void *ptr)
 {
 	int rt;
 	do {
-		rt = ioctl(fd, req, ptr); /* 2nd arg is unsigned long in linux */
+		rt = ioctl(fd, req, ptr);
 	} while (rt == -1 && errno == EINTR);
 	return rt;
 }
@@ -132,7 +142,7 @@ int joe_ioctl(int fd, int req, void *ptr)
 struct mcheck {
 	struct mcheck *next;
 	int state;		/* 0=malloced, 1=free */
-	size_t size;		/* size in bytes */
+	int size;		/* size in bytes */
 	int magic;
 };
 
@@ -144,7 +154,7 @@ void check_malloc()
 	struct mcheck *m;
 	int y = 0;
 	for(m=first;m;m=m->next) {
-		unsigned char *ptr = (unsigned char *)m+sizeof(struct mcheck);
+		char *ptr = (char *)m+SIZEOF(struct mcheck);
 		int x;
 		if(m->magic!=0x55AA55AA) {
 			printf("corrupt heap: head %x\n",ptr);
@@ -165,10 +175,10 @@ void check_malloc()
 	}
 }
 
-void *joe_malloc(size_t size)
+void *joe_malloc(int size)
 {
-	struct mcheck *m = (struct mcheck *)malloc(size+sizeof(struct mcheck)+16384);
-	unsigned char *ptr = (unsigned char *)m+sizeof(struct mcheck);
+	struct mcheck *m = (struct mcheck *)malloc(size+SIZEOF(struct mcheck)+16384);
+	char *ptr = (char *)m+SIZEOF(struct mcheck);
 	int x;
 	m->state = 0;
 	m->size = size;
@@ -192,22 +202,22 @@ void *joe_malloc(size_t size)
 	return ptr;
 }
 
-void *joe_calloc(size_t nmemb, size_t size)
+void *joe_calloc(int nmemb, int size)
 {
-	size_t sz = nmemb*size;
+	int sz = nmemb*size;
 	int x;
-	unsigned char *ptr;
+	char *ptr;
 	ptr = joe_malloc(sz);
 	for(x=0;x!=sz;++x)
 		ptr[x] = 0;
 	return ptr;
 }
 
-void *joe_realloc(void *ptr, size_t size)
+void *joe_realloc(void *ptr, int size)
 {
 	struct mcheck *n;
-	unsigned char *np;
-	struct mcheck *m = (struct mcheck *)((char *)ptr-sizeof(struct mcheck));
+	char *np;
+	struct mcheck *m = (struct mcheck *)((char *)ptr-SIZEOF(struct mcheck));
 
 	if(!size) {
 		printf("0 passed to realloc\n");
@@ -216,7 +226,7 @@ void *joe_realloc(void *ptr, size_t size)
 
 	np = joe_malloc(size);
 
-	n = (struct mcheck *)(np-sizeof(struct mcheck));
+	n = (struct mcheck *)(np-SIZEOF(struct mcheck));
 
 	if(m->size>size)
 		memcpy(np,ptr,size);
@@ -230,7 +240,7 @@ void *joe_realloc(void *ptr, size_t size)
 
 void joe_free(void *ptr)
 {
-	struct mcheck *m = (struct mcheck *)((char *)ptr-sizeof(struct mcheck));
+	struct mcheck *m = (struct mcheck *)((char *)ptr-SIZEOF(struct mcheck));
 	int x;
 	if (m->magic!=0x55AA55AA) {
 		printf("Free non-malloc block %x\n",ptr);
@@ -241,7 +251,7 @@ void joe_free(void *ptr)
 		*(int *)0=0x0;
 	}
 	for(x=0;x!=m->size;++x)
-		((unsigned char *)ptr)[x]=0x41;
+		((char *)ptr)[x]=0x41;
 	m->state = 1;
 	check_malloc();
 	/* printf("free=%x\n",ptr); */
@@ -251,25 +261,25 @@ void joe_free(void *ptr)
 
 /* Normal malloc() */
 
-void *joe_malloc(size_t size)
+void *joe_malloc(int size)
 {
-	void *p = malloc(size);
+	void *p = malloc((size_t)size);
 	if (!p)
 		ttsig(-1);
 	return p;
 }
 
-void *joe_calloc(size_t nmemb,size_t size)
+void *joe_calloc(int nmemb,int size)
 {
-	void *p = calloc(nmemb, size);
+	void *p = calloc((size_t)nmemb, (size_t)size);
 	if (!p)
 		ttsig(-1);
 	return p;
 }
 
-void *joe_realloc(void *ptr,size_t size)
+void *joe_realloc(void *ptr,int size)
 {
-	void *p = realloc(ptr, size);
+	void *p = realloc(ptr, (size_t)size);
 	if (!p)
 		ttsig(-1);
 	return p;
@@ -282,22 +292,22 @@ void joe_free(void *ptr)
 
 #endif
 
-size_t zlen(unsigned char *s)
+int zlen(char *s)
 {
-	return strlen((char *)s);
+	return (int)strlen(s);
 }
 
-int zcmp(unsigned char *a, unsigned char *b)
+int zcmp(char *a, char *b)
 {
-	return strcmp((char *)a, (char *)b);
+	return strcmp(a, b);
 }
 
 /* Only if you know for sure that the text is ASCII */
 
-int zicmp(unsigned char *a, unsigned char *b)
+int zicmp(char *a, char *b)
 {
-	unsigned char ca;
-	unsigned char cb;
+	char ca;
+	char cb;
 	while (*a && *b) {
 		ca = *a;
 		cb = *b;
@@ -329,7 +339,7 @@ int zicmp(unsigned char *a, unsigned char *b)
  *    class::subclass::member
  */
 
-int zmcmp(unsigned char *a, unsigned char *b)
+int zmcmp(char *a, char *b)
 {
 	int x = zlen(a);
 	do {
@@ -340,41 +350,41 @@ int zmcmp(unsigned char *a, unsigned char *b)
 	return zcmp(a, b);
 }
 
-int zncmp(unsigned char *a, unsigned char *b, size_t len)
+int zncmp(char *a, char *b, int len)
 {
-	return strncmp((char *)a, (char *)b, len);
+	return strncmp(a, b, (size_t)len);
 }
 
-unsigned char *zdup(unsigned char *bf)
+char *zdup(char *bf)
 {
-	size_t size = zlen(bf);
-	unsigned char *p = (unsigned char *)joe_malloc(size+1);
+	int size = zlen(bf);
+	char *p = joe_malloc(size+1);
 	memcpy(p,bf,size+1);
 	return p;
 }
 
 #if 0
-unsigned char *zcpy(unsigned char *a, unsigned char *b)
+char *zcpy(char *a, char *b)
 {
-	strcpy((char *)a,(char *)b);
+	strcpy(a,b);
 	return a;
 }
 #endif
 
-unsigned char *zstr(unsigned char *a, unsigned char *b)
+char *zstr(char *a, char *b)
 {
-	return (unsigned char *)strstr((char *)a,(char *)b);
+	return strstr(a,b);
 }
 
-unsigned char *zncpy(unsigned char *a, unsigned char *b, size_t len)
+char *zncpy(char *a, char *b, int len)
 {
-	strncpy((char *)a,(char *)b,len);
+	strncpy(a,b,(size_t)len);
 	return a;
 }
 
-unsigned char *zlcpy(unsigned char *a, size_t len, unsigned char *b)
+char *zlcpy(char *a, int len, char *b)
 {
-	unsigned char *org = a;
+	char *org = a;
 	if (!len) {
 		fprintf(stderr, "zlcpy called with len == 0\n");
 		exit(1);
@@ -388,24 +398,24 @@ unsigned char *zlcpy(unsigned char *a, size_t len, unsigned char *b)
 	return org;
 }
 
-unsigned char *mcpy(unsigned char *a, unsigned char *b, size_t len)
+char *mcpy(char *a, char *b, int len)
 {
 	if (len)
-		memcpy(a, b, len);
+		memcpy(a, b, (size_t)len);
 	return a;
 }
 
 #if 0
-unsigned char *zcat(unsigned char *a, unsigned char *b)
+char *zcat(char *a, char *b)
 {
-	strcat((char *)a,(char *)b);
+	strcat(a,b);
 	return a;
 }
 #endif
 
-unsigned char *zlcat(unsigned char *a, size_t siz, unsigned char *b)
+char *zlcat(char *a, int siz, char *b)
 {
-	unsigned char *org = a;
+	char *org = a;
 	while (*a && siz) {
 		++a;
 		--siz;
@@ -414,21 +424,112 @@ unsigned char *zlcat(unsigned char *a, size_t siz, unsigned char *b)
 	return org;
 }
 
-unsigned char *zchr(unsigned char *s, int c)
+char *zchr(char *s, int c)
 {
-	return (unsigned char *)strchr((char *)s,c);
+	return strchr(s,c);
 }
 
-unsigned char *zrchr(unsigned char *s, int c)
+char *zrchr(char *s, int c)
 {
-	return (unsigned char *)strrchr((char *)s,c);
+	return strrchr(s,c);
+}
+
+off_t zhtoo(char *s)
+{
+	off_t val = 0;
+	int flg = 0;
+	if (s) {
+		if (*s == '-') {
+			++s;
+			flg = 1;
+		} else if (*s == '+') {
+			++s;
+		}
+		while ((*s >= '0' && *s <= '9') || (*s >= 'a' && *s <= 'f') || (*s >= 'A' && *s <= 'F')) {
+			if (*s >= '0' && *s <= '9')
+				val = val * 16 + (off_t)(*s - '0');
+			else if (*s >= 'a' && *s <= 'f')
+				val = val * 16 + (off_t)(*s - 'a' + 10);
+			else if (*s >= 'A' && *s <= 'F')
+				val = val * 16 + (off_t)(*s - 'A' + 10);
+			++s;
+		}
+	}
+	if (flg)
+		return -val;
+	else
+		return val;
+}
+
+off_t ztoo(char *s)
+{
+	off_t val = 0;
+	int flg = 0;
+	if (s) {
+		if (*s == '-') {
+			++s;
+			flg = 1;
+		} else if (*s == '+') {
+			++s;
+		}
+		if (s[0] == '0' && s[1] == 'x') {
+			s += 2;
+			while ((*s >= '0' && *s <= '9') || (*s >= 'a' && *s <= 'f') || (*s >= 'A' && *s <= 'F')) {
+				if (*s >= '0' && *s <= '9')
+					val = val * 16 + (off_t)(*s - '0');
+				else if (*s >= 'a' && *s <= 'f')
+					val = val * 16 + (off_t)(*s - 'a' + 10);
+				else if (*s >= 'A' && *s <= 'F')
+					val = val * 16 + (off_t)(*s - 'A' + 10);
+				++s;
+			}
+		} else if (s[0] == '0') {
+			while (*s >= '0' && *s <= '7') {
+				val = val * 8 + (off_t)(*s - '0');
+				++s;
+			}
+		} else {
+			while (*s >= '0' && *s <= '9') {
+				val = val * 10 + (off_t)(*s - '0');
+				++s;
+			}
+		}
+	}
+	if (flg)
+		return -val;
+	else
+		return val;
+}
+
+long ztol(char *s)
+{
+	off_t val = ztoo(s);
+	return val;
+}
+
+int ztoi(char *s)
+{
+	off_t val = ztoo(s);
+	return val;
+}
+
+long zhtol(char *s)
+{
+	off_t val = zhtoo(s);
+	return val;
+}
+
+int zhtoi(char *s)
+{
+	off_t val = zhtoo(s);
+	return val;
 }
 
 #ifdef junk
 
-void *replenish(void **list,size_t size)
+void *replenish(void **list,int size)
 {
-	unsigned char *i = joe_malloc(size*16);
+	char *i = joe_malloc(size*16);
 	int x;
 	for (x=0; x!=15; ++x) {
 		fr_single(list, i);
@@ -480,10 +581,10 @@ void rm_zs(ZS z)
 	joe_free(z.s);
 }
 
-ZS raw_mk_zs(GC **gc,unsigned char *s,size_t len)
+ZS raw_mk_zs(GC **gc,char *s,int len)
 {
 	ZS zs;
-	zs.s = (unsigned char *)joe_malloc(len+1);
+	zs.s = joe_malloc(len+1);
 	if (len)
 		memcpy(zs.s,s,len);
 	zs.s[len] = 0;
@@ -501,7 +602,7 @@ int joe_set_signal(int signum, sighandler_t handler)
 #ifdef HAVE_SIGACTION
 	struct sigaction sact;
 
-	mset(&sact, 0, sizeof(sact));
+	mset(&sact, 0, SIZEOF(sact));
 	sact.sa_handler = handler;
 #ifdef SA_INTERRUPT
 	sact.sa_flags = SA_INTERRUPT;
@@ -510,7 +611,7 @@ int joe_set_signal(int signum, sighandler_t handler)
 #elif defined(HAVE_SIGVEC)
 	struct sigvec svec;
 
-	mset(&svec, 0, sizeof(svec));
+	mset(&svec, 0, SIZEOF(svec));
 	svec.sv_handler = handler;
 #ifdef HAVE_SV_INTERRUPT
 	svec.sv_flags = SV_INTERRUPT;
@@ -529,9 +630,9 @@ int joe_set_signal(int signum, sighandler_t handler)
 
 /* Skip whitespace and return first non-whitespace character */
 
-int parse_ws(unsigned char **pp,int cmt)
+int parse_ws(char **pp,int cmt)
 {
-	unsigned char *p = *pp;
+	char *p = *pp;
 	while (*p==' ' || *p=='\t')
 		++p;
 	if (*p=='\r' || *p=='\n' || *p==cmt)
@@ -542,9 +643,9 @@ int parse_ws(unsigned char **pp,int cmt)
 
 /* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len-1 chars. */
 
-int parse_ident(unsigned char **pp, unsigned char *buf, size_t len)
+int parse_ident(char **pp, char *buf, int len)
 {
-	unsigned char *p = *pp;
+	char *p = *pp;
 	if (joe_isalpha_(locale_map,*p)) {
 		while(len > 1 && joe_isalnum_(locale_map,*p))
 			*buf++= *p++, --len;
@@ -559,9 +660,9 @@ int parse_ident(unsigned char **pp, unsigned char *buf, size_t len)
 
 /* Parse to next whitespace */
 
-int parse_tows(unsigned char **pp, unsigned char *buf)
+int parse_tows(char **pp, char *buf)
 {
-	unsigned char *p = *pp;
+	char *p = *pp;
 	while (*p && *p!=' ' && *p!='\t' && *p!='\n' && *p!='\r' && *p!='#')
 		*buf++ = *p++;
 
@@ -572,9 +673,9 @@ int parse_tows(unsigned char **pp, unsigned char *buf)
 
 /* Parse over a specific keyword */
 
-int parse_kw(unsigned char **pp, unsigned char *kw)
+int parse_kw(char **pp, char *kw)
 {
-	unsigned char *p = *pp;
+	char *p = *pp;
 	while(*kw && *kw==*p)
 		++kw, ++p;
 	if(!*kw && !joe_isalnum_(locale_map,*p)) {
@@ -586,9 +687,9 @@ int parse_kw(unsigned char **pp, unsigned char *kw)
 
 /* Parse a field (same as parse_kw, but string must be terminated with whitespace) */
 
-int parse_field(unsigned char **pp, unsigned char *kw)
+int parse_field(char **pp, char *kw)
 {
-	unsigned char *p = *pp;
+	char *p = *pp;
 	while(*kw && *kw==*p)
 		++kw, ++p;
 	if(!*kw && (!*p || *p==' ' || *p=='\t' || *p=='#' || *p=='\n' || *p=='\r')) {
@@ -600,9 +701,9 @@ int parse_field(unsigned char **pp, unsigned char *kw)
 
 /* Parse a specific character */
 
-int parse_char(unsigned char **pp, unsigned char c)
+int parse_char(char **pp, char c)
 {
-	unsigned char *p = *pp;
+	char *p = *pp;
 	if (*p == c) {
 		*pp = p+1;
 		return 0;
@@ -612,11 +713,11 @@ int parse_char(unsigned char **pp, unsigned char c)
 
 /* Parse an integer.  Returns 0 for success. */
 
-int parse_int(unsigned char **pp, int *buf)
+int parse_int(char **pp, int *buf)
 {
-	unsigned char *p = *pp;
+	char *p = *pp;
 	if ((*p>='0' && *p<='9') || *p=='-') {
-		*buf = atoi((char *)p);
+		*buf = ztoi(p);
 		if(*p=='-')
 			++p;
 		while(*p>='0' && *p<='9')
@@ -629,15 +730,23 @@ int parse_int(unsigned char **pp, int *buf)
 
 /* Parse a long */
 
-int parse_long(unsigned char **pp, long *buf)
+int parse_off_t(char **pp, off_t *buf)
 {
-	unsigned char *p = *pp;
+	char *p = *pp;
+	off_t val = 0;
+	int flg = 0;
 	if ((*p>='0' && *p<='9') || *p=='-') {
-		*buf = atol((char *)p);
-		if(*p=='-')
+		if(*p=='-') {
 			++p;
-		while(*p>='0' && *p<='9')
+			flg = 1;
+		}
+		while(*p >= '0' && *p <= '9') {
+			val = val * 10 + (int)(*p - '0');
 			++p;
+		}
+		if (flg)
+			val = -val;
+		*buf = val;
 		*pp = p;
 		return 0;
 	} else
@@ -659,16 +768,16 @@ int parse_long(unsigned char **pp, long *buf)
  * -1 if there is no string or if the input ended before the terminating ".
  */
 
-ssize_t parse_string(unsigned char **pp, unsigned char *buf, size_t len)
+int parse_string(char **pp, char *buf, int len)
 {
-	unsigned char *start = buf;
-	unsigned char *p= *pp;
+	char *start = buf;
+	char *p= *pp;
 	if(*p=='\"') {
 		++p;
 		while(len > 1 && *p && *p!='\"') {
 			int x = 50;
 			int c = escape(0, &p, &x);
-			*buf++ = (unsigned char)c; /* escape() can not return unicode when utf8 flag == 0 */
+			*buf++ = c;
 			--len;
 		}
 		*buf = 0;
@@ -691,10 +800,10 @@ ssize_t parse_string(unsigned char **pp, unsigned char *buf, size_t len)
 
 /* Used originally for printing macros */
 
-void emit_string(FILE *f,unsigned char *s,size_t len)
+void emit_string(FILE *f,char *s,int len)
 {
-	unsigned char buf[8];
-	unsigned char *p, *q;
+	char buf[8];
+	char *p, *q;
 	fputc('\"',f);
 	while(len) {
 		p = unescape(buf,*s++);
@@ -708,7 +817,7 @@ void emit_string(FILE *f,unsigned char *s,size_t len)
 
 /* Emit a string */
 
-void emit_string(FILE *f,unsigned char *s,size_t len)
+void emit_string(FILE *f,char *s,int len)
 {
 	fputc('"',f);
 	while(len) {
@@ -730,9 +839,9 @@ void emit_string(FILE *f,unsigned char *s,size_t len)
 
 /* Parse a character range: a-z */
 
-int parse_range(unsigned char **pp, int *first, int *second)
+int parse_range(char **pp, int *first, int *second)
 {
-	unsigned char *p= *pp;
+	char *p= *pp;
 	int a, b;
 	if(!*p)
 		return -1;

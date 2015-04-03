@@ -84,6 +84,9 @@ static int bisearch(int ucs, const struct interval *table, int max)
 	int min = 0;
 	int mid;
 
+	if (ucs < 0)
+		ucs += 256;
+
 	if (ucs < table[0].first || ucs > table[max].last)
 		return -1;
 	while (max >= min) {
@@ -104,7 +107,7 @@ static int bisearch(int ucs, const struct interval *table, int max)
 #define MAKE_ISW(x) \
 	int joe_isw##x(struct charmap *foo,int c) \
 	{ \
-		if (-1!=bisearch(c, data_wctype_##x, sizeof(data_wctype_##x)/sizeof(struct interval) - 1)) \
+		if (-1!=bisearch(c, data_wctype_##x, SIZEOF(data_wctype_##x)/SIZEOF(struct interval) - 1)) \
 			return 1; \
 		else \
 			return 0; \
@@ -202,6 +205,10 @@ int joe_wcwidth(int wide,int ucs)
 	if (!locale_map->type || !wide)
 		return 1;
 
+	/* Negative characters are characters in range 128 - 255 converted from signed char to int */
+	if (ucs < 0)
+		ucs += 256;
+
 	/* Control characters are one column wide in JOE */
 	if (ucs < 32 || ucs == 0x7F)
 		return 1;
@@ -232,7 +239,7 @@ int joe_wcwidth(int wide,int ucs)
 		return 6;
 
 	/* 0 Width Combining characters */
-	if (-1!=bisearch(ucs, combining, sizeof(combining) / sizeof(struct interval) - 1))
+	if (-1!=bisearch(ucs, combining, SIZEOF(combining) / SIZEOF(struct interval) - 1))
 		return 0;
 
 	/* Double-wide characters */
@@ -2714,10 +2721,10 @@ int joe_towupper(struct charmap *foo,int c)
 	if (!data_wctype_toupper_i) {
 		int x;
 		int y = -1;
-		data_wctype_toupper_i = (struct interval *)joe_malloc(sizeof(data_wctype_toupper));
-		toupper_cvt = (int *)joe_malloc(sizeof(data_wctype_toupper)/sizeof(struct interval)*sizeof(int));
+		data_wctype_toupper_i = (struct interval *)joe_malloc(SIZEOF(data_wctype_toupper));
+		toupper_cvt = (int *)joe_malloc(SIZEOF(data_wctype_toupper)/SIZEOF(struct interval)*SIZEOF(int));
 
-		for (x=0;x!=sizeof(data_wctype_toupper)/sizeof(struct interval);++x) {
+		for (x=0;x!=SIZEOF(data_wctype_toupper)/SIZEOF(struct interval);++x) {
 			if (y == -1 || data_wctype_toupper_i[y].first + 1 != data_wctype_toupper[x].first ||
 			    toupper_cvt[y] != data_wctype_toupper[x].last - data_wctype_toupper[x].first) {
 				++y;
@@ -3508,10 +3515,10 @@ int joe_towlower(struct charmap *foo,int c)
 	if (!data_wctype_tolower_i) {
 		int x;
 		int y = -1;
-		data_wctype_tolower_i = (struct interval *)joe_malloc(sizeof(data_wctype_tolower));
-		tolower_cvt = (int *)joe_malloc(sizeof(data_wctype_tolower)/sizeof(struct interval)*sizeof(int));
+		data_wctype_tolower_i = (struct interval *)joe_malloc(SIZEOF(data_wctype_tolower));
+		tolower_cvt = (int *)joe_malloc(SIZEOF(data_wctype_tolower)/SIZEOF(struct interval)*SIZEOF(int));
 
-		for (x=0;x!=sizeof(data_wctype_tolower)/sizeof(struct interval);++x) {
+		for (x=0;x!=SIZEOF(data_wctype_tolower)/SIZEOF(struct interval);++x) {
 			if (y == -1 || data_wctype_tolower_i[y].last + 1 != data_wctype_tolower[x].first ||
 			    tolower_cvt[y] != data_wctype_tolower[x].last - data_wctype_tolower[x].first) {
 				++y;
@@ -3561,6 +3568,9 @@ main(int argc,char *argv[])
 
 int unictrl(int ucs)
 {
+	if (ucs < 0)
+		ucs += 256;
+
 	/* Control characters are one column wide in JOE */
 	if (ucs < 32 || ucs == 0x7F)
 		return 1;

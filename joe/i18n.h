@@ -1,6 +1,3 @@
-#ifndef _Ii18n
-#define _Ii18n 1
-
 int joe_iswupper(struct charmap *,int c);
 int joe_iswlower(struct charmap *,int c);
 
@@ -26,5 +23,3 @@ int joe_towupper(struct charmap *,int c);
 int joe_towlower(struct charmap *,int c);
 
 int unictrl(int c);
-
-#endif

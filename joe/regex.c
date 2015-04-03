@@ -7,10 +7,10 @@
  */
 #include "types.h"
 
-int escape(int utf8,unsigned char **a, int *b)
+int escape(int utf8,char **a, int *b)
 {
 	int c;
-	unsigned char *s = *a;
+	char *s = *a;
 	int l = *b;
 
 	if (*s == '\\' && l >= 2) {
@@ -117,11 +117,11 @@ int escape(int utf8,unsigned char **a, int *b)
 	return c;
 }
 
-static int brack(int utf8,unsigned char **a, int *la, int c)
+static int brack(int utf8,char **a, int *la, int c)
 {
 	int inverse = 0;
 	int flag = 0;
-	unsigned char *s = *a;
+	char *s = *a;
 	int l = *la;
 
 	if (!l)
@@ -164,11 +164,11 @@ static int brack(int utf8,unsigned char **a, int *la, int c)
 		return flag;
 }
 
-static void savec(int utf8,unsigned char **pieces, int n, int c)
+static void savec(int utf8,char **pieces, int n, int c)
 {
-	unsigned char buf[16];
+	char buf[16];
 	int len;
-	unsigned char *s = NULL;
+	char *s = NULL;
 
 	if (utf8)
 		len = utf8_encode(buf,c);
@@ -185,7 +185,7 @@ static void savec(int utf8,unsigned char **pieces, int n, int c)
 
 #define MAX_REGEX_SAVED 16384 /* Largest regex string we will save */
 
-static void saves(unsigned char **pieces, int n, P *p, long int szz)
+static void saves(char **pieces, int n, P *p, off_t szz)
 {
 	if (szz > MAX_REGEX_SAVED)
 		pieces[n] = vstrunc(pieces[n], 0);
@@ -261,10 +261,10 @@ skip:
 	return s;
 }
 
-int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
+int pmatch(char **pieces, char *regex, int len, P *p, int n, int icase)
 {
 	int c, d;
-	P *q = pdup(p, USTR "pmatch");
+	P *q = pdup(p, "pmatch");
 	P *o = NULL;
 	int utf8 = p->b->o.charmap->type;
 	struct charmap *map = p->b->o.charmap;
@@ -322,9 +322,9 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 				break;
 			case '*':
 				/* Find shortest matching sequence */
-				o = pdup(p, USTR "pmatch");
+				o = pdup(p, "pmatch");
 				do {
-					long pb = p->byte;
+					off_t pb = p->byte;
 
 					if (pmatch(pieces, regex, len, p, n + 1, icase)) {
 						saves(pieces, n, o, pb - o->byte);
@@ -334,9 +334,9 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 				} while (c != NO_MORE_DATA && c != '\n');
 				goto fail;
 			case 'c':
-				o = pdup(p, USTR "pmatch");
+				o = pdup(p, "pmatch");
 				do {
-					long pb = p->byte;
+					off_t pb = p->byte;
 
 					if (pmatch(pieces, regex, len, p, n + 1, icase)) {
 						saves(pieces, n, o, pb - o->byte);
@@ -354,10 +354,10 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 				break;
 			case '+':
 				{
-					unsigned char *oregex = regex;	/* Point to character to skip */
+					char *oregex = regex;	/* Point to character to skip */
 					int olen = len;
 
-					unsigned char *tregex;
+					char *tregex;
 					int tlen;
 
 					int match;
@@ -366,7 +366,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 
 					int d = 0;
 
-					o = pdup(p, USTR "pmatch");
+					o = pdup(p, "pmatch");
 
 					/* Advance over character to skip.  Save character in d unless
 					   we're skipping over a \[..] */
@@ -399,13 +399,13 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 					   regex/len point to sequence which follows */
 
 					do {
-						P *z = pdup(p, USTR "pmatch");
+						P *z = pdup(p, "pmatch");
 
 						if (pmatch(pieces, regex, len, p, n + 1, icase)) {
 							saves(pieces, n, o, z->byte - o->byte);
 							if (r)
 								prm(r);
-							r = pdup(p, USTR "pmatch");
+							r = pdup(p, "pmatch");
 						}
 						pset(p, z);
 						prm(z);

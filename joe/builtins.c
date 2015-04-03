@@ -2,10 +2,10 @@
 
 #include "types.h"
 
-unsigned char *builtins[]=
+char *builtins[]=
 {
-	USTR "joerc",
-		USTR "-notite         Don't send terminal initialization and termination strings:\n"
+	"joerc",
+		"-notite         Don't send terminal initialization and termination strings:\n"
 		"-assume_color	Assume terminal has ANSI color support even if termcap/terminfo entry\n"
 		"-assume_256color\n"
 		"-guess_non_utf8	Allow guess of non-UTF-8 file encoding in a UTF-8 locale.\n"
@@ -632,8 +632,8 @@ unsigned char *builtins[]=
 		"\"\x08\"		^H		Backspace\n"
 		"\"\x0d\"		^M		Return\n"
 		"\"\x7f\"		^?		Backspace\n"
-,	USTR "ftyperc",
-		USTR "*\n"
+,	"ftyperc",
+		"*\n"
 		"-wordwrap\n"
 		"*.*\n"
 		"*\n"
@@ -1462,8 +1462,8 @@ unsigned char *builtins[]=
 		"-syntax elixir\n"
 		"-pound_comment\n"
 		"-text_delimiters do=end\n"
-,	USTR "c.jsf",
-		USTR "\n"
+,	"c.jsf",
+		"\n"
 		"\n"
 		"\n"
 		"\n"

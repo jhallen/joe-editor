@@ -10,7 +10,7 @@ extern OPTIONS pdefault;
 extern OPTIONS fdefault;
 
 /* Set local options depending on file name and contents */
-void setopt(B *b, unsigned char *name);
+void setopt(B *b, char *name);
 
 /* Set a global or local option:
  * 's' is option name
@@ -32,7 +32,7 @@ void setopt(B *b, unsigned char *name);
  * glopt(name,arg,options,1): set file local option
  */
 
-int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set);
+int glopt(char *s, char *arg, OPTIONS *options, int set);
 
 /* Option setting user command */
 int umode(BW *bw);
@@ -45,6 +45,6 @@ int ucharset(BW *bw);
 int ulanguage(BW *bw);
 
 /* Get current value of an option (ON / OFF) */
-unsigned char *get_status(BW *bw, unsigned char *s);
+char *get_status(BW *bw, char *s);
 
 extern OPTIONS *options;

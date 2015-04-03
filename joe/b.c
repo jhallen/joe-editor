@@ -26,7 +26,7 @@ extern int errno;
 static int selinux_enabled = -1;
 #endif
 
-unsigned char stdbuf[stdsiz];
+char stdbuf[stdsiz];
 
 int guesscrlf = 0;
 int guessindent = 0;
@@ -37,14 +37,14 @@ VFILE *vmem;
 
 int nodeadjoe = 0;
 
-unsigned char *msgs[] = {
-	USTR _("No error"),
-	USTR _("New File"),
-	USTR _("Error reading file"),
-	USTR _("Error seeking file"),
-	USTR _("Error opening file"),
-	USTR _("Error writing file"),
-	USTR _("File on disk is newer")
+char *msgs[] = {
+	_("No error"),
+	_("New File"),
+	_("Error reading file"),
+	_("Error seeking file"),
+	_("Error opening file"),
+	_("Error writing file"),
+	_("File on disk is newer")
 };
 
 /* Get size of gap (amount of free space) */
@@ -58,7 +58,7 @@ unsigned char *msgs[] = {
 					      : (p)->ptr[(p)->ofst])
 
 /* Set position of gap */
-static void gstgap(H *hdr, unsigned char *ptr, int ofst)
+static void gstgap(H *hdr, char *ptr, int ofst)
 {
 	if (ofst > hdr->hole) {
 		mmove(ptr + hdr->hole, ptr + hdr->ehole, ofst - hdr->hole);
@@ -72,7 +72,7 @@ static void gstgap(H *hdr, unsigned char *ptr, int ofst)
 }
 
 /* Insert a block */
-static void ginsm(H *hdr, unsigned char *ptr, int ofst, unsigned char *blk, int size)
+static void ginsm(H *hdr, char *ptr, int ofst, char *blk, int size)
 {
 	if (ofst != hdr->hole)
 		gstgap(hdr, ptr, ofst);
@@ -82,7 +82,7 @@ static void ginsm(H *hdr, unsigned char *ptr, int ofst, unsigned char *blk, int 
 }
 
 /* Read block */
-static void grmem(H *hdr, unsigned char *ptr, int ofst, unsigned char *blk, int size)
+static void grmem(H *hdr, char *ptr, int ofst, char *blk, int size)
 {
 	if (ofst < hdr->hole)
 		if (size > hdr->hole - ofst) {
@@ -104,8 +104,8 @@ static H *halloc(void)
 	H *h;
 
 	if (qempty(H, link, &ohdrs)) {
-		h = (H *) alitem(&nhdrs, sizeof(H));
-		h->seg = my_valloc(vmem, (long) SEGSIZ);
+		h = (H *) alitem(&nhdrs, SIZEOF(H));
+		h->seg = my_valloc(vmem, SEGSIZ);
 	} else
 		h = deque_f(H, link, ohdrs.link.next);
 	h->hole = 0;
@@ -131,7 +131,7 @@ static P frptrs = { {&frptrs, &frptrs} };
 /* Pointer allocation */
 static P *palloc(void)
 {
-	return alitem(&frptrs, sizeof(P));
+	return alitem(&frptrs, SIZEOF(P));
 }
 
 static void pfree(P *p)
@@ -166,23 +166,23 @@ B *bafter(B *b)
 
 int udebug_joe(BW *bw)
 {
-	unsigned char buf[1024];
+	char buf[1024];
 
 	B *b;
 	P *p;
 
-	binss(bw->cursor, USTR "Buffers and pointers (the number of pointers per buffer should not grow, except for 20 from markpos):\n\n");
+	binss(bw->cursor, "Buffers and pointers (the number of pointers per buffer should not grow, except for 20 from markpos):\n\n");
 	pnextl(bw->cursor);
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next) {
 		if (b->name)
-			joe_snprintf_1(buf, sizeof(buf), "Buffer %s\n", b->name);
+			joe_snprintf_1(buf, SIZEOF(buf), "Buffer %s\n", b->name);
 		else
-			joe_snprintf_1(buf, sizeof(buf), "Buffer 0x%p\n", (void *)b);
+			joe_snprintf_1(buf, SIZEOF(buf), "Buffer 0x%p\n", (void *)b);
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		for (p = b->bof->link.next; p != b->bof; p = p->link.next) {
-			joe_snprintf_1(buf, sizeof(buf), "  Pointer created by %s\n", p->tracker);
+			joe_snprintf_1(buf, SIZEOF(buf), "  Pointer created by %s\n", p->tracker);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}
@@ -218,16 +218,16 @@ B *bprev(void)
 }
 
 /* Make a buffer out of a chain */
-static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
+static B *bmkchn(H *chn, B *prop, off_t amnt, off_t nlines)
 {
-	B *b = alitem(&frebufs, sizeof(B));
+	B *b = alitem(&frebufs, SIZEOF(B));
 
 	b->undo = undomk(b);
 	if (prop)
 		b->o = prop->o;
 	else
 		b->o = pdefault;
-	mset(b->marks, 0, sizeof(b->marks));
+	mset(b->marks, 0, SIZEOF(b->marks));
 	b->rdonly = 0;
 	b->orphan = 0;
 	b->oldcur = NULL;
@@ -263,8 +263,8 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->bof->valcol = 1;
 	b->bof->attr = 0;
 	b->bof->valattr = 1;
-	b->bof->tracker = USTR "bmkchn";
-	b->eof = pdup(b->bof, USTR "bmkchn");
+	b->bof->tracker = "bmkchn";
+	b->eof = pdup(b->bof, "bmkchn");
 	b->eof->end = 1;
 	vunlock(b->eof->ptr);
 	b->eof->hdr = chn->link.prev;
@@ -397,8 +397,8 @@ void breplace(B *b, B *n)
 	/* Reset other pointers */
 	for (p = b->eof->link.next; p != b->eof; p = p->link.next)
 		if (p != b->bof) {
-			long goal_line = p->line;
-			long goal_col = p->xcol;
+			off_t goal_line = p->line;
+			off_t goal_col = p->xcol;
 			p->ptr = 0; /* No need for pset to unlock: we already did it */
 			if (goal_line > b->eof->line) {
 				pset(p, b->eof);
@@ -471,7 +471,7 @@ B *bonline(B *b)
 	return b;
 }
 
-P *pdup(P *p, unsigned char *tr)
+P *pdup(P *p, char *tr)
 {
 	P *n = palloc();
 
@@ -483,7 +483,7 @@ P *pdup(P *p, unsigned char *tr)
 	return pset(n, p);
 }
 
-P *pdupown(P *p, P **o, unsigned char *tr)
+P *pdupown(P *p, P **o, char *tr)
 {
 	P *n = palloc();
 
@@ -567,7 +567,7 @@ int piseol(P *p)
 		return 1;
 	if (p->b->o.crlf)
 		if (c == '\r') {
-			P *q = pdup(p, USTR "piseol");
+			P *q = pdup(p, "piseol");
 
 			pfwrd(q, 1L);
 			if (pgetb(q) == '\n') {
@@ -583,7 +583,7 @@ int piseol(P *p)
 /* This needs to be fast and should not disturb valcol or valattr.  It's used by fixupins(). */
 int pisbol(P *p)
 {
-	unsigned char c;
+	char c;
 
 	if (pisbof(p))
 		return 1;
@@ -603,7 +603,7 @@ int pisbol(P *p)
 /* is p at the beginning of word? */
 int pisbow(P *p)
 {
-	P *q = pdup(p, USTR "pisbow");
+	P *q = pdup(p, "pisbow");
 	int c = brc(p);
 	int d = prgetc(q);
 
@@ -617,7 +617,7 @@ int pisbow(P *p)
 /* is p at the end of word? */
 int piseow(P *p)
 {
-	P *q = pdup(p, USTR "piseow");
+	P *q = pdup(p, "piseow");
 	int d = brc(q);
 	int c = prgetc(q);
 
@@ -631,7 +631,7 @@ int piseow(P *p)
 /* is p on the blank line (ie. full of spaces/tabs)? */
 int pisblank(P *p)
 {
-	P *q = pdup(p, USTR "pisblank");
+	P *q = pdup(p, "pisblank");
 
 	p_goto_bol(q);
 	while (joe_isblank(p->b->o.charmap,brc(q)))
@@ -648,7 +648,7 @@ int pisblank(P *p)
 /* is p at end of line or spaces followed by end of line? */
 int piseolblank(P *p)
 {
-	P *q = pdup(p, USTR "piseolblank");
+	P *q = pdup(p, "piseolblank");
 
 	while (joe_isblank(p->b->o.charmap,brc(q)))
 		pgetb(q);
@@ -662,10 +662,10 @@ int piseolblank(P *p)
 }
 
 /* return column of first nonblank character */
-long pisindent(P *p)
+off_t pisindent(P *p)
 {
-	P *q = pdup(p, USTR "pisindent");
-	long col;
+	P *q = pdup(p, "pisindent");
+	off_t col;
 
 	p_goto_bol(q);
 	while (joe_isblank(p->b->o.charmap,brc(q)))
@@ -679,7 +679,7 @@ long pisindent(P *p)
 
 int pispure(P *p,int c)
 {
-	P *q = pdup(p, USTR "pispure");
+	P *q = pdup(p, "pispure");
 	p_goto_bol(q);
 	while (q->byte!=p->byte)
 		if (pgetc(q)!=c) {
@@ -719,7 +719,7 @@ int pprev(P *p)
 /* return current byte and move p to the next byte.  column will be unchanged. */
 int pgetb(P *p)
 {
-	unsigned char c;
+	char c;
 
 	if (p->ofst == GSIZE(p->hdr))
 		return NO_MORE_DATA;
@@ -752,33 +752,33 @@ int pgetb(P *p)
 HASH *ansi_hash;
 struct ansi_entry {
 	int code;
-	unsigned char *name;
+	char *name;
 };
 struct ansi_entry **ansi_table;
 int ansi_siz;
 int ansi_len;
 
-int ansi_code(unsigned char *s)
+int ansi_code(char *s)
 {
 	struct ansi_entry *e;
 	if (!ansi_hash)
 		ansi_hash = htmk(128);
 	e = htfind(ansi_hash, s);
 	if (!e) {
-		e = joe_malloc(sizeof(struct ansi_entry));
+		e = joe_malloc(SIZEOF(struct ansi_entry));
 		e->name = zdup(s);
 		e->code = ansi_len;
 		htadd(ansi_hash, e->name, e);
 		if (!ansi_siz)
-			ansi_table = (struct ansi_entry **)malloc(ansi_siz = 128);
+			ansi_table = (struct ansi_entry **)joe_malloc(ansi_siz = 128);
 		if (ansi_siz == ansi_len)
-			ansi_table = (struct ansi_entry **)realloc(ansi_table, ansi_siz *= 2);
+			ansi_table = (struct ansi_entry **)joe_realloc(ansi_table, ansi_siz *= 2);
 		ansi_table[ansi_len++] = e;
 	}
 	return (e->code | ANSI_BIT);
 }
 
-unsigned char *ansi_string(int code)
+char *ansi_string(int code)
 {
 	code &= ~ANSI_BIT;
 	if (code < 0 || code >= ansi_len)
@@ -809,12 +809,12 @@ int pgetc(P *p)
 			return c;
 
                 if (p->b->o.ansi && c == '\033') { /* Hide ansi */
-                	unsigned char buf[ANSIMAX];
+                	char buf[ANSIMAX];
                 	int bufx = 0;
-                	buf[bufx++] = c;
+                	buf[bufx++] = TO_CHAR_OK(c);
                         while ((d = pgetb(p)) != NO_MORE_DATA) {
-                        	if (bufx < sizeof(buf) - 1)
-                        		buf[bufx++] = d;
+                        	if (bufx < SIZEOF(buf) - 1)
+                        		buf[bufx++] = TO_CHAR_OK(d);
                                 if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') || d == '\n')
                                         break;
 			}
@@ -883,7 +883,7 @@ int pgetc(P *p)
 
 		return c;
 	} else {
-		unsigned char c;
+		char c;
 
 		if (p->ofst == GSIZE(p->hdr))
 			return NO_MORE_DATA;
@@ -901,12 +901,12 @@ int pgetc(P *p)
                 } else if (p->b->o.ansi && c == '\033') { /* Hide ansi */
                         int d;
                         int v = p->valcol;
-                        unsigned char buf[ANSIMAX];
+                        char buf[ANSIMAX];
                         int bufx = 0;
                         buf[bufx++] = c;
                         while ((d = pgetb(p)) != NO_MORE_DATA) {
-                        	if (bufx < sizeof(buf) - 1)
-                        		buf[bufx++] = d;
+                        	if (bufx < SIZEOF(buf) - 1)
+                        		buf[bufx++] = TO_CHAR_OK(d);
                                 if ((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z') || d == '\n')
                                         break;
 			}
@@ -930,7 +930,7 @@ int pgetc(P *p)
 }
 
 /* move p n bytes forward */
-P *pfwrd(P *p, long n)
+P *pfwrd(P *p, off_t n)
 {
 	if (!n)
 		return p;
@@ -960,7 +960,7 @@ P *pfwrd(P *p, long n)
 /* move p to the previous byte: does not take into account -crlf mode */
 static int prgetb1(P *p)
 {
-	unsigned char c;
+	char c;
 
 	if (!p->ofst)
 		if (!pprev(p))
@@ -999,10 +999,10 @@ int prgetc(P *p)
 		if (pisbol(p))
 			return prgetb(p);
 		else {
-			P *q = pdup(p, USTR "prgetc");
+			P *q = pdup(p, "prgetc");
 			P *r;
 			p_goto_bol(q);
-			r = pdup(q, USTR "prgetc");
+			r = pdup(q, "prgetc");
 			while (q->byte<p->byte) {
 				pset(r, q);
 				pgetc(q);
@@ -1062,7 +1062,7 @@ int prgetc(P *p)
 }
 
 /* move p n bytes backwards */
-P *pbkwd(P *p, long n)
+P *pbkwd(P *p, off_t n)
 {
 	if (!n)
 		return p;
@@ -1088,7 +1088,7 @@ P *pbkwd(P *p, long n)
 }
 
 /* move p n characters forwards/backwards according to loc */
-P *pgoto(P *p, long loc)
+P *pgoto(P *p, off_t loc)
 {
 	if (loc > p->byte)
 		pfwrd(p, loc - p->byte);
@@ -1100,7 +1100,7 @@ P *pgoto(P *p, long loc)
 /* make p->col valid */
 P *pfcol(P *p)
 {
-	long pos = p->byte;
+	off_t pos = p->byte;
 
 	p_goto_bol(p);
 	while (p->byte < pos)
@@ -1138,7 +1138,7 @@ P *p_goto_eol(P *p)
 			pgetc(p);
 	else
 		while (p->ofst != GSIZE(p->hdr)) {
-			unsigned char c;
+			char c;
 
 			c = GCHAR(p);
 			if (c == '\n')
@@ -1212,7 +1212,7 @@ P *pprevl(P *p)
 }
 
 /* move p to the given 'line' line */
-P *pline(P *p, long line)
+P *pline(P *p, off_t line)
 {
 	if (line > p->b->eof->line) {
 		pset(p, p->b->eof);
@@ -1240,7 +1240,7 @@ P *pline(P *p, long line)
 
 /* move p to the given 'goalcol' column */
 /* lands at exact column or on character which would cause us to go past goalcol */
-P *pcol(P *p, long goalcol)
+P *pcol(P *p, off_t goalcol)
 {
 	p_goto_bol(p);
 	if(p->b->o.charmap->type || p->b->o.ansi) {
@@ -1260,7 +1260,7 @@ P *pcol(P *p, long goalcol)
 				break;
 
 			if (c == '\t')
-				wid = p->b->o.tab - p->col % p->b->o.tab;
+				wid = p->b->o.tab - TO_INT_OK(p->col % p->b->o.tab);
 			else
 				wid = joe_wcwidth(1,c);
 
@@ -1271,7 +1271,7 @@ P *pcol(P *p, long goalcol)
 		} while (p->col != goalcol);
 	} else {
 		do {
-			unsigned char c;
+			char c;
 			int wid;
 
 			if (p->ofst == GSIZE(p->hdr))
@@ -1282,7 +1282,7 @@ P *pcol(P *p, long goalcol)
 			if (p->b->o.crlf && c == '\r' && piseol(p))
 				break;
 			if (c == '\t')
-				wid = p->b->o.tab - p->col % p->b->o.tab;
+				wid = p->b->o.tab - TO_INT_OK(p->col % p->b->o.tab);
 			else
 				wid = 1;
 			if (p->col + wid > goalcol)
@@ -1297,7 +1297,7 @@ P *pcol(P *p, long goalcol)
 }
 
 /* Move to goal column, then skip backwards to just after first non-whitespace character */
-P *pcolwse(P *p, long goalcol)
+P *pcolwse(P *p, off_t goalcol)
 {
 	int c;
 
@@ -1312,7 +1312,7 @@ P *pcolwse(P *p, long goalcol)
 
 /* Move p to goalcol: stops after first character which equals or exceeds goal col (unlike
    pcol() which will stops before character which would exceed goal col) */
-P *pcoli(P *p, long goalcol)
+P *pcoli(P *p, off_t goalcol)
 {
 	p_goto_bol(p);
 	if (p->b->o.charmap->type || p->b->o.ansi) {
@@ -1333,7 +1333,7 @@ P *pcoli(P *p, long goalcol)
 		}
 	} else {
 		while (p->col < goalcol) {
-			unsigned char c;
+			char c;
 
 			if (p->ofst == GSIZE(p->hdr))
 				break;
@@ -1357,7 +1357,7 @@ P *pcoli(P *p, long goalcol)
 }
 
 /* fill space between curent column and 'to' column with tabs/spaces */
-void pfill(P *p, long to, int usetabs)
+void pfill(P *p, off_t to, int usetabs)
 {
 	if (usetabs=='\t')
 		while (piscol(p) < to)
@@ -1379,7 +1379,7 @@ void pfill(P *p, long to, int usetabs)
 void pbackws(P *p)
 {
 	int c;
-	P *q = pdup(p, USTR "pbackws");
+	P *q = pdup(p, "pbackws");
 
 	do {
 		c = prgetc(q);
@@ -1390,7 +1390,7 @@ void pbackws(P *p)
 	prm(q);
 }
 
-static int frgetc(P *p)
+static char frgetc(P *p)
 {
 	if (!p->ofst)
 		pprev(p);
@@ -1410,11 +1410,12 @@ static void ffwrd(P *p, int n)
 }
 
 /* forward find pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
-static P *ffind(P *p, unsigned char *s, int len)
+static P *ffind(P *p, char *s, int len)
 {
-	long amnt = p->b->eof->byte - p->byte;
+	off_t amnt = p->b->eof->byte - p->byte;
 	int x;
-	unsigned char table[256], c;
+	char c;
+	int table[256];
 
 	if (len > amnt)
 		return NULL;
@@ -1422,23 +1423,23 @@ static P *ffind(P *p, unsigned char *s, int len)
 		return p;
 	p->valcol = 0;
 	p->valattr = 0;
-	mset(table, 255, 256);
+	msetI(table, -1, 256);
 	for (x = 0; x != len - 1; ++x)
-		table[s[x]] = x;
+		table[((unsigned char *)s)[x]] = x;
 	ffwrd(p, len);
 	amnt -= len;
 	x = len;
 	do {
 		if ((c = frgetc(p)) != s[--x]) {
-			if (table[c] == 255) {
+			if (table[(unsigned char)c] == -1) {
 				ffwrd(p, len + 1);
 				amnt -= x + 1;
-			} else if (x <= table[c]) {
+			} else if (x <= table[(unsigned char)c]) {
 				ffwrd(p, len - x + 1);
 				--amnt;
 			} else {
-				ffwrd(p, len - table[c]);
-				amnt -= x - table[c];
+				ffwrd(p, len - table[(unsigned char)c]);
+				amnt -= x - table[(unsigned char)c];
 			}
 			if (amnt < 0)
 				return NULL;
@@ -1450,12 +1451,13 @@ static P *ffind(P *p, unsigned char *s, int len)
 }
 
 /* forward find (case insensitive) pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
-static P *fifind(P *p, unsigned char *s, int len)
+static P *fifind(P *p, char *s, int len)
 {
-	long amnt = p->b->eof->byte - p->byte;
+	off_t amnt = p->b->eof->byte - p->byte;
 	int x;
 	struct charmap *map = p->b->o.charmap;
-	unsigned char table[256], c;
+	char c;
+	int table[256];
 
 	if (len > amnt)
 		return NULL;
@@ -1463,23 +1465,23 @@ static P *fifind(P *p, unsigned char *s, int len)
 		return p;
 	p->valcol = 0;
 	p->valattr = 0;
-	mset(table, 255, 256);
+	msetI(table, -1, 256);
 	for (x = 0; x != len - 1; ++x)
-		table[s[x]] = x;
+		table[((unsigned char *)s)[x]] = x;
 	ffwrd(p, len);
 	amnt -= len;
 	x = len;
 	do {
 		if ((c = joe_tolower(map,frgetc(p))) != s[--x]) {
-			if (table[c] == 255) {
+			if (table[(unsigned char)c] == -1) {
 				ffwrd(p, len + 1);
 				amnt -= x + 1;
-			} else if (x <= table[c]) {
+			} else if (x <= table[(unsigned char)c]) {
 				ffwrd(p, len - x + 1);
 				--amnt;
 			} else {
-				ffwrd(p, len - table[c]);
-				amnt -= x - table[c];
+				ffwrd(p, len - table[(unsigned char)c]);
+				amnt -= x - table[(unsigned char)c];
 			}
 			if (amnt < 0)
 				return NULL;
@@ -1511,9 +1513,9 @@ static P *getto(P *p, P *q)
 }
 
 /* find forward substring s in text pointed by p and set p after found substring */
-P *pfind(P *p, unsigned char *s, int len)
+P *pfind(P *p, char *s, int len)
 {
-	P *q = pdup(p, USTR "pfind");
+	P *q = pdup(p, "pfind");
 
 	if (ffind(q, s, len)) {
 		getto(p, q);
@@ -1526,9 +1528,9 @@ P *pfind(P *p, unsigned char *s, int len)
 }
 
 /* same as pfind() but case insensitive */
-P *pifind(P *p, unsigned char *s, int len)
+P *pifind(P *p, char *s, int len)
 {
-	P *q = pdup(p, USTR "pifind");
+	P *q = pdup(p, "pifind");
 
 	if (fifind(q, s, len)) {
 		getto(p, q);
@@ -1566,14 +1568,15 @@ static int fpgetc(P *p)
 }
 
 /* backward find pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
-static P *frfind(P *p, unsigned char *s, int len)
+static P *frfind(P *p, char *s, int len)
 {
-	long amnt = p->byte;
+	off_t amnt = p->byte;
 	int x;
-	unsigned char table[256], c;
+	char c;
+	int table[256];
 
 	if (len > p->b->eof->byte - p->byte) {
-		x = len - (p->b->eof->byte - p->byte);
+		x = len - TO_INT_OK(p->b->eof->byte - p->byte);
 		if (amnt < x)
 			return NULL;
 		amnt -= x;
@@ -1583,20 +1586,20 @@ static P *frfind(P *p, unsigned char *s, int len)
 		return p;
 	p->valcol = 0;
 	p->valattr = 0;
-	mset(table, 255, 256);
-	for (x = len; --x; table[s[x]] = len - x - 1) ;
+	msetI(table, -1, 256);
+	for (x = len; --x; table[((unsigned char *)s)[x]] = len - x - 1) ;
 	x = 0;
 	do {
 		if ((c = fpgetc(p)) != s[x++]) {
-			if (table[c] == 255) {
+			if (table[(unsigned char)c] == -1) {
 				fbkwd(p, len + 1);
 				amnt -= len - x + 1;
-			} else if (len - table[c] <= x) {
+			} else if (len - table[(unsigned char)(c)] <= x) {
 				fbkwd(p, x + 1);
 				--amnt;
 			} else {
-				fbkwd(p, len - table[c]);
-				amnt -= len - table[c] - x;
+				fbkwd(p, len - table[(unsigned char)(c)]);
+				amnt -= len - table[(unsigned char)(c)] - x;
 			}
 			if (amnt < 0)
 				return NULL;
@@ -1609,15 +1612,16 @@ static P *frfind(P *p, unsigned char *s, int len)
 }
 
 /* backward find (case insensitive) pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
-static P *frifind(P *p, unsigned char *s, int len)
+static P *frifind(P *p, char *s, int len)
 {
-	long amnt = p->byte;
+	off_t amnt = p->byte;
 	int x;
-	unsigned char table[256], c;
+	char c;
+	int table[256];
 	struct charmap *map = p->b->o.charmap;
 
 	if (len > p->b->eof->byte - p->byte) {
-		x = len - (p->b->eof->byte - p->byte);
+		x = len - TO_INT_OK(p->b->eof->byte - p->byte);
 		if (amnt < x)
 			return NULL;
 		amnt -= x;
@@ -1627,20 +1631,20 @@ static P *frifind(P *p, unsigned char *s, int len)
 		return p;
 	p->valcol = 0;
 	p->valattr = 0;
-	mset(table, 255, 256);
-	for (x = len; --x; table[s[x]] = len - x - 1) ;
+	msetI(table, -1, 256);
+	for (x = len; --x; table[((unsigned char *)s)[x]] = len - x - 1) ;
 	x = 0;
 	do {
 		if ((c = joe_tolower(map,fpgetc(p))) != s[x++]) {
-			if (table[c] == 255) {
+			if (table[(unsigned char)c] == -1) {
 				fbkwd(p, len + 1);
 				amnt -= len - x + 1;
-			} else if (len - table[c] <= x) {
+			} else if (len - table[(unsigned char)c] <= x) {
 				fbkwd(p, x + 1);
 				--amnt;
 			} else {
-				fbkwd(p, len - table[c]);
-				amnt -= len - table[c] - x;
+				fbkwd(p, len - table[(unsigned char)c]);
+				amnt -= len - table[(unsigned char)c] - x;
 			}
 			if (amnt < 0)
 				return NULL;
@@ -1674,9 +1678,9 @@ static P *rgetto(P *p, P *q)
 }
 
 /* find backward substring s in text pointed by p and set p on the first of found substring */
-P *prfind(P *p, unsigned char *s, int len)
+P *prfind(P *p, char *s, int len)
 {
-	P *q = pdup(p, USTR "prfind");
+	P *q = pdup(p, "prfind");
 
 	if (frfind(q, s, len)) {
 		rgetto(p, q);
@@ -1689,9 +1693,9 @@ P *prfind(P *p, unsigned char *s, int len)
 }
 
 /* same as prfind() but case insensitive */
-P *prifind(P *p, unsigned char *s, int len)
+P *prifind(P *p, char *s, int len)
 {
-	P *q = pdup(p, USTR "prifind");
+	P *q = pdup(p, "prifind");
 
 	if (frifind(q, s, len)) {
 		rgetto(p, q);
@@ -1707,13 +1711,13 @@ P *prifind(P *p, unsigned char *s, int len)
 B *bcpy(P *from, P *to)
 {
 	H anchor, *l;
-	unsigned char *ptr;
+	char *ptr;
 	P *q;
 
 	if (from->byte >= to->byte)
 		return bmk(from->b);
 
-	q = pdup(from, USTR "bcpy");
+	q = pdup(from, "bcpy");
 	izque(H, link, &anchor);
 
 	if (q->hdr == to->hdr) {
@@ -1774,7 +1778,7 @@ void pcoalesce(P *p)
 {
 	if (p->hdr != p->b->eof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.next) <= SEGSIZ - SEGSIZ / 4) {
 		H *hdr = p->hdr->link.next;
-		unsigned char *ptr = vlock(vmem, hdr->seg);
+		char *ptr = vlock(vmem, hdr->seg);
 		int osize = GSIZE(p->hdr);
 		int size = GSIZE(hdr);
 		P *q;
@@ -1796,7 +1800,7 @@ void pcoalesce(P *p)
 	}
 	if (p->hdr != p->b->bof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.prev) <= SEGSIZ - SEGSIZ / 4) {
 		H *hdr = p->hdr->link.prev;
-		unsigned char *ptr = vlock(vmem, hdr->seg);
+		char *ptr = vlock(vmem, hdr->seg);
 		int size = GSIZE(hdr);
 		P *q;
 
@@ -1840,10 +1844,10 @@ static B *bcut(P *from, P *to)
 {
 	H *h,			/* The deleted text */
 	*i;
-	unsigned char *ptr;
+	char *ptr;
 	P *p;
-	long nlines;		/* No. EOLs to delete */
-	long amnt;		/* No. bytes to delete */
+	off_t nlines;		/* No. EOLs to delete */
+	off_t amnt;		/* No. bytes to delete */
 	int toamnt;		/* Amount to delete from segment in 'to' */
 	int bofmove = 0;	/* Set if bof got deleted */
 	struct lattr_db *db;
@@ -1862,16 +1866,16 @@ static B *bcut(P *from, P *to)
 		h = halloc();
 		ptr = vlock(vmem, h->seg);
 		mmove(ptr, from->ptr + from->hdr->ehole, (int) amnt);
-		h->hole = amnt;
-		h->nlines = nlines;
+		h->hole = TO_INT_OK(amnt);
+		h->nlines = TO_INT_OK(nlines);
 		vchanged(ptr);
 		vunlock(ptr);
 
 		/* Delete */
-		from->hdr->ehole += amnt;
-		from->hdr->nlines -= nlines;
+		from->hdr->ehole += TO_INT_OK(amnt);
+		from->hdr->nlines -= TO_INT_OK(nlines);
 
-		toamnt = amnt;
+		toamnt = TO_INT_OK(amnt);
 	} else {		/* Delete crosses segments */
 		H *a;
 
@@ -2031,7 +2035,7 @@ static void bsplit(P *p)
 {
 	if (p->ofst) {
 		H *hdr;
-		unsigned char *ptr;
+		char *ptr;
 		P *pp;
 
 		hdr = halloc();
@@ -2068,14 +2072,14 @@ static void bsplit(P *p)
 }
 
 /* Make a chain out of a block of memory (the block must not be empty) */
-static H *bldchn(unsigned char *blk, int size, long *nlines)
+static H *bldchn(char *blk, int size, off_t *nlines)
 {
 	H anchor, *l;
 
 	*nlines = 0;
 	izque(H, link, &anchor);
 	do {
-		unsigned char *ptr;
+		char *ptr;
 		int amnt;
 
 		ptr = vlock(vmem, (l = halloc())->seg);
@@ -2135,7 +2139,7 @@ static void inschn(P *p, H *a)
 	}
 }
 
-static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
+static void fixupins(P *p, off_t amnt, off_t nlines, H *hdr, int hdramnt)
 {
 	P *pp;
 	struct lattr_db *db;
@@ -2177,7 +2181,7 @@ static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 P *binsb(P *p, B *b)
 {
 	if (b->eof->byte) {
-		P *q = pdup(p, USTR "binsb");
+		P *q = pdup(p, "binsb");
 
 		inschn(q, b->bof->hdr);
 		b->eof->hdr = halloc();
@@ -2190,41 +2194,44 @@ P *binsb(P *p, B *b)
 }
 
 /* insert memory block 'blk' at 'p' */
-P *binsm(P *p, unsigned char *blk, int amnt)
+P *binsm(P *p, char *blk, int amnt)
 {
-	long nlines;
+	int nlines;
+	off_t nlines1;
 	H *h = NULL;
 	int hdramnt = 0; /* Only used if h is set */
 	P *q;
 
 	if (!amnt)
 		return p;
-	q = pdup(p, USTR "binsm");
+	q = pdup(p, "binsm");
 	if (amnt <= GGAPSZ(q->hdr)) {
 		h = q->hdr;
 		hdramnt = amnt;
 		ginsm(q->hdr, q->ptr, q->ofst, blk, amnt);
 		q->hdr->nlines += (nlines = mcnt(blk, '\n', amnt));
+		nlines1 = nlines;
 	} else if (!q->ofst && q->hdr != q->b->bof->hdr && amnt <= GGAPSZ(q->hdr->link.prev)) {
 		pprev(q);
 		ginsm(q->hdr, q->ptr, q->ofst, blk, amnt);
 		q->hdr->nlines += (nlines = mcnt(blk, '\n', amnt));
+		nlines1 = nlines;
 	} else {
-		H *a = bldchn(blk, amnt, &nlines);
+		H *a = bldchn(blk, amnt, &nlines1);
 
 		inschn(q, a);
 	}
-	fixupins(q, (long) amnt, nlines, h, hdramnt);
+	fixupins(q, amnt, nlines1, h, hdramnt);
 	pcoalesce(q);
 	prm(q);
 	return p;
 }
 
 /* insert byte 'c' at 'p' */
-P *binsbyte(P *p, unsigned char c)
+P *binsbyte(P *p, char c)
 {
 	if (p->b->o.crlf && c == '\n')
-		return binsm(p, USTR "\r\n", 2);
+		return binsm(p, "\r\n", 2);
 	else
 		return binsm(p, &c, 1);
 }
@@ -2233,23 +2240,23 @@ P *binsbyte(P *p, unsigned char c)
 P *binsc(P *p, int c)
 {
 	if ((c & ANSI_BIT) && p->b->o.ansi) {
-		unsigned char *s = ansi_string(c);
+		char *s = ansi_string(c);
 		return binsm(p, s, zlen(s));
 	} else if (c>127 && p->b->o.charmap->type) {
-		unsigned char buf[8];
+		char buf[8];
 		int len = utf8_encode(buf,c);
 		return binsm(p,buf,len);
 	} else {
-		unsigned char ch = c;
+		char ch = TO_CHAR_OK(c);
 		if (p->b->o.crlf && c == '\n')
-			return binsm(p, USTR "\r\n", 2);
+			return binsm(p, "\r\n", 2);
 		else
 			return binsm(p, &ch, 1);
 	}
 }
 
 /* insert zero-terminated string 's' at 'p' */
-P *binss(P *p, unsigned char *s)
+P *binss(P *p, char *s)
 {
 	return binsm(p, s, zlen(s));
 }
@@ -2258,7 +2265,7 @@ P *binss(P *p, unsigned char *s)
  * when requested size has been read or when end of file condition occurs.
  * Returns with -2 in error for read error or 0 in error for success.
  */
-static int bkread(int fi, unsigned char *buff, int size)
+static int bkread(int fi, char *buff, int size)
 {
 	int a, b;
 
@@ -2276,12 +2283,12 @@ static int bkread(int fi, unsigned char *buff, int size)
 
 /* Read up to 'max' bytes from a file into a buffer */
 /* Returns with 0 in error or -2 in error for read error */
-B *bread(int fi, long int max)
+B *bread(int fi, off_t max)
 {
 	H anchor, *l;
-	long lines = 0, total = 0;
+	off_t lines = 0, total = 0;
 	int amnt;
-	unsigned char *seg;
+	char *seg;
 
 	izque(H, link, &anchor);
 	berror = 0;
@@ -2311,15 +2318,10 @@ B *bread(int fi, long int max)
  *
  * Returns new variable length string.
  */
-unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
+char *parsens(char *s, off_t *skip, off_t *amnt)
 {
-	unsigned char *n = vsncpy(NULL, 0, sz(s));
+	char *n = vsncpy(NULL, 0, sz(s));
 	int x;
-#ifdef HAVE_LONG_LONG
-	unsigned long long skipr;
-#else
-	unsigned long skipr;
-#endif
 
 	*skip = 0;
 	*amnt = MAXLONG;
@@ -2329,52 +2331,15 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 		if (n[x] == ',' && x && n[x-1] != '\\') {
 			n[x] = 0;
 
-#if HAVE_LONG_LONG
-			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf((char *)(n + x + 2), "%llx", &skipr);
-			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf((char *)(n + x + 3), "%llx", &skipr);
-			else if (n[x + 1] == '0')
-				sscanf((char *)(n + x + 1), "%llo", &skipr);
-			else
-				sscanf((char *)(n + x + 1), "%llu", &skipr);
-#else
-			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf((char *)(n + x + 2), "%lx", &skipr);
-			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf((char *)(n + x + 3), "%lx", &skipr);
-			else if (n[x + 1] == '0')
-				sscanf((char *)(n + x + 1), "%lo", &skipr);
-			else
-				sscanf((char *)(n + x + 1), "%lu", &skipr);
-#endif
-			*skip = (signed)skipr;
+			*skip = ztoo(n + x + 1);
+
 			--x;
 			if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 				for (; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 				if (n[x] == ',' && x && n[x-1]!='\\') {
 					n[x] = 0;
 					*amnt = *skip;
-#ifdef HAVE_LONG_LONG
-					if (n[x + 1] == 'x' || n[x + 1] == 'X')
-						sscanf((char *)(n + x + 2), "%llx", &skipr);
-					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-						sscanf((char *)(n + x + 3), "%llx", &skipr);
-					else if (n[x + 1] == '0')
-						sscanf((char *)(n + x + 1), "%llo", &skipr);
-					else
-						sscanf((char *)(n + x + 1), "%llu", &skipr);
-#else
-					if (n[x + 1] == 'x' || n[x + 1] == 'X')
-						sscanf((char *)(n + x + 2), "%lx", &skipr);
-					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-						sscanf((char *)(n + x + 3), "%lx", &skipr);
-					else if (n[x + 1] == '0')
-						sscanf((char *)(n + x + 1), "%lo", &skipr);
-					else
-						sscanf((char *)(n + x + 1), "%lu", &skipr);
-#endif
-					*skip = (signed)skipr;
+					*skip = ztoo(n + x + 1);
 				}
 			}
 		}
@@ -2387,12 +2352,12 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 
 /* Canonicalize file name: do ~ expansion */
 
-unsigned char *canonical(unsigned char *n)
+char *canonical(char *n)
 {
 	int y = 0;
 #ifndef __MSDOS__
 	int x;
-	unsigned char *s;
+	char *s;
 	for (y = zlen(n); ; --y)
 		if (y <= 2) {
 			y = 0;
@@ -2406,9 +2371,9 @@ unsigned char *canonical(unsigned char *n)
 		for (x = y + 1; n[x] && n[x] != '/'; ++x) ;
 		if (n[x] == '/') {
 			if (x == y + 1) {
-				unsigned char *z;
+				char *z;
 
-				s = (unsigned char *)getenv("HOME");
+				s = getenv("HOME");
 				z = vsncpy(NULL, 0, sz(s));
 				z = vsncpy(z, sLEN(z), sz(n + x));
 				vsrm(n);
@@ -2418,11 +2383,11 @@ unsigned char *canonical(unsigned char *n)
 				struct passwd *passwd;
 
 				n[x] = 0;
-				passwd = getpwnam((char *)(n + y + 1));
+				passwd = getpwnam((n + y + 1));
 				n[x] = '/';
 				if (passwd) {
-					unsigned char *z = vsncpy(NULL, 0,
-							 sz((unsigned char *)(passwd->pw_dir)));
+					char *z = vsncpy(NULL, 0,
+							 sz((passwd->pw_dir)));
 
 					z = vsncpy(z, sLEN(z), sz(n + x));
 					vsrm(n);
@@ -2434,14 +2399,14 @@ unsigned char *canonical(unsigned char *n)
 	}
 #endif
 	if (y) {
-		unsigned char *z = vsncpy(NULL, 0, n + y, zlen(n + y));
+		char *z = vsncpy(NULL, 0, n + y, zlen(n + y));
 		vsrm(n);
 		return z;
 	} else
 		return n;
 }
 
-int euclid(int a, int b)
+off_t euclid(off_t a, off_t b)
 {
 	if (!a)
 		return b;
@@ -2457,12 +2422,12 @@ int euclid(int a, int b)
 int found_space;
 int found_tab;
 
-long pisindentg(P *p)
+off_t pisindentg(P *p)
 {
 	int i_spc = 0;
 	int i_tab = 0;
-	P *q = pdup(p, USTR "pisindentg");
-	long col;
+	P *q = pdup(p, "pisindentg");
+	off_t col;
 	int ch;
 
 	p_goto_bol(q);
@@ -2484,10 +2449,10 @@ long pisindentg(P *p)
 	return col;
 }
 
-unsigned char *dequote(unsigned char *s)
+char *dequote(char *s)
 {
-        static unsigned char buf[1024];
-        unsigned char *p = buf;
+        static char buf[1024];
+        char *p = buf;
         while (*s) {
                 if (*s =='\\')
                         ++s;
@@ -2505,23 +2470,23 @@ unsigned char *dequote(unsigned char *s)
  * -3 for seek error
  * -4 for open error
  */
-B *bload(unsigned char *s)
+B *bload(char *s)
 {
-	unsigned char buffer[SEGSIZ];
+	char buffer[SEGSIZ];
 	FILE *fi = 0;
 	B *b = 0;
 	off_t skip, amnt;
-	unsigned char *n;
+	char *n;
 	int nowrite = 0;
 	P *p;
 	int x;
-	long mod_time = 0;
+	time_t mod_time = 0;
 	struct stat sbuf;
 
 	if (!s || !s[0]) {
 		berror = -1;
 		b = bmk(NULL);
-		setopt(b,USTR "");
+		setopt(b,"");
 		b->rdonly = b->o.readonly;
 		b->er = berror;
 		return b;
@@ -2534,10 +2499,10 @@ B *bload(unsigned char *s)
 	if (n[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		fi = popen((char *)dequote(n + 1), "r");
+		fi = popen(dequote(n + 1), "r");
 	} else
 #endif
-	if (!zcmp(n, USTR "-")) {
+	if (!zcmp(n, "-")) {
 #ifdef junk
 		FILE *f;
 		struct stat y;
@@ -2555,12 +2520,12 @@ B *bload(unsigned char *s)
 		b = bmk(NULL);
 		goto empty;
 	} else {
-		fi = fopen((char *)dequote(n), "r+");
+		fi = fopen(dequote(n), "r+");
 		if (!fi)
 			nowrite = 1;
 		else
 			fclose(fi);
-		fi = fopen((char *)dequote(n), "r");
+		fi = fopen(dequote(n), "r");
 		if (!fi)
 			nowrite = 0;
 		if (fi) {
@@ -2615,7 +2580,7 @@ err:
 		pclose(fi);
 	else
 #endif
-	if (zcmp(n, USTR "-"))
+	if (zcmp(n, "-"))
 		fclose(fi);
 
 opnerr:
@@ -2631,7 +2596,7 @@ opnerr:
 	if (berror || s[0] == '!' || skip || amnt != MAXLONG) {
 		b->backup = 1;
 		b->changed = 0;
-	} else if (!zcmp(n, USTR "-")) {
+	} else if (!zcmp(n, "-")) {
 		b->backup = 1;
 		b->changed = 1;
 	} else {
@@ -2643,7 +2608,7 @@ opnerr:
 
 	/* If first line has CR-LF, assume MS-DOS file */
 	if (guesscrlf) {
-		p=pdup(b->bof, USTR "bload");
+		p=pdup(b->bof, "bload");
 		b->o.crlf = 0;
 		for(x=0;x!=1024;++x) {
 			int c = pgetc(p);
@@ -2664,17 +2629,18 @@ opnerr:
 	/* Search backwards through file: if first indented line
 	   is indented with a tab, assume indentc is tab */
 	if (guessindent) {
-		int i, x, y;
-		int guessed_step = 0;
+		int x, y;
+		off_t guessed_step = 0;
 		int hist[20];
-		int hist_val[20];
+		off_t i;
+		off_t hist_val[20];
 		int nhist = 0;
 		int max;
 		int maxi;
 		int space_lines = 0;
 		int tab_lines = 0;
 		
-		p=pdup(b->eof, USTR "bload");
+		p=pdup(b->eof, "bload");
 		/* Create histogram of indentation values */
 		for (y = 0; y != 50; ++y) {
 			found_space = 0;
@@ -2744,14 +2710,14 @@ opnerr:
 }
 
 /* Find already loaded buffer or load file into new buffer */
-B *bfind(unsigned char *s)
+B *bfind(char *s)
 {
 	B *b;
 
 	if (!s || !s[0]) {
 		berror = -1;
 		b = bmk(NULL);
-		setopt(b,USTR "");
+		setopt(b,"");
 		b->rdonly = b->o.readonly;
 		b->internal = 0;
 		b->er = berror;
@@ -2773,14 +2739,14 @@ B *bfind(unsigned char *s)
 }
 
 /* Find already loaded buffer or load file into new buffer */
-B *bfind_scratch(unsigned char *s)
+B *bfind_scratch(char *s)
 {
 	B *b;
 
 	if (!s || !s[0]) {
 		berror = -1;
 		b = bmk(NULL);
-		setopt(b,USTR "");
+		setopt(b,"");
 		b->rdonly = b->o.readonly;
 		b->internal = 0;
 		b->er = berror;
@@ -2807,7 +2773,7 @@ B *bfind_scratch(unsigned char *s)
 	return b;
 }
 
-B *bfind_reload(unsigned char *s)
+B *bfind_reload(char *s)
 {
 	B *b;
 	b = bload(s);
@@ -2815,7 +2781,7 @@ B *bfind_reload(unsigned char *s)
 	return b;
 }
 
-B *bcheck_loaded(unsigned char *s)
+B *bcheck_loaded(char *s)
 {
 	B *b;
 
@@ -2830,9 +2796,9 @@ B *bcheck_loaded(unsigned char *s)
 	return NULL;
 }
 
-unsigned char **getbufs(void)
+char **getbufs(void)
 {
-	unsigned char **s = vamk(16);
+	char **s = vamk(16);
 	B *b;
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
@@ -2861,7 +2827,7 @@ B *borphan(void)
  */
 int bsavefd(P *p, int fd, off_t size)
 {
-	P *np = pdup(p, USTR "bsavefd");
+	P *np = pdup(p, "bsavefd");
 	int amnt;
 
 	while (size > (amnt = GSIZE(np->hdr) - np->ofst)) {
@@ -2911,7 +2877,7 @@ err:
 int break_links; /* Set to break hard links on writes */
 int break_symlinks; /* Set to break symbolic links and hard links on writes */
 
-int bsave(P *p, unsigned char *s, off_t size, int flag)
+int bsave(P *p, char *s, off_t size, int flag)
 {
 	struct stat sbuf;
 	int have_stat = 0;
@@ -2928,19 +2894,19 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 	if (s[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		f = popen((char *)dequote(s + 1), "w");
+		f = popen(dequote(s + 1), "w");
 	} else
 #endif
 	if (s[0] == '>' && s[1] == '>')
-		f = fopen((char *)dequote(s + 2), "a");
-	else if (!zcmp(s, USTR "-")) {
+		f = fopen(dequote(s + 2), "a");
+	else if (!zcmp(s, "-")) {
 		nescape(maint->t);
 		ttclsn();
 		f = stdout;
 	} else if (skip || amnt != MAXLONG)
-		f = fopen((char *)dequote(s), "r+");
+		f = fopen(dequote(s), "r+");
 	else {
-		have_stat = !stat((char *)dequote(s), &sbuf);
+		have_stat = !stat(dequote(s), &sbuf);
 		if (!have_stat)
 			sbuf.st_mode = 0666;
 		/* Normal file save */
@@ -2948,7 +2914,7 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 			struct stat lsbuf;
 
 			/* Try to copy permissions */
-			if (!lstat((char *)dequote(s),&lsbuf)) {
+			if (!lstat(dequote(s),&lsbuf)) {
 				int g;
 				if (!break_symlinks && S_ISLNK(lsbuf.st_mode)) {
 					goto nobreak;
@@ -2960,28 +2926,28 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 					selinux_enabled = (is_selinux_enabled() > 0);
 				
 				if (selinux_enabled) {
-					if (getfilecon((char *)dequote(s), &se) < 0) {
+					if (getfilecon(dequote(s), &se) < 0) {
 						berror = -4;
 						goto opnerr;
 					}
 				}
 #endif
-				unlink((char *)dequote(s));
-				g = creat((char *)dequote(s), sbuf.st_mode & ~(S_ISUID | S_ISGID));
+				unlink(dequote(s));
+				g = creat(dequote(s), sbuf.st_mode & ~(unsigned)(S_ISUID | S_ISGID));
 #ifdef WITH_SELINUX
 				if (selinux_enabled) {
-					setfilecon((char *)dequote(s), &se);
+					setfilecon(dequote(s), &se);
 					freecon(se);
 				}
 #endif
 				close(g);
 				nobreak:;
 			} else {
-				unlink((char *)dequote(s));
+				unlink(dequote(s));
 			}
 		}
 
-		f = fopen((char *)dequote(s), "w");
+		f = fopen(dequote(s), "w");
 		norm = 1;
 	}
 	joesep(s);
@@ -3000,8 +2966,8 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 	bsavefd(p, fileno(f), size);
 
 	if (!berror && force && size && !skip && amnt == MAXLONG) {
-		P *q = pdup(p, USTR "bsave");
-		unsigned char nl = '\n';
+		P *q = pdup(p, "bsave");
+		char nl = '\n';
 
 		pfwrd(q, size - 1);
 		if (brc(q) != '\n' && joe_write(fileno(f), &nl, 1) < 0)
@@ -3020,7 +2986,7 @@ err:
 		pclose(f);
 	else
 #endif
-	if (zcmp(s, USTR "-"))
+	if (zcmp(s, "-"))
 		fclose(f);
 	else
 		fflush(f);
@@ -3028,12 +2994,12 @@ err:
 	/* Update orignal date of file */
 	/* If it's not named, it's about to be */
 	if (!berror && norm && flag && (!p->b->name || flag == 2 || !zcmp(s,p->b->name))) {
-		if (!stat((char *)dequote(s),&sbuf))
+		if (!stat(dequote(s),&sbuf))
 			p->b->mod_time = sbuf.st_mtime;
 	}
 
 opnerr:
-	if (s[0] == '!' || !zcmp(s,USTR "-")) {
+	if (s[0] == '!' || !zcmp(s,"-")) {
 		ttopnn();
 		nreturn(maint->t);
 	}
@@ -3054,7 +3020,7 @@ int brc(P *p)
 int brch(P *p)
 {
 	if (p->b->o.charmap->type) {
-		P *q = pdup(p, USTR "brch");
+		P *q = pdup(p, "brch");
 		int c = pgetc(q);
 		prm(q);
 		return c;
@@ -3063,13 +3029,13 @@ int brch(P *p)
 	}
 }
 
-unsigned char *brmem(P *p, unsigned char *blk, int size)
+char *brmem(P *p, char *blk, int size)
 {
-	unsigned char *bk = blk;
+	char *bk = blk;
 	P *np;
 	int amnt;
 
-	np = pdup(p, USTR "brmem");
+	np = pdup(p, "brmem");
 	while (size > (amnt = GSIZE(np->hdr) - np->ofst)) {
 		grmem(np->hdr, np->ptr, np->ofst, bk, amnt);
 		bk += amnt;
@@ -3082,28 +3048,28 @@ unsigned char *brmem(P *p, unsigned char *blk, int size)
 	return blk;
 }
 
-unsigned char *brs(P *p, int size)
+char *brs(P *p, int size)
 {
-	unsigned char *s = (unsigned char *) joe_malloc(size + 1);
+	char *s = joe_malloc(size + 1);
 
 	s[size] = 0;
 	return brmem(p, s, size);
 }
 
-unsigned char *brvs(P *p, int size)
+char *brvs(P *p, int size)
 {
-	unsigned char *s = vstrunc(NULL, size);
+	char *s = vstrunc(NULL, size);
 
-	return brmem(p, (unsigned char *)s, size);
+	return brmem(p, s, size);
 }
 
-unsigned char *brzs(P *p, unsigned char *buf, int size)
+char *brzs(P *p, char *buf, int size)
 {
-	P *q=pdup(p, USTR "brzs");
+	P *q=pdup(p, "brzs");
 	p_goto_eol(q);
 
 	if(q->byte-p->byte<size)
-		size = q->byte - p->byte;
+		size = TO_INT_OK(q->byte - p->byte);
 
 	prm(q);
 	brmem(p,buf,size);
@@ -3165,9 +3131,9 @@ RETSIGTYPE ttsig(int sig)
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
 		if (b->changed) {
 			if (b->name)
-				fprintf(ttsig_f, (char *)joe_gettext(_("\n*** File \'%s\'\n")), b->name);
+				fprintf(ttsig_f, joe_gettext(_("\n*** File \'%s\'\n")), b->name);
 			else
-				fputs((char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")), ttsig_f);
+				fputs(joe_gettext(_("\n*** File \'(Unnamed)\'\n")), ttsig_f);
 			fflush(ttsig_f);
 			bsavefd(b->bof, fileno(ttsig_f), b->eof->byte);
 		}
@@ -3200,28 +3166,28 @@ skipfile:
    Return 0 for success or -1 for failure
 */
 
-int lock_it(unsigned char *qpath,unsigned char *bf)
+int lock_it(char *qpath,char *bf)
 {
-        unsigned char *path = dequote(qpath);
-	unsigned char *lock_name=dirprt(path);
-	unsigned char *name=namprt(path);
-	unsigned char buf[1024];
-	unsigned char *user = (unsigned char *)getenv("USER");
-	unsigned char *host = (unsigned char *)getenv("HOSTNAME");
+        char *path = dequote(qpath);
+	char *lock_name=dirprt(path);
+	char *name=namprt(path);
+	char buf[1024];
+	char *user = getenv("USER");
+	char *host = getenv("HOSTNAME");
 	int len;
-	if (!user) user=USTR "me";
-	if (!host) host=USTR "here";
+	if (!user) user="me";
+	if (!host) host="here";
 	lock_name=vsncpy(sv(lock_name),sc(".#"));
 	lock_name=vsncpy(sv(lock_name),sv(name));
-	joe_snprintf_3(buf,sizeof(buf),"%s@%s.%d",user,host,getpid());
+	joe_snprintf_3(buf,SIZEOF(buf),"%s@%s.%d",user,host,getpid());
 	/* Fail only if there was an existing lock */
-	if (!symlink((char *)buf,(char *)lock_name) || errno != EEXIST) {
+	if (!symlink(buf,lock_name) || errno != EEXIST) {
 		vsrm(lock_name);
 		vsrm(name);
 		return 0;
 	}
 	if (bf) {
-		len = readlink((char *)lock_name,(char *)bf,255);
+		len = readlink(lock_name,bf,255);
 		if (len<0) len = 0;
 		bf[len] = 0;
 	}
@@ -3230,14 +3196,14 @@ int lock_it(unsigned char *qpath,unsigned char *bf)
 	return -1;
 }
 
-void unlock_it(unsigned char *qpath)
+void unlock_it(char *qpath)
 {
-        unsigned char *path = dequote(qpath);
-	unsigned char *lock_name=dirprt(path);
-	unsigned char *name=namprt(path);
+        char *path = dequote(qpath);
+	char *lock_name=dirprt(path);
+	char *name=namprt(path);
 	lock_name=vsncpy(sv(lock_name),sc(".#"));
 	lock_name=vsncpy(sv(lock_name),sv(name));
-	unlink((char *)lock_name);
+	unlink(lock_name);
 	vsrm(lock_name);
 	vsrm(name);
 }
@@ -3246,7 +3212,7 @@ void unlock_it(unsigned char *qpath)
 
 int plain_file(B *b)
 {
-	if (b->name && zcmp(b->name,USTR "-") && b->name[0]!='!' && b->name[0]!='>' &&
+	if (b->name && zcmp(b->name,"-") && b->name[0]!='!' && b->name[0]!='>' &&
 	    !b->scratch)
 		return 1;
 	else
@@ -3260,7 +3226,7 @@ int check_mod(B *b)
 	struct stat sbuf;
 	if (!plain_file(b))
 		return 0;
-	if (!stat((char *)b->name,&sbuf)) {
+	if (!stat(b->name,&sbuf)) {
 		if (sbuf.st_mtime>b->mod_time) {
 			return 1;
 		}
@@ -3270,9 +3236,9 @@ int check_mod(B *b)
 
 /* True if file exists */
 
-int file_exists(unsigned char *path)
+int file_exists(char *path)
 {
 	struct stat sbuf;
 	if (!path) return 0;
-	return !stat((char *)path, &sbuf);
+	return !stat(path, &sbuf);
 }

@@ -13,9 +13,9 @@ static HENTRY *freentry = NULL;
 
 #define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
 
-size_t hash(unsigned char *s)
+int hash(char *s)
 {
-	size_t accu = 0;
+	int accu = 0;
 
 	while (*s) {
 		accu = hnext(accu, *s++);
@@ -25,12 +25,12 @@ size_t hash(unsigned char *s)
 
 /* Create hash table */
 
-HASH *htmk(size_t len)
+HASH *htmk(int len)
 {
-	HASH *t = (HASH *) joe_malloc(sizeof(HASH));
+	HASH *t = (HASH *) joe_malloc(SIZEOF(HASH));
 	t->nentries = 0;
 	t->len = len;
-	t->tab = (HENTRY **) joe_calloc(sizeof(HENTRY *), len);
+	t->tab = (HENTRY **) joe_calloc(SIZEOF(HENTRY *), len);
 	return t;
 }
 
@@ -55,10 +55,10 @@ void htrm(HASH *ht)
 
 void htexpand(HASH *h)
 {
-	size_t x;
+	int x;
 	/* Allocate new table */
-	size_t new_size = h->len * 2;
-	HENTRY **new_table = (HENTRY **)joe_calloc(new_size, sizeof(HENTRY *));
+	int new_size = h->len * 2;
+	HENTRY **new_table = joe_calloc(new_size, SIZEOF(HENTRY *));
 	/* Copy entries from old table to new */
 	for (x = 0; x != h->len; ++x) {
 		HENTRY *e;
@@ -78,15 +78,15 @@ void htexpand(HASH *h)
  * name and value are not duplicated: it's up to you to keep them around for
  * the life of the hash table. */
 
-void *htadd(HASH *ht, unsigned char *name, void *val)
+void *htadd(HASH *ht, char *name, void *val)
 {
-	size_t hval = hash(name);
-	size_t idx = hval & (ht->len - 1);
+	int hval = hash(name);
+	int idx = hval & (ht->len - 1);
 	HENTRY *entry;
-	size_t x;
+	int x;
 
 	if (!freentry) {
-		entry = (HENTRY *) joe_malloc(sizeof(HENTRY) * 64);
+		entry = (HENTRY *) joe_malloc(SIZEOF(HENTRY) * 64);
 		for (x = 0; x != 64; ++x) {
 			entry[x].next = freentry;
 			freentry = entry + x;
@@ -106,7 +106,7 @@ void *htadd(HASH *ht, unsigned char *name, void *val)
 
 /* Return value associated with name or NULL if there is none */
 
-void *htfind(HASH *ht, unsigned char *name)
+void *htfind(HASH *ht, char *name)
 {
 	HENTRY *e;
 

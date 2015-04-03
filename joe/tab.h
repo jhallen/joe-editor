@@ -5,11 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_TAB_H
-#define _JOE_TAB_H 1
 
 int cmplt(BW *bw);
 extern int menu_jump;
 extern int menu_explorer;
-
-#endif

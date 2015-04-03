@@ -11,7 +11,7 @@
           -1 for file not found
            1 for syntax error (errors written to stderr)
 */
-int procrc(CAP *cap, unsigned char *name);
+int procrc(CAP *cap, char *name);
 
 /* Validate rc file: return -1 if it's bad (call this after rc file has been loaded) */
 int validate_rc();

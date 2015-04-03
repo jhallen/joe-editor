@@ -140,7 +140,7 @@ static void menumove(MENU *m, int x, int y)
 	m->y = y;
 }
 
-static int mlines(unsigned char **s, int w)
+static int mlines(char **s, int w)
 {
 	int x;
 	int lines;
@@ -585,7 +585,7 @@ static int menuabort(MENU *m)
 }
 
 WATOM watommenu = {
-	USTR "menu",
+	"menu",
 	menudisp,
 	menufllw,
 	menuabort,
@@ -598,7 +598,7 @@ WATOM watommenu = {
 	TYPEMENU
 };
 
-void ldmenu(MENU *m, unsigned char **s, int cursor)
+void ldmenu(MENU *m, char **s, int cursor)
 {
 	m->list = s;
 	m->cursor = cursor;
@@ -607,7 +607,7 @@ void ldmenu(MENU *m, unsigned char **s, int cursor)
 
 int menu_above;
 
-MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
+MENU *mkmenu(W *w, W *targ, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
 {
 	W *new;
 	MENU *m;
@@ -630,7 +630,7 @@ MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*ab
 		return NULL;
 	}
 	wfit(new->t);
-	new->object = (void *) (m = (MENU *) joe_malloc(sizeof(MENU)));
+	new->object = (void *) (m = (MENU *) joe_malloc(SIZEOF(MENU)));
 	m->parent = new;
 	m->func = func;
 	m->abrt = abrt;
@@ -647,7 +647,7 @@ MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*ab
 	return m;
 }
 
-static unsigned char *cull(unsigned char *a, unsigned char *b)
+static char *cull(char *a, char *b)
 {
 	int x;
 
@@ -655,9 +655,9 @@ static unsigned char *cull(unsigned char *a, unsigned char *b)
 	return vstrunc(a, x);
 }
 
-unsigned char *find_longest(unsigned char **lst)
+char *find_longest(char **lst)
 {
-	unsigned char *com;
+	char *com;
 	int x;
 
 	if (!lst || !aLEN(lst))
@@ -668,9 +668,9 @@ unsigned char *find_longest(unsigned char **lst)
 	return com;
 }
 
-unsigned char *mcomplete(MENU *m)
+char *mcomplete(MENU *m)
 {
-	unsigned char *com;
+	char *com;
 	int x;
 
 	if (!m->nitems)

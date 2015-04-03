@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_TTY_H
-#define _JOE_TTY_H 1
 
 struct mpx {
 	int	ackfd;		/* Packetizer response descriptor */
@@ -54,8 +52,8 @@ struct mpx {
  */
 void ttopen(void);
 void ttopnn(void);
-extern unsigned long upc; /* Microseconds per character */
-extern unsigned baud; /* Baud rate */
+extern long upc; /* Microseconds per character */
+extern long baud; /* Baud rate */
 
 #define TIMES 3
 #define DIVIDEND 10000000
@@ -91,19 +89,19 @@ int ttcheck(void);
  */
 extern int obufp; /* Output buffer index */
 extern int obufsiz; /* Output buffer size */
-extern unsigned char *obuf; /* Output buffer */
+extern char *obuf; /* Output buffer */
 
 #define ttputc(c) { obuf[obufp++] = (c); if(obufp == obufsiz) ttflsh(); }
 
 /* void ttputs(char *s);  Write a string to the output buffer.  Any time the
  * output buffer gets full, call ttflsh()
  */
-void ttputs(unsigned char *s);
+void ttputs(char *s);
 
 /* int ttshell(char *s);  Run a shell command or if 's' is zero, run a
  * sub-shell
  */
-int ttshell(unsigned char *cmd);
+int ttshell(char *cmd);
 
 /* void ttsusp(void);  Suspend the process, or if the UNIX can't do it, call
  * ttshell(NULL)
@@ -141,7 +139,7 @@ void ttsusp(void);
 int ttflsh(void);
 
 extern int have; /* Set if we have typeahead */
-extern unsigned char havec; /* typeahead character */
+extern char havec; /* typeahead character */
 extern int leave; /* Set if we're exiting (so don't check for typeahead) */
 
 #ifdef __MSDOS__
@@ -188,7 +186,7 @@ void signrm(void);
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int w, int h);
+MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int w, int h);
 
 /* int subshell(int *ptyfd);
  * Execute a subshell.  Returns 'pid' of shell or zero if there was a
@@ -202,10 +200,8 @@ extern int Baud;			/* Baud rate from joerc, cmd line or environment */
 void tickoff(void);
 void tickon(void);
 
-extern long last_time; /* Current time in seconds */
+extern time_t last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */
 
 void ttstsz(int fd, int w, int h); /* Set window size */
 extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */
-
-#endif

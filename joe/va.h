@@ -5,14 +5,12 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_VA_H
-#define _JOE_VA_H 1
 
 /* Functions and global variable you have to define.  Replace these with
  * macros or defines here if they are not to be actual functions 
  */
 
-typedef unsigned char *aELEMENT;
+typedef char *aELEMENT;
 
 /* aELEMENT adup(); */
 #define adup(s) vsdup(s)
@@ -32,7 +30,7 @@ typedef unsigned char *aELEMENT;
 /* aELEMENT *vamk(int len);
  * Create a variable length array.  Space for 'len' elements is preallocated.
  */
-aELEMENT *vamk(size_t len);
+aELEMENT *vamk(int len);
 
 /* void varm(aELEMENT *vary);
  * Free an array and everything which is in it.  Does nothing if 'vary' is
@@ -53,8 +51,8 @@ void varm(aELEMENT *vary);
  * aSIZ returns 0 if you pass it 0.  aSiz does not do this checking,
  * but can be used as an lvalue.
  */
-#define aSIZ(a) ((a) ? *((size_t *)(a) - 2) : 0)
-#define aSiz(a) (*((size_t *)(a) - 2))
+#define aSIZ(a) ((a) ? *((int *)(a) - 2) : 0)
+#define aSiz(a) (*((int *)(a) - 2))
 
 /* int aLEN(aELEMENT *vary);
  * int aLen(aELEMENT *vary);
@@ -68,14 +66,14 @@ void varm(aELEMENT *vary);
  * aLEN return a length of zero if 'vary' is 0.
  * aLen doesn't do this checking, but can be used as an lvalue
  */
-#define aLEN(a) ((a) ? *((size_t *)(a) - 1) : 0)
-#define aLen(a) (*((size_t *)(a) - 1))
+#define aLEN(a) ((a) ? *((int *)(a) - 1) : 0)
+#define aLen(a) (*((int *)(a) - 1))
 
 /* int alen(aELEMENT *ary);
  * Compute length of char or variable length array by searching for termination
  * element.  Returns 0 if 'vary' is 0.
  */
-size_t alen(aELEMENT *ary);
+int alen(aELEMENT *ary);
 
 /* aELEMENT *vaensure(aELEMENT *vary, int len);
  * Make sure there's enough space in the array for 'len' elements.  Whenever
@@ -83,7 +81,7 @@ size_t alen(aELEMENT *ary);
  * minimum space in anticipation of future expansion.  If 'vary' is 0,
  * it creates a new array.
  */
-aELEMENT *vaensure(aELEMENT *vary, size_t len);
+aELEMENT *vaensure(aELEMENT *vary, int len);
 
 /* aELEMENT *vazap(aELEMENT *vary, int pos, int n);
  * Destroy n elements from an array beginning at pos.  Is ok if pos/n go
@@ -92,13 +90,13 @@ aELEMENT *vaensure(aELEMENT *vary, size_t len);
  * function does not actually write to the array.  This does not stop if
  * a aterm is encountered.
  */
-aELEMENT *vazap(aELEMENT *vary, size_t pos, size_t n);
+aELEMENT *vazap(aELEMENT *vary, int pos, int n);
 
 /* aELEMENT *vatrunc(aELEMENT *vary, int len);
  * Truncate array to indicated size.  This zaps or expands with blank elements
  * and sets the LEN() of the array.  A new array is created if 'vary' is 0.
  */
-aELEMENT *vatrunc(aELEMENT *vary, size_t len);
+aELEMENT *vatrunc(aELEMENT *vary, int len);
 
 /************************************/
 /* Function which write to an array */
@@ -112,7 +110,7 @@ aELEMENT *vatrunc(aELEMENT *vary, size_t len);
  * This does not zap previous values.  If you need that to happen, call
  * vazap first.  It does move the terminator around properly though.
  */
-aELEMENT *vafill(aELEMENT *vary, size_t pos, aELEMENT el, size_t len);
+aELEMENT *vafill(aELEMENT *vary, int pos, aELEMENT el, int len);
 
 #ifdef junk
 /* aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len);
@@ -121,7 +119,7 @@ aELEMENT *vafill(aELEMENT *vary, size_t pos, aELEMENT el, size_t len);
  * elements are copied, not duplicated.  A new array is created if 'vary' is
  * 0.  This does not zap previous elements.
  */
-aELEMENT *vancpy(aELEMENT *vary, size_t pos, aELEMENT *array, size_t len);
+aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len);
 #endif
 
 /* aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len);
@@ -129,7 +127,7 @@ aELEMENT *vancpy(aELEMENT *vary, size_t pos, aELEMENT *array, size_t len);
  * 'pos'.  'array' can be a char array since its length is passed seperately.  A
  * new array is created if 'vary' is 0.
  */
-aELEMENT *vandup(aELEMENT *vary, size_t pos, aELEMENT *array, size_t len);
+aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len);
 
 /* aELEMENT *vadup(aELEMENT *vary);
  * Duplicate array.  This is just a functionalized version of:
@@ -152,7 +150,7 @@ aELEMENT *vadup(aELEMENT *vary);
  * deleted.    This does not duplicate 'element'.  If you need 'element'
  * duplicated, call: vaset(vary,pos,adup(element));
  */
-aELEMENT *_vaset(aELEMENT *vary, size_t pos, aELEMENT el);
+aELEMENT *_vaset(aELEMENT *vary, int pos, aELEMENT el);
 
 #define vaset(v,p,el)  \
  (!(v) || (p) > aLen(v) || ((p) == aLen(v) && (p) == aSiz(v)) ?  \
@@ -230,12 +228,10 @@ aELEMENT *_vaset(aELEMENT *vary, size_t pos, aELEMENT el);
 /* aELEMENT *vasort(aELEMENT *ary, int len)
  * Sort the elements of an array (char or variable length) using qsort().
  */
-aELEMENT *vasort(aELEMENT *ary, size_t len);
+aELEMENT *vasort(aELEMENT *ary, int len);
 
 /* aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen);
  * Generate list of strings out of words in 's' seperated with the characters
  * in 'sep'.  The characters in 'sep' must be sorted.
  */
-aELEMENT *vawords(aELEMENT *a, unsigned char *s, size_t len, unsigned char *sep, size_t seplen);
-
-#endif
+aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen);

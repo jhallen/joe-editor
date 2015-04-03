@@ -7,9 +7,9 @@
  */
 #include "types.h"
 
-aELEMENT *vamk(size_t len)
+aELEMENT *vamk(int len)
 {
-	size_t *new = (size_t *) joe_malloc((1 + len) * sizeof(aELEMENT) + 2 * sizeof(size_t));
+	int *new = (int *) joe_malloc((1 + len) * SIZEOF(aELEMENT) + 2 * SIZEOF(int));
 
 	new[0] = len;
 	new[1] = 0;
@@ -21,38 +21,38 @@ void varm(aELEMENT *vary)
 {
 	if (vary) {
 		vazap(vary, 0, aLen(vary));
-		joe_free((size_t *) vary - 2);
+		joe_free((int *) vary - 2);
 	}
 }
 
-size_t alen(aELEMENT *ary)
+int alen(aELEMENT *ary)
 {
 	if (ary) {
 		aELEMENT *beg = ary;
 		while (acmp(*ary, aterm))
 			++ary;
-		return (size_t)(ary - beg);
+		return ary - beg;
 	} else
 		return 0;
 }
 
-aELEMENT *vaensure(aELEMENT *vary, size_t len)
+aELEMENT *vaensure(aELEMENT *vary, int len)
 {
 	if (!vary)
 		vary = vamk(len);
 	else if (len > aSiz(vary)) {
 		len += (len >> 2);
-		vary = (aELEMENT *)(2 + (size_t *) joe_realloc((size_t *) vary - 2, (len + 1) * sizeof(aELEMENT) + 2 * sizeof(size_t)));
+		vary = (aELEMENT *)(2 + (int *) joe_realloc((int *) vary - 2, (len + 1) * SIZEOF(aELEMENT) + 2 * SIZEOF(int)));
 
 		aSiz(vary) = len;
 	}
 	return vary;
 }
 
-aELEMENT *vazap(aELEMENT *vary, size_t pos, size_t n)
+aELEMENT *vazap(aELEMENT *vary, int pos, int n)
 {
 	if (vary) {
-		size_t x;
+		int x;
 
 		if (pos < aLen(vary)) {
 			if (pos + n <= aLen(vary)) {
@@ -67,7 +67,7 @@ aELEMENT *vazap(aELEMENT *vary, size_t pos, size_t n)
 	return vary;
 }
 
-aELEMENT *vatrunc(aELEMENT *vary, size_t len)
+aELEMENT *vatrunc(aELEMENT *vary, int len)
 {
 	if (!vary || len > aLEN(vary))
 		vary = vaensure(vary, len);
@@ -81,9 +81,9 @@ aELEMENT *vatrunc(aELEMENT *vary, size_t len)
 	return vary;
 }
 
-aELEMENT *vafill(aELEMENT *vary, size_t pos, aELEMENT el, size_t len)
+aELEMENT *vafill(aELEMENT *vary, int pos, aELEMENT el, int len)
 {
-	size_t olen = aLEN(vary), x;
+	int olen = aLEN(vary), x;
 
 	if (!vary || pos + len > aSIZ(vary))
 		vary = vaensure(vary, pos + len);
@@ -99,9 +99,9 @@ aELEMENT *vafill(aELEMENT *vary, size_t pos, aELEMENT el, size_t len)
 }
 
 #ifdef junk
-aELEMENT *vancpy(aELEMENT *vary, size_t pos, aELEMENT *array, size_t len)
+aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len)
 {
-	size_t olen = aLEN(vary);
+	int olen = aLEN(vary);
 
 	if (!vary || pos + len > aSIZ(vary))
 		vary = vaensure(vary, pos + len);
@@ -111,14 +111,14 @@ aELEMENT *vancpy(aELEMENT *vary, size_t pos, aELEMENT *array, size_t len)
 	}
 	if (pos > olen)
 		vary = vafill(vary, olen, ablank, pos - olen);
-	mfwrd(vary + pos, array, len * sizeof(aELEMENT));
+	mfwrd(vary + pos, array, len * SIZEOF(aELEMENT));
 	return vary;
 }
 #endif
 
-aELEMENT *vandup(aELEMENT *vary, size_t pos, aELEMENT *array, size_t len)
+aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len)
 {
-	size_t olen = aLEN(vary), x;
+	int olen = aLEN(vary), x;
 
 	if (!vary || pos + len > aSIZ(vary))
 		vary = vaensure(vary, pos + len);
@@ -138,7 +138,7 @@ aELEMENT *vadup(aELEMENT *vary)
 	return vandup(NULL, 0, vary, aLEN(vary));
 }
 
-aELEMENT *_vaset(aELEMENT *vary, size_t pos, aELEMENT el)
+aELEMENT *_vaset(aELEMENT *vary, int pos, aELEMENT el)
 {
 	if (!vary || pos + 1 > aSIZ(vary))
 		vary = vaensure(vary, pos + 1);
@@ -163,17 +163,17 @@ static int _acmp(aELEMENT *a, aELEMENT *b)
 	return acmp(*a, *b);
 }
 
-aELEMENT *vasort(aELEMENT *ary, size_t len)
+aELEMENT *vasort(aELEMENT *ary, int len)
 {
 	if (!ary || !len)
 		return ary;
-	qsort(ary, len, sizeof(aELEMENT), (int (*)(const void *, const void *))_acmp);
+	qsort(ary, len, SIZEOF(aELEMENT), (int (*)(const void *, const void *))_acmp);
 	return ary;
 }
 
-aELEMENT *vawords(aELEMENT *a, unsigned char *s, size_t len, unsigned char *sep, size_t seplen)
+aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen)
 {
-	size_t x;
+	int x;
 
 	if (!a)
 		a = vamk(10);
@@ -185,7 +185,7 @@ aELEMENT *vawords(aELEMENT *a, unsigned char *s, size_t len, unsigned char *sep,
 	len -= x;
 	if (len) {
 		x = vsscan(s, len, sep, seplen);
-		if (x != ~(size_t)0) {
+		if (x != ~0) {
 			a = vaadd(a, vsncpy(vsmk(x), 0, s, x));
 			s += x;
 			len -= x;

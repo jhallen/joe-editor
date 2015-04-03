@@ -22,10 +22,10 @@ int npos = 0;
 
 static void markpos(W *w, P *p)
 {
-	POS *new = alitem(&frpos, sizeof(POS));
+	POS *new = alitem(&frpos, SIZEOF(POS));
 
 	new->p = NULL;
-	pdupown(p, &new->p, USTR "markpos");
+	pdupown(p, &new->p, "markpos");
 	poffline(new->p);
 	new->w = w;
 	enqueb(POS, link, &pos, new);

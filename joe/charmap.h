@@ -6,9 +6,6 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-#ifndef _Icharmap
-#define _Icharmap 1
-
 /* For sorted from_map entries */
 
 struct pair {
@@ -20,7 +17,7 @@ struct pair {
 
 struct charmap {
 	struct charmap *next;		/* Linked list of loaded character maps */
-	unsigned char *name;		/* Name of this one */
+	char *name;		/* Name of this one */
 
 	int type;			/* 0=byte, 1=UTF-8 */
 
@@ -43,16 +40,16 @@ struct charmap {
 
 	int *to_map;			/* Convert byte to unicode */
 
-	unsigned char lower_map[256];	/* Convert to lower case */
-	unsigned char upper_map[256];
+	char lower_map[256];	/* Convert to lower case */
+	char upper_map[256];
 
 	struct pair from_map[256];	/* Convert from unicode to byte */
 
 	int from_size;			/* No. paris in from_map */
 
-	unsigned char print_map[32];	/* Bit map of printable characters */
-	unsigned char alpha__map[32];	/* Bit map of alphabetic characters and _ */
-	unsigned char alnum__map[32];	/* Bit map of alphanumeric characters and _ */
+	char print_map[32];	/* Bit map of printable characters */
+	char alpha__map[32];	/* Bit map of alphabetic characters and _ */
+	char alnum__map[32];	/* Bit map of alphanumeric characters and _ */
 };
 
 /* Predicates */
@@ -71,15 +68,13 @@ int joe_isspace_eof(struct charmap *map,int c);
 #define joe_toupper(map,c) ((map)->to_upper((map),(c)))
 #define joe_to_uni(map,c) ((map)->to_uni((map),(c)))
 #define joe_from_uni(map,c) ((map)->from_uni((map),(c)))
-unsigned char *lowerize(unsigned char *s);
+char *lowerize(char *s);
 
 /* Find (load if necessary) a character set */
-struct charmap *find_charmap(unsigned char *name);
+struct charmap *find_charmap(char *name);
 
 /* Get available encodings */
-unsigned char **get_encodings(void);
+char **get_encodings(void);
 
 int from_uni(struct charmap *cset, int c);
 int to_uni(struct charmap *cset, int c);
-
-#endif

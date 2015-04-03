@@ -1,5 +1,10 @@
 /* JOE global header file */
 
+#define _FILE_OFFSET_BITS 64
+#define TO_INT_OK(a) ((int)(a)) /* Means it's OK that we are converting off_t to int in this case */
+#define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
+#define SIZEOF(a) ((int)sizeof(a))
+
 #include "config.h"
 
 /* Common header files */
@@ -39,14 +44,14 @@ typedef int pid_t;
 #include <time.h>
 #endif
 
-#define joe_gettext(s) my_gettext((unsigned char *)(s))
+#define joe_gettext(s) my_gettext((s))
 
 /*
 #ifdef ENABLE_NLS
 #include <libintl.h>
-#define joe_gettext(s) (unsigned char *)gettext((char *)(s))
+#define joe_gettext(s) (char *)gettext((char *)(s))
 #else
-#define joe_gettext(s) ((unsigned char *)(s))
+#define joe_gettext(s) ((char *)(s))
 #endif
 */
 
@@ -55,63 +60,60 @@ typedef int pid_t;
 
 /* Global Defines */
 
-/* Prefix to make string constants unsigned */
-#define USTR (unsigned char *)
-
 /* Doubly-linked list node */
 #define LINK(type) struct { type *next; type *prev; }
 
 #ifdef HAVE_SNPRINTF
 
-#define joe_snprintf_0(buf,len,fmt) zlcpy((buf),(len),(unsigned char *)(fmt))
-#define joe_snprintf_1(buf,len,fmt,a) snprintf((char *)(buf),(len),(char *)(fmt),(a))
-#define joe_snprintf_2(buf,len,fmt,a,b) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b))
-#define joe_snprintf_3(buf,len,fmt,a,b,c) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c))
-#define joe_snprintf_4(buf,len,fmt,a,b,c,d) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d))
-#define joe_snprintf_5(buf,len,fmt,a,b,c,d,e) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d),(e))
-#define joe_snprintf_6(buf,len,fmt,a,b,c,d,e,f) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d),(e),(f))
-#define joe_snprintf_7(buf,len,fmt,a,b,c,d,e,f,g) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g))
-#define joe_snprintf_8(buf,len,fmt,a,b,c,d,e,f,g,h) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h))
-#define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
-#define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) snprintf((char *)(buf),(len),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
+#define joe_snprintf_0(buf,len,fmt) zlcpy((buf),(len),(fmt))
+#define joe_snprintf_1(buf,len,fmt,a) snprintf((buf),(len),(fmt),(a))
+#define joe_snprintf_2(buf,len,fmt,a,b) snprintf((buf),(len),(fmt),(a),(b))
+#define joe_snprintf_3(buf,len,fmt,a,b,c) snprintf((buf),(len),(fmt),(a),(b),(c))
+#define joe_snprintf_4(buf,len,fmt,a,b,c,d) snprintf((buf),(len),(fmt),(a),(b),(c),(d))
+#define joe_snprintf_5(buf,len,fmt,a,b,c,d,e) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e))
+#define joe_snprintf_6(buf,len,fmt,a,b,c,d,e,f) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f))
+#define joe_snprintf_7(buf,len,fmt,a,b,c,d,e,f,g) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f),(g))
+#define joe_snprintf_8(buf,len,fmt,a,b,c,d,e,f,g,h) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f),(g),(h))
+#define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
+#define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
 
-#define logmessage_0(fmt) (zlcpy((i_msg),sizeof(i_msg),(unsigned char *)(fmt)), internal_msg(i_msg))
-#define logmessage_1(fmt,a) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a)), internal_msg(i_msg))
-#define logmessage_2(fmt,a,b) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg))
-#define logmessage_3(fmt,a,b,c) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg))
-#define logmessage_4(fmt,a,b,c,d) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
+#define logmessage_0(fmt) (zlcpy((i_msg),sizeof(i_msg),(fmt)), internal_msg(i_msg))
+#define logmessage_1(fmt,a) (snprintf((i_msg),sizeof(i_msg),(fmt),(a)), internal_msg(i_msg))
+#define logmessage_2(fmt,a,b) (snprintf((i_msg),sizeof(i_msg),(fmt),(a),(b)), internal_msg(i_msg))
+#define logmessage_3(fmt,a,b,c) (snprintf((i_msg),sizeof(i_msg),(fmt),(a),(b),(c)), internal_msg(i_msg))
+#define logmessage_4(fmt,a,b,c,d) (snprintf((i_msg),sizeof(i_msg),(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
 
-#define logerror_0(fmt) (zlcpy((i_msg),sizeof(i_msg),(unsigned char *)(fmt)), internal_msg(i_msg), setlogerrs())
-#define logerror_1(fmt,a) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a)), internal_msg(i_msg), setlogerrs())
-#define logerror_2(fmt,a,b) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg), setlogerrs())
-#define logerror_3(fmt,a,b,c) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg), setlogerrs())
-#define logerror_4(fmt,a,b,c,d) (snprintf((char *)(i_msg),sizeof(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg), setlogerrs())
+#define logerror_0(fmt) (zlcpy((i_msg),sizeof(i_msg),(fmt)), internal_msg(i_msg), setlogerrs())
+#define logerror_1(fmt,a) (snprintf((i_msg),sizeof(i_msg),(fmt),(a)), internal_msg(i_msg), setlogerrs())
+#define logerror_2(fmt,a,b) (snprintf((i_msg),sizeof(i_msg),(fmt),(a),(b)), internal_msg(i_msg), setlogerrs())
+#define logerror_3(fmt,a,b,c) (snprintf((i_msg),sizeof(i_msg),(fmt),(a),(b),(c)), internal_msg(i_msg), setlogerrs())
+#define logerror_4(fmt,a,b,c,d) (snprintf((i_msg),sizeof(i_msg),(fmt),(a),(b),(c),(d)), internal_msg(i_msg), setlogerrs())
 
 #else
 
-#define joe_snprintf_0(buf,len,fmt) sprintf((char *)(buf),(char *)(fmt))
-#define joe_snprintf_1(buf,len,fmt,a) sprintf((char *)(buf),(char *)(fmt),(a))
-#define joe_snprintf_2(buf,len,fmt,a,b) sprintf((char *)(buf),(char *)(fmt),(a),(b))
-#define joe_snprintf_3(buf,len,fmt,a,b,c) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c))
-#define joe_snprintf_4(buf,len,fmt,a,b,c,d) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d))
-#define joe_snprintf_5(buf,len,fmt,a,b,c,d,e) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e))
-#define joe_snprintf_6(buf,len,fmt,a,b,c,d,e,f) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f))
-#define joe_snprintf_7(buf,len,fmt,a,b,c,d,e,f,g) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g))
-#define joe_snprintf_8(buf,len,fmt,a,b,c,d,e,f,g,h) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h))
-#define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
-#define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) sprintf((char *)(buf),(char *)(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
+#define joe_snprintf_0(buf,len,fmt) sprintf((buf),(fmt))
+#define joe_snprintf_1(buf,len,fmt,a) sprintf((buf),(fmt),(a))
+#define joe_snprintf_2(buf,len,fmt,a,b) sprintf((buf),(fmt),(a),(b))
+#define joe_snprintf_3(buf,len,fmt,a,b,c) sprintf((buf),(fmt),(a),(b),(c))
+#define joe_snprintf_4(buf,len,fmt,a,b,c,d) sprintf((buf),(fmt),(a),(b),(c),(d))
+#define joe_snprintf_5(buf,len,fmt,a,b,c,d,e) sprintf((buf),(fmt),(a),(b),(c),(d),(e))
+#define joe_snprintf_6(buf,len,fmt,a,b,c,d,e,f) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f))
+#define joe_snprintf_7(buf,len,fmt,a,b,c,d,e,f,g) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f),(g))
+#define joe_snprintf_8(buf,len,fmt,a,b,c,d,e,f,g,h) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f),(g),(h))
+#define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
+#define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
 
-#define logmessage_0(fmt) (sprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg))
-#define logmessage_1(fmt,a) (sprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg))
-#define logmessage_2(fmt,a,b) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg))
-#define logmessage_3(fmt,a,b,c) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg))
-#define logmessage_4(fmt,a,b,c,d) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
+#define logmessage_0(fmt) (sprintf((i_msg),(fmt)), internal_msg(i_msg))
+#define logmessage_1(fmt,a) (sprintf((i_msg),(fmt),(a)), internal_msg(i_msg))
+#define logmessage_2(fmt,a,b) (sprintf((i_msg),(fmt),(a),(b)), internal_msg(i_msg))
+#define logmessage_3(fmt,a,b,c) (sprintf((i_msg),(fmt),(a),(b),(c)), internal_msg(i_msg))
+#define logmessage_4(fmt,a,b,c,d) (sprintf((i_msg),(fmt),(a),(b),(c),(d)), internal_msg(i_msg))
 
-#define logerror_0(fmt) (sprintf((char *)(i_msg),(char *)(fmt)), internal_msg(i_msg), setlogerrs())
-#define logerror_1(fmt,a) (sprintf((char *)(i_msg),(char *)(fmt),(a)), internal_msg(i_msg), setlogerrs())
-#define logerror_2(fmt,a,b) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b)), internal_msg(i_msg), setlogerrs())
-#define logerror_3(fmt,a,b,c) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c)), internal_msg(i_msg), setlogerrs())
-#define logerror_4(fmt,a,b,c,d) (sprintf((char *)(i_msg),(char *)(fmt),(a),(b),(c),(d)), internal_msg(i_msg), setlogerrs())
+#define logerror_0(fmt) (sprintf((i_msg),(fmt)), internal_msg(i_msg), setlogerrs())
+#define logerror_1(fmt,a) (sprintf((i_msg),(fmt),(a)), internal_msg(i_msg), setlogerrs())
+#define logerror_2(fmt,a,b) (sprintf((i_msg),(fmt),(a),(b)), internal_msg(i_msg), setlogerrs())
+#define logerror_3(fmt,a,b,c) (sprintf((i_msg),(fmt),(a),(b),(c)), internal_msg(i_msg), setlogerrs())
+#define logerror_4(fmt,a,b,c,d) (sprintf((i_msg),(fmt),(a),(b),(c),(d)), internal_msg(i_msg), setlogerrs())
 
 #endif
 
@@ -141,7 +143,9 @@ typedef int pid_t;
 #ifndef EOF
 #define EOF -1
 #endif
-#define NO_MORE_DATA EOF
+
+/* We use -256 so that it's still unique even if we promoted a signed char to an int */
+#define NO_MORE_DATA (-256)
 
 #if defined __MSDOS__ && SIZEOF_INT == 2 /* real mode ms-dos compilers */
 #if SIZEOF_VOID_P == 4 /* real mode ms-dos compilers with 'far' memory model or something like that */
@@ -249,7 +253,7 @@ typedef struct vt_context VT;
 struct highlight_state {
 	struct high_frame *stack;   /* Pointer to the current frame in the call stack */
 	int state;                  /* Current state in the current subroutine */
-	unsigned char saved_s[24];  /* Buffer for saved delimiters */
+	char saved_s[24];  /* Buffer for saved delimiters */
 };
 
 /* Include files */

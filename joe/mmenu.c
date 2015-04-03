@@ -10,11 +10,11 @@
 
 static B *menuhist = NULL; /* Menu history */
 static struct rc_menu *menus; /* All menus */
-static unsigned char **smenus = NULL; /* Completion list */
+static char **smenus = NULL; /* Completion list */
 
 /* Find a menu */
 
-static struct rc_menu *find_menu(unsigned char *s)
+static struct rc_menu *find_menu(char *s)
 {
 	struct rc_menu *m;
 	for (m = menus; m; m = m->next)
@@ -25,12 +25,12 @@ static struct rc_menu *find_menu(unsigned char *s)
 
 /* Create a new menu, push it on menus list */
 
-struct rc_menu *create_menu(unsigned char *name, MACRO *bs)
+struct rc_menu *create_menu(char *name, MACRO *bs)
 {
 	struct rc_menu *menu = find_menu(name);
 	if (menu)
 		return menu;
-	menu = (struct rc_menu *)joe_malloc(sizeof(struct rc_menu));
+	menu = (struct rc_menu *)joe_malloc(SIZEOF(struct rc_menu));
 	menu->name = zdup(name);
 	menu->next = menus;
 	menus = menu;
@@ -43,16 +43,16 @@ struct rc_menu *create_menu(unsigned char *name, MACRO *bs)
 
 /* Add an entry to a menu */
 
-void add_menu_entry(struct rc_menu *menu, unsigned char *entry_name, MACRO *m)
+void add_menu_entry(struct rc_menu *menu, char *entry_name, MACRO *m)
 {
-	struct rc_menu_entry *e = (struct rc_menu_entry *)joe_malloc(sizeof(struct rc_menu_entry));
+	struct rc_menu_entry *e = (struct rc_menu_entry *)joe_malloc(SIZEOF(struct rc_menu_entry));
 	e->m = m;
 	e->name = zdup(entry_name);
 	++menu->size;
 	if (!menu->entries) {
-		menu->entries = (struct rc_menu_entry **)joe_malloc(menu->size * sizeof(struct rc_menu_entry *));
+		menu->entries = (struct rc_menu_entry **)joe_malloc(menu->size * SIZEOF(struct rc_menu_entry *));
 	} else {
-		menu->entries = (struct rc_menu_entry **)joe_realloc(menu->entries, menu->size * sizeof(struct rc_menu_entry *));
+		menu->entries = (struct rc_menu_entry **)joe_realloc(menu->entries, menu->size * SIZEOF(struct rc_menu_entry *));
 	}
 	menu->entries[menu->size - 1] = e;
 }
@@ -102,8 +102,8 @@ static int execmenu(MENU *m, int x, struct menu_instance *mi, int flg)
 
 static int display_menu(BW *bw, struct rc_menu *menu, int *notify)
 {
-	struct menu_instance *m = (struct menu_instance *)joe_malloc(sizeof(struct menu_instance));
-	unsigned char **s = (unsigned char **)joe_malloc(sizeof(unsigned char *) * (menu->size + 1));
+	struct menu_instance *m = (struct menu_instance *)joe_malloc(SIZEOF(struct menu_instance));
+	char **s = (char **)joe_malloc(SIZEOF(char *) * (menu->size + 1));
 	int x;
 	for (x = 0; x != menu->size; ++x) {
 		s[x] = stagen(NULL, bw, menu->entries[x]->name, ' ');
@@ -119,9 +119,9 @@ static int display_menu(BW *bw, struct rc_menu *menu, int *notify)
 
 /* Build array of menu name from list of menus for completion */
 
-static unsigned char **getmenus(void)
+static char **getmenus(void)
 {
-	unsigned char **s = vaensure(NULL, 20);
+	char **s = vaensure(NULL, 20);
 	struct rc_menu *m;
 
 	for (m = menus; m; m = m->next)
@@ -141,7 +141,7 @@ static int menucmplt(BW *bw)
 
 /* When user selects a menu to bring up */
 
-static int domenu(BW *bw, unsigned char *s, void *object, int *notify)
+static int domenu(BW *bw, char *s, void *object, int *notify)
 {
 	struct rc_menu *menu = find_menu(s);
 	vsrm(s);
@@ -160,7 +160,7 @@ static int domenu(BW *bw, unsigned char *s, void *object, int *notify)
 
 int umenu(BW *bw)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Menu: ")), &menuhist, domenu, USTR "menu", NULL, menucmplt, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(bw->parent, joe_gettext(_("Menu: ")), &menuhist, domenu, "menu", NULL, menucmplt, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

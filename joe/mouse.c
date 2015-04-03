@@ -33,7 +33,7 @@ int joexterm=0;			/* set if we're using Joe's modified xterm */
 static int selecting = 0;	/* Set if we did any selecting */
 
 static int Cb, Cx, Cy;
-static int last_msec=0;		/* time in ms when event occurred */
+static long last_msec=0;		/* time in ms when event occurred */
 static int clicks;
 
 static void fake_key(int c)
@@ -86,7 +86,7 @@ static int mouse_event(BW *bw)
 	else if ((maint->curwin->watom->what & TYPETW ||
 	          maint->curwin->watom->what & TYPEPW) &&
 	          joexterm && (Cb & 3) == 1)		/* Paste */
-		ttputs(USTR "\33]52;;?\33\\");
+		ttputs("\33]52;;?\33\\");
 	return 0;
 }
 
@@ -135,7 +135,7 @@ int uextmouse(BW *bw)
 	return mouse_event(bw);
 }
 
-int mnow()
+long mnow()
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
@@ -175,9 +175,10 @@ int base64_accu = 0;
 int base64_count = 0;
 int base64_pad = 0;
 
-static void ttputs64(unsigned char *p, unsigned length)
+static void ttputs64(char *pp, unsigned length)
 {
-        unsigned char buf[65];
+	unsigned char *p = (unsigned char *)pp;
+        char buf[65];
         unsigned x = 0;
         while (length--) {
             switch (base64_count) {
@@ -218,7 +219,7 @@ static void ttputs64(unsigned char *p, unsigned length)
 
 static void ttputs64_flush()
 {
-    unsigned char x;
+    char x;
     switch (base64_count) {
         case 0:
             break;
@@ -245,14 +246,14 @@ void select_done(struct charmap *map)
 {
 	/* Feed text to xterm */
 	if (joexterm && markv(1)) {
-		long left = markb->xcol;
-		long right = markk->xcol;
-		P *q = pdup(markb, USTR "select_done");
+		off_t left = markb->xcol;
+		off_t right = markk->xcol;
+		P *q = pdup(markb, "select_done");
 		int c;
-		/* ttputs(USTR "\33[?2P"); JOE's xterm */
-		ttputs(USTR "\33]52;;"); /* New xterm */
+		/* ttputs("\33[?2P"); JOE's xterm */
+		ttputs("\33]52;;"); /* New xterm */
 		while (q->byte < markk->byte) {
-			unsigned char buf[16];
+			char buf[16];
 			int len;
 			/* Skip until we're within columns */
 			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
@@ -295,7 +296,7 @@ void select_done(struct charmap *map)
 			}
 		}
 		ttputs64_flush();
-		ttputs(USTR "\33\\");
+		ttputs("\33\\");
 		prm(q);
 	}
 }
@@ -356,9 +357,9 @@ int utomouse(BW *xx)
 	drag_size = 0;
 	if (w->watom->what == TYPETW) {
 		if (bw->o.hex) {
-			int goal_col = x - w->x + bw->offset - 60;
-			int goal_line;
-			long goal_byte;
+			off_t goal_col = x - w->x + bw->offset - 60;
+			off_t goal_line;
+			off_t goal_byte;
 			if (goal_col < 0)
 				goal_col = 0;
 			if (goal_col >15)
@@ -380,8 +381,8 @@ int utomouse(BW *xx)
 			pgoto(bw->cursor, goal_byte);
 			return 0;
 		} else {
-			int goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
-			int goal_line;
+			off_t goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
+			off_t goal_line;
 			if (goal_col < 0)
 				goal_col = 0;
 			/* window has a status line? */
@@ -417,7 +418,7 @@ int utomouse(BW *xx)
 
 /* same as utomouse but won't change windows, and always floats. puts the
  * position that utomouse would use into tmspos. */
-static int tmspos;
+static off_t tmspos;
 
 static int tomousestay()
 {
@@ -433,9 +434,9 @@ static int tomousestay()
 	bw = w->object;
 	if (w->watom->what == TYPETW) {
 		if (bw->o.hex) {
-			int goal_col = x - w->x + bw->offset - 60;
-			int goal_line;
-			long goal_byte;
+			off_t goal_col = x - w->x + bw->offset - 60;
+			off_t goal_line;
+			off_t goal_byte;
 			if (goal_col < 0)
 				goal_col = 0;
 			if (goal_col > 15)
@@ -467,8 +468,8 @@ static int tomousestay()
 			tmspos = bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
-			int goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
-			int goal_line;
+			off_t goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
+			off_t goal_line;
 			if (goal_col < 0)
 				goal_col = 0;
 			/* window has a status line? */
@@ -506,8 +507,8 @@ static int tomousestay()
 	} else return -1;
 }
 
-static long anchor;		/* byte where mouse was originally pressed */
-static long anchorn;		/* near side of the anchored word */
+static off_t anchor;		/* byte where mouse was originally pressed */
+static off_t anchorn;		/* near side of the anchored word */
 static int marked;		/* mark was set by defmdrag? */
 static int reversed;		/* mouse was dragged above the anchor? */
 
@@ -594,8 +595,8 @@ int udefmdrag(BW *xx)
 	else
 		umarkk(bw);
 	if ((!reversed && bw->cursor->byte < anchor) || (reversed && bw->cursor->byte > anchor)) {
-		P *q = pdup(markb, USTR "udefmdrag");
-		int tmp = markb->xcol;
+		P *q = pdup(markb, "udefmdrag");
+		off_t tmp = markb->xcol;
 		pset(markb,markk);
 		pset(markk,q);
 		markb->xcol = markk->xcol;
@@ -714,10 +715,10 @@ void mouseopen()
 {
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
-		ttputs(USTR "\33[?1002h");
-		ttputs(USTR "\33[?1006h");
+		ttputs("\33[?1002h");
+		ttputs("\33[?1006h");
 		if (joexterm)
-			ttputs(USTR "\33[?2007h");
+			ttputs("\33[?2007h");
 		ttflsh();
 	}
 #endif
@@ -728,9 +729,9 @@ void mouseclose()
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
 		if (joexterm)
-			ttputs(USTR "\33[?2007l");
-		ttputs(USTR "\33[?1006l");
-		ttputs(USTR "\33[?1002l");
+			ttputs("\33[?2007l");
+		ttputs("\33[?1006l");
+		ttputs("\33[?1002l");
 		ttflsh();
 	}
 #endif

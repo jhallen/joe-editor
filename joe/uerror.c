@@ -13,11 +13,11 @@ typedef struct error ERROR;
 
 struct error {
 	LINK(ERROR) link;	/* Linked list of errors */
-	long line;		/* Target line number */
-	long org;		/* Original target line number */
-	unsigned char *file;	/* Target file name */
-	long src;		/* Error-file line number */
-	unsigned char *msg;	/* The message */
+	off_t line;		/* Target line number */
+	off_t org;		/* Original target line number */
+	char *file;	/* Target file name */
+	off_t src;		/* Error-file line number */
+	char *msg;	/* The message */
 } errors = { { &errors, &errors} };
 ERROR *errptr = &errors;	/* Current error row */
 
@@ -32,8 +32,8 @@ B *errbuf = NULL;		/* Buffer with error messages */
 B *beafter(B *b)
 {
 	struct error *e;
-	unsigned char *name = b->name;
-	if (!name) name = USTR "";
+	char *name = b->name;
+	if (!name) name = "";
 	for (e = errors.link.next; e != &errors; e = e->link.next)
 		if (!zcmp(name, e->file))
 			break;
@@ -58,7 +58,7 @@ B *beafter(B *b)
 
 /* Insert and delete notices */
 
-void inserr(unsigned char *name, long int where, long int n, int bol)
+void inserr(char *name, off_t where, off_t n, int bol)
 {
 	ERROR *e;
 
@@ -77,7 +77,7 @@ void inserr(unsigned char *name, long int where, long int n, int bol)
 	}
 }
 
-void delerr(unsigned char *name, long int where, long int n)
+void delerr(char *name, off_t where, off_t n)
 {
 	ERROR *e;
 
@@ -98,7 +98,7 @@ void delerr(unsigned char *name, long int where, long int n)
 
 /* Abort notice */
 
-void abrerr(unsigned char *name)
+void abrerr(char *name)
 {
 	ERROR *e;
 
@@ -110,7 +110,7 @@ void abrerr(unsigned char *name)
 
 /* Save notice */
 
-void saverr(unsigned char *name)
+void saverr(char *name)
 {
 	ERROR *e;
 
@@ -152,11 +152,11 @@ static int freeall(void)
 /* First word (allowing ., /, _ and -) with a . is the file name.  Next number
    is line number.  Then there should be a ':' */
 
-static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_name,long *rtn_line)
+static void parseone(struct charmap *map,char *s,char **rtn_name,off_t *rtn_line)
 {
 	int x, y, flg;
-	unsigned char *name = NULL;
-	long line = -1;
+	char *name = NULL;
+	off_t line = -1;
 
 	y=0;
 	flg=0;
@@ -185,8 +185,9 @@ static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_na
 	for (y = x; s[y] >= '0' && s[y] <= '9'; ++y) ;
 
 	/* Save line number */
-	if (x != y)
-		sscanf((char *)(s + x), "%ld", &line);
+	if (x != y) {
+		line = ztoo(s + x);
+	}
 	if (line != -1)
 		--line;
 
@@ -220,11 +221,11 @@ static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_na
  * filename:line-number:*
  */
 
-void parseone_grep(struct charmap *map,unsigned char *s,unsigned char **rtn_name,long *rtn_line)
+void parseone_grep(struct charmap *map,char *s,char **rtn_name,off_t *rtn_line)
 {
 	int y;
-	unsigned char *name = NULL;
-	long line = -1;
+	char *name = NULL;
+	off_t line = -1;
 
 	if (s[0] == 'J' && s[1] == 'O' && s[2] == 'E' && s[3] == ':')
 		goto bye;
@@ -254,11 +255,11 @@ void parseone_grep(struct charmap *map,unsigned char *s,unsigned char **rtn_name
 	*rtn_line = line;
 }
 
-static int parseit(struct charmap *map,unsigned char *s, long int row,
-  void (*parseone)(struct charmap *map, unsigned char *s, unsigned char **rtn_name, long *rtn_line), unsigned char *current_dir)
+static int parseit(struct charmap *map,char *s, off_t row,
+  void (*parseone)(struct charmap *map, char *s, char **rtn_name, off_t *rtn_line), char *current_dir)
 {
-	unsigned char *name = NULL;
-	long line = -1;
+	char *name = NULL;
+	off_t line = -1;
 	ERROR *err;
 
 	parseone(map,s,&name,&line);
@@ -266,7 +267,7 @@ static int parseit(struct charmap *map,unsigned char *s, long int row,
 	if (name) {
 		if (line != -1) {
 			/* We have an error */
-			err = (ERROR *) alitem(&errnodes, sizeof(ERROR));
+			err = (ERROR *) alitem(&errnodes, SIZEOF(ERROR));
 			err->file = name;
 			if (current_dir) {
 				err->file = vsncpy(NULL, 0, sv(current_dir));
@@ -290,14 +291,14 @@ static int parseit(struct charmap *map,unsigned char *s, long int row,
 
 /* Parse the error output contained in a buffer */
 
-void kill_ansi(unsigned char *s);
+void kill_ansi(char *s);
 
-static long parserr(B *b)
+static off_t parserr(B *b)
 {
 	if (markv(1)) {
-		P *p = pdup(markb, USTR "parserr1");
-		P *q = pdup(markb, USTR "parserr2");
-		long nerrs = 0;
+		P *p = pdup(markb, "parserr1");
+		P *q = pdup(markb, "parserr2");
+		off_t nerrs = 0;
 		errbuf = markb->b;
 
 		freeall();
@@ -305,7 +306,7 @@ static long parserr(B *b)
 		p_goto_bol(p);
 
 		do {
-			unsigned char *s;
+			char *s;
 
 			pset(q, p);
 			p_goto_eol(p);
@@ -321,14 +322,14 @@ static long parserr(B *b)
 		prm(q);
 		return nerrs;
 	} else {
-		P *p = pdup(b->bof, USTR "parserr3");
-		P *q = pdup(p, USTR "parserr4");
-		long nerrs = 0;
+		P *p = pdup(b->bof, "parserr3");
+		P *q = pdup(p, "parserr4");
+		off_t nerrs = 0;
 		errbuf = b;
 
 		freeall();
 		do {
-			unsigned char *s;
+			char *s;
 
 			pset(q, p);
 			p_goto_eol(p);
@@ -373,15 +374,15 @@ BW *find_a_good_bw(B *b)
 int parserrb(B *b)
 {
 	BW *bw;
-	int n;
+	off_t n;
 	freeall();
 	bw = find_a_good_bw(b);
 	unmark(bw);
 	n = parserr(b);
 	if (n)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), (int)n);
 	else
-		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages found")));
+		joe_snprintf_0(msgbuf, SIZEOF(msgbuf), joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
@@ -390,11 +391,11 @@ int urelease(BW *bw)
 {
 	bw->b->parseone = 0;
 	if (qempty(ERROR, link, &errors) && !errbuf) {
-		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages")));
+		joe_snprintf_0(msgbuf, SIZEOF(msgbuf), joe_gettext(_("No messages")));
 	} else {
 		int count = freeall();
 		errbuf = NULL;
-		joe_snprintf_1(msgbuf, sizeof(msgbuf), joe_gettext(_("%d messages cleared")), count);
+		joe_snprintf_1(msgbuf, SIZEOF(msgbuf), joe_gettext(_("%d messages cleared")), count);
 	}
 	msgnw(bw->parent, msgbuf);
 	updall();
@@ -403,33 +404,33 @@ int urelease(BW *bw)
 
 int uparserr(BW *bw)
 {
-	int n;
+	off_t n;
 	freeall();
 	bw->b->parseone = parseone;
 	n = parserr(bw->b);
 	if (n)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), (int)n);
 	else
-		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages found")));
+		joe_snprintf_0(msgbuf, SIZEOF(msgbuf), joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
 
 int ugparse(BW *bw)
 {
-	int n;
+	off_t n;
 	freeall();
 	bw->b->parseone = parseone_grep;
 	n = parserr(bw->b);
 	if (n)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), (int)n);
 	else
-		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages found")));
+		joe_snprintf_0(msgbuf, SIZEOF(msgbuf), joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
 
-int jump_to_file_line(BW *bw,unsigned char *file,int line,unsigned char *msg)
+int jump_to_file_line(BW *bw,char *file,off_t line,char *msg)
 {
 	int omid;
 	if (!bw->b->name || zcmp(file, bw->b->name)) {
@@ -462,7 +463,7 @@ int ucurrent_msg(BW *bw)
 
 /* Find line in error database: return pointer to message */
 
-ERROR *srcherr(BW *bw,unsigned char *file,long line)
+ERROR *srcherr(BW *bw,char *file,off_t line)
 {
 	ERROR *p;
 	for (p = errors.link.next; p != &errors; p=p->link.next)
@@ -476,9 +477,9 @@ ERROR *srcherr(BW *bw,unsigned char *file,long line)
 
 /* Delete ansi formatting */
 
-void kill_ansi(unsigned char *s)
+void kill_ansi(char *s)
 {
-	unsigned char *d = s;
+	char *d = s;
 	while (*s)
 		if (*s == 27) {
 			while (*s && (*s == 27 || *s == '[' || (*s >= '0' && *s <= '9') || *s == ';'))
@@ -493,9 +494,9 @@ void kill_ansi(unsigned char *s)
 int ujump(BW *bw)
 {
 	int rtn = -1;
-	P *p = pdup(bw->cursor, USTR "ujump");
-	P *q = pdup(p, USTR "ujump");
-	unsigned char *s;
+	P *p = pdup(bw->cursor, "ujump");
+	P *q = pdup(p, "ujump");
+	char *s;
 	p_goto_bol(p);
 	p_goto_eol(q);
 	s = brvs(p, (int) (q->byte - p->byte));
@@ -503,10 +504,10 @@ int ujump(BW *bw)
 	prm(p);
 	prm(q);
 	if (s) {
-		unsigned char *name = NULL;
-		unsigned char *fullname = NULL;
-		unsigned char *curd = get_cd(bw->parent);
-		long line = -1;
+		char *name = NULL;
+		char *fullname = NULL;
+		char *curd = get_cd(bw->parent);
+		off_t line = -1;
 		if (bw->b->parseone)
 			bw->b->parseone(bw->b->o.charmap,s,&name,&line);
 		else

@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_KBD_H
-#define _JOE_KBD_H 1
 
 /* A key binding */
 struct key {
@@ -66,7 +64,7 @@ void rmkmap(KMAP *kmap);
  * is speicified, then the key sequences
  * ^K A, ^K B, ^K C, ... ^K Z are all bound.
  */
-int kadd(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind);
+int kadd(CAP *cap, KMAP *kmap, char *seq, void *bind);
 
 /* void kcpy(KMAP *dest,KMAP *src);
  * Copy all of the entries in the 'src' keymap into the 'dest' keymap
@@ -80,7 +78,7 @@ void kcpy(KMAP *dest, KMAP *src);
  *        -1 if the given key sequence was invalid
  *         1 if the given key sequence did not exist
  */
-int kdel(KMAP *kmap, unsigned char *seq);
+int kdel(KMAP *kmap, char *seq);
 
 /* KBD *mkkbd(KMAP *kmap);
    Create a keyboard handler which uses the given keymap
@@ -105,7 +103,7 @@ void *dokey(KBD *kbd, int n);
 /* A list of named KMAPs */
 struct context {
 	struct context *next;
-	unsigned char *name;
+	char *name;
 	KMAP *kmap;
 };
 
@@ -119,12 +117,10 @@ int kmap_empty(KMAP *k);
  * Find and return the KMAP for a given context name.  If none is found, an
  * empty kmap is created, bound to the context name, and returned.
  */
-KMAP *kmap_getcontext(unsigned char *name);
+KMAP *kmap_getcontext(char *name);
 
 /* KMAP *ngetcontext(char *name);
  * JM - Find and return the KMAP for a given context name.  If none is found,
  * NULL is returned.
  */
-KMAP *ngetcontext(unsigned char *name);
-
-#endif
+KMAP *ngetcontext(char *name);

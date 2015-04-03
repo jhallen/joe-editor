@@ -15,18 +15,18 @@ int joe_state;
 
 static void save_hist(FILE *f,B *b)
 {
-	unsigned char buf[512];
+	char buf[512];
 	int len;
 	if (b) {
-		P *p = pdup(b->bof, USTR "save_hist");
-		P *q = pdup(b->bof, USTR "save_hist");
+		P *p = pdup(b->bof, "save_hist");
+		P *q = pdup(b->bof, "save_hist");
 		if (b->eof->line>10)
 			pline(p,b->eof->line-10);
 		pset(q,p);
 		while (!piseof(p)) {
 			pnextl(q);
 			if (q->byte-p->byte<512) {
-				len = q->byte - p->byte;
+				len = TO_INT_OK(q->byte - p->byte);
 				brmem(p,buf,len);
 			} else {
 				brmem(p,buf,512);
@@ -48,21 +48,21 @@ static void save_hist(FILE *f,B *b)
 static void load_hist(FILE *f,B **bp)
 {
 	B *b;
-	unsigned char buf[1024];
-	unsigned char bf[1024];
+	char buf[1024];
+	char bf[1024];
 	P *q;
 
 	b = *bp;
 	if (!b)
 		*bp = b = bmk(NULL);
 
-	q = pdup(b->eof, USTR "load_hist");
+	q = pdup(b->eof, "load_hist");
 
-	while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n")) {
-		unsigned char *p = buf;
+	while(fgets(buf,1023,f) && zcmp(buf,"done\n")) {
+		char *p = buf;
 		int len;
 		parse_ws(&p,'#');
-		len = parse_string(&p,bf,sizeof(bf));
+		len = parse_string(&p,bf,SIZEOF(bf));
 		if (len>0) {
 			binsm(q,bf,len);
 			pset(q,b->eof);
@@ -74,12 +74,12 @@ static void load_hist(FILE *f,B **bp)
 
 /* Save state */
 
-#define STATE_ID (unsigned char *)"# JOE state file v1.0\n"
+#define STATE_ID "# JOE state file v1.0\n"
 
 void save_state()
 {
-	unsigned char *home = (unsigned char *)getenv("HOME");
-	int old_mask;
+	char *home = getenv("HOME");
+	mode_t old_mask;
 	FILE *f;
 	if (!joe_state)
 		return;
@@ -87,13 +87,13 @@ void save_state()
 		return;
 	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
 	old_mask = umask(0066);
-	f = fopen((char *)stdbuf,"w");
+	f = fopen(stdbuf,"w");
 	umask(old_mask);
 	if(!f)
 		return;
 
 	/* Write ID */
-	fprintf(f,"%s",(char *)STATE_ID);
+	fprintf(f,"%s",STATE_ID);
 
 	/* Write state information */
 	fprintf(f,"search\n"); save_srch(f);
@@ -115,49 +115,49 @@ void save_state()
 
 void load_state()
 {
-	unsigned char *home = (unsigned char *)getenv("HOME");
-	unsigned char buf[1024];
+	char *home = getenv("HOME");
+	char buf[1024];
 	FILE *f;
 	if (!joe_state)
 		return;
 	if (!home)
 		return;
 	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
-	f = fopen((char *)stdbuf,"r");
+	f = fopen(stdbuf,"r");
 	if(!f)
 		return;
 
 	/* Only read state information if the version is correct */
-	if (fgets((char *)buf,1024,f) && !zcmp(buf,STATE_ID)) {
+	if (fgets(buf,1024,f) && !zcmp(buf,STATE_ID)) {
 
 		/* Read state information */
-		while(fgets((char *)buf,1023,f)) {
-			if(!zcmp(buf,USTR "search\n"))
+		while(fgets(buf,1023,f)) {
+			if(!zcmp(buf,"search\n"))
 				load_srch(f);
-			else if(!zcmp(buf,USTR "macros\n"))
+			else if(!zcmp(buf,"macros\n"))
 				load_macros(f);
-			else if(!zcmp(buf,USTR "files\n"))
+			else if(!zcmp(buf,"files\n"))
 				load_hist(f,&filehist);
-			else if(!zcmp(buf,USTR "find\n"))
+			else if(!zcmp(buf,"find\n"))
 				load_hist(f,&findhist);
-			else if(!zcmp(buf,USTR "replace\n"))
+			else if(!zcmp(buf,"replace\n"))
 				load_hist(f,&replhist);
-			else if(!zcmp(buf,USTR "run\n"))
+			else if(!zcmp(buf,"run\n"))
 				load_hist(f,&runhist);
-			else if(!zcmp(buf,USTR "build\n"))
+			else if(!zcmp(buf,"build\n"))
 				load_hist(f,&buildhist);
-			else if(!zcmp(buf,USTR "grep\n"))
+			else if(!zcmp(buf,"grep\n"))
 				load_hist(f,&grephist);
-			else if(!zcmp(buf,USTR "cmd\n"))
+			else if(!zcmp(buf,"cmd\n"))
 				load_hist(f,&cmdhist);
-			else if(!zcmp(buf,USTR "math\n"))
+			else if(!zcmp(buf,"math\n"))
 				load_hist(f,&mathhist);
-			else if(!zcmp(buf,USTR "yank\n"))
+			else if(!zcmp(buf,"yank\n"))
 				load_yank(f);
-			else if (!zcmp(buf,USTR "file_pos\n"))
+			else if (!zcmp(buf,"file_pos\n"))
 				load_file_pos(f);
 			else { /* Unknown... skip until next done */
-				while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n"));
+				while(fgets(buf,1023,f) && zcmp(buf,"done\n"));
 			}
 		}
 	}

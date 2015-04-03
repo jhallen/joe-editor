@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     printf("\n");
     printf("#include \"types.h\"\n");
     printf("\n");
-    printf("unsigned char *builtins[]=\n");
+    printf("char *builtins[]=\n");
     printf("{\n");
     for (x = 1; argv[x]; ++x) {
         int c;
@@ -28,10 +28,10 @@ int main(int argc, char *argv[])
         }
         for (z = strlen(argv[x]); z && argv[x][z - 1] != '/'; --z);
         if (first_file) {
-            printf("	USTR \"%s\",\n", argv[x] + z);
+            printf("	\"%s\",\n", argv[x] + z);
             first_file = 0;
         } else
-            printf(",	USTR \"%s\",\n", argv[x] + z);
+            printf(",	\"%s\",\n", argv[x] + z);
         if (strstr(argv[x] + z, ".jsf"))
             type = 1; /* .jsf file: delete # comments */
         else
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
                     continue;
                 }
                 if (first_string) {
-                    printf("		USTR \"");
+                    printf("		\"");
                     first_string = 0;
                 } else
                     printf("		\"");

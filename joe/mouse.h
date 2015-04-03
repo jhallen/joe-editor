@@ -16,9 +16,6 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
-#ifndef _Imouse
-#define _Imouse 1
-
 /* maximum number of milliseconds that can elapse between
    double/triple clicks */
 #define MOUSE_MULTI_THRESH	300
@@ -54,7 +51,7 @@ int udefm3down(BW *);
 int udefm3up(BW *);
 int udefm3drag(BW *);
 
-int mnow();
+long mnow();
 void reset_trig_time();
 
 /* options */
@@ -64,5 +61,3 @@ extern int rtbutton; /* Use button 3 instead of button 1 */
 extern int auto_scroll; /* Set for autoscroll */
 extern int auto_trig_time; /* Time of next scroll */
 extern int joexterm; /* Set if xterm can do base64 paste */
-
-#endif

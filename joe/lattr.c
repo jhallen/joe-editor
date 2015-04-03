@@ -38,14 +38,14 @@
 
 struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn)
 {
-	struct lattr_db *db = (struct lattr_db *)joe_malloc(sizeof(struct lattr_db));
+	struct lattr_db *db = (struct lattr_db *)joe_malloc(SIZEOF(struct lattr_db));
 	db->next = 0;
 	db->syn = new_syn;
 	db->b = new_b;
 	db->end = 512;
 	db->hole = 1;
 	db->ehole = db->end;
-	db->buffer = (HIGHLIGHT_STATE *)malloc(db->end * sizeof(HIGHLIGHT_STATE));
+	db->buffer = (HIGHLIGHT_STATE *)malloc(db->end * SIZEOF(HIGHLIGHT_STATE));
 	db->first_invalid = 1;
 	db->invalid_window = -1;
 	/* State of first line is idle */
@@ -93,9 +93,9 @@ void reset_all_lattr_db(struct lattr_db *db)
 void lattr_hole(struct lattr_db *db, long pos)
 {
 	if (pos > db->hole)
-		mmove(db->buffer + db->hole, db->buffer + db->ehole, (pos - db->hole) * sizeof(HIGHLIGHT_STATE));
+		mmove(db->buffer + db->hole, db->buffer + db->ehole, (pos - db->hole) * SIZEOF(HIGHLIGHT_STATE));
 	else if (pos < db->hole)
-		mmove(db->buffer + db->ehole - (db->hole - pos), db->buffer + pos, (db->hole - pos) * sizeof(HIGHLIGHT_STATE));
+		mmove(db->buffer + db->ehole - (db->hole - pos), db->buffer + pos, (db->hole - pos) * SIZEOF(HIGHLIGHT_STATE));
 	db->ehole = pos + db->ehole - db->hole;
 	db->hole = pos;
 }
@@ -108,8 +108,8 @@ void lattr_check(struct lattr_db *db, long amnt)
 		/* Not enough space */
 		/* Amount of additional space needed */
 		amnt = amnt - (db->ehole - db->hole) + 16;
-		db->buffer = (HIGHLIGHT_STATE *)realloc(db->buffer, (db->end + amnt) * sizeof(HIGHLIGHT_STATE));
-		mmove(db->buffer + db->ehole + amnt, db->buffer + db->ehole, (db->end - db->ehole) * sizeof(HIGHLIGHT_STATE));
+		db->buffer = (HIGHLIGHT_STATE *)realloc(db->buffer, (db->end + amnt) * SIZEOF(HIGHLIGHT_STATE));
+		mmove(db->buffer + db->ehole + amnt, db->buffer + db->ehole, (db->end - db->ehole) * SIZEOF(HIGHLIGHT_STATE));
 		db->ehole += amnt;
 		db->end += amnt;
 	}
@@ -292,7 +292,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 		long ln;
 		P *tmp = 0;
 		HIGHLIGHT_STATE state;
-		tmp = pdup(p, USTR "lattr_get");
+		tmp = pdup(p, "lattr_get");
 		ln = db->first_invalid; /* First line with known good state */
 		state = lattr_lvalue(db, ln - 1); /* Known good state */
 		/* Compute up to requested line */
@@ -342,7 +342,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 #ifdef junk
 	{
 		HIGHLIGHT_STATE st;
-		P *tmp =pdup(p, USTR "lattr_get");
+		P *tmp =pdup(p, "lattr_get");
 		pline(tmp, 0);
 		clear_state(&st);
 

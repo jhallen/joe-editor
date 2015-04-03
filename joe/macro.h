@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_MACRO_H
-#define _JOE_MACRO_H 1
 
 struct macro {
 	int k; /* Keycode */
@@ -37,8 +35,8 @@ MACRO *macsta(MACRO *m, int a);
 void chmac(void);
 
 /* Text to macro / Macro to text */
-MACRO *mparse(MACRO *m, unsigned char *buf, int *sta, int secure);
-unsigned char *mtext(unsigned char *s, MACRO *m);
+MACRO *mparse(MACRO *m, char *buf, int *sta, int secure);
+char *mtext(char *s, MACRO *m);
 
 /* Execute a macro */
 extern MACRO *curmacro; /* Current macro being executed */
@@ -61,12 +59,10 @@ int uelsif(BW *bw);
 int uelse(BW *bw);
 int uendif(BW *bw);
 
-unsigned char *unescape(unsigned char *ptr,int c);
+char *unescape(char *ptr,int c);
 
 void load_macros(FILE *f);
 void save_macros(FILE *f);
 
 extern int current_arg; /* Current macro repeat argument */
 extern int current_arg_set; /* Set if repeat arg was given */
-
-#endif

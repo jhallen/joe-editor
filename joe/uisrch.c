@@ -12,15 +12,15 @@ typedef struct irec IREC;
 struct irec {
 	LINK(IREC)	link;
 	int	what;		/* 0 repeat, >0 append n chars */
-	long	start;		/* Cursor search position */
-	long	disp;		/* Original cursor position */
+	off_t	start;		/* Cursor search position */
+	off_t	disp;		/* Original cursor position */
 	int	wrap_flag;	/* Wrap flag */
 };
 
 struct isrch {
 	IREC	irecs;		/* Linked list of positions */
-	unsigned char *pattern;	/* Search pattern string */
-	unsigned char *prompt;	/* Prompt (usually same as pattern unless utf-8/byte conversion) */
+	char *pattern;	/* Search pattern string */
+	char *prompt;	/* Prompt (usually same as pattern unless utf-8/byte conversion) */
 	int	ofst;		/* Offset in pattern past prompt */
 	int	dir;		/* 0=fwrd, 1=bkwd */
 	int	quote;		/* Set to quote next char */
@@ -28,13 +28,13 @@ struct isrch {
 
 struct isrch *lastisrch = NULL;	/* Previous search */
 
-unsigned char *lastpat = NULL;	/* Previous pattern */
+char *lastpat = NULL;	/* Previous pattern */
 
 IREC fri = { {&fri, &fri} };	/* Free-list of irecs */
 
 static IREC *alirec(void)
 {				/* Allocate an IREC */
-	return alitem(&fri, sizeof(IREC));
+	return alitem(&fri, SIZEOF(IREC));
 }
 
 static void frirec(IREC *i)
@@ -58,7 +58,7 @@ static int iabrt(BW *bw, struct isrch *isrch)
 	return -1;
 }
 
-static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
+static void iappend(BW *bw, struct isrch *isrch, char *s, int len)
 {				/* Append text and search */
 	/* Append char and search */
 	IREC *i = alirec();
@@ -83,7 +83,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 
 	if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
 		prm(srch->wrap_p);
-		srch->wrap_p = pdup(bw->cursor, USTR "iappend");
+		srch->wrap_p = pdup(bw->cursor, "iappend");
 		srch->wrap_p->owner = &srch->wrap_p;
 		srch->wrap_flag = 0;
 	}
@@ -156,7 +156,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 
 			if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
 				prm(srch->wrap_p);
-				srch->wrap_p = pdup(bw->cursor, USTR "itype");
+				srch->wrap_p = pdup(bw->cursor, "itype");
 				srch->wrap_p->owner = &srch->wrap_p;
 				srch->wrap_flag = 0;
 			}
@@ -190,7 +190,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		lastisrch = isrch;
 		return 0;
 	} else if (c != -1) {
-		unsigned char buf[16];
+		char buf[16];
 		int buf_len;
 		/* Search */
 
@@ -225,7 +225,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 
 	if (locale_map->type && !bw->b->o.charmap->type) {
 		/* Translate bytes to utf-8 */
-		unsigned char buf[16];
+		char buf[16];
 		int x;
 		for (x=0; x!=sLEN(isrch->pattern); ++x) {
 			int c = to_uni(bw->b->o.charmap, isrch->pattern[x]);
@@ -234,7 +234,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		}
 	} else if (!locale_map->type && bw->b->o.charmap->type) {
 		/* Translate utf-8 to bytes */
-		unsigned char *p = isrch->pattern;
+		char *p = isrch->pattern;
 		int len = sLEN(isrch->pattern);
 		while (len) {
 			int c = utf8_decode_fwrd(&p, &len);
@@ -258,7 +258,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 
 static int doisrch(BW *bw, int dir)
 {				/* Create a struct isrch */
-	struct isrch *isrch = (struct isrch *) joe_malloc(sizeof(struct isrch));
+	struct isrch *isrch = (struct isrch *) joe_malloc(SIZEOF(struct isrch));
 
 	izque(IREC, link, &isrch->irecs);
 	isrch->pattern = vsncpy(NULL, 0, NULL, 0);
