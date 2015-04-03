@@ -25,12 +25,12 @@ struct watom {
 struct screen {
 	SCRN	*t;		/* Screen data on this screen is output to */
 
-	int	wind;		/* Number of help lines on this screen */
+	ptrdiff_t	wind;		/* Number of help lines on this screen */
 
 	W	*topwin;	/* Top-most window showing on screen */
 	W	*curwin;	/* Window cursor is in */
 
-	int	w, h;		/* Width and height of this screen */
+	ptrdiff_t	w, h;		/* Width and height of this screen */
 };
 
 /* Buffer stack entry */
@@ -50,20 +50,20 @@ struct window {
 
 	Screen	*t;		/* Screen this thing is on */
 
-	int	x, y, w, h;	/* Position and size of window */
+	ptrdiff_t	x, y, w, h;	/* Position and size of window */
 				/* Currently, x = 0, w = width of screen. */
 				/* y == -1 if window is not on screen */
 
-	int	ny, nh;		/* Temporary values for wfit */
+	ptrdiff_t	ny, nh;		/* Temporary values for wfit */
 
-	int	reqh;		/* Requested new height or 0 for same */
+	ptrdiff_t	reqh;		/* Requested new height or 0 for same */
 				/* This is an argument for wfit */
 
-	int	fixed;		/* If this is zero, use 'hh'.  If not, this
+	ptrdiff_t	fixed;		/* If this is zero, use 'hh'.  If not, this
 				   is a fixed size window and this variable
 				   gives its height */
 
-	int	hh;		/* Height window would be on a screen with
+	ptrdiff_t	hh;		/* Height window would be on a screen with
 				   1000 lines.  When the screen size changes
 				   this is used to calculate the window's
 				   real height */
@@ -71,7 +71,7 @@ struct window {
 	W	*win;		/* Window this one operates on */
 	W	*main;		/* Main window of this family */
 	W	*orgwin;	/* Window where space from this window came */
-	int	curx, cury;	/* Cursor position within window */
+	ptrdiff_t	curx, cury;	/* Cursor position within window */
 	KBD	*kbd;		/* Keyboard handler for this window */
 	WATOM	*watom;		/* The type of this window */
 	void	*object;	/* Object which inherits this */
@@ -105,7 +105,7 @@ struct base {
 /* int getgrouph(W *);
  * Get height of a family of windows
  */
-int getgrouph(W *w);
+ptrdiff_t getgrouph(W *w);
 
 /* W *findtopw(W *);
  * Find first (top-most) window of a family
@@ -137,7 +137,7 @@ void wfit(Screen *t);
 /* W *watpos(Screen *t, int x, int y);
  * Return the window at the given location, or NULL if there is none
  */
-W *watpos(Screen *t, int x, int y);
+W *watpos(Screen *t, ptrdiff_t x, ptrdiff_t y);
 
 /*****************/
 /* Main routines */
@@ -179,7 +179,7 @@ void sresize(Screen *t);
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height, char *huh, int *notify);
+W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, char *huh, int *notify);
 
 /* int wabort(W *w);
  *

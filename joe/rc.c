@@ -50,10 +50,10 @@ int validate_rc()
 
 /* Parse a macro- allow it to cross lines */
 
-MACRO *multiparse(JFILE *fd, int *refline, char *buf, int *ofst, int *referr, char *name)
+MACRO *multiparse(JFILE *fd, int *refline, char *buf, ptrdiff_t *ofst, int *referr, char *name)
 {
 	MACRO *m;
-	int x = *ofst;
+	ptrdiff_t x = *ofst;
 	int err = *referr;
 	int line = *refline;
 	m = 0;
@@ -170,25 +170,26 @@ int procrc(CAP *cap, char *name)
 			break;
 		case ':':	/* Select context */
 			{
-				int x, c;
+				ptrdiff_t x, c;
+				char ch;
 
 				for (x = 1; !joe_isspace_eof(locale_map,buf[x]); ++x) ;
-				c = buf[x];
+				ch = buf[x];
 				buf[x] = 0;
 				if (x != 1)
 					if (!zcmp(buf + 1, "def")) {
-						int y;
+						ptrdiff_t y;
 
-						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+						for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
 						for (y = x; !joe_isspace_eof(locale_map,buf[y]); ++y) ;
-						c = buf[y];
+						ch = buf[y];
 						buf[y] = 0;
 						zlcpy(buf1, SIZEOF(buf1), buf + x);
 						if (y != x) {
-							int sta = y + 1;
+							ptrdiff_t sta = y + 1;
 							MACRO *m;
 
-							if (joe_isblank(locale_map,c)
+							if (joe_isblank(locale_map,ch)
 							    && (m = multiparse(fd, &line, buf, &sta, &err, name)))
 								addcmd(buf1, m);
 							else {
@@ -201,7 +202,7 @@ int procrc(CAP *cap, char *name)
 						}
 					} else if (!zcmp(buf + 1, "inherit")) {
 						if (context) {
-							for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+							for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
 							for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 							buf[c] = 0;
 							if (c != x)
@@ -215,7 +216,7 @@ int procrc(CAP *cap, char *name)
 							logerror_2(joe_gettext(_("%s %d: No context selected for :inherit\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, "include")) {
-						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+						for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
@@ -256,9 +257,9 @@ int procrc(CAP *cap, char *name)
 						}
 					} else if (!zcmp(buf + 1, "delete")) {
 						if (context) {
-							int y;
+							ptrdiff_t y;
 
-							for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+							for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
 							for (y = x; buf[y] != 0 && buf[y] != '\t' && buf[y] != '\n' && (buf[y] != ' ' || buf[y + 1]
 															!= ' '); ++y) ;
 							buf[y] = 0;
@@ -268,7 +269,7 @@ int procrc(CAP *cap, char *name)
 							logerror_2(joe_gettext(_("%s %d: No context selected for :delete\n")), name, line);
 						}
 					} else if (!zcmp(buf + 1, "defmap")) {
-						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+						for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
@@ -280,8 +281,9 @@ int procrc(CAP *cap, char *name)
 						}
 					} else if (!zcmp(buf + 1, "defmenu")) {
 						MACRO *m = 0;
-						int y, d;
-						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+						char d;
+						ptrdiff_t y;
+						for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 						d = buf[c];
 						buf[c] = 0;
@@ -306,7 +308,7 @@ int procrc(CAP *cap, char *name)
 			break;
 		default:	/* Get key-sequence to macro binding */
 			{
-				int x, y;
+				ptrdiff_t x, y;
 				MACRO *m;
 
 				if (!context && !current_menu) {

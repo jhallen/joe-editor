@@ -29,13 +29,13 @@ void mouseopen();	/* initialize mouse */
 void mouseclose();	/* de-initialize mouse */
 
 /* mousedn(int x, int y) - handle a mouse-down event */
-void mousedn(int x, int y);
+void mousedn(ptrdiff_t x, ptrdiff_t y);
 
 /* mouseup(int x, int y) - handle a mouse-up event */
-void mouseup(int x, int y);
+void mouseup(ptrdiff_t x, ptrdiff_t y);
 
 /* mousedrag(int x, int y) - handle a mouse drag event */
-void mousedrag(int x, int y);
+void mousedrag(ptrdiff_t x, ptrdiff_t y);
 
 /* user command handlers */
 int uxtmouse(BW *);		/* handle an xterm mouse control sequence */

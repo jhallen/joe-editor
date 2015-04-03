@@ -34,7 +34,7 @@ char **get_word_list(B *b,off_t ignore)
 	HENTRY *t;
 	P *p;
 	int c;
-	int idx;
+	ptrdiff_t idx;
 	off_t start = 0;
 
 	h = htmk(1024);
@@ -51,7 +51,7 @@ char **get_word_list(B *b,off_t ignore)
 					}
 				} else {
 					if (idx!=MAX_WORD_SIZE)
-						buf[idx++] = c;
+						buf[idx++] = TO_CHAR_OK(c);
 				}
 			} else {
 				if (idx!=MAX_WORD_SIZE && start!=ignore) {
@@ -69,7 +69,7 @@ char **get_word_list(B *b,off_t ignore)
 				if (b->o.charmap->type) {
 					idx += utf8_encode(buf+idx, c);
 				} else {
-					buf[idx++] = c;
+					buf[idx++] = TO_CHAR_OK(c);
 				}
 			}
 		}
@@ -261,9 +261,9 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 
 	try_again:
 
-	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.charmap->type); ++x)
+	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
-			pattern[x] = joe_tolower(p->b->o.charmap,pattern[x]);
+			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap,pattern[x]));
 	wrapped:
 	while (srch->ignore ? pifind(start, pattern, x) : pfind(start, pattern, x)) {
 		pset(end, start);
@@ -332,9 +332,9 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 
 	try_again:
 
-	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.charmap->type); ++x)
+	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
-			pattern[x] = joe_tolower(p->b->o.charmap,pattern[x]);
+			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap, pattern[x]));
 
 	wrapped:
 	while (pbkwd(start, 1L)
@@ -461,9 +461,9 @@ void rmsrch(SRCH *srch)
  * p is advanced past the inserted text
  */
 
-static P *insert(SRCH *srch, P *p, char *s, int len)
+static P *insert(SRCH *srch, P *p, char *s, ptrdiff_t len)
 {
-	int x;
+	ptrdiff_t x;
 	off_t starting = p->byte;
 
 	while (len) {
@@ -492,7 +492,7 @@ static P *insert(SRCH *srch, P *p, char *s, int len)
 				len -= 2;
 			} else {
 				char *a=s+x;
-				int l=len-x;
+				ptrdiff_t l=len-x;
 				binsc(p,escape(p->b->o.charmap->type,&a,&l));
 				pgetc(p);
 				len -= a - s;
@@ -691,7 +691,7 @@ static int set_pattern(BW *bw, char *s, SRCH *srch, int *notify)
 
 /* Unescape for text going to genfmt */
 
-void unesc_genfmt(char *d, char *s, int len,int max)
+void unesc_genfmt(char *d, char *s, ptrdiff_t len,ptrdiff_t max)
 {
 	while (max > 0 && len) {
 		if (!*s) {
@@ -1145,14 +1145,14 @@ void load_srch(FILE *f)
 		char *p=buf;
 		parse_ws(&p,'#');
 		if(!parse_kw(&p,"pattern")) {
-			int len;
+			ptrdiff_t len;
 			parse_ws(&p,'#');
 			bf[0] = 0;
 			len = parse_string(&p,bf,SIZEOF(bf));
 			if (len>0)
 				pattern = vsncpy(NULL,0,bf,len);
 		} else if(!parse_kw(&p,"replacement")) {
-			int len;
+			ptrdiff_t len;
 			parse_ws(&p,'#');
 			bf[0] = 0;
 			len = parse_string(&p,bf,SIZEOF(bf));

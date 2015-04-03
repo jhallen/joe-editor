@@ -60,7 +60,7 @@ static void load_hist(FILE *f,B **bp)
 
 	while(fgets(buf,1023,f) && zcmp(buf,"done\n")) {
 		char *p = buf;
-		int len;
+		ptrdiff_t len;
 		parse_ws(&p,'#');
 		len = parse_string(&p,bf,SIZEOF(bf));
 		if (len>0) {

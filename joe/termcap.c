@@ -59,9 +59,10 @@ static int match(char *s, char *name)
 
 /* Find termcap entry in a file */
 
-static char *lfind(char *s, int pos, FILE *fd, char *name)
+static char *lfind(char *s, ptrdiff_t pos, FILE *fd, char *name)
 {
-	int c, x;
+	int c;
+	ptrdiff_t x;
 
 	if (!s)
 		s = vsmk(1024);
@@ -90,7 +91,7 @@ static char *lfind(char *s, int pos, FILE *fd, char *name)
 		else if (c == '\r')
 			/* do nothing */;
 		else {
-			s = vsset(s, x, c);
+			s = vsset(s, x, TO_CHAR_OK(c));
 			++x;
 		}
 	}
@@ -103,7 +104,7 @@ static char *lfind(char *s, int pos, FILE *fd, char *name)
 		else if (c == '\r')
 			/* do nothing */;
 		else {
-			s = vsset(s, x, c);
+			s = vsset(s, x, TO_CHAR_OK(c));
 			++x;
 		}
 	s = vstrunc(s, x);
@@ -144,7 +145,9 @@ CAP *my_getcap(char *name, unsigned int baud, void (*out) (char *, char), void *
 	CAP *cap;
 	FILE *f, *f1;
 	off_t idx;
-	int x, y, c, z, ti;
+	int c;
+	ptrdiff_t ti;
+	ptrdiff_t x, y, z;
 	char *tp, *pp, *qq, *namebuf, **npbuf, *idxname;
 	int sortsiz;
 
@@ -358,7 +361,7 @@ CAP *my_getcap(char *name, unsigned int baud, void (*out) (char *, char), void *
 
 static struct sortentry *findcap(CAP *cap, char *name)
 {
-	int x, y, z;
+	ptrdiff_t x, y, z;
 	int found;
 
 	x = 0;
@@ -460,11 +463,11 @@ static char escape1(char **s)
 		case '5':
 		case '6':
 		case '7':
-			c -= '0';
+			c = (char)(c - '0');
 			if (**s >= '0' && **s <= '7')
-				c = (c << 3) + *((*s)++) - '0';
+				c = (char)((c << 3) + *((*s)++) - '0');
 			if (**s >= '0' && **s <= '7')
-				c = (c << 3) + *((*s)++) - '0';
+				c = (char)((c << 3) + *((*s)++) - '0');
 			return c;
 		case 'e':
 		case 'E':
@@ -492,17 +495,19 @@ static char escape1(char **s)
 static CAP *outcap;
 static int outout(int c)
 {
-	outcap->out(outcap->outptr, c);
+	outcap->out(outcap->outptr, (char)c);
 	return(c);	/* act like putchar() - return written char */
 }
 #endif
 
-void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
+void texec(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
 {
-	int c, tenth = 0, x;
-	int args[4];
-	int vars[128];
-	int *a = args;
+	int c;
+	ptrdiff_t x;
+	long tenth = 0;
+	ptrdiff_t args[4];
+	ptrdiff_t vars[128];
+	ptrdiff_t *a = args;
 
 /* Do nothing if there is no string */
 	if (!s)
@@ -513,8 +518,8 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 		char *a;
 
 		outcap = cap;
-		a = tgoto(s, a1, a0);
-		tputs(a, l, outout);
+		a = tgoto(s, (int)a1, (int)a0);
+		tputs(a, (int)l, outout);
 		return;
 	}
 #endif
@@ -546,14 +551,14 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 			switch (x = a[0], c = escape1(&s)) {
 			case 'C':
 				if (x >= 96) {
-					cap->out(cap->outptr, x / 96);
+					cap->out(cap->outptr, (char)(x / 96));
 					x %= 96;
 				}
 			case '+':
 				if (*s)
 					x += escape1(&s);
 			case '.':
-				cap->out(cap->outptr, x);
+				cap->out(cap->outptr, (char)x);
 				++a;
 				break;
 			case 'd':
@@ -568,14 +573,14 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 					++c;
 					x -= 100;
 				}
-				cap->out(cap->outptr, c);
+				cap->out(cap->outptr, (char)c);
 			      two:c = '0';
 				while (x >= 10) {
 					++c;
 					x -= 10;
 				}
-				cap->out(cap->outptr, c);
-			      one:cap->out(cap->outptr, '0' + x);
+				cap->out(cap->outptr, (char)c);
+			      one:cap->out(cap->outptr, (char)('0' + x));
 				++a;
 				break;
 			case 'r':
@@ -644,7 +649,7 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 					escape1(&s);
 			default:
 				cap->out(cap->outptr, '%');
-				cap->out(cap->outptr, c);
+				cap->out(cap->outptr, (char)c);
 			}
 		} else {
 			--s;
@@ -667,14 +672,14 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 	}
 }
 
-static int total;
+static ptrdiff_t total;
 
 static void cst(char *ptr, char c)
 {
 	++total;
 }
 
-int tcost(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
+ptrdiff_t tcost(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
 {
 	void (*out) (char *, char) = cap->out;
 
@@ -693,10 +698,10 @@ static void cpl(char *ptr, char c)
 	ssp = vsadd(ssp, c);
 }
 
-char *tcompile(CAP *cap, char *s, int a0, int a1, int a2, int a3)
+char *tcompile(CAP *cap, char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
 {
 	void (*out) (char *, char) = cap->out;
-	int div = cap->div;
+	long div = cap->div;
 
 	if (!s)
 		return NULL;

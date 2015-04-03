@@ -280,7 +280,7 @@ void bwins(BW *w, off_t l, off_t n, int flg)
 			msetI(w->t->t->updtab + w->y, 1, w->h);
 		} else if ((l + 1) < w->top->line + w->h) {
 			int start = TO_INT_OK(l + 1 - w->top->line);
-			int size = w->h - start;
+			ptrdiff_t size = w->h - start;
 			msetI(w->t->t->updtab + w->y + start, 1, size);
 		}
 	}
@@ -313,7 +313,7 @@ void bwdel(BW *w, off_t l, off_t n, int flg)
 			msetI(w->t->t->updtab + w->y, 1, w->h);
 		} else if ((l + 1) < w->top->line + w->h) {
 			int start = TO_INT_OK(l + 1 - w->top->line);
-			int size = w->h - start;
+			ptrdiff_t size = w->h - start;
 			msetI(w->t->t->updtab + w->y + start, 1, size);
 		}
 	}
@@ -373,7 +373,7 @@ void ansi_init(struct ansi_sm *sm)
 
 /* Update a single line */
 
-static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
+static int lgen(SCRN *t, ptrdiff_t y, int *screen, int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
         
       
             			/* Screen line address */
@@ -383,14 +383,15 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, off_
               			/* Range for marked block */
 {
 	int ansi = bw->o.ansi;
-	int ox = x;
+	ptrdiff_t ox = x;
 	int tach;
 	int done = 1;
 	off_t col = 0;
 	off_t byte = p->byte;
 	char *bp;	/* Buffer pointer, 0 if not set */
-	int amnt;		/* Amount left in this segment of the buffer */
-	int c, ta, c1;
+	ptrdiff_t amnt;		/* Amount left in this segment of the buffer */
+	int c, c1;
+	off_t ta;
 	char bc;
 	int ungetit = NO_MORE_DATA;
 
@@ -483,7 +484,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, off_
 				c1 = 0;
 			++byte;
 			if (bc == '\t') {
-				ta = p->b->o.tab - TO_INT_OK(col % p->b->o.tab);
+				ta = p->b->o.tab - col % p->b->o.tab;
 				if (ta + col > scr) {
 					ta -= scr - col;
 					tach = ' ';
@@ -621,7 +622,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, off_
 				c1 = 0;
 			++byte;
 			if (bc == '\t') {
-				ta = p->b->o.tab - TO_INT_OK((x - ox + scr) % p->b->o.tab);
+				ta = p->b->o.tab - (x - ox + scr) % p->b->o.tab;
 				tach = ' ';
 			      dota:
 				do {
@@ -898,16 +899,16 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, off_t scr, off
 }
 #endif
 
-static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
+static void gennum(BW *w, int *screen, int *attr, SCRN *t, ptrdiff_t y, int *comp)
 {
 	char buf[12];
-	int z;
+	ptrdiff_t z;
 	off_t lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
 		joe_snprintf_1(buf, SIZEOF(buf), "%9ld ", (long)(w->top->line + y - w->y + 1));
 	else {
-		int x;
+		ptrdiff_t x;
 		for (x = 0; x != LINCOLS; ++x)
 			buf[x] = ' ';
 		buf[x] = 0;
@@ -925,8 +926,8 @@ void bwgenh(BW *w)
 	int *screen;
 	int *attr;
 	P *q = pdup(w->top, "bwgenh");
-	int bot = w->h + w->y;
-	int y;
+	ptrdiff_t bot = w->h + w->y;
+	ptrdiff_t y;
 	SCRN *t = w->t->t;
 	int flg = 0;
 	off_t from;
@@ -1042,8 +1043,8 @@ void bwgen(BW *w, int linums)
 	int *attr;
 	P *p = NULL;
 	P *q;
-	int bot = w->h + w->y;
-	int y;
+	ptrdiff_t bot = w->h + w->y;
+	ptrdiff_t y;
 	int dosquare = 0;
 	off_t from, to;
 	off_t fromline, toline;
@@ -1091,7 +1092,7 @@ void bwgen(BW *w, int linums)
 
 	q = pdup(w->cursor, "bwgen");
 
-	y = TO_INT_OK(w->cursor->line - w->top->line) + w->y;
+	y = TO_DIFF_OK(w->cursor->line - w->top->line) + w->y;
 	attr = t->attr + y*w->t->w;
 	for (screen = t->scrn + y * w->t->w; y != bot; ++y, (screen += w->t->w), (attr += w->t->w)) {
 		if (ifhave && !linums)
@@ -1155,13 +1156,13 @@ void bwgen(BW *w, int linums)
 		prm(p);
 }
 
-void bwmove(BW *w, int x, int y)
+void bwmove(BW *w, ptrdiff_t x, ptrdiff_t y)
 {
 	w->x = x;
 	w->y = y;
 }
 
-void bwresz(BW *w, int wi, int he)
+void bwresz(BW *w, ptrdiff_t wi, ptrdiff_t he)
 {
 	if (he > w->h && w->y != -1) {
 		msetI(w->t->t->updtab + w->y + w->h, 1, he - w->h);
@@ -1394,7 +1395,7 @@ int ustat(BW *bw)
 
 int ucrawlr(BW *bw)
 {
-	int amnt = bw->w / 2;
+	ptrdiff_t amnt = bw->w / 2;
 
 	pcol(bw->cursor, bw->cursor->xcol + amnt);
 	bw->cursor->xcol += amnt;

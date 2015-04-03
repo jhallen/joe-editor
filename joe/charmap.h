@@ -45,7 +45,7 @@ struct charmap {
 
 	struct pair from_map[256];	/* Convert from unicode to byte */
 
-	int from_size;			/* No. paris in from_map */
+	ptrdiff_t from_size;			/* No. paris in from_map */
 
 	char print_map[32];	/* Bit map of printable characters */
 	char alpha__map[32];	/* Bit map of alphabetic characters and _ */

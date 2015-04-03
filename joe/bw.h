@@ -15,7 +15,7 @@ struct bw {
 	P	*cursor;
 	off_t	offset;
 	Screen	*t;
-	int	h, w, x, y;
+	ptrdiff_t	h, w, x, y;
 
 	OPTIONS	o;
 	void	*object;
@@ -37,8 +37,8 @@ void bwdel(BW *w, off_t l, off_t n, int flg);
 void bwgen(BW *w, int linums);
 void bwgenh(BW *w);
 BW *bwmk(W *window, B *b, int prompt);
-void bwmove(BW *w, int x, int y);
-void bwresz(BW *w, int wi, int he);
+void bwmove(BW *w, ptrdiff_t x, ptrdiff_t y);
+void bwresz(BW *w, ptrdiff_t wi, ptrdiff_t he);
 void bwrm(BW *w);
 int ustat(BW *bw);
 int ucrawll(BW *bw);

@@ -48,7 +48,7 @@ char *jfgets(char *buf,int len,JFILE *f)
 		return fgets(buf, len, f->f);
 	else {
 		if (f->p[0]) {
-			int x;
+			ptrdiff_t x;
 			for (x = 0; f->p[x] && f->p[x] != '\n'; ++x)
 				buf[x] = f->p[x];
 			if (f->p[x] == '\n') {
@@ -64,8 +64,8 @@ char *jfgets(char *buf,int len,JFILE *f)
 
 char **jgetbuiltins(char *suffix)
 {
-	int x;
-	int sflen = 0;
+	ptrdiff_t x;
+	ptrdiff_t sflen = 0;
 	char **result = NULL;
 	
 	if (suffix)
@@ -73,7 +73,7 @@ char **jgetbuiltins(char *suffix)
 	
 	for (x = 0; builtins[x]; x += 2) {
 		char *name = builtins[x];
-		int nlen = zlen(name);
+		ptrdiff_t nlen = zlen(name);
 		
 		if (!suffix || (sflen <= nlen && !zcmp(suffix, &name[nlen - sflen]))) {
 			result = vaadd(result, vsncpy(NULL, 0, sz(name)));

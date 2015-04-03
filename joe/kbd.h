@@ -25,7 +25,7 @@ struct kbd {
 	KMAP	*curmap;	/* Current keymap */
 	KMAP	*topmap;	/* Top-level keymap */
 	int	seq[16];	/* Current sequence of keys */
-	int	x;		/* What we're up to */
+	ptrdiff_t	x;	/* What we're up to */
 };
 
 /* KMAP *mkkmap(void);

@@ -17,7 +17,7 @@ char *joesep(char *path);
  * The name part if "/" is ""
  */
 char *namprt(char *path);
-char *namepart(char *tmp, int tmpsiz, char *path);
+char *namepart(char *tmp, ptrdiff_t tmpsiz, char *path);
 
 /* char *dirprt(char *path);
  * Return directory and drive part of a path.  I.E., everything to the

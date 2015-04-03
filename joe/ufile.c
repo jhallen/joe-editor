@@ -114,7 +114,8 @@ int usys(BW *bw)
 
 static int cp(char *from, char *to)
 {
-	int f, g, amnt;
+	int f, g;
+	ptrdiff_t amnt;
 	struct stat sbuf;
 
 #ifdef HAVE_UTIME

@@ -30,7 +30,7 @@ typedef char *aELEMENT;
 /* aELEMENT *vamk(int len);
  * Create a variable length array.  Space for 'len' elements is preallocated.
  */
-aELEMENT *vamk(int len);
+aELEMENT *vamk(ptrdiff_t len);
 
 /* void varm(aELEMENT *vary);
  * Free an array and everything which is in it.  Does nothing if 'vary' is
@@ -51,8 +51,8 @@ void varm(aELEMENT *vary);
  * aSIZ returns 0 if you pass it 0.  aSiz does not do this checking,
  * but can be used as an lvalue.
  */
-#define aSIZ(a) ((a) ? *((int *)(a) - 2) : 0)
-#define aSiz(a) (*((int *)(a) - 2))
+#define aSIZ(a) ((a) ? *((ptrdiff_t *)(a) - 2) : 0)
+#define aSiz(a) (*((ptrdiff_t *)(a) - 2))
 
 /* int aLEN(aELEMENT *vary);
  * int aLen(aELEMENT *vary);
@@ -66,14 +66,14 @@ void varm(aELEMENT *vary);
  * aLEN return a length of zero if 'vary' is 0.
  * aLen doesn't do this checking, but can be used as an lvalue
  */
-#define aLEN(a) ((a) ? *((int *)(a) - 1) : 0)
-#define aLen(a) (*((int *)(a) - 1))
+#define aLEN(a) ((a) ? *((ptrdiff_t *)(a) - 1) : 0)
+#define aLen(a) (*((ptrdiff_t *)(a) - 1))
 
 /* int alen(aELEMENT *ary);
  * Compute length of char or variable length array by searching for termination
  * element.  Returns 0 if 'vary' is 0.
  */
-int alen(aELEMENT *ary);
+ptrdiff_t alen(aELEMENT *ary);
 
 /* aELEMENT *vaensure(aELEMENT *vary, int len);
  * Make sure there's enough space in the array for 'len' elements.  Whenever
@@ -81,7 +81,7 @@ int alen(aELEMENT *ary);
  * minimum space in anticipation of future expansion.  If 'vary' is 0,
  * it creates a new array.
  */
-aELEMENT *vaensure(aELEMENT *vary, int len);
+aELEMENT *vaensure(aELEMENT *vary, ptrdiff_t len);
 
 /* aELEMENT *vazap(aELEMENT *vary, int pos, int n);
  * Destroy n elements from an array beginning at pos.  Is ok if pos/n go
@@ -90,13 +90,13 @@ aELEMENT *vaensure(aELEMENT *vary, int len);
  * function does not actually write to the array.  This does not stop if
  * a aterm is encountered.
  */
-aELEMENT *vazap(aELEMENT *vary, int pos, int n);
+aELEMENT *vazap(aELEMENT *vary, ptrdiff_t pos, ptrdiff_t n);
 
 /* aELEMENT *vatrunc(aELEMENT *vary, int len);
  * Truncate array to indicated size.  This zaps or expands with blank elements
  * and sets the LEN() of the array.  A new array is created if 'vary' is 0.
  */
-aELEMENT *vatrunc(aELEMENT *vary, int len);
+aELEMENT *vatrunc(aELEMENT *vary, ptrdiff_t len);
 
 /************************************/
 /* Function which write to an array */
@@ -110,7 +110,7 @@ aELEMENT *vatrunc(aELEMENT *vary, int len);
  * This does not zap previous values.  If you need that to happen, call
  * vazap first.  It does move the terminator around properly though.
  */
-aELEMENT *vafill(aELEMENT *vary, int pos, aELEMENT el, int len);
+aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len);
 
 #ifdef junk
 /* aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len);
@@ -119,7 +119,7 @@ aELEMENT *vafill(aELEMENT *vary, int pos, aELEMENT el, int len);
  * elements are copied, not duplicated.  A new array is created if 'vary' is
  * 0.  This does not zap previous elements.
  */
-aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len);
+aELEMENT *vancpy(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
 #endif
 
 /* aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len);
@@ -127,7 +127,7 @@ aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len);
  * 'pos'.  'array' can be a char array since its length is passed seperately.  A
  * new array is created if 'vary' is 0.
  */
-aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len);
+aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
 
 /* aELEMENT *vadup(aELEMENT *vary);
  * Duplicate array.  This is just a functionalized version of:
@@ -150,7 +150,7 @@ aELEMENT *vadup(aELEMENT *vary);
  * deleted.    This does not duplicate 'element'.  If you need 'element'
  * duplicated, call: vaset(vary,pos,adup(element));
  */
-aELEMENT *_vaset(aELEMENT *vary, int pos, aELEMENT el);
+aELEMENT *_vaset(aELEMENT *vary, ptrdiff_t pos, aELEMENT el);
 
 #define vaset(v,p,el)  \
  (!(v) || (p) > aLen(v) || ((p) == aLen(v) && (p) == aSiz(v)) ?  \
@@ -228,10 +228,10 @@ aELEMENT *_vaset(aELEMENT *vary, int pos, aELEMENT el);
 /* aELEMENT *vasort(aELEMENT *ary, int len)
  * Sort the elements of an array (char or variable length) using qsort().
  */
-aELEMENT *vasort(aELEMENT *ary, int len);
+aELEMENT *vasort(aELEMENT *ary, ptrdiff_t len);
 
 /* aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen);
  * Generate list of strings out of words in 's' seperated with the characters
  * in 'sep'.  The characters in 'sep' must be sorted.
  */
-aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen);
+aELEMENT *vawords(aELEMENT *a, char *s, ptrdiff_t len, char *sep, ptrdiff_t seplen);

@@ -15,18 +15,18 @@ struct vt_context {
 
 	/* Record attribute sequence */
 	char buf[100];
-	int bufx;
+	ptrdiff_t bufx;
 
 	/* Numeric arguments */
-	int argv[MAXARGS + 1];
-	int argc;
+	ptrdiff_t argv[MAXARGS + 1];
+	ptrdiff_t argc;
 
 	P *top;
-	int height;
-	int width;
+	ptrdiff_t height;
+	ptrdiff_t width;
 
-	int regn_top;
-	int regn_bot;
+	ptrdiff_t regn_top;
+	ptrdiff_t regn_bot;
 
 	P *vtcur;
 	B *b;
@@ -39,9 +39,9 @@ struct vt_context {
 };
 
 
-VT *mkvt(B *b, P *top, int height, int width);
+VT *mkvt(B *b, P *top, ptrdiff_t height, ptrdiff_t width);
 void vtrm(VT *vt);
 
-MACRO *vt_data(VT *vt, char **indat, int *insiz);
+MACRO *vt_data(VT *vt, char **indat, ptrdiff_t *insiz);
 
-void vt_resize(VT *vt, P *top, int height, int width);
+void vt_resize(VT *vt, P *top, ptrdiff_t height, ptrdiff_t width);

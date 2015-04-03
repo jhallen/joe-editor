@@ -14,7 +14,7 @@ static long curvalloc = 0;	/* Amount of memory in use */
 static long maxvalloc = ILIMIT;	/* Maximum allowed */
 char *vbase;			/* Data first entry in vheader refers to */
 VPAGE **vheaders = NULL;	/* Array of header addresses */
-static int vheadsz = 0;		/* No. entries allocated to vheaders */
+static ptrdiff_t vheadsz = 0;	/* No. entries allocated to vheaders */
 
 void vflsh(void)
 {
@@ -101,7 +101,7 @@ void vflshf(VFILE *vfile)
 	}
 }
 
-static char *mema(int align, int size)
+static char *mema(ptrdiff_t align, ptrdiff_t size)
 {
 	char *z = joe_malloc(align + size);
 
@@ -116,7 +116,7 @@ char *vlock(VFILE *vfile, off_t addr)
 
 	addr -= ofst;
 
-	for (vp = htab[((addr >> LPGSIZE) + (unsigned long) vfile) & (HTSIZE - 1)]; vp; vp = vp->next)
+	for (vp = htab[((addr >> LPGSIZE) + (ptrdiff_t) vfile) & (HTSIZE - 1)]; vp; vp = vp->next)
 		if (vp->vfile == vfile && vp->addr == addr) {
 			++vp->count;
 			return vp->data + ofst;
@@ -141,7 +141,7 @@ char *vlock(VFILE *vfile, off_t addr)
 					vbase = vp->data;
 				} else if (physical(vp->data) < physical(vbase)) {
 					VPAGE **t = vheaders;
-					int amnt = (physical(vbase) - physical(vp->data)) >> LPGSIZE;
+					ptrdiff_t amnt = (physical(vbase) - physical(vp->data)) >> LPGSIZE;
 
 					vheaders = (VPAGE **) joe_malloc((amnt + vheadsz) * SIZEOF(VPAGE *));
 					mmove(vheaders + amnt, t, vheadsz * SIZEOF(VPAGE *));
@@ -179,7 +179,7 @@ char *vlock(VFILE *vfile, off_t addr)
 				pp->next = vp->next;
 				goto gotit;
 			}
-	if (-1 == write(2, sz(joe_gettext(_("vfile: out of memory\n")))))
+	if (-1 == joe_write(2, sz(joe_gettext(_("vfile: out of memory\n")))))
 		exit(2);
 	else
 		exit(1);
@@ -189,8 +189,8 @@ char *vlock(VFILE *vfile, off_t addr)
 	vp->vfile = vfile;
 	vp->dirty = 0;
 	vp->count = 1;
-	vp->next = htab[((addr >> LPGSIZE) + (unsigned long)vfile) & (HTSIZE - 1)];
-	htab[((addr >> LPGSIZE) + (unsigned long)vfile) & (HTSIZE - 1)] = vp;
+	vp->next = htab[((addr >> LPGSIZE) + (ptrdiff_t)vfile) & (HTSIZE - 1)];
+	htab[((addr >> LPGSIZE) + (ptrdiff_t)vfile) & (HTSIZE - 1)] = vp;
 
 	if (addr < vfile->size) {
 		if (!vfile->fd) {

@@ -38,7 +38,7 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 
 	char state = h_state.saved_s[0];
 	char accu = h_state.saved_s[1];
-	int current_attr = h_state.state;
+	int current_attr = (int)h_state.state;
 	// int new_attr = *(int *)(h_state.saved_s + 8);
 
 	int ansi_mode = line->b->o.ansi;
@@ -181,7 +181,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd, *kw_cmd;
 		int iters = -8; /* +8 extra iterations before cycle detect. */
-		int x;
+		ptrdiff_t x;
 
 		/* Fix signed char promoted to int */
 		if (c < 0)
@@ -491,7 +491,7 @@ void dump_syntax(BW *bw)
 	pnextl(bw->cursor);
 	for (syntax = syntax_list; syntax; syntax = syntax->next) {
 		int x;
-		joe_snprintf_3(buf, SIZEOF(buf), "Syntax name=%s, subr=%s, nstates=%d\n",syntax->name,syntax->subr,syntax->nstates);
+		joe_snprintf_3(buf, SIZEOF(buf), "Syntax name=%s, subr=%s, nstates=%d\n",syntax->name,syntax->subr,(int)syntax->nstates);
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		zlcpy(buf, SIZEOF(buf), "params=(");
@@ -513,13 +513,13 @@ void dump_syntax(BW *bw)
 				if (f == -1)
 					f = y;
 				else if (s->cmd[f]->new_state != s->cmd[y]->new_state) {
-					joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",f,y-1,(s->cmd[f]->new_state ? s->cmd[f]->new_state->name : "ERROR! Unknown state!"),s->cmd[f]->recolor);
+					joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",f,y-1,(s->cmd[f]->new_state ? s->cmd[f]->new_state->name : "ERROR! Unknown state!"),(int)s->cmd[f]->recolor);
 					binss(bw->cursor, buf);
 					pnextl(bw->cursor);
 					f = y;
 				}
 			}
-			joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",f,y-1,(s->cmd[f]->new_state ? s->cmd[f]->new_state->name : "ERROR! Unknown state!"),s->cmd[f]->recolor);
+			joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",f,y-1,(s->cmd[f]->new_state ? s->cmd[f]->new_state->name : "ERROR! Unknown state!"),(int)s->cmd[f]->recolor);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}
@@ -613,7 +613,7 @@ int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,char 
 			parse_ws(&p,'#');
 			if(!parse_char(&p,'=')) {
 				parse_ws(&p,'#');
-				if(parse_int(&p,&cmd->recolor))
+				if(parse_diff(&p,&cmd->recolor))
 					logerror_2(joe_gettext(_("%s %d: Missing value for option\n")),name,line);
 			} else
 				logerror_2(joe_gettext(_("%s %d: Missing value for option\n")),name,line);
@@ -703,7 +703,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	char bf[256];
 	int clist[256];
 	char *p;
-	int c;
+	ptrdiff_t c;
 	JFILE *f = 0;
 	struct ifstack *stack=0;
 	struct high_state *state=0;	/* Current state */

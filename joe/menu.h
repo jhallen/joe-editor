@@ -11,15 +11,15 @@
 struct menu {
 	W	*parent;	/* Window we're in */
 	char	**list;		/* List of items */
-	int	top;		/* First item on screen */
-	int	cursor;		/* Item cursor is on */
-	int	width;		/* Width of widest item, up to 'w' max */
-	int 	fitline;	/* Number of items we can fit on each line */
-	int	perline;	/* Number of items we place on each line */
-	int	lines;		/* Total no. of lines */
-	int	nitems;		/* No. items in list */
+	ptrdiff_t	top;		/* First item on screen */
+	ptrdiff_t	cursor;		/* Item cursor is on */
+	ptrdiff_t	width;		/* Width of widest item, up to 'w' max */
+	ptrdiff_t	fitline;	/* Number of items we can fit on each line */
+	ptrdiff_t	perline;	/* Number of items we place on each line */
+	ptrdiff_t	lines;		/* Total no. of lines */
+	ptrdiff_t	nitems;		/* No. items in list */
 	Screen	*t;		/* Screen we're on */
-	int	h, w, x, y;
+	ptrdiff_t	h, w, x, y;
 	int	(*abrt) ();	/* Abort callback function */
 	int	(*func) ();	/* Return callback function */
 	int	(*backs) ();	/* Backspace callback function */
@@ -28,7 +28,7 @@ struct menu {
 
 /* Create a menu */
 /* FIXME: ??? ---> */
-MENU *mkmenu(W *loc, W *targ, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify);
+MENU *mkmenu(W *loc, W *targ, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), ptrdiff_t cursor, void *object, int *notify);
 
 /* Menu user functions */
 
@@ -47,12 +47,12 @@ int umbol(MENU *m);
 int umeol(MENU *m);
 int umbacks(MENU *m);
 
-void ldmenu(MENU *m, char **s, int cursor);
+void ldmenu(MENU *m, char **s, ptrdiff_t cursor);
 
 char *mcomplete(MENU *m);
 char *find_longest(char **lst);
 
-void menujump(MENU *m, int x, int y);
+void menujump(MENU *m, ptrdiff_t x, ptrdiff_t y);
 
 extern WATOM watommenu; /* Menu WATOM */
 

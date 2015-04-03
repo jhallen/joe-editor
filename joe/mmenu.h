@@ -14,8 +14,8 @@ struct rc_menu_entry {
 struct rc_menu {
 	struct rc_menu *next;	/* Next one in list */
 	char *name;	/* Name of this menu */
-	int last_position;	/* Last cursor position */
-	int size;		/* Number of entries */
+	ptrdiff_t last_position;	/* Last cursor position */
+	ptrdiff_t size;		/* Number of entries */
 	struct rc_menu_entry **entries;
 	MACRO *backs;		/* Macro to execute for backspace */
 };

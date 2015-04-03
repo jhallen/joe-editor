@@ -554,9 +554,11 @@ static int docmd(BW *bw, char *s, void *object, int *notify)
 {
 	MACRO *mac;
 	int ret = -1;
+	ptrdiff_t sta = -1;
+	
 
-	mac = mparse(NULL, s, &ret,0);
-	if (ret < 0) {
+	mac = mparse(NULL, s, &sta,0);
+	if (sta < 0) {
 		msgnw(bw->parent,joe_gettext(_("No such command")));
 	} else {
 		ret = exmacro(mac, 1);

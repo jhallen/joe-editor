@@ -36,4 +36,4 @@ extern int keepup;
 extern int bg_stalin;
 
 extern WATOM watomtw;
-char *stagen(char *stalin, BW *bw, char *s, int fill);
+char *stagen(char *stalin, BW *bw, char *s, char fill);

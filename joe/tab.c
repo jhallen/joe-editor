@@ -15,11 +15,11 @@ int menu_jump = 0;		/* Jump into menu */
 extern WATOM watommenu;
 
 struct tab {
-	int first_len;			/* Original size of path */
-	int ofst;			/* Starting offset to path */
+	ptrdiff_t first_len;			/* Original size of path */
+	off_t ofst;			/* Starting offset to path */
 	char *path;		/* current directory */
 	char *pattern;		/* search pattern */
-	int len;		/* no. entries in files */
+	ptrdiff_t len;		/* no. entries in files */
 	char **files;		/* array of file names */
 	char **list;
 	char *type;		/* file type array */
@@ -100,7 +100,7 @@ static int get_entries(TAB *tab, ino_t prv)
 	return which;
 }
 
-static void insnam(BW *bw, char *path, char *nam, int dir, int ofst)
+static void insnam(BW *bw, char *path, char *nam, int dir, off_t ofst)
 {
 	P *p = pdup(bw->cursor, "insnam");
 

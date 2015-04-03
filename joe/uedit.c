@@ -577,7 +577,7 @@ int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,char *set,char *g
 					len=0;
 					while ((d >= 'a' && d <= 'z') || (d>='A' && d<='Z') || d=='_' || (d>='0' && d<='9')) {
 						if(len!=MAX_WORD_SIZE)
-							buf[len++]=d;
+							buf[len++] = TO_CHAR_OK(d);
 						d=prgetc(p);
 						--col;
 					}
@@ -599,13 +599,13 @@ int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,char *set,char *g
 					}
 					prm(r);
 					if (d == set[0])
-						buf[len++] = d;
+						buf[len++] = TO_CHAR_OK(d);
 					if(d!=NO_MORE_DATA)
 						pgetc(p);
 					++col;
 					buf[len]=0;
 					for(x=0;x!=len/2;++x) {
-						int e = buf[x];
+						char e = buf[x];
 						buf[x] = buf[len-x-1];
 						buf[len-x-1] = e;
 					}
@@ -694,7 +694,7 @@ int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,char *set,char *g
 					doit:
 					while ((d >= 'a' && d <= 'z') || (d>='A' && d<='Z') || d=='_' || (d>='0' && d<='9')) {
 						if(len!=MAX_WORD_SIZE)
-							buf[len++]=d;
+							buf[len++] = TO_CHAR_OK(d);
 						d=pgetc(p);
 						++col;
 					}
@@ -792,14 +792,14 @@ int tomatch_xml(BW *bw,char *word,int dir)
 				while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || (c>='0' && c<='9') || c=='.' ||
 				       c == '-' || c == ':') {
 					if(len!=MAX_WORD_SIZE)
-						buf[len++]=c;
+						buf[len++] = TO_CHAR_OK(c);
 					c=prgetc(p);
 				}
 				if(c!=NO_MORE_DATA)
 					c = pgetc(p);
 				buf[len]=0;
 				for(x=0;x!=len/2;++x) {
-					int d = buf[x];
+					char d = buf[x];
 					buf[x] = buf[len-x-1];
 					buf[len-x-1] = d;
 				}
@@ -839,7 +839,7 @@ int tomatch_xml(BW *bw,char *word,int dir)
 					while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || c==':' || c=='-' || c=='.' ||
 					       (c >= '0' && c <= '9')) {
 						if(len!=MAX_WORD_SIZE)
-							buf[len++]=c;
+							buf[len++]=TO_CHAR_OK(c);
 						c=pgetc(p);
 					}
 					if (c!=NO_MORE_DATA)
@@ -875,7 +875,7 @@ void get_xml_name(P *p,char *buf)
 	while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || c==':' || c=='-' || c=='.' ||
 	       (c >= '0' && c <= '9')) {
 		if(len!=MAX_WORD_SIZE)
-			buf[len++]=c;
+			buf[len++]=TO_CHAR_OK(c);
 		c=pgetc(p);
 	}
 	buf[len]=0;
@@ -893,13 +893,13 @@ void get_delim_name(P *q,char *buf)
 	prm(p);
 	/* preprocessor directive hack */
 	if (c=='#' || c=='`')
-		buf[len++]=c;
+		buf[len++]=TO_CHAR_OK(c);
 
 	p=pdup(q, "get_delim_name");
 	c=pgetc(p);
 	while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || (c >= '0' && c <= '9')) {
 		if(len!=MAX_WORD_SIZE)
-			buf[len++]=c;
+			buf[len++]=TO_CHAR_OK(c);
 		c=pgetc(p);
 	}
 	buf[len]=0;
@@ -1358,7 +1358,7 @@ static B *linehist = NULL;	/* History of previously entered line numbers */
 
 static int doline(BW *bw, char *s, void *object, int *notify)
 {
-	off_t num = calc(bw, s, 1);
+	off_t num = (off_t)calc(bw, s, 1);
 
 	if (notify)
 		*notify = 1;
@@ -1396,7 +1396,7 @@ static B *colhist = NULL;	/* History of previously entered column numbers */
 
 static int docol(BW *bw, char *s, void *object, int *notify)
 {
-	off_t num = calc(bw, s, 1);
+	off_t num = (off_t)calc(bw, s, 1);
 
 	if (notify)
 		*notify = 1;
@@ -1432,7 +1432,7 @@ static B *bytehist = NULL;	/* History of previously entered byte numbers */
 
 static int dobyte(BW *bw, char *s, void *object, int *notify)
 {
-	off_t num = calc(bw, s, 1);
+	off_t num = (off_t)calc(bw, s, 1);
 
 	if (notify)
 		*notify = 1;
@@ -1487,8 +1487,8 @@ int ubacks(BW *bw, int k)
 		int c;
 		off_t indent;
 		off_t col;
-		int indwid;
-		int wid;
+		off_t indwid;
+		off_t wid;
 
 		/* Degenerate into ltarw for overtype mode */
 		if (bw->o.overtype) {
@@ -1532,7 +1532,7 @@ int ubacks(BW *bw, int k)
 		} else if (col<indent && bw->o.smartbacks && !pisbol(bw->cursor)) {
 			/* We're before indent point: delete indwid worth of space but do not
 			   cross line boundary.  We could probably replace the above with this. */
-			int cw=0;
+			off_t cw=0;
 			P *p = pdup(bw->cursor, "ubacks");
 			do {
 				c = prgetc(bw->cursor);
@@ -1699,12 +1699,12 @@ struct utf8_sm utype_utf8_sm;
 
 int utypebw_raw(BW *bw, int k, int no_decode)
 {
+	char c = TO_CHAR_OK(k);
 	struct charmap *map=bw->b->o.charmap;
 
 	/* Send data to shell window */
 	if ((bw->b->pid && !bw->b->vt && piseof(bw->cursor)) ||
 	   ( bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)) {
-		char c = k;
 		joe_write(bw->b->out, &c, 1);
 		return 0;
 	}
@@ -1712,7 +1712,6 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 	/* Hex mode overtype is real simple */
 	if (bw->o.hex && bw->o.overtype) {
 		P *p;
-		char c = k;
 		binsm(bw->cursor, &c, 1);
 		pgetb(bw->cursor);
 		if (piseof(bw->cursor))
@@ -1734,9 +1733,9 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 				pfill(bw->cursor,col,'\t');
 		}
 		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
-	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)>=piscol(bw->cursor)) {
+	} else if (c == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)>=piscol(bw->cursor)) {
 		P *p = pdup(bw->cursor, "utypebw_raw");
-		int n = find_indent(p);
+		off_t n = find_indent(p);
 		if (n != -1 && pisindent(bw->cursor)==piscol(bw->cursor) && n > pisindent(bw->cursor)) {
 			if (!pisbol(bw->cursor))
 				udelbl(bw);
@@ -1778,7 +1777,7 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 
 		/* UTF8 decoder */
 		if(locale_map->type && !no_decode) {
-			int utf8_char = utf8_decode(&utype_utf8_sm,k);
+			int utf8_char = utf8_decode(&utype_utf8_sm, c);
 
 			if(utf8_char >= 0)
 				k = utf8_char;
@@ -1798,7 +1797,7 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 		if (!no_decode) {
 			if(locale_map->type && !bw->b->o.charmap->type) {
 				char buf[10];
-				utf8_encode(buf,k);
+				utf8_encode(buf, k);
 				k = from_utf8(bw->b->o.charmap,buf);
 			} else if(!locale_map->type && bw->b->o.charmap->type) {
 				char buf[10];
@@ -1834,7 +1833,7 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 		if (simple && k != '\t' && k != '\n' && !curmacro) {
 			int atr;
 			SCRN *t = bw->parent->t->t;
-			int y = bw->y + TO_INT_OK(bw->cursor->line - bw->top->line);
+			ptrdiff_t y = bw->y + TO_DIFF_OK(bw->cursor->line - bw->top->line);
 			int *screen = t->scrn + y * t->co;
 			int *attr = t->attr + y * t->co;
 			x += bw->x;
@@ -2107,7 +2106,7 @@ int rtntw(BW *bw)
 		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
 		P *p = pdup(bw->cursor, "rtntw");
-		char c;
+		int c;
 
 		binsc(bw->cursor, '\n'), pgetc(bw->cursor);
 		/* Suppress autoindent if we're on a space or tab... */
@@ -2289,7 +2288,8 @@ int umsg(BASE *b)
 
 static int dotxt(BW *bw, char *s, void *object, int *notify)
 {
-	int x,fill;
+	int x;
+	char fill;
 	char *str;
 
 	if (notify)

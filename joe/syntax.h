@@ -17,8 +17,8 @@ struct high_color {
 /* State */
 
 struct high_state {
-	int no;				/* State number */
-	char *name;		/* Highlight state name */
+	ptrdiff_t no;			/* State number */
+	char *name;			/* Highlight state name */
 	int color;			/* Color for this state */
 	struct high_cmd *cmd[256];	/* Character table */
 	struct high_cmd *delim;		/* Matching delimiter */
@@ -45,7 +45,7 @@ struct high_cmd {
 	unsigned recolor_mark : 1;	/* Set to recolor marked area with new state */
 	unsigned rtn : 1;		/* Set to return */
 	unsigned reset : 1;		/* Set to reset the call stack */
-	int recolor;			/* No. chars to recolor if <0. */
+	ptrdiff_t recolor;			/* No. chars to recolor if <0. */
 	struct high_state *new_state;	/* The new state */
 	HASH *keywords;			/* Hash table of keywords */
 	struct high_cmd *delim;		/* Matching delimiter */
@@ -71,8 +71,8 @@ struct high_syntax {
 	struct high_param *params;	/* Parameters defined */
 	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
 	HASH *ht_states;		/* Hash table of states */
-	int nstates;			/* No. states */
-	int szstates;			/* Malloc size of states array */
+	ptrdiff_t nstates;			/* No. states */
+	ptrdiff_t szstates;			/* Malloc size of states array */
 	struct high_color *color;	/* Linked list of color definitions */
 	struct high_cmd default_cmd;	/* Default transition for new states */
 	struct high_frame *stack_base;  /* Root of run-time call tree */

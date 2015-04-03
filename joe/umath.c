@@ -87,7 +87,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			if (*ptr=='(') {
 				char *q = ++ptr;
 				MACRO *m;
-				int sta;
+				ptrdiff_t sta;
 				while (*q && *q!=')')
 					++q;
 				if (*q!=')') {
@@ -794,28 +794,28 @@ double calc(BW *bw, char *s, int secure)
 	}
 
 	v = get("top");
-	v->val = tbw->top->line + 1;
+	v->val = (double)(tbw->top->line + 1);
 	v->set = 1;
 	v = get("lines");
-	v->val = tbw->b->eof->line + 1;
+	v->val = (double)(tbw->b->eof->line + 1);
 	v->set = 1;
 	v = get("line");
-	v->val = tbw->cursor->line + 1;
+	v->val = (double)(tbw->cursor->line + 1);
 	v->set = 1;
 	v = get("col");
-	v->val = tbw->cursor->col + 1;
+	v->val = (double)(tbw->cursor->col + 1);
 	v->set = 1;
 	v = get("byte");
-	v->val = tbw->cursor->byte + 1;
+	v->val = (double)(tbw->cursor->byte + 1);
 	v->set = 1;
 	v = get("size");
-	v->val = tbw->b->eof->byte;
+	v->val = (double)tbw->b->eof->byte;
 	v->set = 1;
 	v = get("height");
-	v->val = tbw->h;
+	v->val = (double)tbw->h;
 	v->set = 1;
 	v = get("width");
-	v->val = tbw->w;
+	v->val = (double)tbw->w;
 	v->set = 1;
 	v = get("char");
 	v->val = (c == NO_MORE_DATA ? -1.0 : c);

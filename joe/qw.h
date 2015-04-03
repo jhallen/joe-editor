@@ -14,15 +14,15 @@ struct query {
 	int	(*abrt) ();
 	void	*object;
 	char	*prompt;	/* Prompt string */
-	int	promptlen;	/* Width of prompt string */
-	int	org_w;
-	int	org_h;
+	ptrdiff_t	promptlen;	/* Width of prompt string */
+	ptrdiff_t	org_w;
+	ptrdiff_t	org_h;
 };
 
 /* QW *mkqw(W *w, char *prompt, int (*func)(), int (*abrt)(), void *object);
  * Create a query window for the given window
  */
 /* FIXME: ??? ----> */
-QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
-QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
-QW *mkqwnsr(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
+QW *mkqw(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
+QW *mkqwna(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
+QW *mkqwnsr(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);

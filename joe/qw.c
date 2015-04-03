@@ -9,7 +9,7 @@
 
 /* Return width of a string */
 
-int joe_wcswidth(struct charmap *map,char *s, int len)
+ptrdiff_t joe_wcswidth(struct charmap *map,char *s, ptrdiff_t len)
 {
 	if (!map->type) {
 		return len;
@@ -30,19 +30,19 @@ int joe_wcswidth(struct charmap *map,char *s, int len)
    Also this finds the nth line and returns the position of the substring which is
    that line. Set n to -1 if you just want the height. */
 
-int break_height(struct charmap *map,char **src,int *src_len,int wid,int n)
+ptrdiff_t break_height(struct charmap *map,char **src,ptrdiff_t *src_len,ptrdiff_t wid,ptrdiff_t n)
 {
 	char *s = *src;
-	int len = *src_len;
-	int h = 1; /* Number of lines */
-	int col = 0; /* Current column */
-	int x = 0; /* Offset into string */
-	int start_of_line = 0; /* Start of most recent line */
+	ptrdiff_t len = *src_len;
+	ptrdiff_t h = 1; /* Number of lines */
+	ptrdiff_t col = 0; /* Current column */
+	ptrdiff_t x = 0; /* Offset into string */
+	ptrdiff_t start_of_line = 0; /* Start of most recent line */
 	while (x != len) {
-		int space = 0;
-		int word = 0;
-		int start = x;
-		int start_word;
+		ptrdiff_t space = 0;
+		ptrdiff_t word = 0;
+		ptrdiff_t start = x;
+		ptrdiff_t start_word;
 		while (x != len && s[x] == ' ') {
 			++space;
 			++x;
@@ -73,13 +73,13 @@ int break_height(struct charmap *map,char **src,int *src_len,int wid,int n)
 
 static void dispqw(QW *qw)
 {
-	int y;
+	ptrdiff_t y;
 	W *w = qw->parent;
 
 	/* Generate prompt */
 	for (y = 0; y != w->h; ++y) {
 		char *s = qw->prompt;
-		int l = qw->promptlen;
+		ptrdiff_t l = qw->promptlen;
 		break_height(locale_map, &s, &l, qw->org_w, y);
 		w->t->t->updtab[w->y + y] = 1;
 		genfield(w->t->t,
@@ -100,7 +100,7 @@ static void dispqw(QW *qw)
 
 static void dispqwn(QW *qw)
 {
-	int y;
+	ptrdiff_t y;
 	W *w = qw->parent;
 
 	/* Set cursor position */
@@ -114,7 +114,7 @@ static void dispqwn(QW *qw)
 	/* Generate prompt */
 	for (y = 0; y != w->h; ++y) {
 		char *s = qw->prompt;
-		int l = qw->promptlen;
+		ptrdiff_t l = qw->promptlen;
 		break_height(locale_map, &s, &l, qw->org_w, y);
 		w->t->t->updtab[w->y + y] = 1;
 		genfield(w->t->t,
@@ -219,13 +219,13 @@ static WATOM watqwsr = {
 
 /* Create a query window */
 
-QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqw(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
 	char *s = prompt;
-	int l = len;
-	int h = break_height(locale_map, &s, &l, w->w, -1);
+	ptrdiff_t l = len;
+	ptrdiff_t h = break_height(locale_map, &s, &l, w->w, -1);
 
 	new = wcreate(w->t, &watomqw, w, w, w->main, h, NULL, notify);
 	if (!new) {
@@ -250,13 +250,13 @@ QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ?
 /* Same as above, but cursor is left in original window */
 /* For Ctrl-Meta thing */
 
-QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwna(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
 	char *s = prompt;
-	int l = len;
-	int h = break_height(locale_map, &s, &l, w->w, -1);
+	ptrdiff_t l = len;
+	ptrdiff_t h = break_height(locale_map, &s, &l, w->w, -1);
 
 	new = wcreate(w->t, &watqwn, w, w, w->main, h, NULL, notify);
 	if (!new) {
@@ -281,13 +281,13 @@ QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/*
 /* Same as above, but cursor is left in original window */
 /* For search and replace thing */
 
-QW *mkqwnsr(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwnsr(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
 	char *s = prompt;
-	int l = len;
-	int h = break_height(locale_map, &s, &l, w->w, -1);
+	ptrdiff_t l = len;
+	ptrdiff_t h = break_height(locale_map, &s, &l, w->w, -1);
 
 	new = wcreate(w->t, &watqwsr, w, w, w->main, h, NULL, notify);
 	if (!new) {

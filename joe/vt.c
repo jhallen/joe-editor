@@ -2,7 +2,7 @@
 
 #include "types.h"
 
-VT *mkvt(B *b, P *top, int height, int width)
+VT *mkvt(B *b, P *top, ptrdiff_t height, ptrdiff_t width)
 {
 	VT *vt = joe_malloc(SIZEOF(VT));
 	vt->b = b;
@@ -20,7 +20,7 @@ VT *mkvt(B *b, P *top, int height, int width)
 	return vt;
 }
 
-void vt_resize(VT *vt, P *top, int height, int width)
+void vt_resize(VT *vt, P *top, ptrdiff_t height, ptrdiff_t width)
 {
 	int flag = 0;
 	if (vt->regn_bot == vt->height)
@@ -235,7 +235,7 @@ void vt_lf(VT *bw)
 		pline(bw->top, bw->vtcur->line - bw->height + 1);
 }
 
-void vt_insert_spaces(VT *bw, int n)
+void vt_insert_spaces(VT *bw, ptrdiff_t n)
 {
 	while (n--)
 		binsc(bw->vtcur, ' ');
@@ -259,7 +259,7 @@ void vt_tab(VT *bw)
 	}
 }
 
-void vt_left(VT *bw, int n)
+void vt_left(VT *bw, ptrdiff_t n)
 {
 	off_t col = piscol(bw->vtcur);
 	if (n > col)
@@ -270,7 +270,7 @@ void vt_left(VT *bw, int n)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_right(VT *bw, int n)
+void vt_right(VT *bw, ptrdiff_t n)
 {
 	off_t col = piscol(bw->vtcur);
 	col += n;
@@ -280,7 +280,7 @@ void vt_right(VT *bw, int n)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_up(VT *bw, int n)
+void vt_up(VT *bw, ptrdiff_t n)
 {
 	off_t line = bw->vtcur->line;
 	off_t col = piscol(bw->vtcur);
@@ -323,7 +323,7 @@ void vt_reverse_lf(VT *bw)
 	}
 }
 
-void vt_down(VT *bw, int n)
+void vt_down(VT *bw, ptrdiff_t n)
 {
 	off_t line = bw->vtcur->line;
 	off_t col = piscol(bw->vtcur);
@@ -340,13 +340,13 @@ void vt_down(VT *bw, int n)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_col(VT *bw, int col)
+void vt_col(VT *bw, ptrdiff_t col)
 {
 	pcol(bw->vtcur, col);
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_row(VT *bw, int row)
+void vt_row(VT *bw, ptrdiff_t row)
 {
 	off_t col = piscol(bw->vtcur);
 	off_t line = bw->top->line + row;
@@ -417,7 +417,7 @@ void vt_erase_eol(VT *bw)
 	prm(p);
 }
 
-void vt_insert_lines(VT *bw, int n)
+void vt_insert_lines(VT *bw, ptrdiff_t n)
 {
 	if (bw->vtcur->line < bw->top->line + bw->regn_bot)
 		while (n--) {
@@ -436,7 +436,7 @@ void vt_insert_lines(VT *bw, int n)
 		}
 }
 
-void vt_delete_lines(VT *bw, int n)
+void vt_delete_lines(VT *bw, ptrdiff_t n)
 {
 	if (bw->vtcur->line < bw->top->line + bw->regn_bot)
 		while (n--) {
@@ -461,7 +461,7 @@ void vt_delete_lines(VT *bw, int n)
 		}
 }
 
-void vt_delete_chars(VT *bw, int n)
+void vt_delete_chars(VT *bw, ptrdiff_t n)
 {
 	while (n && !piseol(bw->vtcur)) {
 		P *q = pdup(bw->vtcur, "vt_delete_chars");
@@ -472,19 +472,19 @@ void vt_delete_chars(VT *bw, int n)
 	}
 }
 
-void vt_scroll_up(VT *bw, int n)
+void vt_scroll_up(VT *bw, ptrdiff_t n)
 {
 }
 
-void vt_scroll_down(VT *bw, int n)
+void vt_scroll_down(VT *bw, ptrdiff_t n)
 {
 }
 
-void vt_erase_chars(VT *bw, int n)
+void vt_erase_chars(VT *bw, ptrdiff_t n)
 {
 }
 
-void vt_set_region(VT *bw, int top, int bot)
+void vt_set_region(VT *bw, ptrdiff_t top, ptrdiff_t bot)
 {
 	if (top < bw->height && bot < bw->height && top <= bot) {
 		bw->regn_top = top;
@@ -561,7 +561,7 @@ ESC [ ? 25 h  show cursor
 ESC [ ? 25 l  hide cursor
 */
 
-int vt_arg(VT *vt, int argn, int dflt)
+ptrdiff_t vt_arg(VT *vt, ptrdiff_t argn, ptrdiff_t dflt)
 {
 	while (vt->argc <= argn) {
 		vt->argv[vt->argc++] = 0;
@@ -571,10 +571,10 @@ int vt_arg(VT *vt, int argn, int dflt)
 	return vt->argv[argn];
 }
 
-MACRO *vt_data(VT *vt, char **indat, int *insiz)
+MACRO *vt_data(VT *vt, char **indat, ptrdiff_t *insiz)
 {
 	char *dat = *indat;
-	int siz = *insiz;
+	ptrdiff_t siz = *insiz;
 	while (siz--) {
 		char c = *dat++;
 		switch (vt->state) {
@@ -743,7 +743,7 @@ MACRO *vt_data(VT *vt, char **indat, int *insiz)
 				} else {
 					if (c == '}') {
 						MACRO *m;
-						int rtn;
+						ptrdiff_t rtn;
 						vt->buf[vt->bufx] = 0;
 						/* printf("Got command '%s'\r\n", vt->buf); */
  						m = mparse(NULL, vt->buf, &rtn, 1);
@@ -873,7 +873,7 @@ MACRO *vt_data(VT *vt, char **indat, int *insiz)
 									vt100 ansi.sys: default=understrike,bold,inverse off
 									ansi.sys: 30 - 37: foreground color
 									ansi.sys: 40 - 47: background color */
-							int x, y;
+							ptrdiff_t x, y;
 							/* for (x = 0; x != vt->bufx; ++x) {
 								binsc(vt->vtcur, vt->buf[x]);
 								pgetb(vt->vtcur);
@@ -896,13 +896,13 @@ MACRO *vt_data(VT *vt, char **indat, int *insiz)
 								else if (x == 27)
 									vt->attr &= ~INVERSE;
 								else if (x >= 30 && x <= 37)
-									vt->attr = (vt->attr & ~FG_MASK) | (FG_NOT_DEFAULT | (x - 30) << FG_SHIFT);
+									vt->attr = (vt->attr & ~FG_MASK) | (FG_NOT_DEFAULT | (int)(x - 30) << FG_SHIFT);
 								else if (x == 39)
 									vt->attr &= ~FG_MASK;
 								else if (x == 49)
 									vt->attr &= ~BG_MASK;
 								else if (x >= 40 && x <= 47)
-									vt->attr = (vt->attr & ~BG_MASK) | (BG_NOT_DEFAULT | (x - 40) << BG_SHIFT);
+									vt->attr = (vt->attr & ~BG_MASK) | (BG_NOT_DEFAULT | (int)(x - 40) << BG_SHIFT);
 							}
 							break;
 						} case 'n': { /* 6: send cursor position as ESC [ row ; col R */

@@ -33,8 +33,8 @@ int help_init(JFILE *fd,char *bf,int line)
 	char buf[1024];			/* input buffer */
 
 	struct help *tmp;
-	int bfl;				/* buffer length */
-	int hlpsiz, hlpbsz;			/* number of used/allocated bytes for tmp->text */
+	ptrdiff_t bfl;				/* buffer length */
+	ptrdiff_t hlpsiz, hlpbsz;		/* number of used/allocated bytes for tmp->text */
 	char *tempbuf;
 
 	if (bf[0] == '{') {			/* start of help screen */
@@ -117,12 +117,12 @@ void help_display(Screen *t)
 	for (y = skiptop; y != t->wind; ++y) {
 		if (t->t->updtab[y]) {
 			char *start = str, *eol;
-			int width=0;
-			int nspans=0;
-			int spanwidth;
-			int spancount=0;
-			int spanextra;
-			int len;
+			ptrdiff_t width=0;
+			ptrdiff_t nspans=0;
+			ptrdiff_t spanwidth;
+			ptrdiff_t spancount=0;
+			ptrdiff_t spanextra;
+			ptrdiff_t len;
 
 			eol = zchr(str, '\n');
 

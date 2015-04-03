@@ -11,8 +11,8 @@ struct macro {
 	int flg; /* Flags: bit 0: this step wants the negative arg,
 	                   bit 1: ignore return value of this step, but use it as return value of macro */
 	CMD *cmd; /* Command address */
-	int n; /* Number of steps */
-	int size; /* Malloc size of steps */
+	ptrdiff_t n; /* Number of steps */
+	ptrdiff_t size; /* Malloc size of steps */
 	MACRO **steps; /* Block */
 };
 
@@ -25,7 +25,7 @@ struct recmac {
 extern struct recmac *recmac; /* Set when macro is recording: for status line */
 
 /* Macro construction functions */
-MACRO *mkmacro(int k, int arg, int n, CMD *cmd);
+MACRO *mkmacro(int k, int arg, ptrdiff_t n, CMD *cmd);
 void addmacro(MACRO *macro, MACRO *m);
 MACRO *dupmacro(MACRO *mac);
 void rmmacro(MACRO *macro);
@@ -35,7 +35,7 @@ MACRO *macsta(MACRO *m, int a);
 void chmac(void);
 
 /* Text to macro / Macro to text */
-MACRO *mparse(MACRO *m, char *buf, int *sta, int secure);
+MACRO *mparse(MACRO *m, char *buf, ptrdiff_t *sta, int secure);
 char *mtext(char *s, MACRO *m);
 
 /* Execute a macro */

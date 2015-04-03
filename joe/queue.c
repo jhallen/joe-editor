@@ -11,7 +11,7 @@ void *QUEUE;
 void *ITEM;
 void *LAST;
 
-void *alitem(void *list, int itemsize)
+void *alitem(void *list, ptrdiff_t itemsize)
 {
 	STDITEM	*freelist = (STDITEM *)list;
 

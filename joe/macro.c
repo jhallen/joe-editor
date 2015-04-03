@@ -11,12 +11,12 @@ MACRO *freemacros = NULL;
 
 /* Create a macro */
 
-MACRO *mkmacro(int k, int flg, int n, CMD *cmd)
+MACRO *mkmacro(int k, int flg, ptrdiff_t n, CMD *cmd)
 {
 	MACRO *macro;
 
 	if (!freemacros) {
-		int x;
+		ptrdiff_t x;
 
 		macro = (MACRO *) joe_malloc(SIZEOF(MACRO) * 64);
 		for (x = 0; x != 64; ++x) {
@@ -41,7 +41,7 @@ void rmmacro(MACRO *macro)
 {
 	if (macro) {
 		if (macro->steps) {
-			int x;
+			ptrdiff_t x;
 
 			for (x = 0; x != macro->n; ++x)
 				rmmacro(macro->steps[x]);
@@ -72,7 +72,7 @@ MACRO *dupmacro(MACRO *mac)
 	MACRO *m = mkmacro(mac->k, mac->flg, mac->n, mac->cmd);
 
 	if (mac->steps) {
-		int x;
+		ptrdiff_t x;
 
 		m->steps = (MACRO **) joe_malloc((m->size = mac->n) * SIZEOF(MACRO *));
 		for (x = 0; x != m->n; ++x)
@@ -106,7 +106,7 @@ MACRO *macsta(MACRO *m, int a)
  * Also, secure_type will be used instead of type.
  */
 
-MACRO *mparse(MACRO *m, char *buf, int *sta, int secure)
+MACRO *mparse(MACRO *m, char *buf, ptrdiff_t *sta, int secure)
 {
 	char c;
 	int y, x = 0;
@@ -151,14 +151,14 @@ MACRO *mparse(MACRO *m, char *buf, int *sta, int secure)
 				case 'x':
 					c = 0;
 					if (buf[x + 1] >= '0' && buf[x + 1] <= '9')
-						c = c * 16 + buf[++x] - '0';
+						c = (char)(c * 16 + buf[++x] - '0');
 					else if ((buf[x + 1] >= 'a' && buf[x + 1] <= 'f') || (buf[x + 1] >= 'A' && buf[x + 1] <= 'F'))
-						c = c * 16 + (buf[++x] & 0xF) + 9;
+						c = (char)(c * 16 + (buf[++x] & 0xF) + 9);
 					if (buf[x + 1] >= '0' && buf[x + 1] <= '9')
-						c = c * 16 + buf[++x] - '0';
+						c = (char)(c * 16 + buf[++x] - '0');
 					else if ((buf[x + 1] >= 'a' && buf[x + 1] <= 'f') || (buf[x + 1] >= 'A' && buf[x + 1] <= 'F'))
-						c = c * 16 + (buf[++x] & 0xF) + 9;
-					buf[x] = TO_CHAR_OK(c);
+						c = (char)(c * 16 + (buf[++x] & 0xF) + 9);
+					buf[x] = c;
 					break;
 				case '0':
 				case '1':
@@ -170,12 +170,12 @@ MACRO *mparse(MACRO *m, char *buf, int *sta, int secure)
 				case '7':
 				case '8':
 				case '9':
-					c = buf[x] - '0';
+					c = (char)(buf[x] - '0');
 					if (buf[x + 1] >= '0' && buf[x + 1] <= '7')
-						c = c * 8 + buf[++x] - '0';
+						c = (char)(c * 8 + buf[++x] - '0');
 					if (buf[x + 1] >= '0' && buf[x + 1] <= '7')
-						c = c * 8 + buf[++x] - '0';
-					buf[x] = TO_CHAR_OK(c);
+						c = (char)(c * 8 + buf[++x] - '0');
+					buf[x] = c;
 					break;
 				}
 			}
@@ -291,7 +291,7 @@ char *unescape(char *ptr, int c)
 
 static void domtext(MACRO *m)
 {
-	int x;
+	ptrdiff_t x;
 
 	if (!m)
 		return;
@@ -812,8 +812,8 @@ void load_macros(FILE *f)
 	while(fgets(buf,1023,f) && zcmp(buf,"done\n")) {
 		char *p = buf;
 		int n;
-		int len;
-		int sta;
+		ptrdiff_t len;
+		ptrdiff_t sta;
 		parse_ws(&p, '#');
 		if(!parse_int(&p,&n)) {
 			parse_ws(&p, '#');

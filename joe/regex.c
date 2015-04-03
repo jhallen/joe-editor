@@ -7,11 +7,11 @@
  */
 #include "types.h"
 
-int escape(int utf8,char **a, int *b)
+int escape(int utf8,char **a, ptrdiff_t *b)
 {
 	int c;
 	char *s = *a;
-	int l = *b;
+	ptrdiff_t l = *b;
 
 	if (*s == '\\' && l >= 2) {
 		++s; --l;
@@ -117,12 +117,12 @@ int escape(int utf8,char **a, int *b)
 	return c;
 }
 
-static int brack(int utf8,char **a, int *la, int c)
+static int brack(int utf8,char **a, ptrdiff_t *la, int c)
 {
 	int inverse = 0;
 	int flag = 0;
 	char *s = *a;
-	int l = *la;
+	ptrdiff_t l = *la;
 
 	if (!l)
 		return 0;
@@ -164,16 +164,16 @@ static int brack(int utf8,char **a, int *la, int c)
 		return flag;
 }
 
-static void savec(int utf8,char **pieces, int n, int c)
+static void savec(int utf8,char **pieces, ptrdiff_t n, int c)
 {
 	char buf[16];
-	int len;
+	ptrdiff_t len;
 	char *s = NULL;
 
 	if (utf8)
 		len = utf8_encode(buf,c);
 	else {
-		buf[0] = c;
+		buf[0] = TO_CHAR_OK(c);
 		len = 1;
 	}
 
@@ -185,7 +185,7 @@ static void savec(int utf8,char **pieces, int n, int c)
 
 #define MAX_REGEX_SAVED 16384 /* Largest regex string we will save */
 
-static void saves(char **pieces, int n, P *p, off_t szz)
+static void saves(char **pieces, ptrdiff_t n, P *p, off_t szz)
 {
 	if (szz > MAX_REGEX_SAVED)
 		pieces[n] = vstrunc(pieces[n], 0);
@@ -261,7 +261,7 @@ skip:
 	return s;
 }
 
-int pmatch(char **pieces, char *regex, int len, P *p, int n, int icase)
+int pmatch(char **pieces, char *regex, ptrdiff_t len, P *p, ptrdiff_t n, int icase)
 {
 	int c, d;
 	P *q = pdup(p, "pmatch");
@@ -355,10 +355,10 @@ int pmatch(char **pieces, char *regex, int len, P *p, int n, int icase)
 			case '+':
 				{
 					char *oregex = regex;	/* Point to character to skip */
-					int olen = len;
+					ptrdiff_t olen = len;
 
 					char *tregex;
-					int tlen;
+					ptrdiff_t tlen;
 
 					int match;
 

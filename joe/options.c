@@ -244,19 +244,20 @@ void setopt(B *b, char *parsed_name)
 struct glopts {
 	char *name;		/* Option name */
 	int type;		/*      0 for global option flag
-				   1 for global option numeric
+				   1 for global option int
 				   2 for global option string
 				   4 for local option flag
-				   5 for local option numeric
+				   5 for local option int
+				   14 for local option off_t
 				   6 for local option string
-				   7 for local option numeric+1, with range checking
+				   7 for local option off_t+1, with range checking
 				 */
 	void *set;		/* Address of global option */
 	char *addr;		/* Local options structure member address */
 	char *yes;		/* Message if option was turned on, or prompt string */
 	char *no;		/* Message if option was turned off */
 	char *menu;		/* Menu string */
-	int ofst;		/* Local options structure member offset */
+	ptrdiff_t ofst;		/* Local options structure member offset */
 	int low;		/* Low limit for numeric options */
 	int high;		/* High limit for numeric options */
 } glopts[] = {
@@ -265,7 +266,7 @@ struct glopts {
 	{"ansi",4, NULL, (char *) &fdefault.ansi, _("Hide ANSI sequences"), _("Reveal ANSI sequences"), _("  Hide ANSI mode ") },
 	{"autoindent",	4, NULL, (char *) &fdefault.autoindent, _("Autoindent enabled"), _("Autoindent disabled"), _("I Autoindent ") },
 	{"wordwrap",	4, NULL, (char *) &fdefault.wordwrap, _("Wordwrap enabled"), _("Wordwrap disabled"), _("W Word wrap ") },
-	{"tab",	5, NULL, (char *) &fdefault.tab, _("Tab width (%d): "), 0, _("D Tab width "), 0, 1, 64 },
+	{"tab",	14, NULL, (char *) &fdefault.tab, _("Tab width (%d): "), 0, _("D Tab width "), 0, 1, 64 },
 	{"lmargin",	7, NULL, (char *) &fdefault.lmargin, _("Left margin (%d): "), 0, _("L Left margin "), 0, 0, 63 },
 	{"rmargin",	7, NULL, (char *) &fdefault.rmargin, _("Right margin (%d): "), 0, _("R Right margin "), 0, 7, 255 },
 	{"restore",	0, &restore_file_pos, NULL, _("Restore cursor position when files loaded"), _("Don't restore cursor when files loaded"), _("  Restore cursor ") },
@@ -279,7 +280,7 @@ struct glopts {
 	{"menu_jump",	0, &menu_jump, NULL, _("Jump into menu is on"), _("Jump into menu is off"), _("  Jump into menu ") },
 	{"autoswap",	0, &autoswap, NULL, _("Autoswap ^KB and ^KK"), _("Autoswap off "), _("  Autoswap mode ") },
 	{"indentc",	5, NULL, (char *) &fdefault.indentc, _("Indent char %d (SPACE=32, TAB=9, ^C to abort): "), 0, _("  Indent char "), 0, 0, 255 },
-	{"istep",	5, NULL, (char *) &fdefault.istep, _("Indent step %d (^C to abort): "), 0, _("  Indent step "), 0, 1, 64 },
+	{"istep",	14, NULL, (char *) &fdefault.istep, _("Indent step %d (^C to abort): "), 0, _("  Indent step "), 0, 1, 64 },
 	{"french",	4, NULL, (char *) &fdefault.french, _("One space after periods for paragraph reformat"), _("Two spaces after periods for paragraph reformat"), _("  French spacing ") },
 	{"flowed",	4, NULL, (char *) &fdefault.flowed, _("One space after paragraph line"), _("No spaces after paragraph lines"), _("  Flowed text ") },
 	{"highlight",	4, NULL, (char *) &fdefault.highlight, _("Highlighting enabled"), _("Highlighting disabled"), _("H Highlighting ") },
@@ -376,6 +377,7 @@ static void izopts(void)
 		case 6:
 		case 7:
 		case 8:
+		case 14:
 			glopts[x].ofst = glopts[x].addr - (char *) &fdefault;
 		}
 	}
@@ -456,6 +458,16 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 				} 
 			}
 			break;
+		case 14: /* Local option off_t */
+			if (arg) {
+				if (options) {
+					off_t zz = ztoo(arg);
+					if (zz >= opt->low && zz <= opt->high)
+						*(off_t *) ((char *)
+							  options + opt->ofst) = zz;
+				} 
+			}
+			break;
 		case 6: /* Local string option */
 			if (options) {
 				if (arg) {
@@ -469,12 +481,11 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 			break;
 		case 7: /* Local option numeric + 1, with range checking */
 			if (arg) {
-				int zz = 0;
-				zz = ztoi(arg);
+				off_t zz = ztoo(arg);
 				if (zz >= opt->low && zz <= opt->high) {
 					--zz;
 					if (options)
-						*(int *) ((char *)
+						*(off_t *) ((char *)
 							  options + opt->ofst) = zz;
 				}
 			}
@@ -544,7 +555,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 				ret = 1;
 		} else if (!zcmp(s, "mnew")) {
 			if (arg) {
-				int sta;
+				ptrdiff_t sta;
 
 				if (options)
 					options->mnew = mparse(NULL, arg, &sta, 0);
@@ -553,7 +564,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 				ret = 1;
 		} else if (!zcmp(s, "mfirst")) {
 			if (arg) {
-				int sta;
+				ptrdiff_t sta;
 
 				if (options)
 					options->mfirst = mparse(NULL, arg, &sta, 0);
@@ -562,7 +573,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 				ret = 1;
 		} else if (!zcmp(s, "mold")) {
 			if (arg) {
-				int sta;
+				ptrdiff_t sta;
 
 				if (options)
 					options->mold = mparse(NULL, arg, &sta, 0);
@@ -571,7 +582,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 				ret = 1;
 		} else if (!zcmp(s, "msnew")) {
 			if (arg) {
-				int sta;
+				ptrdiff_t sta;
 
 				if (options)
 					options->msnew = mparse(NULL, arg, &sta, 0);
@@ -580,7 +591,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 				ret = 1;
 		} else if (!zcmp(s, "msold")) {
 			if (arg) {
-				int sta;
+				ptrdiff_t sta;
 
 				if (options)
 					options->msold = mparse(NULL, arg, &sta, 0);

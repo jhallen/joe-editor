@@ -15,7 +15,7 @@ struct cap {
 	char	*tbuf;		/* Termcap entry loaded here */
 
 	struct sortentry *sort;	/* Pointers to each capability stored in here */
-	int	sortlen;	/* Number of capabilities */
+	ptrdiff_t	sortlen;	/* Number of capabilities */
 
 	char	*abuf;		/* For terminfo compatible version */
 	char	*abufp;
@@ -119,7 +119,7 @@ void rmcap(CAP *cap);
 
    'a0' - 'a1' are the arguments for the string
 */
-void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3);
+void texec(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* int tcost(CAP *cap,char *str, int l, int a0, int a1, int a2, int a3);
    Return cost in number of characters which need to be sent
@@ -137,7 +137,7 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3);
 
    'a0' - 'a3' are arguements passed to the string
 */
-int tcost(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3);
+ptrdiff_t tcost(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* char *tcompile(CAP *cap,char *str,int a0,int a1,int a2,int a3);
 
@@ -145,7 +145,7 @@ int tcost(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3);
    string (see vs.h) containing the compiled string capability.
    Pad characters are not placed in the string.
 */
-char *tcompile(CAP *cap, char *s, int a0, int a1, int a2, int a3);
+char *tcompile(CAP *cap, char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* Old termcap support */
 #ifdef junk

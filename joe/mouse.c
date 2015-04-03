@@ -23,7 +23,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #endif
 
 int auto_scroll = 0;		/* Set for autoscroll */
-int auto_rate;			/* Rate */
+ptrdiff_t auto_rate;		/* Rate */
 long auto_trig_time;		/* Time of next scroll */
 
 int rtbutton=0;			/* use button 3 instead of 1 */
@@ -32,14 +32,15 @@ int joexterm=0;			/* set if we're using Joe's modified xterm */
 
 static int selecting = 0;	/* Set if we did any selecting */
 
-static int Cb, Cx, Cy;
+static int Cb;
+static ptrdiff_t Cx, Cy;
 static long last_msec=0;		/* time in ms when event occurred */
 static int clicks;
 
 static void fake_key(int c)
 {
 	MACRO *m=dokey(maint->curwin->kbd,c);
-	int x=maint->curwin->kbd->x;
+	ptrdiff_t x=maint->curwin->kbd->x;
 	maint->curwin->main->kbd->x=x;
 	if(x)
 		maint->curwin->main->kbd->seq[x-1]=maint->curwin->kbd->seq[x-1];
@@ -49,7 +50,7 @@ static void fake_key(int c)
 
 /* Translate mouse coordinates */
 
-static int mcoord(int x)
+static ptrdiff_t mcoord(ptrdiff_t x)
 {
 	if (x>=33 && x<=240)
 		return x - 33 + 1;
@@ -114,7 +115,8 @@ int uxtmouse(BW *bw)
 int uextmouse(BW *bw)
 {
 	int c;
-	Cb = Cx = Cy = 0;
+	Cb = 0;
+	Cx = Cy = 0;
 	while ((c = ttgetc()) != ';') {
 		if (c < '0' || c > '9')
 			return -1;
@@ -142,7 +144,7 @@ long mnow()
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
-void mousedn(int x,int y)
+void mousedn(ptrdiff_t x,ptrdiff_t y)
 {
 	Cx = x, Cy = y;
 	if (last_msec == 0 || mnow() - last_msec > MOUSE_MULTI_THRESH) {
@@ -173,13 +175,13 @@ abcdefghijklmnopqrstuvwxyz\
 
 int base64_accu = 0;
 int base64_count = 0;
-int base64_pad = 0;
+ptrdiff_t base64_pad = 0;
 
-static void ttputs64(char *pp, int length)
+static void ttputs64(char *pp, ptrdiff_t length)
 {
 	unsigned char *p = (unsigned char *)pp;
         char buf[65];
-        int x = 0;
+        ptrdiff_t x = 0;
         while (length--) {
             switch (base64_count) {
                 case 0:
@@ -233,7 +235,7 @@ static void ttputs64_flush()
             break;
     }
     if (base64_pad & 3) {
-        int z = 4 - (base64_pad & 3);
+        ptrdiff_t z = 4 - (base64_pad & 3);
         while (z--)
         	ttputc('=');
     }
@@ -254,7 +256,7 @@ void select_done(struct charmap *map)
 		ttputs("\33]52;;"); /* New xterm */
 		while (q->byte < markk->byte) {
 			char buf[16];
-			int len;
+			ptrdiff_t len;
 			/* Skip until we're within columns */
 			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
 				pgetc(q);
@@ -301,7 +303,7 @@ void select_done(struct charmap *map)
 	}
 }
 
-void mouseup(int x,int y)
+void mouseup(ptrdiff_t x,ptrdiff_t y)
 {
 	auto_scroll = 0;
 	Cx = x, Cy = y;
@@ -325,7 +327,7 @@ void mouseup(int x,int y)
 	last_msec = mnow();
 }
 
-void mousedrag(int x,int y)
+void mousedrag(ptrdiff_t x,ptrdiff_t y)
 {
 	Cx = x, Cy = y;
 	switch(clicks) {
@@ -343,12 +345,12 @@ void mousedrag(int x,int y)
 	}
 }
 
-int drag_size; /* Set if we are resizing a window */
+ptrdiff_t drag_size; /* Set if we are resizing a window */
 
 int utomouse(BW *xx)
 {
 	BW *bw;
-	int x = Cx - 1, y = Cy - 1;
+	ptrdiff_t x = Cx - 1, y = Cy - 1;
 	W *w = watpos(maint,x,y);
 	if (!w)
 		return -1;
@@ -423,7 +425,7 @@ static off_t tmspos;
 static int tomousestay()
 {
 	BW *bw;
-	int x = Cx - 1,y = Cy - 1;
+	ptrdiff_t x = Cx - 1,y = Cy - 1;
 	W *w;
 	/*
 	w = watpos(maint,x,y);
@@ -535,18 +537,18 @@ void reset_trig_time()
 int udefmdrag(BW *xx)
 {
 	BW *bw = (BW *)maint->curwin->object;
-	int ay = Cy - 1;
+	ptrdiff_t ay = Cy - 1;
 	int new_scroll;
-	int new_rate;
+	ptrdiff_t new_rate;
 	if (drag_size) {
 		while (ay > bw->parent->y) {
-			int y = bw->parent->y;
+			ptrdiff_t y = bw->parent->y;
 			wgrowdown(bw->parent);
 			if (y == bw->parent->y)
 				return -1;
 		}
 		while (ay < bw->parent->y) {
-			int y = bw->parent->y;
+			ptrdiff_t y = bw->parent->y;
 			wgrowup(bw->parent);
 			if (y == bw->parent->y)
 				return -1;

@@ -87,8 +87,8 @@ int ttcheck(void);
 /* void ttputc(char c);  Write a character to the output buffer.  If it becomes
  * full, call ttflsh()
  */
-extern int obufp; /* Output buffer index */
-extern int obufsiz; /* Output buffer size */
+extern ptrdiff_t obufp; /* Output buffer index */
+extern ptrdiff_t obufsiz; /* Output buffer size */
 extern char *obuf; /* Output buffer */
 
 #define ttputc(c) { obuf[obufp++] = (c); if(obufp == obufsiz) ttflsh(); }
@@ -157,7 +157,7 @@ void ttsig(int sig);
 
 /* void ttgtsz(int *x,int *y);  Get size of screen from ttsize/winsize
  * structure */
-void ttgtsz(int *x, int *y);
+void ttgtsz(ptrdiff_t *x, ptrdiff_t *y);
 
 /* You don't have to call these: ttopen/ttclose does it for you.  These
  * may be needed to make your own shell escape sequences.
@@ -186,7 +186,7 @@ void signrm(void);
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int w, int h);
+MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, ptrdiff_t w, ptrdiff_t h);
 
 /* int subshell(int *ptyfd);
  * Execute a subshell.  Returns 'pid' of shell or zero if there was a
@@ -203,5 +203,5 @@ void tickon(void);
 extern time_t last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */
 
-void ttstsz(int fd, int w, int h); /* Set window size */
+void ttstsz(int fd, ptrdiff_t w, ptrdiff_t h); /* Set window size */
 extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */

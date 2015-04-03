@@ -13,8 +13,8 @@ struct pw {
 	int	(*abrt) ();	/* Func which gets called when window is aborted */
 	int	(*tab) ();	/* Func which gets called when TAB is hit */
 	char	*prompt;	/* Prompt string */
-	int	promptlen;	/* Width of prompt string */
-	int	promptofst;	/* Prompt scroll offset */
+	ptrdiff_t	promptlen;	/* Width of prompt string */
+	ptrdiff_t	promptofst;	/* Prompt scroll offset */
 	B	*hist;		/* History buffer */
 	void	*object;	/* Object */
 	int	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
@@ -34,18 +34,18 @@ int ucmplt(BW *bw, int k);
 
 /* Function for TAB completion */
 
-char **regsub(char **z, int len, char *s);
+char **regsub(char **z, ptrdiff_t len, char *s);
 
 void cmplt_ins(BW *bw,char *line);
 
-int cmplt_abrt(BW *bw,int x, char *line);
+int cmplt_abrt(BW *bw,ptrdiff_t x, char *line);
 
-int cmplt_rtn(MENU *m,int x,char *line);
+int cmplt_rtn(MENU *m,ptrdiff_t x,char *line);
 
 int simple_cmplt(BW *bw,char **list);
 
 void setup_history(B **history);
-void append_history(B *hist,char *s,int len);
+void append_history(B *hist,char *s,ptrdiff_t len);
 void promote_history(B *hist, off_t line);
 void set_current_dir(BW *bw, char *s,int simp);
 

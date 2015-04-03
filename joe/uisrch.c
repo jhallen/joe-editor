@@ -11,7 +11,7 @@ typedef struct irec IREC;
 
 struct irec {
 	LINK(IREC)	link;
-	int	what;		/* 0 repeat, >0 append n chars */
+	ptrdiff_t	what;		/* 0 repeat, >0 append n chars */
 	off_t	start;		/* Cursor search position */
 	off_t	disp;		/* Original cursor position */
 	int	wrap_flag;	/* Wrap flag */
@@ -21,7 +21,7 @@ struct isrch {
 	IREC	irecs;		/* Linked list of positions */
 	char *pattern;	/* Search pattern string */
 	char *prompt;	/* Prompt (usually same as pattern unless utf-8/byte conversion) */
-	int	ofst;		/* Offset in pattern past prompt */
+	ptrdiff_t	ofst;		/* Offset in pattern past prompt */
 	int	dir;		/* 0=fwrd, 1=bkwd */
 	int	quote;		/* Set to quote next char */
 };
@@ -58,7 +58,7 @@ static int iabrt(BW *bw, struct isrch *isrch)
 	return -1;
 }
 
-static void iappend(BW *bw, struct isrch *isrch, char *s, int len)
+static void iappend(BW *bw, struct isrch *isrch, char *s, ptrdiff_t len)
 {				/* Append text and search */
 	/* Append char and search */
 	IREC *i = alirec();
@@ -191,7 +191,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		return 0;
 	} else if (c != -1) {
 		char buf[16];
-		int buf_len;
+		ptrdiff_t buf_len;
 		/* Search */
 
 		in:
@@ -208,7 +208,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		if (bw->b->o.charmap->type) {
 			buf_len = utf8_encode(buf,c);
 		} else {
-			buf[0] = c;
+			buf[0] = TO_CHAR_OK(c);
 			buf_len = 1;
 		}		
 
@@ -235,12 +235,12 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 	} else if (!locale_map->type && bw->b->o.charmap->type) {
 		/* Translate utf-8 to bytes */
 		char *p = isrch->pattern;
-		int len = sLEN(isrch->pattern);
+		ptrdiff_t len = sLEN(isrch->pattern);
 		while (len) {
 			int c = utf8_decode_fwrd(&p, &len);
 			if (c>=0) {
 				c = from_uni(locale_map, c);
-				isrch->prompt = vsadd(isrch->prompt, c);
+				isrch->prompt = vsadd(isrch->prompt, TO_CHAR_OK(c));
 			}
 		}
 	} else {

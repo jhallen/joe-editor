@@ -99,7 +99,7 @@ void setup_history(B **history)
 
 /* Add line to history buffer */
 
-void append_history(B *hist,char *s,int len)
+void append_history(B *hist,char *s,ptrdiff_t len)
 {
 	P *q = pdup(hist->eof, "append_history");
 	binsm(q, s, len);
@@ -298,7 +298,7 @@ BW *wmkpw(W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt
 
 /* Tab completion functions */
 
-char **regsub(char **z, int len, char *s)
+char **regsub(char **z, ptrdiff_t len, char *s)
 {
 	char **lst = NULL;
 	int x;
@@ -322,7 +322,7 @@ void cmplt_ins(BW *bw, char *line)
 	bw->cursor->xcol = piscol(bw->cursor);
 }
 
-int cmplt_abrt(BW *bw, int x, char *line)
+int cmplt_abrt(BW *bw, ptrdiff_t x, char *line)
 {
 	if (line) {
 		/* cmplt_ins(bw, line); */
@@ -331,7 +331,7 @@ int cmplt_abrt(BW *bw, int x, char *line)
 	return -1;
 }
 
-int cmplt_rtn(MENU *m, int x, char *line)
+int cmplt_rtn(MENU *m, ptrdiff_t x, char *line)
 {
 	cmplt_ins(m->parent->win->object, m->list[x]);
 	vsrm(line);

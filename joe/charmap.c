@@ -21,7 +21,7 @@ int to_uni(struct charmap *cset, int c)
 
 int from_uni(struct charmap *cset, int c)
 {
-	int x, y, z;
+	ptrdiff_t x, y, z;
 
 	if (c < 0)
 		c += 256;
@@ -1090,7 +1090,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 		}
 	}
 		
-	qsort(map->from_map,map->from_size,sizeof(struct pair), (int (*)(const void *, const void *))pair_cmp);
+	jsort(map->from_map,map->from_size,SIZEOF(struct pair), (int (*)(const void *, const void *))pair_cmp);
 
 	/* Fill in print, alpha and alnum bit maps */
 
@@ -1485,6 +1485,8 @@ int joe_isspace_eof(struct charmap *map,int c)
 {
 	return (c==0) || joe_isspace(map,c);
 }
+
+/* Broken: does not handle UTF-8 */
 
 char *lowerize(char *s)
 {

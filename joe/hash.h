@@ -9,21 +9,21 @@
 struct entry {
 	HENTRY *next;
 	char *name;
-	unsigned hash_val;
+	ptrdiff_t hash_val;
 	void *val;
 };
 
 struct hash {
-	int len;
+	ptrdiff_t len;
 	HENTRY **tab;
-	int nentries;
+	ptrdiff_t nentries;
 };
 
 /* Compute hash code for a string */
-int hash(char *s);
+ptrdiff_t hash(char *s);
 
 /* Create a hash table of specified size, which must be a power of 2 */
-HASH *htmk(int len);
+HASH *htmk(ptrdiff_t len);
 
 /* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
 void htrm(HASH *ht);

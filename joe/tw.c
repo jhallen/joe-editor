@@ -14,7 +14,7 @@ int bg_stalin;
 
 /* Move text window */
 
-static void movetw(BW *bw, int x, int y)
+static void movetw(BW *bw, ptrdiff_t x, ptrdiff_t y)
 {
 	TW *tw = (TW *) bw->object;
 
@@ -35,7 +35,7 @@ static void movetw(BW *bw, int x, int y)
 
 /* Resize text window */
 
-static void resizetw(BW *bw, int wi, int he)
+static void resizetw(BW *bw, ptrdiff_t wi, ptrdiff_t he)
 {
 	if (bw->parent->ny || !staen)
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he - 1);
@@ -125,10 +125,10 @@ char *get_context(BW *bw)
 	return buf1;
 }
 
-char *duplicate_backslashes(char *s, int len)
+char *duplicate_backslashes(char *s, ptrdiff_t len)
 {
 	char *m;
-	int x, count;
+	ptrdiff_t x, count;
 	for (x = count = 0; x != len; ++x)
 		if (s[x] == '\\')
 			++count;
@@ -141,7 +141,7 @@ char *duplicate_backslashes(char *s, int len)
 	return m;
 }
 
-/* static */char *stagen(char *stalin, BW *bw, char *s, int fill)
+/* static */char *stagen(char *stalin, BW *bw, char *s, char fill)
 {
 	char buf[80];
 	int x;
@@ -417,17 +417,17 @@ char *duplicate_backslashes(char *s, int len)
 				break;
 			case 'k':
 				{
-					int i;
+					ptrdiff_t i;
 					char *cpos = buf;
 
 					buf[0] = 0;
 					if (w->kbd->x && w->kbd->seq[0])
 						for (i = 0; i != w->kbd->x; ++i) {
-							int c = w->kbd->seq[i] & 127;
+							char c = w->kbd->seq[i] & 127;
 
 							if (c < 32) {
 								cpos[0] = '^';
-								cpos[1] = c + '@';
+								cpos[1] = (char)(c + '@');
 								cpos += 2;
 							} else if (c == 127) {
 								cpos[0] = '^';
@@ -494,7 +494,7 @@ static void disptw(BW *bw, int flg)
 	}
 
 	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen)) {
-		int fill;
+		char fill;
 
 		tw->prevline = bw->cursor->line;
 		tw->changed = bw->b->changed;
@@ -506,7 +506,7 @@ static void disptw(BW *bw, int flg)
 		tw->stalin = stagen(tw->stalin, bw, bw->o.lmsg, fill);
 		tw->staright = stagen(tw->staright, bw, bw->o.rmsg, fill);
 		if (fmtlen(tw->staright) < w->w) {
-			int x = fmtpos(tw->stalin, w->w - fmtlen(tw->staright));
+			ptrdiff_t x = fmtpos(tw->stalin, w->w - fmtlen(tw->staright));
 
 			if (x > sLEN(tw->stalin))
 				tw->stalin = vsfill(sv(tw->stalin), fill, x - sLEN(tw->stalin));
@@ -527,7 +527,7 @@ static void disptw(BW *bw, int flg)
 
 /* Split current window */
 
-static void iztw(TW *tw, int y)
+static void iztw(TW *tw, ptrdiff_t y)
 {
 	tw->stalin = NULL;
 	tw->staright = NULL;
@@ -540,7 +540,7 @@ static void iztw(TW *tw, int y)
 int usplitw(BW *bw)
 {
 	W *w = bw->parent;
-	int newh = getgrouph(w);
+	ptrdiff_t newh = getgrouph(w);
 	W *new;
 	TW *newtw;
 	BW *newbw;
@@ -568,7 +568,7 @@ int usplitw(BW *bw)
 int uduptw(BW *bw)
 {
 	W *w = bw->parent;
-	int newh = getgrouph(w);
+	ptrdiff_t newh = getgrouph(w);
 	W *new;
 	TW *newtw;
 	BW *newbw;

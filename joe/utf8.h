@@ -13,15 +13,15 @@
  * returns length (not including terminator).
  */
 
-int utf8_encode(char *buf,int c);
+ptrdiff_t utf8_encode(char *buf,int c);
 
 /* UTF-8 decoder state machine */
 
 struct utf8_sm {
 	char buf[8];	/* Record of sequence */
-	int ptr;		/* Record pointer */
-	int state;		/* Current state.  0 = idle, anything else is no. of chars left in sequence */
-	int accu;		/* Character accumulator */
+	ptrdiff_t ptr;	/* Record pointer */
+	int state;	/* Current state.  0 = idle, anything else is no. of chars left in sequence */
+	int accu;	/* Character accumulator */
 };
 
 /* UTF-8 Decoder
@@ -36,7 +36,7 @@ int utf8_decode(struct utf8_sm *utf8_sm,char c);
 
 int utf8_decode_string(char *s);
 
-int utf8_decode_fwrd(char **p,int *plen);
+int utf8_decode_fwrd(char **p,ptrdiff_t *plen);
 
 /* Initialize state machine */
 
@@ -53,10 +53,10 @@ extern struct charmap *locale_map;	/* Default bytemap of terminal */
 extern char *locale_lang;	/* Locale language (like de_DE) */
 extern char *locale_msgs;	/* Locale language for editor messages (like de_DE) */
 
-void my_iconv(char *dest, int destsiz, struct charmap *dest_map,
+void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
               char *src,struct charmap *src_map);
 
-struct charmap *guess_map(char *buf, int len);
+struct charmap *guess_map(char *buf, ptrdiff_t len);
 
 extern int guess_non_utf8;
 extern int guess_utf8;

@@ -39,7 +39,7 @@
  * returns length (not including terminator).
  */
 
-int utf8_encode(char *buf,int c)
+ptrdiff_t utf8_encode(char *buf,int c)
 {
 	if (c < 0x80) {
 		buf[0] = TO_CHAR_OK(c);
@@ -162,7 +162,7 @@ void utf8_init(struct utf8_sm *utf8_sm)
 int utf8_decode_string(char *s)
 {
 	struct utf8_sm sm;
-	int x;
+	ptrdiff_t x;
 	int c = -1;
 	utf8_init(&sm);
 	for(x=0;s[x];++x)
@@ -180,11 +180,11 @@ int utf8_decode_string(char *s)
  * infinite loops.
  */
 
-int utf8_decode_fwrd(char **p,int *plen)
+int utf8_decode_fwrd(char **p,ptrdiff_t *plen)
 {
 	struct utf8_sm sm;
 	char *s = *p;
-	int len;
+	ptrdiff_t len;
 	int c = -2; /* Return this on no more input. */
 	if (plen)
 		len = *plen;
@@ -460,8 +460,8 @@ void to_utf8(struct charmap *map,char *s,int c)
 	char buf[10];
 	char *ibufp = buf;
 	char *obufp = s;
-	int ibuf_sz=1;
-	int obuf_sz= 10;
+	ptrdiff_t ibuf_sz=1;
+	ptrdiff_t obuf_sz= 10;
 	buf[0]=c;
 	buf[1]=0;
 
@@ -486,9 +486,9 @@ int from_utf8(struct charmap *map,char *s)
 
 #ifdef junk
 	/* Iconv() way */
-	int ibuf_sz=zlen(s);
+	ptrdiff_t ibuf_sz=zlen(s);
 	char *ibufp=s;
-	int obuf_sz=10;
+	ptrdiff_t obuf_sz=10;
 	char obuf[10];
 	char *obufp = obuf;
 
@@ -501,7 +501,7 @@ int from_utf8(struct charmap *map,char *s)
 #endif
 }
 
-void my_iconv(char *dest, int destsiz, struct charmap *dest_map,
+void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
               char *src, struct charmap *src_map)
 {
 	if (dest_map == src_map) {
@@ -518,7 +518,7 @@ void my_iconv(char *dest, int destsiz, struct charmap *dest_map,
 			--destsiz;
 			/* UTF-8 to non-UTF-8 */
 			while (*src && destsiz) {
-				int len = -1;
+				ptrdiff_t len = -1;
 				int c = utf8_decode_fwrd(&src, &len);
 				if (c >= 0) {
 					int d = from_uni(dest_map, c);
@@ -557,7 +557,7 @@ void my_iconv(char *dest, int destsiz, struct charmap *dest_map,
 			while (*src && destsiz >= 6) {
 				int c = to_uni(src_map, *src++);
 				if (c >= 0) {
-					int l = utf8_encode(dest, c);
+					ptrdiff_t l = utf8_encode(dest, c);
 					destsiz -= l;
 					dest += l;
 				} else {
@@ -575,10 +575,10 @@ void my_iconv(char *dest, int destsiz, struct charmap *dest_map,
 int guess_non_utf8;
 int guess_utf8;
 
-struct charmap *guess_map(char *buf, int len)
+struct charmap *guess_map(char *buf, ptrdiff_t len)
 {
 	char *p;
-	int plen;
+	ptrdiff_t plen;
 	int c;
 	int flag;
 

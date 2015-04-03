@@ -97,7 +97,7 @@ char *namprt(char *path)
 	return vsncpy(NULL, 0, sz(z));
 }
 /********************************************************************/
-char *namepart(char *tmp, int tmpsiz, char *path)
+char *namepart(char *tmp, ptrdiff_t tmpsiz, char *path)
 {
 	char *z;
 
@@ -194,7 +194,7 @@ char *mktmp(char *where)
 #endif
 	char *name;
 	int fd;
-	int namesize;
+	ptrdiff_t namesize;
 
 	if (!where)
 		where = getenv("TEMP");
@@ -206,7 +206,7 @@ char *mktmp(char *where)
 				   area returned by mktmp() is destroyed later with
 				   vsrm(); */
 #ifdef HAVE_MKSTEMP
-	joe_snprintf_1(name, namesize, "%s/joe.tmp.XXXXXX", where);
+	joe_snprintf_1(name, (size_t)namesize, "%s/joe.tmp.XXXXXX", where);
 	if((fd = mkstemp(name)) == -1)
 		return NULL;	/* FIXME: vflsh() and vflshf() */
 				/* expect mktmp() always succeed!!! */

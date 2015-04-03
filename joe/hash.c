@@ -13,9 +13,9 @@ static HENTRY *freentry = NULL;
 
 #define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
 
-int hash(char *s)
+ptrdiff_t hash(char *s)
 {
-	int accu = 0;
+	ptrdiff_t accu = 0;
 
 	while (*s) {
 		accu = hnext(accu, *s++);
@@ -25,7 +25,7 @@ int hash(char *s)
 
 /* Create hash table */
 
-HASH *htmk(int len)
+HASH *htmk(ptrdiff_t len)
 {
 	HASH *t = (HASH *) joe_malloc(SIZEOF(HASH));
 	t->nentries = 0;
@@ -38,7 +38,7 @@ HASH *htmk(int len)
 
 void htrm(HASH *ht)
 {
-	int x;
+	ptrdiff_t x;
 	for (x = 0; x != ht->len; ++x) {
 		HENTRY *p, *n;
 		for (p = ht->tab[x]; p; p = n) {
@@ -55,9 +55,9 @@ void htrm(HASH *ht)
 
 void htexpand(HASH *h)
 {
-	int x;
+	ptrdiff_t x;
 	/* Allocate new table */
-	int new_size = h->len * 2;
+	ptrdiff_t new_size = h->len * 2;
 	HENTRY **new_table = joe_calloc(new_size, SIZEOF(HENTRY *));
 	/* Copy entries from old table to new */
 	for (x = 0; x != h->len; ++x) {
@@ -80,10 +80,10 @@ void htexpand(HASH *h)
 
 void *htadd(HASH *ht, char *name, void *val)
 {
-	int hval = hash(name);
-	int idx = hval & (ht->len - 1);
+	ptrdiff_t hval = hash(name);
+	ptrdiff_t idx = hval & (ht->len - 1);
 	HENTRY *entry;
-	int x;
+	ptrdiff_t x;
 
 	if (!freentry) {
 		entry = (HENTRY *) joe_malloc(SIZEOF(HENTRY) * 64);

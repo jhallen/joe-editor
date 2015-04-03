@@ -139,8 +139,8 @@ static struct ltchars oltarg;
 /* Output buffer, index and size */
 
 char *obuf = NULL;
-int obufp = 0;
-int obufsiz;
+ptrdiff_t obufp = 0;
+ptrdiff_t obufsiz;
 
 /* The baud rate */
 
@@ -151,21 +151,35 @@ long upc;			/* Microseconds per character */
  * too much to ask for them to just use an integer for the baud-rate?)
  */
 
-static long speeds[] = {
-	B50, 50, B75, 75, B110, 110, B134, 134, B150, 150, B200, 200, B300,
-	300, B600, 600,
-	B1200, 1200, B1800, 1800, B2400, 2400, B4800, 4800, B9600, 9600
+static speed_t speeds_in[] = {
+	B50, B75, B110, B134, B150, B200, B300, B600, B1200, B1800, B2400, B4800, B9600
 #ifdef EXTA
-	    , EXTA, 19200
+	, EXTA
 #endif
 #ifdef EXTB
-	    , EXTB, 38400
+	, EXTB
 #endif
 #ifdef B19200
-	    , B19200, 19200
+	, B19200
 #endif
 #ifdef B38400
-	    , B38400, 38400
+	, B38400
+#endif
+};
+
+static long speeds_out[] = {
+	50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800, 9600
+#ifdef EXTA
+	, 19200
+#endif
+#ifdef EXTB
+	, 38400
+#endif
+#ifdef B19200
+	, 19200
+#endif
+#ifdef B38400
+	, 38400
 #endif
 };
 
@@ -194,7 +208,7 @@ static int acceptch = NO_MORE_DATA;	/* =-1 if we have last packet */
 
 struct packet {
 	MPX *who;
-	int size;
+	ptrdiff_t size;
 	int ch;
 	char data[1024];
 } pack;
@@ -282,7 +296,7 @@ void tickon(void)
 	val.it_interval.tv_sec = 0;
 	val.it_interval.tv_usec = 0;
 	if (auto_scroll) {
-		int tim = auto_trig_time - mnow();
+		long tim = auto_trig_time - mnow();
 		if (tim < 0)
 			tim = 1;
 		tim *= 1000;
@@ -306,7 +320,8 @@ void tickon(void)
 
 void ttopnn(void)
 {
-	int x, bbaud;
+	ptrdiff_t x;
+	speed_t bbaud;
 
 #ifdef HAVE_POSIX_TERMIOS
 	struct termios newterm;
@@ -341,9 +356,9 @@ void ttopnn(void)
 	newterm = oldterm;
 	newterm.c_lflag = 0;
 	if (noxon)
-		newterm.c_iflag &= ~(ICRNL | IGNCR | INLCR | IXON | IXOFF);
+		newterm.c_iflag &= ~(unsigned)(ICRNL | IGNCR | INLCR | IXON | IXOFF);
 	else
-		newterm.c_iflag &= ~(ICRNL | IGNCR | INLCR);
+		newterm.c_iflag &= ~(unsigned)(ICRNL | IGNCR | INLCR);
 	newterm.c_oflag = 0;
 	newterm.c_cc[VMIN] = 1;
 	newterm.c_cc[VTIME] = 0;
@@ -394,9 +409,9 @@ void ttopnn(void)
 
 	baud = 9600;
 	upc = 0;
-	for (x = 0; x != 30; x += 2)
-		if (bbaud == speeds[x]) {
-			baud = speeds[x + 1];
+	for (x = 0; x != sizeof(speeds_in)/sizeof(speed_t); ++x)
+		if (bbaud == speeds_in[x]) {
+			baud = speeds_out[x];
 			break;
 		}
 	if (Baud)
@@ -523,7 +538,7 @@ int ttcheck()
 	if (!have && !leave) {
 		if (ackkbd != -1) {
 			fcntl(mpxfd, F_SETFL, O_NDELAY);
-			if (read(mpxfd, &pack, SIZEOF(struct packet) - 1024) > 0) {
+			if (read(mpxfd, &pack, pack.data - (char *)&pack) > 0) {
 				fcntl(mpxfd, F_SETFL, 0);
 				joe_read(mpxfd, pack.data, pack.size);
 				have = 1;
@@ -603,7 +618,7 @@ extern MACRO *timer_play();
 int ttgetc(void)
 {
         MACRO *m;
-	int stat;
+	ptrdiff_t stat;
 	time_t new_time;
 	int flg;
 
@@ -645,7 +660,7 @@ int ttgetc(void)
 	}
 	if (ackkbd != -1) {
 		if (!have) {	/* Wait for input */
-			stat = read(mpxfd, &pack, SIZEOF(struct packet) - 1024);
+			stat = read(mpxfd, &pack, pack.data - (char *)&pack);
 
 			if (pack.size && stat > 0) {
 				joe_read(mpxfd, pack.data, pack.size);
@@ -706,7 +721,7 @@ void ttputs(char *s)
 
 /* Get window size */
 
-void ttgtsz(int *x, int *y)
+void ttgtsz(ptrdiff_t *x, ptrdiff_t *y)
 {
 #ifdef TIOCGSIZE
 	struct ttysize getit;
@@ -736,7 +751,7 @@ void ttgtsz(int *x, int *y)
 
 /* Set window size */
 
-void ttstsz(int fd, int w, int h)
+void ttstsz(int fd, ptrdiff_t w, ptrdiff_t h)
 {
 #ifdef TIOCSSIZE
 	struct ttysize getit;
@@ -746,8 +761,8 @@ void ttstsz(int fd, int w, int h)
 #else
 #ifdef TIOCSWINSZ
 	struct winsize getit;
-	getit.ws_col = w;
-	getit.ws_row = h;
+	getit.ws_col = (unsigned short)w;
+	getit.ws_row = (unsigned short)h;
 	joe_ioctl(fd, TIOCSWINSZ, &getit);
 #endif
 #endif
@@ -800,7 +815,7 @@ static int mpxresume(void)
 		close(fds[1]);
 		do {
 			char c;
-			int sta;
+			ptrdiff_t sta;
 
 			pack.who = 0;
 			sta = joe_read(fileno(termin), &c, 1);
@@ -809,7 +824,7 @@ static int mpxresume(void)
 			else
 				pack.ch = c;
 			pack.size = 0;
-			joe_write(mpxsfd, &pack, SIZEOF(struct packet) - 1024);
+			joe_write(mpxsfd, &pack, pack.data - (char *)&pack);
 		} while (joe_read(fds[0], &pack, 1) == 1);
 		_exit(0);
 	}
@@ -886,7 +901,7 @@ static void mpxend(void)
 	close(mpxfd);
 	close(mpxsfd);
 	if (have)
-		havec = pack.ch;
+		havec = (char)pack.ch;
 }
 
 /* Get a pty/tty pair.  Returns open pty in 'ptyfd' and returns tty name
@@ -1057,7 +1072,7 @@ static char **newenv(char **old, char *s)
 /* If out_only is set, leave program's stdin attached to JOE's stdin */
 
 MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only,
-           int w, int h)
+           ptrdiff_t w, ptrdiff_t h)
 {
 	char buf[80];
 	int fds[2];
@@ -1215,18 +1230,18 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 
 					/* If shell didn't execute */
 					joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Couldn't execute shell '%s'\n")),cmd);
-					if (-1 == write(1,buf,zlen(buf)))
+					if (-1 == joe_write(1, buf, zlen(buf)))
 						sleep(2);
 					else
 						sleep(1);
 
 				} else {
 					char buf[1024];
-					int len;
+					ptrdiff_t len;
 					for (;;) {
 						len = read(0, buf, SIZEOF(buf));
 						if (len > 0) {
-							if (-1 == write(1, buf, len))
+							if (-1 == write(1, buf, (size_t)len))
 								break;
 						} else
 							break;
@@ -1259,15 +1274,15 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 		pack.ch = 0;
 
 		/* Read data from process */
-		pack.size = joe_read(*ptyfd, pack.data, 1024);
+		pack.size = joe_read(*ptyfd, pack.data, SIZEOF(pack.data));
 
 		/* On SUNOS 5.8, the very first read from the pty returns 0 for some reason */
 		if (!pack.size)
-			pack.size = joe_read(*ptyfd, pack.data, 1024);
+			pack.size = joe_read(*ptyfd, pack.data, SIZEOF(pack.data));
 
 		if (pack.size > 0) {
 			/* Send data to JOE, wait for ack */
-			joe_write(mpxsfd, &pack, SIZEOF(struct packet) - 1024 + pack.size);
+			joe_write(mpxsfd, &pack, pack.data - (char *)&pack + pack.size);
 
 			joe_read(fds[0], &pack, 1);
 			goto loop;
@@ -1275,7 +1290,7 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 			/* Shell died: return */
 			pack.ch = NO_MORE_DATA;
 			pack.size = 0;
-			joe_write(mpxsfd, &pack, SIZEOF(struct packet) - 1024);
+			joe_write(mpxsfd, &pack, pack.data - (char *)&pack);
 
 			_exit(0);
 		}

@@ -21,7 +21,7 @@ struct undorec {
 struct undo {
 	LINK(UNDO)	link;
 	B	*b;
-	int	nrecs;		/* Number of units */
+	ptrdiff_t	nrecs;		/* Number of units */
 	UNDOREC	recs;		/* The undo records: recs.link.prev is latest */
 	UNDOREC	*ptr;		/* Pointer to latest "undone" record. */
 	UNDOREC	*first;		/* Pointers to first and last records of a group.  The group is */

@@ -7,8 +7,8 @@
  */
 
 struct hentry {
-	int	next;
-	int	loc;
+	ptrdiff_t	next;
+	ptrdiff_t	loc;
 };
 
 /* Each terminal has one of these: terminal capability database */
@@ -16,15 +16,15 @@ struct hentry {
 #ifdef __MSDOS__
 
 struct scrn {
-	int	li;		/* Height of screen */
-	int	co;		/* Width of screen */
+	ptrdiff_t	li;		/* Height of screen */
+	ptrdiff_t	co;		/* Width of screen */
 	short	*scrn;		/* Buffer */
 	int	scroll;
 	int	insdel;
 	int	*updtab;	/* Lines which need to be updated */
 	HIGHLIGHT_STATE *syntax;
 	int	*compose;
-	int	*sary;
+	ptrdiff_t	*sary;
 };
 
 #else
@@ -32,8 +32,8 @@ struct scrn {
 struct scrn {
 	CAP	*cap;		/* Termcap/Terminfo data */
 
-	int	li;		/* Screen height */
-	int	co;		/* Screen width */
+	ptrdiff_t	li;		/* Screen height */
+        ptrdiff_t	co;		/* Screen width */
 
 	char	*ti;		/* Initialization string */
 	char	*cl;		/* Home and clear screen... really an
@@ -84,44 +84,44 @@ struct scrn {
 	int	mi;		/* Set if ok to move while in insert mode */
 
 	char	*bs;		/* Move cursor left 1 */
-	int	cbs;
+	ptrdiff_t	cbs;
 	char	*lf;		/* Move cursor down 1 */
-	int	clf;
+	ptrdiff_t	clf;
 	char	*up;		/* Move cursor up 1 */
-	int	cup;
+	ptrdiff_t	cup;
 	char	*nd;		/* Move cursor right 1 */
 
 	char	*ta;		/* Move cursor to next tab stop */
-	int	cta;
+	ptrdiff_t	cta;
 	char	*bt;		/* Move cursor to previous tab stop */
-	int	cbt;
-	int	tw;		/* Tab width */
+	ptrdiff_t	cbt;
+	ptrdiff_t	tw;		/* Tab width */
 
 	char	*ho;		/* Home cursor to upper left */
-	int	cho;
+	ptrdiff_t	cho;
 	char	*ll;		/* Home cursor to lower left */
-	int	cll;
+	ptrdiff_t	cll;
 	char	*cr;		/* Move cursor to left edge */
-	int	ccr;
+	ptrdiff_t	ccr;
 	char	*RI;		/* Move cursor right n */
-	int	cRI;
+	ptrdiff_t	cRI;
 	char	*LE;		/* Move cursor left n */
-	int	cLE;
+        ptrdiff_t	cLE;
 	char	*UP;		/* Move cursor up n */
-	int	cUP;
+	ptrdiff_t	cUP;
 	char	*DO;		/* Move cursor down n */
-	int	cDO;
+	ptrdiff_t	cDO;
 	char	*ch;		/* Set cursor column */
-	int	cch;
+	ptrdiff_t	cch;
 	char	*cv;		/* Set cursor row */
-	int	ccv;
+	ptrdiff_t	ccv;
 	char	*cV;		/* Goto beginning of specified line */
-	int	ccV;
+	ptrdiff_t	ccV;
 	char	*cm;		/* Set cursor row and column */
-	int	ccm;
+	ptrdiff_t	ccm;
 
 	char	*ce;		/* Clear to end of line */
-	int	cce;
+	ptrdiff_t	cce;
 
 	int assume_256;		/* Assume terminal has 256 color mode, but use
 	                           regular mode for standard colors just in case */
@@ -133,17 +133,17 @@ struct scrn {
 	/* Current state of terminal */
 	int	*scrn;		/* Characters on screen */
 	int	*attr;		/* Attributes on screen */
-	int	x, y;		/* Current cursor position (-1 for unknown) */
-	int	top, bot;	/* Current scrolling region */
+	ptrdiff_t	x, y;		/* Current cursor position (-1 for unknown) */
+	ptrdiff_t	top, bot;	/* Current scrolling region */
 	int	attrib;		/* Current character attributes */
 	int	ins;		/* Set if we're in insert mode */
 
 	int	*updtab;	/* Dirty lines table */
 	int	avattr;		/* Bits set for available attributes */
-	int	*sary;		/* Scroll buffer array */
+	ptrdiff_t	*sary;		/* Scroll buffer array */
 
 	int	*compose;	/* Line compose buffer */
-	int	*ofst;		/* stuff for magic */
+	ptrdiff_t	*ofst;		/* stuff for magic */
 	struct hentry	*htab;
 	struct hentry	*ary;
 };
@@ -164,7 +164,7 @@ SCRN *nopen(CAP *cap);
  * Change size of screen.  For example, call this when you find out that
  * the Xterm changed size.
  */
-int nresize(SCRN *t, int w, int h);
+int nresize(SCRN *t, ptrdiff_t w, ptrdiff_t h);
 
 /* void nredraw(SCRN *t);
  *
@@ -189,7 +189,7 @@ void nclose(SCRN *t);
  *
  * Set cursor position
  */
-int cpos(register SCRN *t, register int x, register int y);
+int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y);
 
 /* int attr(SCRN *t,int a);
  *
@@ -289,7 +289,7 @@ extern unsigned atab[];
 #define FG_RED		(FG_NOT_DEFAULT|(1<<FG_SHIFT))
 #define FG_BLACK	(FG_NOT_DEFAULT|(0<<FG_SHIFT))
 
-void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a);
+void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdiff_t yy,int c,int a);
 
 #endif
 
@@ -303,7 +303,7 @@ void xlat_utf_ctrl(int *attr, char *c);
  *
  * Erase from screen coordinate to end of line.
  */
-int eraeol(SCRN *t, int x, int y, int atr);
+int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr);
 
 /* void nscrlup(SCRN *t,int top,int bot,int amnt);
  *
@@ -311,7 +311,7 @@ int eraeol(SCRN *t, int x, int y, int atr);
  * indicate which lines to scroll.  'bot' is the last line to scroll + 1.
  * 'amnt' is distance in lines to scroll.
  */
-void nscrlup(SCRN *t, int top, int bot, int amnt);
+void nscrlup(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt);
 
 /* void nscrldn(SCRN *t,int top,int bot,int amnt);
  *
@@ -319,7 +319,7 @@ void nscrlup(SCRN *t, int top, int bot, int amnt);
  * indicate which lines to scroll.  'bot' is the last line to scroll + 1.
  * 'amnt' is distance in lines to scroll.
  */
-void nscrldn(SCRN *t, int top, int bot, int amnt);
+void nscrldn(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt);
 
 /* void nscroll(SCRN *t);
  *
@@ -331,28 +331,28 @@ void nscroll(SCRN *t, int atr);
  *
  * Figure out and execute line shifting
  */
-void magic(SCRN *t, int y, int *cs, int *ca, int *s, int *a,int placex);
+void magic(SCRN *t, ptrdiff_t y, int *cs, int *ca, int *s, int *a,ptrdiff_t placex);
 
 int clrins(SCRN *t);
 
 int meta_color(char *s);
 
 /* Generate a field */
-void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,char *s,int len,int atr,int width,int flg,int *fmt);
+void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt);
 
 /* Column width of a string takes into account utf-8) */
-int txtwidth(char *s,int len);
+ptrdiff_t txtwidth(char *s,ptrdiff_t len);
 
-int txtwidth1(struct charmap *map, int tabwidth, char *s, int len);
+ptrdiff_t txtwidth1(struct charmap *map, ptrdiff_t tabwidth, char *s, ptrdiff_t len);
 
 /* Generate a field: formatted */
-void genfmt(SCRN *t, int x, int y, int ofst, char *s, int atr, int flg);
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, char *s, int atr, int flg);
 
 /* Column width of formatted string */
-int fmtlen(char *s);
+ptrdiff_t fmtlen(char *s);
 
 /* Offset within formatted string of particular column */
-int fmtpos(char *s, int goal);
+ptrdiff_t fmtpos(char *s, ptrdiff_t goal);
 
 extern int bg_text;
 extern int columns;

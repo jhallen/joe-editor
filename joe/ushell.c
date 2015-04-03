@@ -130,7 +130,7 @@ void vt_scrdn()
 	 }
 }
 
-static void cdata(B *b, char *dat, int siz)
+static void cdata(B *b, char *dat, ptrdiff_t siz)
 {
 	if (b->vt) { /* ANSI terminal emulator */
 		MACRO *m;
@@ -196,7 +196,7 @@ int cstart(BW *bw, char *name, char **s, void *obj, int *notify, int build, int 
 	return -1;
 #else
 	MPX *m;
-	int shell_w = -1, shell_h = -1;
+	ptrdiff_t shell_w = -1, shell_h = -1;
 
 
 	if (notify) {
@@ -234,7 +234,7 @@ int cstart(BW *bw, char *name, char **s, void *obj, int *notify, int build, int 
 	} else {
 		bw->b->pid = m->pid;
 		if (first_command)
-			if (-1 == write(bw->b->out, first_command, zlen(first_command)))
+			if (-1 == write(bw->b->out, first_command, strlen(first_command)))
 				msgnw(bw->parent, joe_gettext(_("Write failed when writing first command to shell")));
 	}
 	return 0;

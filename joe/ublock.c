@@ -654,11 +654,11 @@ void setindent(BW *bw)
 /* Verifies that at least n indentation characters (for non-blank lines) match c */
 /* If n is 0 (for urindent), this fails if c is space but indentation begins with tab */
 
-int purity_check(int c, int n)
+int purity_check(int c, off_t n)
 {
 	P *p = pdup(markb, "purity_check");
 	while (p->byte < markk->byte) {
-		int x;
+		off_t x;
 		p_goto_bol(p);
 		if (!n && c==' ' && brc(p)=='\t') {
 			prm(p);
@@ -678,10 +678,10 @@ int purity_check(int c, int n)
 /* Left indent check */
 /* Verify that there is enough whitespace to do the left indent */
 
-int lindent_check(int c, int n)
+int lindent_check(int c, off_t n)
 {
 	P *p = pdup(markb, "lindent_check");
-	int indwid;
+	off_t indwid;
 	if (c=='\t')
 		indwid = n * p->b->o.tab;
 	else
@@ -718,7 +718,7 @@ int urindent(BW *bw)
 		} else if ( 1 /* bw->o.purify */) {
 			P *p = pdup(markb, "urindent");
 			P *q = pdup(markb, "urindent");
-			int indwid;
+			off_t indwid;
 
 			if (bw->o.indentc=='\t')
 				indwid = bw->o.tab * bw->o.istep;
@@ -798,7 +798,7 @@ int ulindent(BW *bw)
 		} else if (1 /* bw->o.purify */ && lindent_check(bw->o.indentc,bw->o.istep)) {
 			P *p = pdup(markb, "ulindent");
 			P *q = pdup(markb, "ulindent");
-			int indwid;
+			off_t indwid;
 
 			if (bw->o.indentc=='\t')
 				indwid = bw->o.tab * bw->o.istep;
@@ -940,8 +940,8 @@ static int dofilt(BW *bw, char *s, void *object, int *notify)
 	if (!vfork()) { /* For AMIGA only */
 #endif
 #ifdef HAVE_PUTENV
-		char		*fname, *name;
-		unsigned	len;
+		char *fname, *name;
+		ptrdiff_t len;
 #endif
 		signrm();
 		close(0);
@@ -1187,7 +1187,7 @@ int blksum(double *sum, double *sumsq)
 				c=pgetc(q);
 				if ((c >= '0' && c <= '9') || c == '.' || c == '-') {
 					/* Copy number into buffer */
-					buf[0]=c; x=1;
+					buf[0] = TO_CHAR_OK(c); x=1;
 					while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
 						c=pgetc(q);
 						if ((c >= '0' && c <= '9') || c == 'e' || c == 'E' ||
@@ -1195,7 +1195,7 @@ int blksum(double *sum, double *sumsq)
 						    c == '.' || c == '-' || c == '+' ||
 						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F')) {
 							if(x != 79)
-								buf[x++]=c;
+								buf[x++]= TO_CHAR_OK(c);
 						} else
 							break;
 					}

@@ -365,7 +365,7 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 		} else {
 			/* First line */
 			P *r = pdup(s, "uformat");
-			int x, y;
+			ptrdiff_t x, y;
 
 			indent = nindent(bw, s, 1);
 			pcol(r, indent);
@@ -373,8 +373,8 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 			prm(r);
 			if (!bw->o.autoindent) {
 				/* Don't indent second line of single-line paragraphs if autoindent is off */
-				int x = zlen(indents);
-				int orgx = x;
+				ptrdiff_t x = zlen(indents);
+				ptrdiff_t orgx = x;
 				while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
 					indents[--x] = 0;
 				if (x && orgx != x) {
@@ -570,14 +570,14 @@ int uformat(BW *bw)
 		prm(r);
 	} else {
 		P *r = pdup(p, "uformat");
-		int x, y;
+		ptrdiff_t x, y;
 		indent = nindent(bw, p, 1); /* allowing * and - here */
 		pcol(r, indent);
 		indents = brs(p, r->byte - p->byte); /* Risky */
 		prm(r);
 		if (!bw->o.autoindent) {
 			/* Don't indent second line of single-line paragraphs if autoindent is off */
-			int x = zlen(indents);
+			ptrdiff_t x = zlen(indents);
 			while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
 				indents[--x] = 0;
 			if (x) {

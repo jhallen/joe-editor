@@ -15,12 +15,12 @@ struct lattr_db
   /* Use a gap buffer for the attribute records */
 
   HIGHLIGHT_STATE *buffer;	/* Address of buffer */
-  long hole;			/* Offset to hole */
-  long ehole;			/* Offset to end of hole */
-  long end;			/* Malloc() size of buffer */
+  ptrdiff_t hole;		/* Offset to hole */
+  ptrdiff_t ehole;		/* Offset to end of hole */
+  ptrdiff_t end;		/* Malloc() size of buffer */
 
-  long first_invalid;		/* Lines beginning with this are invalid */
-  long invalid_window;		/* Lines beyond first_invalid+invalid_window might be valid */
+  ptrdiff_t first_invalid;	/* Lines beginning with this are invalid */
+  ptrdiff_t invalid_window;	/* Lines beyond first_invalid+invalid_window might be valid */
                                 /* -1 means all lines are valid */
   };
 
@@ -46,23 +46,23 @@ void drop_lattr_db(B *b, struct lattr_db *db);
 
 #define lattr_size(db) ((db)->end - ((db)->ehole - (db)->hole))
 
-void lattr_hole(struct lattr_db *db, long pos);
+void lattr_hole(struct lattr_db *db, ptrdiff_t pos);
   /* Set hole position */
 
-void lattr_check(struct lattr_db *db, long size);
+void lattr_check(struct lattr_db *db, ptrdiff_t size);
   /* Make sure we have enough space for insert.  If not, expand buffer. */
 
-void lattr_ins(struct lattr_db *db,long line,long size);
+void lattr_ins(struct lattr_db *db,ptrdiff_t line,ptrdiff_t size);
   /* An insert occured, beginning on specified line.  'size' lines were inserted.
      Adjust invalid window to cover inserted area.
   */
 
-void lattr_del(struct lattr_db *db,long line,long size);
+void lattr_del(struct lattr_db *db,ptrdiff_t line,ptrdiff_t size);
   /* A deletion occured, beginning on specified line.  'size' lines were deleted.
      Adjust invalid window to cover deleted area.
   */
 
-HIGHLIGHT_STATE lattr_get(struct lattr_db *db,struct high_syntax *y,P *p,long line);
+HIGHLIGHT_STATE lattr_get(struct lattr_db *db,struct high_syntax *y,P *p,ptrdiff_t line);
   /* Get state for specified line.  If we don't have it, compute it.
      Records results of any computation so that we don't have to do it again.
      If first_invalid is < number of lines we have, compute forward until we

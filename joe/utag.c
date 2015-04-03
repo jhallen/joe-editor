@@ -181,7 +181,8 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 	}
 	clrtags();
 	while (fgets(buf, SIZEOF(buf), f)) {
-		int x, y, c;
+		ptrdiff_t x, y;
+		char c;
 		for (x = 0; buf[x] && buf[x] != ' ' && buf[x] !='\t'; ++x) ;
 		c = buf[x];
 		buf[x] = 0;
@@ -216,7 +217,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 						line = ztoo(buf + y);
 						if (line >= 1) {
 							/* Comment */
-							int q;
+							ptrdiff_t q;
 							while (buf[y] >= '0' && buf[y] <= '9')
 								++y;
 							/* Comment (skip vi junk) */
@@ -243,13 +244,13 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 							vsrm(file);
 						}
 					} else {
-						int z = 0;
+						ptrdiff_t z = 0;
 						/* It's a search string. New versions of
 						   ctags have real regex with vi command.  Old
 						   ones do not always quote / and depend on it
 						   being last char on line. */
 						if (buf[y] == '/' || buf[y] == '?') {
-							int ch = buf[y++];
+							char ch = buf[y++];
 							/* Find last / or ? on line... */
 							for (x = y + zlen(buf + y); x != y; --x)
 								if (buf[x] == ch)
@@ -279,7 +280,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 							}
 						}
 						if (z) {
-							int q;
+							ptrdiff_t q;
 							char *srch;
 							srch = vsncpy(NULL, 0, buf1, z);
 							if (buf[y]) ++y;
@@ -360,7 +361,7 @@ static void get_tag_list()
 {
 	char buf[512];
 	char tag[512];
-	int i,pos;
+	ptrdiff_t i,pos;
 	FILE *f;
 	HASH *ht; /* Used to prevent duplicates in list */
 	struct stat stat;

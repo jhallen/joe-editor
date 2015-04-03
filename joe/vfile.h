@@ -35,8 +35,8 @@ struct vfile {
 	/* For stream I/O */
 	char	*bufp;		/* Buffer pointer */
 	char	*vpage;		/* Buffer pointer points in here */
-	int	left;		/* Space left in bufp */
-	int	lv;		/* Amount of append space at end of buffer */
+	ptrdiff_t	left;		/* Space left in bufp */
+	ptrdiff_t	lv;		/* Amount of append space at end of buffer */
 };
 /* Additions:
  *
@@ -205,10 +205,10 @@ int _vgetc();
 int _vrgetc();
 
 #define vrgetc(v) \
-        ( (v)->left!=PGSIZE ? ( ++(v)->left, (int)(unsigned)*(--(v)->bufp) ) : _vrgetc(v) )
+        ( (v)->left!=PGSIZE ? ( ++(v)->left, (int)(unsigned char)*(--(v)->bufp) ) : _vrgetc(v) )
 
 #define vgetc(v) \
-	( (v)->left>(v)->lv ? ( --(v)->left, (int)(unsigned)*((v)->bufp++) ) : _vgetc(v) )
+	( (v)->left>(v)->lv ? ( --(v)->left, (int)(unsigned char)*((v)->bufp++) ) : _vgetc(v) )
 
 /* int vputc(VFILE *,I);
  *
@@ -223,7 +223,7 @@ int _vputc();
 	   ( \
 	   --(v)->left, \
 	   vchanged((v)->vpage), \
- 	   (int)(unsigned)(*((v)->bufp++)=(c)) \
+ 	   (int)(unsigned char)(*((v)->bufp++)=(c)) \
 	   ) \
 	  : \
 	   _vputc((v),(c)) \

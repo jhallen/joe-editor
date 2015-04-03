@@ -154,12 +154,13 @@ static char *range(char *seq, int *vv, int *ww)
 
 /* Add a binding to a keymap */
 
-static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char *capseq, int seql)
+static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char *capseq, ptrdiff_t seql)
 {
 	int v, w;
 
 	if (!seql && seq[0] == '.' && seq[1]) {
-		int x, c;
+		int x;
+		char c;
 		char *s;
 
 		for (x = 0; seq[x] && seq[x] != ' '; ++x) ;

@@ -61,6 +61,16 @@ off_t off_min(off_t a, off_t b)
 	return a < b ? a : b;
 }
 
+ptrdiff_t diff_max(ptrdiff_t a, ptrdiff_t b)
+{
+	return a > b ? a : b;
+}
+
+ptrdiff_t diff_min(ptrdiff_t a, ptrdiff_t b)
+{
+	return a < b ? a : b;
+}
+
 #if 0
 /* 
  * Characters which are considered as word characters 
@@ -104,22 +114,22 @@ int isalpha_(int wide,struct charmap *map,int c)
 #endif
 
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
-int joe_read(int fd, void *buf, int size)
+ptrdiff_t joe_read(int fd, void *buf, ptrdiff_t size)
 {
-	int rt;
+	ptrdiff_t rt;
 
 	do {
-		rt = read(fd, buf, size);
+		rt = read(fd, buf, (size_t)size);
 	} while (rt < 0 && errno == EINTR);
 	return rt;
 }
 
-int joe_write(int fd, void *buf, int size)
+ptrdiff_t joe_write(int fd, void *buf, ptrdiff_t size)
 {
-	int rt;
+	ptrdiff_t rt;
 
 	do {
-		rt = write(fd, buf, size);
+		rt = write(fd, buf, (size_t)size);
 	} while (rt < 0 && errno == EINTR);
 	return rt;
 }
@@ -128,7 +138,7 @@ int joe_ioctl(int fd, int req, void *ptr)
 {
 	int rt;
 	do {
-		rt = ioctl(fd, req, ptr);
+		rt = ioctl(fd, (unsigned)req, ptr);
 	} while (rt == -1 && errno == EINTR);
 	return rt;
 }
@@ -261,7 +271,7 @@ void joe_free(void *ptr)
 
 /* Normal malloc() */
 
-void *joe_malloc(int size)
+void *joe_malloc(ptrdiff_t size)
 {
 	void *p = malloc((size_t)size);
 	if (!p)
@@ -269,7 +279,7 @@ void *joe_malloc(int size)
 	return p;
 }
 
-void *joe_calloc(int nmemb,int size)
+void *joe_calloc(ptrdiff_t nmemb,ptrdiff_t size)
 {
 	void *p = calloc((size_t)nmemb, (size_t)size);
 	if (!p)
@@ -277,7 +287,7 @@ void *joe_calloc(int nmemb,int size)
 	return p;
 }
 
-void *joe_realloc(void *ptr,int size)
+void *joe_realloc(void *ptr,ptrdiff_t size)
 {
 	void *p = realloc(ptr, (size_t)size);
 	if (!p)
@@ -292,9 +302,9 @@ void joe_free(void *ptr)
 
 #endif
 
-int zlen(char *s)
+ptrdiff_t zlen(char *s)
 {
-	return (int)strlen(s);
+	return (ptrdiff_t)strlen(s);
 }
 
 int zcmp(char *a, char *b)
@@ -341,7 +351,7 @@ int zicmp(char *a, char *b)
 
 int zmcmp(char *a, char *b)
 {
-	int x = zlen(a);
+	ptrdiff_t x = zlen(a);
 	do {
 		if (a[x] == ':' && a[x + 1] == ':')
 			if ((b[0] == ':' && !zcmp(a + x, b)) || !zcmp(a + x + 2, b))
@@ -350,16 +360,16 @@ int zmcmp(char *a, char *b)
 	return zcmp(a, b);
 }
 
-int zncmp(char *a, char *b, int len)
+int zncmp(char *a, char *b, ptrdiff_t len)
 {
 	return strncmp(a, b, (size_t)len);
 }
 
 char *zdup(char *bf)
 {
-	int size = zlen(bf);
+	ptrdiff_t size = zlen(bf);
 	char *p = joe_malloc(size+1);
-	memcpy(p, bf, size + 1);
+	memcpy(p, bf, (size_t)(size + 1));
 	return p;
 }
 
@@ -376,13 +386,13 @@ char *zstr(char *a, char *b)
 	return strstr(a,b);
 }
 
-char *zncpy(char *a, char *b, int len)
+char *zncpy(char *a, char *b, ptrdiff_t len)
 {
 	strncpy(a,b,(size_t)len);
 	return a;
 }
 
-char *zlcpy(char *a, int len, char *b)
+char *zlcpy(char *a, ptrdiff_t len, char *b)
 {
 	char *org = a;
 	if (!len) {
@@ -398,7 +408,7 @@ char *zlcpy(char *a, int len, char *b)
 	return org;
 }
 
-char *mcpy(char *a, char *b, int len)
+void *mcpy(void *a, void *b, ptrdiff_t len)
 {
 	if (len)
 		memcpy(a, b, (size_t)len);
@@ -413,7 +423,7 @@ char *zcat(char *a, char *b)
 }
 #endif
 
-char *zlcat(char *a, int siz, char *b)
+char *zlcat(char *a, ptrdiff_t siz, char *b)
 {
 	char *org = a;
 	while (*a && siz) {
@@ -513,6 +523,12 @@ int ztoi(char *s)
 	return (int)val;
 }
 
+ptrdiff_t ztodiff(char *s)
+{
+	off_t val = ztoo(s);
+	return (ptrdiff_t)val;
+}
+
 long zhtol(char *s)
 {
 	off_t val = zhtoo(s);
@@ -523,6 +539,12 @@ int zhtoi(char *s)
 {
 	off_t val = zhtoo(s);
 	return (int)val;
+}
+
+ptrdiff_t zhtodiff(char *s)
+{
+	off_t val = zhtoo(s);
+	return (ptrdiff_t)val;
 }
 
 #ifndef SIG_ERR
@@ -577,7 +599,7 @@ int parse_ws(char **pp,int cmt)
 
 /* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len-1 chars. */
 
-int parse_ident(char **pp, char *buf, int len)
+int parse_ident(char **pp, char *buf, ptrdiff_t len)
 {
 	char *p = *pp;
 	if (joe_isalpha_(locale_map,*p)) {
@@ -662,6 +684,21 @@ int parse_int(char **pp, int *buf)
 		return -1;
 }
 
+int parse_diff(char **pp, ptrdiff_t *buf)
+{
+	char *p = *pp;
+	if ((*p>='0' && *p<='9') || *p=='-') {
+		*buf = ztodiff(p);
+		if(*p=='-')
+			++p;
+		while(*p>='0' && *p<='9')
+			++p;
+		*pp = p;
+		return 0;
+	} else
+		return -1;
+}
+
 /* Parse a long */
 
 int parse_off_t(char **pp, off_t *buf)
@@ -702,14 +739,14 @@ int parse_off_t(char **pp, off_t *buf)
  * -1 if there is no string or if the input ended before the terminating ".
  */
 
-int parse_string(char **pp, char *buf, int len)
+ptrdiff_t parse_string(char **pp, char *buf, ptrdiff_t len)
 {
 	char *start = buf;
 	char *p= *pp;
 	if(*p=='\"') {
 		++p;
 		while(len > 1 && *p && *p!='\"') {
-			int x = 50;
+			ptrdiff_t x = 50;
 			int c = escape(0, &p, &x);
 			*buf++ = TO_CHAR_OK(c);
 			--len;
@@ -734,7 +771,7 @@ int parse_string(char **pp, char *buf, int len)
 
 /* Used originally for printing macros */
 
-void emit_string(FILE *f,char *s,int len)
+void emit_string(FILE *f,char *s,ptrdiff_t len)
 {
 	char buf[8];
 	char *p, *q;
@@ -751,7 +788,7 @@ void emit_string(FILE *f,char *s,int len)
 
 /* Emit a string */
 
-void emit_string(FILE *f,char *s,int len)
+void emit_string(FILE *f,char *s,ptrdiff_t len)
 {
 	fputc('"',f);
 	while(len) {
@@ -809,4 +846,9 @@ int parse_range(char **pp, int *first, int *second)
 	*second = b;
 	*pp = p;
 	return 0;
+}
+
+void jsort(void *base, ptrdiff_t num, ptrdiff_t size, int (*compar)(const void *a, const void *b))
+{
+	return qsort(base, (size_t)num, (size_t)size, compar);
 }

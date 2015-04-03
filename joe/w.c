@@ -43,7 +43,7 @@ W *findtopw(W *w)
 /* Determine height of a window.  Returns reqh if it is set, otherwise
  * used fixed or hh scaled to the current screen size */
 
-static int geth(W *w)
+static ptrdiff_t geth(W *w)
 {
 	if (w->reqh)
 		return w->reqh;
@@ -55,7 +55,7 @@ static int geth(W *w)
 
 /* Set the height of a window */
 
-static void seth(W *w, int h)
+static void seth(W *w, ptrdiff_t h)
 {
 	long tmp;
 
@@ -66,10 +66,10 @@ static void seth(W *w, int h)
 
 /* Determine height of a family of windows.  Uses 'reqh' if it's set */
 
-int getgrouph(W *w)
+ptrdiff_t getgrouph(W *w)
 {
 	W *x;
-	int h;
+	ptrdiff_t h;
 
 	/* Find first window in family */
 	x = findtopw(w);
@@ -82,10 +82,10 @@ int getgrouph(W *w)
 
 /* Determine minimum height of a family */
 
-static int getminh(W *w)
+static ptrdiff_t getminh(W *w)
 {
 	W *x;
-	int h;
+	ptrdiff_t h;
 
 	x = findtopw(w);
 	for (w = x, h = (w->fixed ? w->fixed : 2); w->link.next != x && w->link.next->main == x->main; w = w->link.next, h += (w->fixed ? w->fixed : 2)) ;
@@ -218,7 +218,7 @@ void scrdel(B *b, off_t l, off_t n, int flg)
 	}
 }
 
-W *watpos(Screen *t,int x,int y)
+W *watpos(Screen *t,ptrdiff_t x,ptrdiff_t y)
 {
 	W *w=t->topwin;
 	do
@@ -235,16 +235,16 @@ W *watpos(Screen *t,int x,int y)
  * of windows until window with cursor fits on screen).
  */
 
-static int doabort(W *w, int *ret);
+static ptrdiff_t doabort(W *w, int *ret);
 
 void wfit(Screen *t)
 {
-	int y;			/* Where next window goes */
-	int left;		/* Lines left on screen */
+	ptrdiff_t y;		/* Where next window goes */
+	ptrdiff_t left;		/* Lines left on screen */
 	W *w;			/* Current window we're fitting */
 	W *pw;			/* Main window of previous family */
-	int req;		/* Amount this family needs */
-	int adj;		/* Amount family needs to be adjusted */
+	ptrdiff_t req;		/* Amount this family needs */
+	ptrdiff_t adj;		/* Amount family needs to be adjusted */
 	int flg = 0;		/* Set if cursor window was placed on screen */
 	int ret;
 
@@ -320,7 +320,7 @@ void wfit(Screen *t)
 				/* Scroll windows between l and w */
 			      loop1:
 				if (l->ny >= 0 && l->y >= 0)
-					nscrldn(t->t, l->y, l->ny + int_min(l->h, l->nh), l->ny - l->y);
+					nscrldn(t->t, l->y, l->ny + diff_min(l->h, l->nh), l->ny - l->y);
 				if (w != l) {
 					l = l->link.prev;
 					goto loop1;
@@ -337,7 +337,7 @@ void wfit(Screen *t)
 				/* Scroll windows between l and w */
 			      loop0:
 				if (w->ny >= 0 && w->y >= 0)
-					nscrlup(t->t, w->ny, w->y + int_min(w->h, w->nh), w->y - w->ny);
+					nscrlup(t->t, w->ny, w->y + diff_min(w->h, w->nh), w->y - w->ny);
 				if (w != l) {
 					w = w->link.next;
 					goto loop0;
@@ -485,8 +485,8 @@ int wgrowdown(W *w)
 
 void wshowall(Screen *t)
 {
-	int n = 0;
-	int set;
+	ptrdiff_t n = 0;
+	ptrdiff_t set;
 	W *w;
 
 	/* Count no. of main windows */
@@ -505,7 +505,7 @@ void wshowall(Screen *t)
 	w = t->topwin;
 	do {
 		if (!w->win) {
-			int h = getminh(w);
+			ptrdiff_t h = getminh(w);
 
 			if (h >= set)
 				seth(w, 2);
@@ -522,7 +522,7 @@ void wshowall(Screen *t)
 
 static void wspread(Screen *t)
 {
-	int n = 0;
+	ptrdiff_t n = 0;
 	W *w = t->topwin;
 
 	do {
@@ -541,7 +541,7 @@ static void wspread(Screen *t)
 	w = t->topwin;
 	do {
 		if (!w->win) {
-			int h = getminh(w);
+			ptrdiff_t h = getminh(w);
 
 			if (h >= n)
 				seth(w, 2);
@@ -572,7 +572,7 @@ void wshowone(W *w)
 
 /* Create a window */
 
-W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height, char *huh, int *notify)
+W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, char *huh, int *notify)
 {
 	W *new;
 
@@ -640,9 +640,9 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height
 
 /* Abort group of windows */
 
-static int doabort(W *w, int *ret)
+static ptrdiff_t doabort(W *w, int *ret)
 {
-	int amnt = geth(w);
+	ptrdiff_t amnt = geth(w);
 	W *z;
 
 	w->y = -2;
@@ -719,10 +719,10 @@ int wabort(W *w)
 
 int bg_msg;
 
-static void mdisp(SCRN *t, int y, char *s)
+static void mdisp(SCRN *t, ptrdiff_t y, char *s)
 {
-	int ofst;
-	int len;
+	ptrdiff_t ofst;
+	ptrdiff_t len;
 
 	len = fmtlen(s);
 	if (len <= (t->co))

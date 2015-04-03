@@ -492,7 +492,7 @@ void load_yank(FILE *f)
 	char bf[SMALL+1];
 	while(fgets(buf,SIZEOF(buf)-1,f) && zcmp(buf,"done\n")) {
 		char *p = buf;
-		int len;
+		ptrdiff_t len;
 		parse_ws(&p,'#');
 		len = parse_string(&p,bf,SIZEOF(bf));
 		if (len>0 && len<=SMALL) {
@@ -502,7 +502,7 @@ void load_yank(FILE *f)
 			}
 			rec = alrec();
 			rec->small = joe_malloc(len);
-			memcpy(rec->small,bf,len);
+			mcpy(rec->small,bf,len);
 			rec->where = -1;
 			rec->len = len;
 			rec->del = 1;

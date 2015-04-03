@@ -14,9 +14,9 @@
 struct header {
 	LINK(H)	link;		/* Doubly-linked list of gap buffer headers */
 	off_t	seg;		/* Swap file offset to gap buffer */
-	int	hole;		/* Offset to gap */
-	int	ehole;		/* Offset to after gap */
-	int	nlines;		/* No. '\n's in this buffer */
+	ptrdiff_t	hole;		/* Offset to gap */
+	ptrdiff_t	ehole;		/* Offset to after gap */
+	ptrdiff_t	nlines;		/* No. '\n's in this buffer */
 };
 
 /* A pointer to some location within a buffer.  After an insert or delete,
@@ -27,7 +27,7 @@ struct point {
 	LINK(P)	link;		/* Doubly-linked list of pointers for a particular buffer */
 
 	B	*b;		/* Buffer */
-	int	ofst;		/* Gap buffer offset */
+	ptrdiff_t	ofst;		/* Gap buffer offset */
 	char	*ptr;	/* Gap buffer address */
 	H	*hdr;		/* Gap buffer header */
 
@@ -51,14 +51,14 @@ struct options {
 	char	*name_regex;
 	char	*contents_regex;
 	int	overtype;
-	int	lmargin;
-	int	rmargin;
+	off_t	lmargin;
+	off_t	rmargin;
 	int	autoindent;
 	int	wordwrap;
 	int	nobackup;
-	int	tab;
+	off_t	tab;
 	int	indentc;
-	int	istep;
+	off_t	istep;
 	char	*context;
 	char	*lmsg;
 	char	*rmsg;
@@ -219,10 +219,10 @@ P *pcoli(P *p, off_t goalcol);
 void pbackws(P *p);
 void pfill(P *p, off_t to, int usetabs);
 
-P *pfind(P *p, char *s, int len);
-P *pifind(P *p, char *s, int len);
-P *prfind(P *p, char *s, int len);
-P *prifind(P *p, char *s, int len);
+P *pfind(P *p, char *s, ptrdiff_t len);
+P *pifind(P *p, char *s, ptrdiff_t len);
+P *prfind(P *p, char *s, ptrdiff_t len);
+P *prifind(P *p, char *s, ptrdiff_t len);
 
 /* copy text between 'from' and 'to' into new buffer */
 B *bcpy(P *from, P *to);	
@@ -234,7 +234,7 @@ void bdel(P *from, P *to);
 /* insert buffer 'b' into another at 'p' */
 P *binsb(P *p, B *b);
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
-P *binsm(P *p, char *blk, int amnt); 
+P *binsm(P *p, char *blk, ptrdiff_t amnt); 
 
 /* insert character 'c' into buffer at 'p' */
 P *binsc(P *p, int c);
@@ -273,19 +273,19 @@ int brc(P *p);
 int brch(P *p);
 
 /* Copy 'size' bytes from a buffer beginning at p into block 'blk' */
-char *brmem(P *p, char *blk, int size);
+char *brmem(P *p, char *blk, ptrdiff_t size);
 
 /* Copy 'size' bytes from a buffer beginning at p into a zero-terminated
  * C-string in an malloc block.
  */
-char *brs(P *p, int size);
+char *brs(P *p, ptrdiff_t size);
 
 /* Copy 'size' bytes from a buffer beginning at p into a variable length string. */
-char *brvs(P *p, int size);
+char *brvs(P *p, ptrdiff_t size);
 
 /* Copy line into buffer.  Maximum of size bytes will be copied.  Buffer needs
    to be one bigger for NIL */
-char *brzs(P *p, char *buf, int size);
+char *brzs(P *p, char *buf, ptrdiff_t size);
 
 B *bnext(void);
 B *bafter(B *b);

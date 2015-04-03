@@ -2,6 +2,7 @@
 
 #define _FILE_OFFSET_BITS 64
 #define TO_INT_OK(a) ((int)(a)) /* Means it's OK that we are converting off_t to int in this case */
+#define TO_DIFF_OK(a) ((ptrdiff_t)(a)) /* Means it's OK that we are converting off_t to ptrdiff_t in this case */
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
 #define SIZEOF(a) ((int)sizeof(a))
 
@@ -30,6 +31,10 @@ typedef int pid_t;
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+
+#ifdef HAVE_STDDEF_H
+#include <stddef.h>
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -152,7 +157,7 @@ typedef int pid_t;
 #define physical(a)  (((unsigned long)(a)&0xFFFF)+(((unsigned long)(a)&0xFFFF0000)>>12))
 #define normalize(a) ((void *)(((unsigned long)(a)&0xFFFF000F)+(((unsigned long)(a)&0x0000FFF0)<<12)))
 #else
-#define physical(a) ((unsigned long)(a))
+#define physical(a) ((ptrdiff_t)(a))
 #define normalize(a) (a)
 #endif /* sizeof(void *) == 4 */
 
@@ -164,7 +169,7 @@ typedef int pid_t;
 
 #else /* not real mode ms-dos */
 
-#define physical(a) ((unsigned long)(a))
+#define physical(a) ((ptrdiff_t)(a))
 #define normalize(a) (a)
 
 /* Log2 of page size */
@@ -251,9 +256,9 @@ typedef struct vt_context VT;
 /* Structure which are passed by value */
 
 struct highlight_state {
-	struct high_frame *stack;   /* Pointer to the current frame in the call stack */
-	int state;                  /* Current state in the current subroutine */
-	char saved_s[24];  /* Buffer for saved delimiters */
+	struct high_frame *stack; /* Pointer to the current frame in the call stack */
+	ptrdiff_t state; /* Current state in the current subroutine */
+	char saved_s[24]; /* Buffer for saved delimiters */
 };
 
 /* Include files */

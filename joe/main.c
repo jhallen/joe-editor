@@ -40,7 +40,7 @@ volatile int dostaupd = 1;
 void edupd(int flg)
 {
 	W *w;
-	int wid, hei;
+	ptrdiff_t wid, hei;
 
 	if (dostaupd) {
 		staupd = 1;
@@ -175,7 +175,7 @@ int edloop(int flg)
 		}
 
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
-			int x = maint->curwin->kbd->x;
+			ptrdiff_t x = maint->curwin->kbd->x;
 
 			maint->curwin->main->kbd->x = x;
 			if (x)
@@ -460,7 +460,7 @@ int main(int argc, char **real_argv, char **envv)
 
 	{
 		char buf[10];
-		int x;
+		ptrdiff_t x;
 		zlcpy(buf, SIZEOF(buf), "\"`\"	`  ");
 		type_backtick = mparse(0, buf, &x, 0);
 	}

@@ -57,7 +57,7 @@ char xlatc[256] = {
 	120, 121, 122, 123, 124, 125, 126,  63			/* 256 */
 };
 /* ... and here their attributes */ 
-unsigned xlata[256] = {
+int xlata[256] = {
 	UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,		/*   4 */
 	UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,		/*   8 */
 	UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,		/*  12 */
@@ -237,7 +237,7 @@ int set_attr(SCRN *t, int c)
 
 /* Output character with attributes */
 
-void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
+void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdiff_t yy,int c,int a)
 {
 	if (c < 0)
 		c += 256;
@@ -314,7 +314,7 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c
 				cpos(t,xx,yy);
 			if(t->attrib != a)
 				set_attr(t,a);
-			ttputc(c);
+			ttputc(TO_CHAR_OK(c));
 			t->x++;
 		}
 	else
@@ -340,7 +340,7 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c
 				cpos(t,xx,yy);
 			if(t->attrib != a)
 				set_attr(t,a);
-			ttputc(c);
+			ttputc(TO_CHAR_OK(c));
 			t->x++;
 		} else {
 			/* Non UTF-8 char to UTF-8 terminal */
@@ -384,7 +384,7 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c
 
 /* Set scrolling region */
 
-static void setregn(SCRN *t, int top, int bot)
+static void setregn(SCRN *t, ptrdiff_t top, ptrdiff_t bot)
 {
 	if (!t->cs) {
 		t->top = top;
@@ -402,7 +402,7 @@ static void setregn(SCRN *t, int top, int bot)
 
 /* Enter insert mode */
 
-static void setins(SCRN *t, int x)
+static void setins(SCRN *t, ptrdiff_t x)
 {
 	if (t->ins != 1 && t->im) {
 		t->ins = 1;
@@ -423,10 +423,10 @@ int clrins(SCRN *t)
 
 /* Erase from given screen coordinate to end of line */
 
-int eraeol(SCRN *t, int x, int y, int atr)
+int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 {
 	int *s, *ss, *a, *aa;
-	int w = t->co - x;
+	ptrdiff_t w = t->co - x;
 
 	if (w <= 0)
 		return 0;
@@ -474,7 +474,7 @@ int eraeol(SCRN *t, int x, int y, int atr)
 /* As above but useable in insert mode */
 /* The cursor position must already be correct */
 
-static void outatri(SCRN *t, int x, int y, int c, int a)
+static void outatri(SCRN *t, ptrdiff_t x, ptrdiff_t y, int c, int a)
 {
 /*
 	if (c == -1)
@@ -497,7 +497,7 @@ static void out(char *t, char c)
 SCRN *nopen(CAP *cap)
 {
 	SCRN *t = (SCRN *) joe_malloc(SIZEOF(SCRN));
-	int x, y, co, li;
+	ptrdiff_t x, y, co, li;
 	int ansiish;
 
 	ttopen();
@@ -841,7 +841,7 @@ SCRN *nopen(CAP *cap)
 
 /* Change size of screen. Decrease width by 1 if printing in the last column is not supported */
 
-int nresize(SCRN *t, int w, int h)
+int nresize(SCRN *t, ptrdiff_t w, ptrdiff_t h)
 {
 	if (h < 4)
 		h = 4;
@@ -867,13 +867,13 @@ int nresize(SCRN *t, int w, int h)
 		joe_free(t->ofst);
 	if (t->ary)
 		joe_free(t->ary);
-	t->scrn = (int *) joe_malloc(t->li * t->co * SIZEOF(int));
-	t->attr = (int *) joe_malloc(t->li * t->co * SIZEOF(int));
-	t->sary = (int *) joe_calloc(t->li, SIZEOF(int));
-	t->updtab = (int *) joe_malloc(t->li * SIZEOF(int));
-	t->compose = (int *) joe_malloc(t->co * SIZEOF(int));
-	t->ofst = (int *) joe_malloc(t->co * SIZEOF(int));
-	t->ary = (struct hentry *) joe_malloc(t->co * SIZEOF(struct hentry));
+	t->scrn = joe_malloc(t->li * t->co * SIZEOF(int));
+	t->attr = joe_malloc(t->li * t->co * SIZEOF(int));
+	t->sary = joe_calloc(t->li, SIZEOF(ptrdiff_t));
+	t->updtab = joe_malloc(t->li * SIZEOF(int));
+	t->compose = joe_malloc(t->co * SIZEOF(int));
+	t->ofst = joe_malloc(t->co * SIZEOF(ptrdiff_t));
+	t->ary = joe_malloc(t->co * SIZEOF(struct hentry));
 
 	nredraw(t);
 	return 1;
@@ -886,9 +886,9 @@ int nresize(SCRN *t, int w, int h)
  * This doesn't use the am and bw capabilities although it probably could.
  */
 
-static int relcost(register SCRN *t, register int x, register int y, register int ox, register int oy)
+static ptrdiff_t relcost(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y, register ptrdiff_t ox, register ptrdiff_t oy)
 {
-	int cost = 0;
+	ptrdiff_t cost = 0;
 
 /* If we don't know the cursor position, force use of absolute positioning */
 	if (oy == -1 || ox == -1)
@@ -896,11 +896,11 @@ static int relcost(register SCRN *t, register int x, register int y, register in
 
 /* First adjust row */
 	if (y > oy) {
-		int dist = y - oy;
+		ptrdiff_t dist = y - oy;
 
 		/* Have to go down */
 		if (t->lf) {
-			int mult = dist * t->clf;
+			ptrdiff_t mult = dist * t->clf;
 
 			if (dist < 10 && t->cDO < mult)
 				cost += t->cDO;
@@ -916,11 +916,11 @@ static int relcost(register SCRN *t, register int x, register int y, register in
 		else
 			return 10000;
 	} else if (y < oy) {
-		int dist = oy - y;
+		ptrdiff_t dist = oy - y;
 
 		/* Have to go up */
 		if (t->up) {
-			int mult = dist * t->cup;
+			ptrdiff_t mult = dist * t->cup;
 
 			if (dist < 10 && t->cUP < mult)
 				cost += t->cUP;
@@ -941,10 +941,10 @@ static int relcost(register SCRN *t, register int x, register int y, register in
 
 /* Use tabs */
 	if (x > ox && t->ta) {
-		int dist = x - ox;
-		int ntabs = (dist + ox % t->tw) / t->tw;
-		int cstunder = x % t->tw + t->cta * ntabs;
-		int cstover;
+		ptrdiff_t dist = x - ox;
+		ptrdiff_t ntabs = (dist + ox % t->tw) / t->tw;
+		ptrdiff_t cstunder = x % t->tw + t->cta * ntabs;
+		ptrdiff_t cstover;
 
 		if (x + t->tw < t->co && t->bs)
 			cstover = t->cbs * (t->tw - x % t->tw) + t->cta * (ntabs + 1);
@@ -959,9 +959,9 @@ static int relcost(register SCRN *t, register int x, register int y, register in
 		else if (cstover < t->cRI + 1 && cstover < x - ox)
 			return cost + cstover;
 	} else if (x < ox && t->bt) {
-		int dist = ox - x;
-		int ntabs = (dist + t->tw - ox % t->tw) / t->tw;
-		int cstunder, cstover;
+		ptrdiff_t dist = ox - x;
+		ptrdiff_t ntabs = (dist + t->tw - ox % t->tw) / t->tw;
+		ptrdiff_t cstunder, cstover;
 
 		if (t->bs)
 			cstunder = t->cbt * ntabs + t->cbs * (t->tw - x % t->tw);
@@ -985,11 +985,11 @@ static int relcost(register SCRN *t, register int x, register int y, register in
 
 /* Use simple motions */
 	if (x < ox) {
-		int dist = ox - x;
+		ptrdiff_t dist = ox - x;
 
 		/* Have to go left */
 		if (t->bs) {
-			int mult = dist * t->cbs;
+			ptrdiff_t mult = dist * t->cbs;
 
 			if (t->cLE < mult && dist < 10)
 				cost += t->cLE;
@@ -1002,7 +1002,7 @@ static int relcost(register SCRN *t, register int x, register int y, register in
 		else
 			return 10000;
 	} else if (x > ox) {
-		int dist = x - ox;
+		ptrdiff_t dist = x - ox;
 
 		/* Have to go right */
 		/* Hmm.. this should take into account possible attribute changes */
@@ -1022,12 +1022,12 @@ static int relcost(register SCRN *t, register int x, register int y, register in
  * given new row and column and execute them.
  */
 
-static void cposs(register SCRN *t, register int x, register int y)
+static void cposs(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
 {
-	register int bestcost, cost;
+	register ptrdiff_t bestcost, cost;
 	int bestway;
-	int hy;
-	int hl;
+	ptrdiff_t hy;
+	ptrdiff_t hl;
 
 	fixupcursor(t);
 
@@ -1239,9 +1239,9 @@ docv:
 
 /* Use tabs */
 	if (x > t->x && t->ta) {
-		int ntabs = (x - t->x + t->x % t->tw) / t->tw;
-		int cstunder = x % t->tw + t->cta * ntabs;
-		int cstover;
+		ptrdiff_t ntabs = (x - t->x + t->x % t->tw) / t->tw;
+		ptrdiff_t cstunder = x % t->tw + t->cta * ntabs;
+		ptrdiff_t cstover;
 
 		if (x + t->tw < t->co && t->bs)
 			cstover = t->cbs * (t->tw - x % t->tw) + t->cta * (ntabs + 1);
@@ -1262,8 +1262,8 @@ docv:
 			} while (--ntabs);
 		}
 	} else if (x < t->x && t->bt) {
-		int ntabs = ((t->x + t->tw - 1) - (t->x + t->tw - 1) % t->tw - ((x + t->tw - 1) - (x + t->tw - 1) % t->tw)) / t->tw;
-		int cstunder, cstover;
+		ptrdiff_t ntabs = ((t->x + t->tw - 1) - (t->x + t->tw - 1) % t->tw - ((x + t->tw - 1) - (x + t->tw - 1) % t->tw)) / t->tw;
+		ptrdiff_t cstunder, cstover;
 
 		if (t->bs)
 			cstunder = t->cbt * ntabs + t->cbs * (t->tw - x % t->tw);
@@ -1338,7 +1338,7 @@ docv:
 	}
 }
 
-int cpos(register SCRN *t, register int x, register int y)
+int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
 {
 	/* Move cursor quickly if we can */
 	if (y == t->y) {
@@ -1355,7 +1355,7 @@ int cpos(register SCRN *t, register int x, register int y)
 				if (*as != t->attrib)
 					set_attr(t, *as);
 
-				ttputc(*cs);
+				ttputc(TO_CHAR_OK(*cs));
 
 				++cs;
 				++as;
@@ -1378,9 +1378,9 @@ int cpos(register SCRN *t, register int x, register int y)
 	return 0;
 }
 
-static void doinschr(SCRN *t, int x, int y, int *s, int *as, int n)
+static void doinschr(SCRN *t, ptrdiff_t x, ptrdiff_t y, int *s, int *as, ptrdiff_t n)
 {
-	int a;
+	ptrdiff_t a;
 
 	if (x < 0) {
 		s -= x;
@@ -1413,9 +1413,9 @@ static void doinschr(SCRN *t, int x, int y, int *s, int *as, int n)
 	mmove(t->attr + x + t->co * y, s, n * SIZEOF(int));
 }
 
-static void dodelchr(SCRN *t, int x, int y, int n)
+static void dodelchr(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t n)
 {
-	int a;
+	ptrdiff_t a;
 
 	if (x < 0)
 		x = 0;
@@ -1440,12 +1440,12 @@ static void dodelchr(SCRN *t, int x, int y, int n)
 /* Insert/Delete within line */
 /* FIXME: doesn't know about attr */
 
-void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
+void magic(SCRN *t, ptrdiff_t y, int *cs, int *ca,int *s, int *a, ptrdiff_t placex)
 {
 	struct hentry *htab = t->htab;
-	int *ofst = t->ofst;
+	ptrdiff_t *ofst = t->ofst;
 	int aryx = 1;
-	int x;
+	ptrdiff_t x;
 
 	if (!(t->im || t->ic || t->IC) || !(t->dc || t->DC))
 		return;
@@ -1466,18 +1466,18 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 		if (htab[s[x] & 255].loc >= 15)
 			ofst[x++] = t->co;
 		else {
-			int aryy;
-			int maxaryy = 0;
-			int maxlen = 0;
-			int best = 0;
-			int bestback = 0;
-			int z;
+			ptrdiff_t aryy;
+			ptrdiff_t maxaryy = 0;
+			ptrdiff_t maxlen = 0;
+			ptrdiff_t best = 0;
+			ptrdiff_t bestback = 0;
+			ptrdiff_t z;
 
 			for (aryy = htab[s[x] & 255].next; aryy; aryy = t->ary[aryy].next) {
-				int amnt, back;
-				int tsfo = t->ary[aryy].loc - x;
-				int cst = -abs(tsfo);
-				int pre = 32;
+				ptrdiff_t amnt, back;
+				ptrdiff_t tsfo = t->ary[aryy].loc - x;
+				ptrdiff_t cst = tsfo < 0 ? -tsfo : tsfo;
+				ptrdiff_t pre = 32;
 
 				for (amnt = 0; x + amnt < t->co && x + tsfo + amnt < t->co; ++amnt) {
 					if (cs[x + tsfo + amnt] != s[x + amnt])
@@ -1516,11 +1516,11 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 /* Apply scrolling commands */
 
 	for (x = 0; x != t->co; ++x) {
-		int q = ofst[x];
+		ptrdiff_t q = ofst[x];
 
 		if (q && q != t->co) {
 			if (q > 0) {
-				int z, fu;
+				ptrdiff_t z, fu;
 
 				for (z = x; z != t->co && ofst[z] == q; ++z) ;
 				while (s[x] == cs[x] && x < placex)
@@ -1531,7 +1531,7 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 						ofst[fu] -= q;
 				x = z - 1;
 			} else {
-				int z, fu;
+				ptrdiff_t z, fu;
 
 				for (z = x; z != t->co && ofst[z] == q; ++z) ;
 				while (s[x + q] == cs[x + q] && x - q < placex)
@@ -1546,9 +1546,9 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 	}
 }
 
-static void doupscrl(SCRN *t, int top, int bot, int amnt, int atr)
+static void doupscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int atr)
 {
-	int a = amnt;
+	ptrdiff_t a = amnt;
 
 	if (!amnt)
 		return;
@@ -1616,9 +1616,9 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt, int atr)
 	}
 }
 
-static void dodnscrl(SCRN *t, int top, int bot, int amnt, int atr)
+static void dodnscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int atr)
 {
-	int a = amnt;
+	ptrdiff_t a = amnt;
 
 	if (!amnt)
 		return;
@@ -1687,7 +1687,7 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt, int atr)
 
 void nscroll(SCRN *t,int atr)
 {
-	int y, z, q, r, p;
+	ptrdiff_t y, z, q, r, p;
 
 	for (y = 0; y != t->li; ++y) {
 		q = t->sary[y];
@@ -1714,7 +1714,7 @@ void nscroll(SCRN *t,int atr)
 			}
 		}
 	}
-	msetI(t->sary, 0, t->li);
+	msetD(t->sary, 0, t->li);
 }
 
 void npartial(SCRN *t)
@@ -1771,9 +1771,9 @@ void nclose(SCRN *t)
 	joe_free(t);
 }
 
-void nscrldn(SCRN *t, int top, int bot, int amnt)
+void nscrldn(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt)
 {
-	int x;
+	ptrdiff_t x;
 
 	if (!amnt || top >= bot || bot > t->li)
 		return;
@@ -1790,15 +1790,15 @@ void nscrldn(SCRN *t, int top, int bot, int amnt)
 	}
 	if (amnt > bot - top)
 		amnt = bot - top;
-	msetI(t->sary + top, t->li, amnt);
+	msetD(t->sary + top, t->li, amnt);
 	if (amnt == bot - top) {
 		msetI(t->updtab + top, 1, amnt);
 	}
 }
 
-void nscrlup(SCRN *t, int top, int bot, int amnt)
+void nscrlup(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt)
 {
-	int x;
+	ptrdiff_t x;
 
 	if (!amnt || top >= bot || bot > t->li)
 		return;
@@ -1815,7 +1815,7 @@ void nscrlup(SCRN *t, int top, int bot, int amnt)
 	}
 	if (amnt > bot - top)
 		amnt = bot - top;
-	msetI(t->sary + bot - amnt, t->li, amnt);
+	msetD(t->sary + bot - amnt, t->li, amnt);
 	if (amnt == bot - top) {
 		msetI(t->updtab + bot - amnt, 1, amnt);
 		}
@@ -1828,7 +1828,7 @@ void nredraw(SCRN *t)
 	msetI(t->attr, BG_COLOR(bg_text), t->co * skiptop);  
 	msetI(t->scrn + skiptop * t->co, -1, (t->li - skiptop) * t->co);
 	msetI(t->attr + skiptop * t->co, BG_COLOR(bg_text), (t->li - skiptop) * t->co); 
-	msetI(t->sary, 0, t->li);
+	msetD(t->sary, 0, t->li);
 	msetI(t->updtab + skiptop, -1, t->li - skiptop);
 	t->x = -1;
 	t->y = -1;
@@ -2005,22 +2005,22 @@ int meta_color(char *s)
  * 'fmt' is array of attributes, one for each byte.  OK if NULL.
  */
 
-void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,char *s,int len,int atr,int width,int flg,int *fmt)
+void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt)
 {
-	int col;
+	ptrdiff_t col;
 	struct utf8_sm sm;
-	int last_col = x + width;
+	ptrdiff_t last_col = x + width;
 
 	utf8_init(&sm);
 
 	for (col = 0;len != 0 && x < last_col; len--) {
 		int c = *s++;
-		int wid = -1;
+		ptrdiff_t wid = -1;
 		int my_atr = atr;
 		if (fmt) my_atr |= *fmt++;
 		if (locale_map->type) {
 			/* UTF-8 mode: decode character and determine its width */
-			c = utf8_decode(&sm,c);
+			c = utf8_decode(&sm,TO_CHAR_OK(c));
 			if (c >= 0)
 				wid = joe_wcwidth(1,c);
 		} else {
@@ -2074,10 +2074,10 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,char *s,int len,i
 
 /* Width function for above */
 
-int txtwidth(char *s,int len)
+ptrdiff_t txtwidth(char *s,ptrdiff_t len)
 {
 	if (locale_map->type) {
-		int col=0;
+		ptrdiff_t col=0;
 		struct utf8_sm sm;
 		utf8_init(&sm);
 
@@ -2092,10 +2092,10 @@ int txtwidth(char *s,int len)
 		return len;
 }
 
-int txtwidth1(struct charmap *map,int tabwidth,char *s,int len)
+ptrdiff_t txtwidth1(struct charmap *map,ptrdiff_t tabwidth,char *s,ptrdiff_t len)
 {
 	if (map->type) {
-		int col=0;
+		ptrdiff_t col=0;
 		struct utf8_sm sm;
 		utf8_init(&sm);
 
@@ -2110,7 +2110,7 @@ int txtwidth1(struct charmap *map,int tabwidth,char *s,int len)
 
 		return col;
 	} else {
-		int col = 0;
+		ptrdiff_t col = 0;
 		while (len--) {
 			if (*s++ == '\t') {
 				++col;
@@ -2124,11 +2124,11 @@ int txtwidth1(struct charmap *map,int tabwidth,char *s,int len)
 
 /* Generate text with formatting escape sequences */
 
-void genfmt(SCRN *t, int x, int y, int ofst, char *s, int atr, int flg)
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, char *s, int atr, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
-	int col = 0;
+	ptrdiff_t col = 0;
 	int c;
 	struct utf8_sm sm;
 
@@ -2177,10 +2177,10 @@ void genfmt(SCRN *t, int x, int y, int ofst, char *s, int atr, int flg)
 				}
 			}
 		} else {
-			int wid = -1;
+			ptrdiff_t wid = -1;
 			if (locale_map->type) {
 				/* UTF-8 mode: decode character and determine its width */
-				c = utf8_decode(&sm,c);
+				c = utf8_decode(&sm,TO_CHAR_OK(c));
 				if (c >= 0) {
 						wid = joe_wcwidth(1,c);
 				}
@@ -2219,9 +2219,9 @@ void genfmt(SCRN *t, int x, int y, int ofst, char *s, int atr, int flg)
 
 /* Determine column width of string with format codes */
 
-int fmtlen(char *s)
+ptrdiff_t fmtlen(char *s)
 {
-	int col = 0;
+	ptrdiff_t col = 0;
 	struct utf8_sm sm;
 	int c;
 
@@ -2248,9 +2248,9 @@ int fmtlen(char *s)
 				continue;
 			}
 		} else {
-			int wid = 0;
+			ptrdiff_t wid = 0;
 			if(locale_map->type) {
-				c = utf8_decode(&sm,c);
+				c = utf8_decode(&sm,TO_CHAR_OK(c));
 				if (c>=0)
 					wid = joe_wcwidth(1,c);
 			} else {
@@ -2267,10 +2267,10 @@ int fmtlen(char *s)
 
 /* FIXME: this is not valid if we land in the middle of a double-wide character */
 
-int fmtpos(char *s, int goal)
+ptrdiff_t fmtpos(char *s, ptrdiff_t goal)
 {
 	char *org = s;
-	int col = 0;
+	ptrdiff_t col = 0;
 	int c;
 	struct utf8_sm sm;
 
@@ -2299,9 +2299,9 @@ int fmtpos(char *s, int goal)
 				continue;
 			}
 		} else {
-			int wid = 0;
+			ptrdiff_t wid = 0;
 			if(locale_map->type) {
-				c = utf8_decode(&sm,c);
+				c = utf8_decode(&sm,TO_CHAR_OK(c));
 				if (c>=0)
 					wid = joe_wcwidth(1,c);
 			} else {
