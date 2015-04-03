@@ -404,6 +404,27 @@ int zcmp(unsigned char *a, unsigned char *b)
 	return strcmp((char *)a, (char *)b);
 }
 
+/* Tags file string matcher */
+/* a can be something like: "class::subclass::member"
+ * b can be:
+ *    member
+ *    ::member
+ *    subclass::member
+ *    ::subclass::member
+ *    class::subclass::member
+ */
+
+int zmcmp(unsigned char *a, unsigned char *b)
+{
+	int x = zlen(a);
+	do {
+		if (a[x] == ':' && a[x + 1] == ':')
+			if ((b[0] == ':' && !zcmp(a + x, b)) || !zcmp(a + x + 2, b))
+				return 0;
+	} while (x--);
+	return zcmp(a, b);
+}
+
 int zncmp(unsigned char *a, unsigned char *b, size_t len)
 {
 	return strncmp((char *)a, (char *)b, len);

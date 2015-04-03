@@ -45,6 +45,7 @@ CMD cmds[] = {
 	{USTR "build", TYPETW + TYPEPW, ubuild, NULL, 0, NULL},
 	{USTR "byte", TYPETW + TYPEPW, ubyte, NULL, 0, NULL},
 	{USTR "cancel", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ucancel, NULL, 0, NULL},
+	{USTR "cd", TYPETW, usetcd, NULL, 0, NULL},
 	{USTR "center", TYPETW + TYPEPW + EFIXXCOL + EMOD, ucenter, NULL, 1, NULL},
 	{USTR "charset", TYPETW + TYPEPW, ucharset, NULL, 0, NULL}, 
 	{USTR "ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
@@ -100,6 +101,7 @@ CMD cmds[] = {
 	{USTR "fmtblk", TYPETW + EMOD + EFIXXCOL + EBLOCK, ufmtblk, NULL, 1, NULL},
 	{USTR "fwrdc", TYPETW + TYPEPW, ufwrdc, NULL, 1, USTR "bkwdc"},
 	{USTR "gomark", TYPETW + TYPEPW + EMOVE, ugomark, NULL, 0, NULL},
+	{USTR "gparse", TYPETW, ugparse, NULL, 0, NULL},
 	{USTR "grep", TYPETW, ugrep, NULL, 0, NULL},
 	{USTR "groww", TYPETW+TYPEPW, ugroww, NULL, 1, USTR "shrinkw"},
 	{USTR "if", TYPETW+TYPEPW+TYPEMENU+TYPEQW+EMETA, uif, 0, 0, 0 },
@@ -127,13 +129,14 @@ CMD cmds[] = {
 	{USTR "markk", TYPETW + TYPEPW, umarkk, NULL, 0, NULL},
 	{USTR "markl", TYPETW + TYPEPW, umarkl, NULL, 0, NULL},
 	{USTR "math", TYPETW + TYPEPW, umath, NULL, 0, NULL},
+	{USTR "maths", TYPETW + TYPEPW, usmath, NULL, 0, NULL},
 	{USTR "menu", TYPETW + TYPEPW + TYPEQW, umenu, NULL, 0, NULL},
 	{USTR "mode", TYPETW + TYPEPW + TYPEQW, umode, NULL, 0, NULL},
 	{USTR "msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, NULL, 0, NULL},
 	{USTR "mfit", TYPETW, umfit, NULL, 0, NULL},
 	{USTR "mwind", TYPETW, umwind, NULL, 0, NULL},
 	{USTR "name", TYPETW + TYPEPW, uname_joe, NULL, 0, NULL}, 
-	{USTR "nbuf", TYPETW, unbuf, NULL, 1, USTR "pbuf"},
+	{USTR "nbuf", TYPETW + EFIXXCOL, unbuf, NULL, 1, USTR "pbuf"},
 	{USTR "nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, NULL, 1, USTR "pedge"}, 
 	{USTR "nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, NULL, 1, USTR "prevpos"}, 
 	{USTR "nextw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, unextw, NULL, 1, USTR "prevw"},
@@ -144,7 +147,7 @@ CMD cmds[] = {
 	{USTR "open", TYPETW + TYPEPW + EFIXXCOL + EMOD, uopen, NULL, 1, USTR "deleol"},
 	{USTR "parserr", TYPETW, uparserr, NULL, 0, NULL},
 	{USTR "paste", TYPETW + TYPEPW + EMOD, upaste, NULL, 0, NULL },
-	{USTR "pbuf", TYPETW, upbuf, NULL, 1, USTR "nbuf"},
+	{USTR "pbuf", TYPETW + EFIXXCOL, upbuf, NULL, 1, USTR "nbuf"},
 	{USTR "pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, NULL, 1, USTR "nedge"}, 
 	{USTR "pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, NULL, 1, USTR "pgup"},
 	{USTR "pgdnmenu", TYPEMENU, umpgdn, NULL, 1, USTR "pgupmenu"}, 
@@ -158,6 +161,7 @@ CMD cmds[] = {
 	{USTR "prverr", TYPETW, uprverr, NULL, 1, USTR "nxterr"},
 	{USTR "psh", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upsh, NULL, 0, NULL},
 	{USTR "pop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upop, NULL, 0, NULL},
+	{USTR "popabort", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upopabort, NULL, 0, NULL},
 	{USTR "qrepl", TYPETW + TYPEPW + EMOD, pqrepl, NULL, 0, NULL},
 	{USTR "query", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uquery, NULL, 0, NULL},
 	{USTR "querysave", TYPETW, uquerysave, NULL, 0, NULL},
@@ -165,6 +169,7 @@ CMD cmds[] = {
 	{USTR "quote8", TYPETW + TYPEPW + EMOD, uquote8, NULL, 0, NULL},
 	{USTR "record", TYPETW + TYPEPW + TYPEMENU + TYPEQW, urecord, NULL, 0, NULL},
 	{USTR "redo", TYPETW + TYPEPW + EFIXXCOL, uredo, NULL, 1, USTR "undo"},
+	{USTR "release", TYPETW, urelease, NULL, 0, NULL},
 	{USTR "reload", TYPETW, ureload, NULL, 0, NULL },
 	{USTR "reloadall", TYPETW, ureload_all, NULL, 0, NULL },
 	{USTR "retype", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uretyp, NULL, 0, NULL},
@@ -178,6 +183,7 @@ CMD cmds[] = {
 	{USTR "save", TYPETW + TYPEPW, usave, NULL, 0, NULL},
 	{USTR "savenow", TYPETW + TYPEPW, usavenow, NULL, 0, NULL},
 	{USTR "scratch", TYPETW + TYPEPW, uscratch, NULL, 0, NULL},
+	{USTR "secure_type", TYPEPW + TYPEQW + TYPEMENU + EMINOR + EMOD, utype, NULL, 1, USTR "backs"},
 	{USTR "select", TYPETW + TYPEPW, uselect, NULL, 0, NULL},
 	{USTR "setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},
 	{USTR "shell", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ushell, NULL, 0, NULL},
@@ -192,6 +198,7 @@ CMD cmds[] = {
 	{USTR "sys", TYPETW + TYPEPW, usys, NULL, 0, NULL },
 	{USTR "tabmenu", TYPEMENU, umtab, NULL, 1, USTR "ltarwmenu"},
 	{USTR "tag", TYPETW + TYPEPW, utag, NULL, 0, NULL},
+	{USTR "tagjump", TYPETW + TYPEPW, utagjump, NULL, 0, NULL},
 	{USTR "toggle_marking", TYPETW + TYPEPW, utoggle_marking, NULL, 0, NULL},
 	{USTR "then", TYPEPW+EMOD, urtn, 0, 0, 0 },
 	{USTR "timer", TYPETW + TYPEPW + TYPEMENU + TYPEQW, utimer, NULL, 1, NULL},
@@ -217,6 +224,7 @@ CMD cmds[] = {
 	{USTR "winpaste", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, uwinpaste, NULL, 0, NULL},
 #endif
 	{USTR "upslidemenu", TYPEMENU, umscrup, NULL, 1, USTR "dnslidemenu"},
+	{USTR "vtbknd", TYPETW, uvtbknd, NULL, 0, NULL},
 	{USTR "xtmouse", TYPETW+TYPEPW+TYPEMENU+TYPEQW, uxtmouse, 0, 0, 0 },
 	{USTR "yank", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyank, NULL, 1, NULL},
 	{USTR "yapp", TYPETW + TYPEPW + EKILL, uyapp, NULL, 0, NULL},
@@ -366,13 +374,15 @@ int execmd(CMD *cmd, int k)
 	/* Warning: bw is a BW * only if maint->curwin->watom->what &
 	    (TYPETW|TYPEPW) */
 
+#if junk
 	/* Send data to shell window: this is broken ^K ^H (help) sends its ^H to shell */
-	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && piseof(bw->cursor) &&
-	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype && k>=32 && k<256))) {
+	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor) &&
+	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype /* && k>=32 && k<256 */))) {
 		unsigned char c = k;
 		writempx(bw->b->out, &c, 1);
 		return 0;
 	}
+#endif
 
 	if (cmd->m) {
 		ret = exmacro(cmd->m, 0);
@@ -439,7 +449,7 @@ int execmd(CMD *cmd, int k)
 
 	/* Make dislayed cursor column equal the actual cursor column
 	 * for commands which arn't simple vertical movements */
-	if (cmd->flag & EFIXXCOL)
+	if ((cmd->flag & EFIXXCOL) && (maint->curwin->watom->what & (TYPETW | TYPEPW)))
 		bw->cursor->xcol = piscol(bw->cursor);
 
 	/* Recenter cursor to middle of screen */
@@ -547,7 +557,7 @@ int uexecmd(BW *bw)
 	&cmdhist, USTR _("cmd"), cmdcmplt, locale_map, 0, 0, NULL);
 
 	if (s) {
-		mac = mparse(NULL, s, &ret);
+		mac = mparse(NULL, s, &ret, 0);
 		if (ret < 0 || !mac) {
 			msgnw(bw->parent, joe_gettext(_("No such command")));
 		} else {

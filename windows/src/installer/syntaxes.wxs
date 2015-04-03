@@ -77,6 +77,9 @@
       <Component Id="erlangJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
 	<File Id="erlangJSF" Name="erlang.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\erlang.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="filenameJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+	<File Id="filenameJSF" Name="filename.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\filename.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="fortranJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="fortranJSF" Name="fortran.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\fortran.jsf" KeyPath="yes" />
       </Component>

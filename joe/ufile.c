@@ -24,6 +24,7 @@ unsigned char *backpath = NULL;		/* Place to store backup files */
 B *filehist = NULL;	/* History of file names */
 int nobackups = 0;
 int exask = 0;
+extern int noexmsg;
 
 #ifdef JOEWIN
 
@@ -104,7 +105,8 @@ void genexmsg(BW *bw, int saved, unsigned char *name)
 
 	exmsg = m;
 	obj_perm(exmsg);
-	msgnw(bw->parent, m);
+	if (!noexmsg)
+		msgnw(bw->parent, m);
 }
 
 /* For ^X ^C */
@@ -610,12 +612,20 @@ int doedit(BW *bw,int c,unsigned char *s)
 	void *object;
 	W *w;
 	B *b;
+	unsigned char *current_dir;
 	again:
 	if (c == YES_CODE || yncheck(yes_key, c)) {
 		/* Reload from file */
 
 		b = bfind_reload(s);
 		er = berror;
+		current_dir = vsdup(bw->b->current_dir);
+		/* Try to pop scratch window */
+		if (bw->b->scratch) {
+			W *w = bw->parent;
+			upopabort(bw);
+			bw = (BW *)w->object;
+		}
 		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 			if (orphan) {
 				orphit(bw);
@@ -637,6 +647,10 @@ int doedit(BW *bw,int c,unsigned char *s)
 		w = bw->parent;
 		bwrm(bw);
 		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+		/* Propogate current directory to newly loaded buffer */
+		if (!b->current_dir)
+			b->current_dir = current_dir;
+		obj_perm(b->current_dir);
 		wredraw(bw->parent);
 		bw->object = object;
 		if (er == -1 && bw->o.mnew) {
@@ -661,6 +675,12 @@ int doedit(BW *bw,int c,unsigned char *s)
 
 		b = bfind(s);
 		er = berror;
+		/* Try to pop scratch window */
+		if (bw->b->scratch) {
+			W *w = bw->parent;
+			upopabort(bw);
+			bw = (BW *)w->object;
+		}
 		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 			if (orphan) {
 				orphit(bw);
@@ -745,6 +765,21 @@ int uedit(BW *bw)
 	}
 }
 
+int usetcd(BW *bw)
+{
+	unsigned char *s;
+	
+	s = ask(bw->parent, joe_gettext(_("Set current directory (^C to abort): ")), &filehist, USTR "Names", cmplt, locale_map, 7, 0, NULL);
+	if (!s)
+		return -1;
+	
+	if (s[0])
+		set_current_dir(bw, s, 1);
+	
+	msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("Directory prefix set to %s")), s));
+	return 0;
+}
+
 /* Switch to another buffer.  If it doesn't exist, load file. */
 
 int doswitch(BW *bw, unsigned char *s)
@@ -763,6 +798,20 @@ int uswitch(BW *bw)
 	}
 }
 
+void wpush(BW *bw)
+{
+	struct bstack *e;
+	e = (struct bstack *)malloc(sizeof(struct bstack));
+	e->b = bw->b;
+	++bw->b->count;
+	e->cursor = 0;
+	e->top = 0;
+	pdupown(bw->cursor, &e->cursor, USTR "wpush");
+	pdupown(bw->top, &e->top, USTR "wpush");
+	e->next = bw->parent->bstack;
+	bw->parent->bstack = e;
+}
+
 int uscratch(BW *bw)
 {
 	unsigned char *s;
@@ -776,8 +825,12 @@ int uscratch(BW *bw)
 
 		b = bfind_scratch(s);
 		er = berror;
-		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
-			if (orphan) {
+
+	if (!bw->b->scratch)
+		wpush(bw);
+
+	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) { /* Last reference on dirty buffer */
+		if (orphan || bw->b->scratch) {
 				orphit(bw);
 			} else {
 				if (uduptw(bw)) {
@@ -821,6 +874,7 @@ static int dorepl(BW *bw, unsigned char *s, void *obj)
 	int er;
 	W *w = bw->parent;
 	B *b;
+	unsigned char *current_dir = vsdup(bw->b->current_dir);
 
 	b = bfind(s);
 	er = berror;
@@ -835,6 +889,11 @@ static int dorepl(BW *bw, unsigned char *s, void *obj)
 	}
 	bwrm(bw);
 	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+	/* Propogate current directory into new buffer */
+	if (!b->current_dir) {
+		b->current_dir = current_dir;
+		obj_perm(current_dir);
+	}
 	wredraw(bw->parent);
 	bw->object = object;
 	if (er == -1 && bw->o.mnew) {

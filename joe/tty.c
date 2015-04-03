@@ -167,7 +167,7 @@ static int speeds[] = {
 /* Input buffer */
 
 int have = 0;			/* Set if we have pending input */
-static unsigned char havec;	/* Character read in during pending input check */
+unsigned char havec;	/* Character read in during pending input check */
 int leave = 0;			/* When set, typeahead checking is disabled */
 
 /* TTY mode flag.  1 for open, 0 for closed */
@@ -498,6 +498,50 @@ static void pauseit(void)
 #endif
 #endif
 
+/* Check for type-ahead */
+
+int ttcheck()
+{
+	/* Ack previous packet */
+	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
+		unsigned char c = 0;
+
+		if (pack.who && pack.who->func)
+			joe_write(pack.who->ackfd, &c, 1);
+		else
+			joe_write(ackkbd, &c, 1);
+		acceptch = NO_MORE_DATA;
+	}
+
+	/* Check for typeahead or next packet */
+
+	if (!have && !leave) {
+		if (ackkbd != -1) {
+			fcntl(mpxfd, F_SETFL, O_NDELAY);
+			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
+				fcntl(mpxfd, F_SETFL, 0);
+				joe_read(mpxfd, pack.data, pack.size);
+				have = 1;
+				acceptch = pack.ch;
+			} else
+				fcntl(mpxfd, F_SETFL, 0);
+		} else {
+			/* Set terminal input to non-blocking */
+			fcntl(fileno(termin), F_SETFL, O_NDELAY);
+
+			/* Try to read */
+			if (read(fileno(termin), &havec, 1) == 1)
+				have = 1;
+
+			/* Set terminal back to blocking */
+			fcntl(fileno(termin), F_SETFL, 0);
+		}
+	}
+	return have;
+}
+
+/* Flush output and check for type ahead */
+
 int ttflsh(void)
 {
 	/* Flush output */
@@ -538,41 +582,8 @@ int ttflsh(void)
 		obufp = 0;
 	}
 
-	/* Ack previous packet */
-	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
-		unsigned char c = 0;
-
-		if (pack.who && pack.who->func)
-			joe_write(pack.who->ackfd, &c, 1);
-		else
-			joe_write(ackkbd, &c, 1);
-		acceptch = NO_MORE_DATA;
-	}
-
 	/* Check for typeahead or next packet */
-
-	if (!have && !leave) {
-		if (ackkbd != -1) {
-			fcntl(mpxfd, F_SETFL, O_NDELAY);
-			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
-				fcntl(mpxfd, F_SETFL, 0);
-				joe_read(mpxfd, pack.data, pack.size);
-				have = 1;
-				acceptch = pack.ch;
-			} else
-				fcntl(mpxfd, F_SETFL, 0);
-		} else {
-			/* Set terminal input to non-blocking */
-			fcntl(fileno(termin), F_SETFL, O_NDELAY);
-
-			/* Try to read */
-			if (read(fileno(termin), &havec, 1) == 1)
-				have = 1;
-
-			/* Set terminal back to blocking */
-			fcntl(fileno(termin), F_SETFL, 0);
-		}
-	}
+	ttcheck();
 	return 0;
 }
 
@@ -714,6 +725,25 @@ void ttgtsz(int *x, int *y)
 		*x = getit.ws_col;
 		*y = getit.ws_row;
 	}
+#endif
+#endif
+}
+
+/* Set window size */
+
+void ttstsz(int fd, int w, int h)
+{
+#ifdef TIOCSSIZE
+	struct ttysize getit;
+	getit.ts_cols = w;
+	getit.ts_lines = h;
+	joe_ioctl(fd, TIOCSSIZE, &getit);
+#else
+#ifdef TIOCSWINSZ
+	struct winsize getit;
+	getit.ws_col = w;
+	getit.ws_row = h;
+	joe_ioctl(fd, TIOCSWINSZ, &getit);
 #endif
 #endif
 }
@@ -872,7 +902,7 @@ static void mpxend(void)
 
 extern char *_getpty();
 
-static unsigned char *getpty(int *ptyfd)
+static unsigned char *getpty(int *ptyfd, int *ttyfd)
 {
 	return (unsigned char *)_getpty(ptyfd, O_RDWR, 0600, 0);
 }
@@ -884,7 +914,7 @@ static unsigned char *getpty(int *ptyfd)
 
 extern char *ptsname();
 
-static unsigned char *getpty(int *ptyfd)
+static unsigned char *getpty(int *ptyfd, int *ttyfd)
 {
 	int fdm;
 	*ptyfd = fdm = open("/dev/ptmx", O_RDWR);
@@ -898,15 +928,15 @@ static unsigned char *getpty(int *ptyfd)
 
 /* BSD function, present in libc5 and glibc2 */
 
-static unsigned char *getpty(int *ptyfd)
+static unsigned char *getpty(int *ptyfd, int *ttyfd)
 {
 	static unsigned char name[32];
-	int ttyfd;
 
-        if (openpty(ptyfd, &ttyfd, (char *)name, NULL, NULL) == 0)
-           return(name);
-        else
-	   return (NULL);
+	if (openpty(ptyfd, ttyfd, (char *)name, NULL, NULL) == 0) {
+        	return(name);
+        } else {
+        	return (NULL);
+	}
 }
 
 #else
@@ -922,7 +952,7 @@ static unsigned char *getpty(int *ptyfd)
  * process and the process gets to be the session leader.
  */
 
-static unsigned char *getpty(int *ptyfd)
+static unsigned char *getpty(int *ptyfd, int *ttyfd)
 {
 	int x, fd;
 	unsigned char *orgpwd = pwd();
@@ -1021,7 +1051,8 @@ static unsigned char **newenv(unsigned char **old, unsigned char *s)
 
 /* If out_only is set, leave program's stdin attached to JOE's stdin */
 
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only)
+MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only,
+           int w, int h)
 {
 	unsigned char buf[80];
 	int fds[2];
@@ -1030,10 +1061,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 	int x;
 	MPX *m = 0;
 	unsigned char *name;
-
-	/* Get pty/tty pair */
-	if (!(name = getpty(ptyfd)))
-		return NULL;
+	int ttyfd = -1;
 
 	/* Find free slot */
 	for (x = 0; x != NPROC; ++x)
@@ -1042,6 +1070,10 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 			break;
 		}
 	if (x==NPROC)
+		return NULL;
+
+	/* Get pty/tty pair */
+	if (!(name = getpty(ptyfd, &ttyfd)))
 		return NULL;
 
 	/* Fixes cygwin console bug: if you fork() with inverse video he assumes you want
@@ -1118,48 +1150,60 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 #endif
 
-			/* Close all fds */
-			for (x = (out_only ? 1 : 0); x != 32; ++x)
-				close(x);	/* Yes, this is quite a kludge... all in the
-						   name of portability */
+			/* Open the TTY (if we didn't already get it from openpty() */
+			if (ttyfd == -1)
+				ttyfd = open((char *)name, O_RDWR);
 
+			if (ttyfd != -1) {
+				unsigned char **enva;
+				unsigned char **env;
 
-			/* Open the TTY */
-			if ((x = open((char *)name, O_RDWR)) != -1) {	/* Standard input */
-				unsigned char **env = newenv(mainenv, USTR "TERM=");
+				if (!out_only) {			/* Standard input */
+					dup2(ttyfd, 0);
+				}
+				dup2(ttyfd, 1);
+				dup2(ttyfd, 2);
+				/* (yes, stdin, stdout, and stderr must all be open for reading and
+				 * writing.  On some systems the shell assumes this */
+
+				for (x = 2; x != 32; ++x)
+					close(x);/* Yes, this is quite a kludge... all in the name of portability */
+
+				if (w == -1)
+					enva = newenv(mainenv, USTR "TERM=");
+				else
+					enva = newenv(mainenv, USTR "TERM=linux");
+				env = newenv(enva, USTR "JOE=1");
 
 
 				if (!out_only) {
 #ifdef HAVE_LOGIN_TTY
-					login_tty(x);
+					login_tty(1);
 
 #else
 				/* This tells the fd that it's a tty (I think) */
 #ifdef __svr4__
-					joe_ioctl(x, I_PUSH, "ptem");
-					joe_ioctl(x, I_PUSH, "ldterm");
+					joe_ioctl(1, I_PUSH, "ptem");
+					joe_ioctl(1, I_PUSH, "ldterm");
 #endif
 
-				/* Open stdout, stderr */
-					dup(x);
-					dup(x);	/* Standard output, standard error */
-					/* (yes, stdin, stdout, and stderr must all be open for reading and
-					 * writing.  On some systems the shell assumes this */
 #endif
 
 #ifdef HAVE_POSIX_TERMIOS
-					tcsetattr(0, TCSADRAIN, &oldterm);
+					tcsetattr(1, TCSADRAIN, &oldterm);
 #else
 #ifdef HAVE_SYSV_TERMIO
-					joe_ioctl(0, TCSETAW, &oldterm);
+					joe_ioctl(1, TCSETAW, &oldterm);
 #else
-					joe_ioctl(0, TIOCSETN, &oarg);
-					joe_ioctl(0, TIOCSETC, &otarg);
-					joe_ioctl(0, TIOCSLTC, &oltarg);
+					joe_ioctl(1, TIOCSETN, &oarg);
+					joe_ioctl(1, TIOCSETC, &otarg);
+					joe_ioctl(1, TIOCSLTC, &oltarg);
 #endif
 #endif
 					/* We could probably have a special TTY set-up for JOE, but for now
 					 * we'll just use the TTY setup for the TTY was was run on */
+					 if (w != -1)
+					         ttstsz(1, w, h);
 
 					/* Execute the shell */
 					execve((char *)cmd, (char **)args, (char **)env);
@@ -1174,15 +1218,14 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 				} else {
 					unsigned char buf[1024];
 					int len;
-					if (-1 != dup(x)) /* Standard error */
-						for (;;) {
-							len = read(0, buf, sizeof(buf));
-							if (len > 0) {
-								if (-1 == write(1, buf, len))
-									break;
-							} else
+					for (;;) {
+						len = read(0, buf, sizeof(buf));
+						if (len > 0) {
+							if (-1 == write(1, buf, len))
 								break;
-						}
+						} else
+							break;
+					}
 				}
 
 
@@ -1234,6 +1277,10 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 	}
 	joe_read(comm[0], &m->pid, sizeof(m->pid));
 
+	/* Close tty side of pty (if we used openpty) */
+	if (-1 != ttyfd)
+		close(ttyfd);
+
 	/* We only need comm once */
 	close(comm[0]);
 	close(comm[1]);
@@ -1252,6 +1299,7 @@ void mpxdied(MPX *m)
 	if (m->die)
 		m->die(m->dieobj);
 	m->func = NULL;
+	close(m->ackfd);
 	edupd(1);
 }
 

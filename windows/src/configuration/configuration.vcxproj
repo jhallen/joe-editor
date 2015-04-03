@@ -54,6 +54,7 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\elixir.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\erb.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\erlang.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\filename.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\fortran.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\git-commit.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\go.jsf.in" />

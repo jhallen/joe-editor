@@ -45,7 +45,7 @@ unsigned long upc;		/* Microseconds per character */
 /* Input buffer */
 
 int have = 0;			/* Set if we have pending input */
-static unsigned char havec;	/* Character read in during pending input check */
+unsigned char havec;		/* Character read in during pending input check */
 int leave = 0;			/* When set, typeahead checking is disabled */
 
 /* TTY mode flag.  1 for open, 0 for closed */
@@ -156,7 +156,15 @@ int ttflsh(void)
 		obufp = 0;
 	}
 
-	/* Check for typeahead */
+	ttcheck();
+
+	return 0;
+}
+
+/* Check for typeahead */
+
+int ttcheck(void)
+{
 	if (!have && !leave) {
 		if (ibufp < ibufsiz)
 		{
@@ -165,7 +173,7 @@ int ttflsh(void)
 		}
 	}
 
-	return 0;
+	return have;
 }
 
 /* Read next character from input */
@@ -389,7 +397,7 @@ int handlejwcontrol(struct CommMessage *m)
 
 		if (data) {
 			int sta;
-			MACRO *m = mparse(NULL, USTR data, &sta);
+			MACRO *m = mparse(NULL, USTR data, &sta, 0);
 			co_call(exemac, m);
 			rmmacro(m);
 			if (dealloc) free(dealloc);
@@ -504,7 +512,8 @@ static DWORD WINAPI mpxreadthread(LPVOID arg)
 	}
 }
 
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (void*), void *dieobj, int out_only)
+MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (void*), void *dieobj, int out_only,
+	   int w, int h)
 {
 	HANDLE prr, prw, pwr, pww, hthread, hconsole;
 	SECURITY_ATTRIBUTES sa;
@@ -777,4 +786,8 @@ int writempx(int fd, void *data, size_t amt)
 	}
 
 	return joe_write(fd, data, amt);
+}
+
+void ttstsz(int fd, int w, int h)
+{
 }

@@ -334,6 +334,9 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\erlang.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\filename.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\fortran.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>

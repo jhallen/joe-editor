@@ -938,6 +938,7 @@
  Markdown
 *.md
 -syntax md
+-wordwrap
 
  YAML
 *.yml

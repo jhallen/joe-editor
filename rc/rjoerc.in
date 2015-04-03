@@ -218,13 +218,20 @@
   %O  Byte offset into file in hex
   %a  Ascii value of character under cursor
   %A  Ascii value of character under cursor in hex
+  %w  Width of character under cursor
   %p  Percent of file cursor is at
   %l  No. lines in file
   %k  Entered prefix keys
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
   %y  Syntax
+  %e  Encoding
   %x  Context (first non-indented line going backwards)
+  %dd day
+  %dm month
+  %dY year
+  %Ename%  value of environment variable
+  %Tname%  value of option (ON or OFF for boolean options)
 
  These formatting escape sequences may also be given:
  
@@ -236,7 +243,10 @@
   \l  Italic
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M
--rmsg  %S Row %r Col %c %t  Ctrl-K H for help
+-rmsg  %S Row %4r Col %3c %t  Ctrl-K H for help
+-smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
+-zmsg ** Line %r Col %c Offset %o(0x%O) ** 
+
 
  SECOND SECTION: File name dependant local option settings:
 
@@ -248,6 +258,10 @@
 
 	-cpara >#!;*/%
 				Characters which can indent paragraphs.
+
+	-cnotpara .
+				Characters which begin non-paragraph lines.
+
 
 	-encoding name
 				Set file coding (for example: utf-8, iso-8859-15)
@@ -451,6 +465,7 @@ mode,"csmode",rtn	% % Continued search %Zcsmode%
 mode,"french",rtn	% % French spacing %Zfrench%
 mode,"flowed",rtn	% % Flowed text %Zflowed%
 mode,"cpara",rtn	% % Paragraph indent chars %Zcpara%
+mode,"cnotpara",rtn	% % Not-paragraph chars %Zcnotpara%
 
 :defmenu file
 mode,"restore",rtn	% % Restore cursor %Zrestore%
@@ -616,6 +631,8 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 	:query		For single-character query lines
 	:querya		Singe-character query for quote
 	:querysr	Search & Replace single-character query
+	:shell		For shell windows
+	:vtshell	For terminal emulator windows
 
  Other sections may be given as well for organization purposes or for
  use with the '-keymap' option.
@@ -676,9 +693,9 @@ help		^K ^H
 help		^K h
 hnext		^[ .		Next help window
 hprev		^[ ,		Previous help window
-math		^[ m		Calculator
-math		^[ M		Calculator
-math		^[ ^M		Calculator
+maths		^[ m		Calculator
+maths		^[ M		Calculator
+maths		^[ ^M		Calculator
 msg		^[ h		Display a message
 msg		^[ H		Display a message
 msg		^[ ^H		Display a message

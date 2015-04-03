@@ -32,8 +32,8 @@
       <Component Id="NewsMDComponent" Guid="*" Win64="$(var.Win64)">
         <File Id="newsMD" Name="news.md" DiskId="1" Source="$(var.JoeRootDir)\news.md" KeyPath="yes" />
       </Component>
-      <Component Id="TasksMDComponent" Guid="*" Win64="$(var.Win64)">
-        <File Id="tasksMD" Name="tasks.md" DiskId="1" Source="$(var.JoeRootDir)\docs\tasks.md" KeyPath="yes" />
+      <Component Id="ManMDComponent" Guid="*" Win64="$(var.Win64)">
+	<File Id="manMD" Name="man.md" DiskId="1" Source="$(var.JoeRootDir)\docs\man.md" KeyPath="yes" />
       </Component>
       <Component Id="WindowsMDComponent" Guid="*" Win64="$(var.Win64)">
         <File Id="windowsMD" Name="windows.md" DiskId="1" Source="$(var.JoeRootDir)\docs\windows.md" KeyPath="yes" />

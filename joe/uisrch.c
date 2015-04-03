@@ -122,7 +122,7 @@ static int itype(BW *bw, int c, struct isrch *isrch)
 			if(joe_beep)
 				ttputc(7);
 		}
-	} else if (c == 'Q' - '@' || c == '`') {
+	} else if (c == 'Q' - '@' /* || c == '`' */) {
 		isrch->quote = 1;
 	} else if (c == 'S' - '@' || c == '\\' - '@' || c == 'L' - '@' || c == 'R' - '@') {
 		/* Repeat */

@@ -145,6 +145,7 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 {
 	unsigned char buf[80];
 	int x;
+	int field;
 	W *w = bw->parent;
 	time_t n=time(NULL);
 	struct tm *cas;
@@ -154,7 +155,13 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 	obj_perm(stalin);
 	while (*s) {
 		if (*s == '%' && s[1]) {
-			switch (*++s) {
+			field = 0;
+			++s;
+			while (*s >= '0' && *s <= '9' && s[1]) {
+				field = field * 10 + *s - '0';
+				++s;
+			}
+			switch (*s) {
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
 					if ( bw->o.autoindent) {
@@ -293,17 +300,27 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 					stalin = vsadd(stalin, fill);
 				break;
 			case 'r':
-				joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
+				if (field)
+					joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
+				else
+					joe_snprintf_1(buf, sizeof(buf), "%ld", bw->cursor->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'o':
+				if (field)
 #ifdef HAVE_LONG_LONG
-				joe_snprintf_1(buf, sizeof(buf), "%-4lld", (long long)bw->cursor->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%-4lld", (long long)bw->cursor->byte);
 #else
-				joe_snprintf_1(buf, sizeof(buf), "%-4ld", (long)bw->cursor->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%-4ld", (long)bw->cursor->byte);
+#endif
+				else
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, sizeof(buf), "%lld", (long long)bw->cursor->byte);
+#else
+					joe_snprintf_1(buf, sizeof(buf), "%ld", (long)bw->cursor->byte);
 #endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
@@ -311,10 +328,17 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'O':
+				if (field)
 #ifdef HAVE_LONG_LONG
-				joe_snprintf_1(buf, sizeof(buf), "%-4llX", (unsigned long long)bw->cursor->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%-4llX", (unsigned long long)bw->cursor->byte);
 #else
-				joe_snprintf_1(buf, sizeof(buf), "%-4lX", (unsigned long)bw->cursor->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%-4lX", (unsigned long)bw->cursor->byte);
+#endif
+				else
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, sizeof(buf), "%llX", (unsigned long long)bw->cursor->byte);
+#else
+					joe_snprintf_1(buf, sizeof(buf), "%lX", (unsigned long)bw->cursor->byte);
 #endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
@@ -332,17 +356,26 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'A':
-				if (!piseof(bw->cursor))
-					joe_snprintf_1(buf, sizeof(buf), "%2.2X", brch(bw->cursor));
+				if (field)
+					if (!piseof(bw->cursor))
+						joe_snprintf_1(buf, sizeof(buf), "%2.2X", brch(bw->cursor));
+					else
+						joe_snprintf_0(buf, sizeof(buf), "  ");
 				else
-					joe_snprintf_0(buf, sizeof(buf), "  ");
+					if (!piseof(bw->cursor))
+						joe_snprintf_1(buf, sizeof(buf), "%x", brch(bw->cursor));
+					else
+						joe_snprintf_0(buf, sizeof(buf), "");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'c':
-				joe_snprintf_1(buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
+				if (field)
+					joe_snprintf_1(buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
+				else
+					joe_snprintf_1(buf, sizeof(buf), "%ld", piscol(bw->cursor) + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -369,7 +402,10 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'l':
-				joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
+				if (field)
+					joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
+				else
+					joe_snprintf_1(buf, sizeof(buf), "%ld", bw->b->eof->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -411,6 +447,15 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 			case 'M':
 				if (recmac) {
 					joe_snprintf_1(buf, sizeof(buf), joe_gettext(_("(Macro %d recording...)")), recmac->n);
+					stalin = vsncpy(sv(stalin), sz(buf));
+				}
+				break;
+			case 'e':
+				stalin = vsncpy(sv(stalin), sz(bw->b->o.charmap->name));
+				break;
+			case 'w':
+				if (!piseof(bw->cursor)) {
+					joe_snprintf_1(buf, sizeof(buf), "%d", joe_wcwidth(bw->o.charmap->type, brch(bw->cursor)));
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;
@@ -502,7 +547,7 @@ int usplitw(BW *bw)
 	new = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL);
 	if (!new)
 		return -1;
-	wfit(new->t);
+//	wfit(new->t);
 	new->object = (void *) (newbw = bwmk(new, bw->b, 0, NULL));
 	++bw->b->count;
 	newbw->offset = bw->offset;
@@ -512,6 +557,7 @@ int usplitw(BW *bw)
 	pset(newbw->cursor, bw->cursor);
 	newbw->cursor->xcol = bw->cursor->xcol;
 	new->t->curwin = new;
+	wfit(new->t);
 	return 0;
 }
 
@@ -591,6 +637,8 @@ int abortit(BW *bw)
 			w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 			wredraw(bw->parent);
 			bw->object = object;
+			bw = (BW *)w->object;
+			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		}
 	bwrm(bw);
@@ -604,6 +652,37 @@ int abortit(BW *bw)
 	return 0;
 }
 
+B *wpop(BW *bw)
+{
+	B *b;
+	struct bstack *e = bw->parent->bstack;
+	b = e->b;
+	if (b->oldcur) prm(b->oldcur);
+	if (b->oldtop) prm(b->oldtop);
+	b->oldcur = e->cursor;
+	b->oldtop = e->top;
+	bw->parent->bstack = e->next;
+	free(e);
+	--b->count;
+	return b;
+}
+
+/* Pop, or do nothing if no window on stack */
+int upopabort(BW *bw)
+{
+	if (bw->parent->bstack) {
+		int rtn;
+		B *b = wpop(bw);
+		W *w = bw->parent;
+		rtn = get_buffer_in_window(bw, b);
+		bw = (BW *)w->object;
+		bw->cursor->xcol = piscol(bw->cursor);
+		return rtn;
+	} else {
+		return 0;
+	}
+}
+
 /* k is last character types which lead to uabort.  If k is -1, it means uabort
    was called internally, and not by the user: which means uabort will not send
    Ctrl-C to process */
@@ -611,6 +690,15 @@ int uabort(BW *bw, int k)
 {
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
+	if (bw->parent->bstack) {
+		int rtn;
+		B *b = wpop(bw);
+		W *w = bw->parent;
+		rtn = get_buffer_in_window(bw, b);
+		bw = (BW *)w->object;
+		bw->cursor->xcol = piscol(bw->cursor);
+		return rtn;
+	}
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
@@ -726,6 +814,9 @@ void setline(B *b, long int line)
 
 				/* pline(bw->top, line); */
 				pline(bw->cursor, line);
+				if (!bw->b->err)
+					bw->b->err = pdup(bw->cursor, USTR "setline");
+				pline(bw->b->err, line);
 				if (w->y >= 0 && bw->top->line > oline && bw->top->line - oline < bw->h)
 					nscrlup(w->t->t, bw->y, bw->y + bw->h, (int) (bw->top->line - oline));
 				else if (w->y >= 0 && bw->top->line < oline && oline - bw->top->line < bw->h)
@@ -737,6 +828,9 @@ void setline(B *b, long int line)
 	/* In case error buffer was orphaned */
 	if (errbuf == b && b->oldcur) {
 		pline(b->oldcur, line);
+		if (!b->err)
+			b->err = pdup(b->oldcur, USTR ("setline1"));
+		pline(b->err, line);
 	}
 }
 

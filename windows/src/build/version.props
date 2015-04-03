@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <JoeWinVersion>3.8</JoeWinVersion>
+    <JoeWinVersion>4.0</JoeWinVersion>
     <JoeWinVersionDesignation></JoeWinVersionDesignation>
     
     <JoeWinProduct32Guid>f4d1cc71-e14f-49ca-95a9-b1c25cd87481</JoeWinProduct32Guid>

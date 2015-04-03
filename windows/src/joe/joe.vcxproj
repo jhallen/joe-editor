@@ -88,6 +88,7 @@
     <ClInclude Include="$(JoeExternalSrcDir)\utf8.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\utils.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\vfile.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\vt.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\w.h" />
     <ClInclude Include="$(JoeSrcDir)\autoconf.h" />
     <ClInclude Include="$(JoeSrcDir)\builtin.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="$(JoeExternalSrcDir)\utf8.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\utils.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\vfile.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\vt.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\w.c" />
     <ClCompile Include="$(JoeSrcDir)\builtin.c" />
     <ClCompile Include="$(JoeSrcDir)\bupdates.c" />

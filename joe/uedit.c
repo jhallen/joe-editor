@@ -87,7 +87,11 @@ int u_goto_bof(BW *bw)
  */
 int u_goto_eof(BW *bw)
 {
-	p_goto_eof(bw->cursor);
+	if (bw->b->vt && bw->b->pid) {
+		pset(bw->cursor, bw->b->vt->vtcur);
+	} else {
+		p_goto_eof(bw->cursor);
+	}
 	return 0;
 }
 
@@ -1373,7 +1377,7 @@ int uline(BW *bw)
 	if (!s)
 		return -1;
 
-	num = calc(bw, s);
+	num = calc(bw, s, 1);
 
 	if (num >= 1 && !merr) {
 		int tmp = mid;
@@ -1409,7 +1413,7 @@ int ucol(BW *bw)
 	if (!s)
 		return -1;
 
-	num = calc(bw, s);
+	num = calc(bw, s, 1);
 
 	if (num >= 1 && !merr) {
 		int tmp = mid;
@@ -1443,7 +1447,7 @@ int ubyte(BW *bw)
 	if (!s)
 		return -1;
 
-	num = calc(bw, s);
+	num = calc(bw, s, 1);
 
 	if (num >= 0 && !merr) {
 		int tmp = mid;
@@ -1702,7 +1706,8 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 	struct charmap *map=bw->b->o.charmap;
 
 	/* Send data to shell window */
-	if (bw->b->pid && piseof(bw->cursor)) {
+	if ((bw->b->pid && !bw->b->vt && piseof(bw->cursor)) ||
+	   ( bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)) {
 		unsigned char c = k;
 		writempx(bw->b->out, &c, 1);
 		return 0;

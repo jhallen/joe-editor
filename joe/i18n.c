@@ -193,6 +193,10 @@ int joe_wcwidth(int wide,int ucs)
 		{ 0xE0001, 0xE0001 }, { 0xE0020, 0xE007F }, { 0xE0100, 0xE01EF }
 	};
 
+	/* If ANSI color sequences exist (ansi mode), they are 0 width */
+	if (ucs & ANSI_BIT)
+		return 0;
+
 	/* If terminal is not UTF-8 or file is not UTF-8: width is 1 */
 	/* FIXME */
 	if (!locale_map->type || !wide)

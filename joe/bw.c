@@ -352,6 +352,29 @@ void bwdel(BW *w, long int l, long int n, int flg)
 	}
 }
 
+struct ansi_sm
+{
+	int state;
+};
+
+int ansi_decode(struct ansi_sm *sm, int bc)
+{
+	if (sm->state) {
+		if ((bc >= 'a' && bc <= 'z') || (bc >= 'A' && bc <= 'Z'))
+			sm->state = 0;
+		return -1;
+	} else if (bc == '\033') {
+		sm->state = 1;
+		return -1;
+	} else
+		return bc;
+}
+
+void ansi_init(struct ansi_sm *sm)
+{
+	sm->state = 0;
+}
+
 /* Update a single line */
 
 #define SELECT_IF(c)	{ if (c) { ca = selectatr; cm = selectmask; } else { ca = 0; cm = -1; } }
@@ -365,6 +388,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
          			/* Starting column to display */
               			/* Range for marked block */
 {
+	int ansi = bw->o.ansi;
 	int ox = x;
 	int tach;
 	int done = 1;
@@ -377,6 +401,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	int ungetit = -1;
 
 	struct utf8_sm utf8_sm;
+	struct ansi_sm ansi_sm;
 
         int *syn = 0;
         P *tmp;
@@ -386,6 +411,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	int cm = -1;		/* Attribute mask for current character */
 
 	utf8_init(&utf8_sm);
+	ansi_init(&ansi_sm);
 
 	if(st.state!=-1) {
 		tmp=pdup(p, USTR "lgen");
@@ -477,7 +503,16 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					c = utf8_decode(&utf8_sm,bc);
 
 					if (c>=0) /* Normal decoded character */
-						wid = joe_wcwidth(1,c);
+						if (ansi) {
+							c = ansi_decode(&ansi_sm, c);
+							if (c >= 0) /* Not ansi */
+								wid = joe_wcwidth(1, c);
+							else { /* Skip ansi character */
+								wid = 0;
+								++idx;
+							}
+						} else
+							wid = joe_wcwidth(1,c);
 					else if(c== -1) /* Character taken */
 						wid = -1;
 					else if(c== -2) { /* Incomplete sequence (FIXME: do something better here) */
@@ -489,7 +524,17 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					else if(c== -3) /* Control character 128-191, 254, 255 */
 						wid = 1;
 				} else {
-					wid = 1;
+					if (ansi) {
+						c = ansi_decode(&ansi_sm, bc);
+						if (c>=0) /* Not ansi */
+							wid = 1;
+						else {
+							wid = 0;
+							++idx;
+						}
+					} else {
+						wid = 1;
+					}
 				}
 
 				if(wid>0) {
@@ -593,7 +638,16 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					utf8_char = utf8_decode(&utf8_sm,bc);
 
 					if (utf8_char >= 0) { /* Normal decoded character */
-						wid = joe_wcwidth(1,utf8_char);
+						if (ansi) {
+							utf8_char = ansi_decode(&ansi_sm, utf8_char);
+							if (utf8_char >= 0) {
+								wid = joe_wcwidth(1, utf8_char);
+							} else {
+								wid = -1;
+								++idx;
+							}
+						} else
+							wid = joe_wcwidth(1,utf8_char);
 					} else if(utf8_char== -1) { /* Character taken */
 						wid = -1;
 					} else if(utf8_char== -2) { /* Incomplete sequence (FIXME: do something better here) */
@@ -608,8 +662,18 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 						utf8_char = 'X';
 					}
 				} else { /* Regular */
-					utf8_char = bc;
-					wid = 1;
+					if (ansi) {
+						utf8_char = ansi_decode(&ansi_sm, bc);
+						if (utf8_char >= 0) /* Not ansi */
+							wid = 1;
+						else {
+							wid = -1;
+							++idx;
+						}
+					} else {
+						utf8_char = bc;
+						wid = 1;
+					}
 				}
 
 				if(wid>=0) {
@@ -984,8 +1048,8 @@ void bwgen(BW *w, int linums)
 
 	fromline = toline = from = to = 0;
 
-	if (w->b == errbuf) {
-		P *tmp = pdup(w->cursor, USTR "bwgen");
+	if (w->b == errbuf && w->b->err) {
+		P *tmp = pdup(w->b->err, USTR "bwgen");
 		p_goto_bol(tmp);
 		from = tmp->byte;
 		pnextl(tmp);
@@ -1102,6 +1166,10 @@ void bwresz(BW *w, int wi, int he)
 	}
 	w->w = wi;
 	w->h = he;
+	if (w->b->vt && w->b->pid && w == vtmaster(w->parent->t, w->b)) {
+		vt_resize(w->b->vt, w->top, he, wi);
+		ttstsz(w->b->out, wi, he);
+	}
 }
 
 BW *bwmk(W *window, B *b, int prompt, unsigned char *ps)
@@ -1159,6 +1227,7 @@ BW *bwmk(W *window, B *b, int prompt, unsigned char *ps)
 	w->top_changed = 1;
 	w->linums = 0;
 	w->db = 0;
+	w->shell_flag = 0;
 	return w;
 }
 
@@ -1275,6 +1344,24 @@ void set_file_pos_all(Screen *t)
 	set_file_pos_orphaned();
 }
 
+/* Return master BW for a B.  It's the last window on the screen with the B.  If the B has a VT, then
+ * it's the last window on the screen with the B and where the cursor matches the VT cursor. */
+
+BW *vtmaster(Screen *t, B *b)
+{
+	W *w = t->topwin;
+	BW *m = 0;
+	do {
+		if (w->watom == &watomtw) {
+			BW *bw = w->object;
+			if (bw && w->y != -1 && bw->b == b && (!b->vt || b->vt->vtcur->byte == bw->cursor->byte))
+				m = bw;
+		}
+		w = w->link.next;
+	} while (w != t->topwin);
+	return m;
+}
+
 void bwrm(BW *w)
 {
 	if (w->b == errbuf && w->b->count == 1) {
@@ -1290,8 +1377,11 @@ void bwrm(BW *w)
 	joe_free(w);
 }
 
+unsigned char *ustat_line;
+
 int ustat(BW *bw)
 {
+#if 0
 	int c = brch(bw->cursor);
 	unsigned char *dec = vsfmt(NULL, 0, USTR "%Od", bw->cursor->byte);
 	unsigned char *hex = vsfmt(NULL, 0, USTR "%Ox", bw->cursor->byte);
@@ -1300,6 +1390,22 @@ int ustat(BW *bw)
 		msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, dec, hex));
 	else
 		msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, dec, hex, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c)));
+
+#endif
+
+	int c = brch(bw->cursor);
+	unsigned char *msg;
+
+	if (c == NO_MORE_DATA) {
+		if (bw->o.zmsg) msg = bw->o.zmsg;
+		else msg = USTR "** Line %r Col %c Offset %o(0x%O) **";
+	} else {
+		if (bw->o.smsg) msg = bw->o.smsg;
+		else msg = USTR "** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w **";
+	}
+
+	ustat_line = stagen(ustat_line, bw, msg, zlen(msg) ? msg[zlen(msg) - 1] : ' ');
+	msgnw(bw->parent, ustat_line);
 
 	return 0;
 }
@@ -1340,7 +1446,7 @@ int ucrawll(BW *bw)
 
 void orphit(BW *bw)
 {
-	++bw->b->count; /* Assumes bwrm() is abour to be called */
+	++bw->b->count; /* Assumes bwrm() is about to be called */
 	bw->b->orphan = 1;
 	pdupown(bw->cursor, &bw->b->oldcur, USTR "orphit");
 	pdupown(bw->top, &bw->b->oldtop, USTR "orphit");

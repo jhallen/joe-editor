@@ -16,6 +16,7 @@ void nungetc PARAMS((int c));
 void dofollows PARAMS((void));
 int edloop PARAMS((void));
 void edupd PARAMS((int flg));
+extern KBD *shell_kbd;
 
 extern volatile int dostaupd;	/* Force status line update */
 extern int nonotice; /* Set to prevent copyright notice */

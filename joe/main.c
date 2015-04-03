@@ -98,6 +98,8 @@ void nungetc(int c)
 	}
 }
 
+MACRO *type_backtick;
+
 /* Execute a macro every nn seconds */
 
 time_t last_timer_time = 0;
@@ -117,14 +119,20 @@ MACRO *timer_play()
 
 /* Main loop */
 
+KBD *shell_kbd;
+
 int edloop()
 {
 	int ret = 0;
 
 	/* Here is the loop.  Loop while we're not exiting the editor (or query is not done)... */
 	while (!leave) {
+		W *w;
 		MACRO *m;
+		BW *bw;
 		int c;
+		int auto_off = 0;
+		int word_off = 0;
 
 		/* Free exit message if we're not leaving */
 		if (exmsg) {
@@ -142,16 +150,49 @@ int edloop()
 			ungot = 0;
 		} else
 			c = ttgetc();
+
+		/* Clear temporary messages */
+		w = maint->curwin;
+		do {
+			if (w->y != -1) {
+				msgclr(w);
+			}
+			w = (W *) (w->link.next);
+		} while (w != maint->curwin);
+
 		/* Deal with typeahead from before editor starting: tty was in
 		   cooked mode so it converted carriage returns to line
 		   feeds.  Convert them back here. */
+	
 		if (!ahead && c == 10)
 			c = 13;
+		
+		more_no_auto:
+
 		/* Give key to current keyboard handler: it returns a macro to execute when
-		   a full sequence is decoded.  */
-		m = dokey(maint->curwin->kbd, c);
-		/* Make sure main window of group has copy of current key sequence so that it
-		   is displayed in the status line (why doesn't status line code figure this out?) */
+		   a full sequence is decoded. Use special kbd if we're handing data to a shell window */
+		bw = (BW *)maint->curwin->object;
+		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor))
+			m = dokey(shell_kbd, c);
+		else if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)
+			m = dokey(bw->b->vt->kbd, c);
+		else
+			m = dokey(maint->curwin->kbd, c);
+
+		/* leading part of backtick hack... */
+		/* should only do this if backtick is uquote, but you're not likely to get quick typeahead with ESC ' as uquote */
+		if (m && m->cmd && m->cmd->func == uquote && ttcheck()) {
+			m = type_backtick;
+		}
+
+		/* disable autoindent if it looks like a mouse paste... */
+		if (m && m->cmd && (m->cmd->func == utype || m->cmd->func == urtn) && (maint->curwin->watom->what & TYPETW) && (bw->o.autoindent || bw->o.wordwrap) && ttcheck()) {
+			auto_off = bw->o.autoindent;
+			bw->o.autoindent = 0;
+			word_off = bw->o.wordwrap;
+			bw->o.wordwrap = 0;
+		}
+
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
 			int x = maint->curwin->kbd->x;
 
@@ -166,7 +207,35 @@ int edloop()
 			ret = co_call(exemac, m);
 			/* ret = exemac(m); */
 		}
+
+		/* trailing part of backtick hack... */
+		/* for case where ` is very last character of pasted block */
+		while (!leave && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck() && havec == '`') {
+			ttgetc();
+			ret = co_call(exemac, type_backtick);
+		}
+
+		/* trailing part of disabled autoindent */
+		if (!leave && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck()) {
+			if (ungot) {
+				c = ungotc;
+				ungot = 0;
+			} else
+				c = ttgetc();
+			goto more_no_auto;
+		}
+
+		if (auto_off) {
+			auto_off = 0;
+			bw->o.autoindent = 1;
+		}
+
+		if (word_off) {
+			word_off = 0;
+			bw->o.wordwrap = 1;
+		}
 	}
+
 	/* prompt can force return of error, which aborts macro */
 	return ret;
 }
@@ -601,7 +670,7 @@ void setup_pipein()
 		a = vaadd(a, vsncpy(NULL, 0, sc("-c")));
 		a = vaadd(a, vsncpy(NULL, 0, sc("/bin/cat")));
 
-		cstart(maint->curwin->object, USTR "/bin/sh", a, NULL, 0, 1);
+		cstart(maint->curwin->object, USTR "/bin/sh", a, NULL, 0, 1, NULL, 0);
 	}
 }
 
@@ -650,6 +719,15 @@ int main(int argc, char **real_argv, char **envv)
 	/* Process JOERC file */
 	if (joerc()) 
 		goto exit_errors;
+
+	{
+		unsigned char buf[10];
+		int x;
+		zlcpy(buf, sizeof(buf), USTR "\"`\"	`  ");
+		type_backtick = mparse(0, buf, &x, 0);
+	}
+
+	shell_kbd = mkkbd(kmap_getcontext(USTR "shell"));
 
 #ifndef JOEWIN
 	/* Is somebody piping something into JOE, or is stdin the tty? */

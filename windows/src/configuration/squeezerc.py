@@ -49,7 +49,8 @@ oneparamsettings = [
 ]
 
 lineparamsettings = [
-    'backpath', 'cpara', 'lmsg', 'mfirst', 'mnew', 'mold', 'msnew', 'msold', 'rmsg', 'text_delimiters'
+    'backpath', 'cpara', 'lmsg', 'mfirst', 'mnew', 'mold', 'msnew', 'msold', 'rmsg', 'text_delimiters',
+    'smsg', 'zmsg'
 ]
 
 specialkeys = [

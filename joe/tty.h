@@ -94,6 +94,8 @@ void ttclsn PARAMS((void));
  */
 int ttgetc PARAMS((void));
 
+int ttcheck PARAMS((void));
+
 /* void ttputc(char c);  Write a character to the output buffer.  If it becomes
  * full, call ttflsh()
  */
@@ -149,6 +151,7 @@ void ttsusp PARAMS((void));
 int ttflsh PARAMS((void));
 
 extern int have; /* Set if we have typeahead */
+extern unsigned char havec; /* typeahead character */
 extern int leave; /* Set if we're exiting (so don't check for typeahead) */
 
 #ifdef __MSDOS__
@@ -195,7 +198,7 @@ void signrm PARAMS((void));
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (void*), void *dieobj, int out_only));
+MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int w, int h));
 
 void killmpx PARAMS((int pid, int sig));
 
@@ -219,5 +222,8 @@ extern time_t last_time;
 extern long last_time; /* Current time in seconds */
 #endif
 extern int idleout; /* Clear to use /dev/tty for screen */
+
+void ttstsz(int fd, int w, int h); /* Set window size */
+extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */
 
 #endif
