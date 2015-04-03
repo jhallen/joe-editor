@@ -157,7 +157,7 @@ typedef int pid_t;
 #define physical(a)  (((unsigned long)(a)&0xFFFF)+(((unsigned long)(a)&0xFFFF0000)>>12))
 #define normalize(a) ((void *)(((unsigned long)(a)&0xFFFF000F)+(((unsigned long)(a)&0x0000FFF0)<<12)))
 #else
-#define physical(a) ((ptrdiff_t)(a))
+#define physical(a) ((size_t)(a))
 #define normalize(a) (a)
 #endif /* sizeof(void *) == 4 */
 
@@ -169,7 +169,7 @@ typedef int pid_t;
 
 #else /* not real mode ms-dos */
 
-#define physical(a) ((ptrdiff_t)(a))
+#define physical(a) ((size_t)(a))
 #define normalize(a) (a)
 
 /* Log2 of page size */
