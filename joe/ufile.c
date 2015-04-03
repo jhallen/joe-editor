@@ -1259,16 +1259,11 @@ static W *getmousedropwindow(int x, int y)
 
 	/* Find BW we're dropping onto */
 	w = maint->topwin;
-	do
-	{
-		if (w->watom->what & TYPETW)
-		{
-			if (best == NULL)
-			{
+	do {
+		if (w->watom->what & TYPETW) {
+			if (best == NULL) {
 				best = w;
-			}
-			else if (w->y <= y && (w->y > best->y || best->y > y))
-			{
+			} else if (w->y <= y && (w->y > best->y || best->y > y)) {
 				best = w;
 			}
 		}
@@ -1293,40 +1288,44 @@ int dodropfiles(va_list args)
 	y = va_arg(args, int);
 
 	target = getmousedropwindow(x, y);
-	if (target)
-	{
+	if (target) {
 		count = valen(files);
+		bwtarget = (BW*)target->object;
 
-		for (i = 0; i < count; i++)
-		{
-			bwtarget = (BW*)target->object;
-			if (bwtarget)
-			{
+		if (bwtarget) {
+			for (i = 0; i < count; i++) {
 				unsigned char *s = files[i];
 				B *b = bcheck_loaded(s);
 
 				if (b) {
 					/* Buffer not modified- just use it as is */
 					doedit(bwtarget, NO_CODE, s);
-				} else
+				} else {
 					/* File not in buffer: don't ask */
 					doedit(bwtarget, YES_CODE, s);
+
+					/* Set current dir to path of file */
+					b = bcheck_loaded(s);
+					if (b) {
+						if (b->current_dir)
+							obj_free(b->current_dir);
+						b->current_dir = dirprt(s);
+						obj_perm(b->current_dir);
+					}
+				}
 			}
 		}
 
 		/* If more than one file, explode all files */
-		if (count > 1)
-		{
-			if (explode == NULL)
-			{
+		if (count > 1) {
+			if (explode == NULL) {
 				explode = findcmd(USTR "explode");
 			}
 
 			// We really ought to just make our own logic in w.c for this, but for now let's
 			// take the easy way out.
 			bwtarget = (BW*)target->object;
-			if (bwtarget && bwtarget->parent->t->h - bwtarget->parent->t->wind != getgrouph(bwtarget->parent))
-			{
+			if (bwtarget && bwtarget->parent->t->h - bwtarget->parent->t->wind != getgrouph(bwtarget->parent)) {
 				execmd(explode, 0);
 			}
 
