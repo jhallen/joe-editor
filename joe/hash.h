@@ -22,7 +22,7 @@ struct hash {
 };
 
 /* Compute hash code for a string */
-size_t long hash(unsigned char *s);
+size_t hash(unsigned char *s);
 
 /* Create a hash table of specified size, which must be a power of 2 */
 HASH *htmk(size_t len);

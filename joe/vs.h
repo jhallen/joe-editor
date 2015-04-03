@@ -347,7 +347,7 @@ sELEMENT *vssort(sELEMENT *ary, size_t len);
  *
  * Hmm... this should really indicate whether or not the element was found.
  */
-int vsbsearch(sELEMENT *ary, size_t len, sELEMENT el);
+size_t vsbsearch(sELEMENT *ary, size_t len, sELEMENT el);
 
 #ifdef junk
 /* int vsfirst(sELEMENT *ary, int len, sELEMENT element);
@@ -403,13 +403,13 @@ int vsicmp(sELEMENT *a, sELEMENT *b);
  *
  * Hmm... this really needs to return what the found element is.
  */
-int vsscan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
+size_t vsscan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
 
 /* int vsspan(sELEMENT *a, int alen, sELEMENT *b, int blen);
  * Find offset of first matching element in 'a' which does not match any
  * of the elements passed in 'b'.  Array 'b' must be sorted.
  */
-int vsspan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
+size_t vsspan(sELEMENT *a, size_t alen, sELEMENT *b, size_t blen);
 
 /***************/
 /* Other stuff */
