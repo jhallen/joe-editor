@@ -57,36 +57,7 @@ void *replenish(void **list,int size);
 	*(void **)(list) = (void *)(item); \
 } while(0)
 
-/* JOE uses 'char *', never 'char *'.  This is that when a
-   character is loaded into an 'int', the codes 0-255 are used,
-   not -128 - 127. */
-
-/* Zero terminated strings */
-
-typedef struct zs ZS;
-
-struct zs {
-	char *s;
-};
-
-/* Create zs in local gc */
-
-#define mk_zs(var,s,len) do { \
-	(var) = raw_mk_zs((s),(len)); \
-	gc_add(&gc, &(var), rm_zs); \
-} while(0)
-
-ZS raw_mk_zs(GC **gc,char *s,int len);
-
-/* Destructor for zs */
-
-void rm_zs(ZS z);
-
 /* Unsigned versions of regular string functions */
-
-/* JOE uses 'char *', never 'char *'.  This is so that when a
-   character is loaded from a string into an 'int', the codes 0-255 are
-   used, not -128 - 127. */
 
 int zlen(char *s);
 int zcmp(char *a, char *b);

@@ -651,7 +651,7 @@ static int doopt1(BW *bw, char *s, int *xx, int *notify)
 	joe_free(xx);
 	switch (glopts[x].type) {
 	case 1:
-		v = calc(bw, s, 0);
+		v = (int)calc(bw, s, 0);
 		if (merr) {
 			msgnw(bw->parent, merr);
 			ret = -1;
@@ -670,7 +670,7 @@ static int doopt1(BW *bw, char *s, int *xx, int *notify)
 		*(char **)((char *)&bw->o+glopts[x].ofst) = zdup(s);
 		break;
 	case 5:
-		v = calc(bw, s, 0);
+		v = (int)calc(bw, s, 0);
 		if (merr) {
 			msgnw(bw->parent, merr);
 			ret = -1;
@@ -682,7 +682,7 @@ static int doopt1(BW *bw, char *s, int *xx, int *notify)
 		}
 		break;
 	case 7:
-		v = calc(bw, s, 0) - 1.0;
+		v = (int)(calc(bw, s, 0) - 1.0);
 		if (merr) {
 			msgnw(bw->parent, merr);
 			ret = -1;

@@ -501,7 +501,7 @@ int from_utf8(struct charmap *map,char *s)
 #endif
 }
 
-void my_iconv(char *dest, size_t destsiz, struct charmap *dest_map,
+void my_iconv(char *dest, int destsiz, struct charmap *dest_map,
               char *src, struct charmap *src_map)
 {
 	if (dest_map == src_map) {
@@ -523,7 +523,7 @@ void my_iconv(char *dest, size_t destsiz, struct charmap *dest_map,
 				if (c >= 0) {
 					int d = from_uni(dest_map, c);
 					if (d >= 0)
-						*dest++ = d;
+						*dest++ = TO_CHAR_OK(d);
 					else
 						*dest++ = '?';
 				} else
@@ -543,7 +543,7 @@ void my_iconv(char *dest, size_t destsiz, struct charmap *dest_map,
 				if (c >= 0) {
 					d = from_uni(dest_map, c);
 					if (d >= 0)
-						*dest++ = d;
+						*dest++ = TO_CHAR_OK(d);
 					else
 						*dest++ = '?';
 				} else

@@ -191,7 +191,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 		         .*::string */
 		if (!zmcmp(buf, s) || (t && !zcmp(t, buf))) {
 			char *key = vsncpy(NULL, 0, sz(buf));
-			buf[x] = c;
+			buf[x] = TO_CHAR_OK(c);
 			while (buf[x] == ' ' || buf[x] == '\t') {
 				++x;
 			}
@@ -203,7 +203,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 				if (prefix)
 					file = vsncpy(NULL, 0, sv(prefix));
 				file = vsncpy(sv(file), sz(buf + x));
-				buf[y] = c;
+				buf[y] = TO_CHAR_OK(c);
 				while (buf[y] == ' ' || buf[y] == '\t') {
 					++y;
 				}

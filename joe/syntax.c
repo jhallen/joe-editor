@@ -36,8 +36,8 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	int *attr_end = attr_buf + attr_size;
 	int c;
 
-	int state = h_state.saved_s[0];
-	int accu = h_state.saved_s[1];
+	char state = h_state.saved_s[0];
+	char accu = h_state.saved_s[1];
 	int current_attr = h_state.state;
 	// int new_attr = *(int *)(h_state.saved_s + 8);
 
@@ -85,7 +85,7 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 					current_attr = 0;
 					/* but stay in this state */
 				} else if (c >= '0' && c <= '9') {
-					accu = c - '0';
+					accu = (char)(c - '0');
 					state = IN_NUMBER;
 				} else if (c == 'm') {
 					/* APPLY NEW ATTRIBUTES */
@@ -119,7 +119,7 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 						state = IDLE;
 					}
 				} else if (c >= '0' && c <= '9') {
-					accu = accu * 10 + c - '0';
+					accu = (char)(accu * 10 + c - '0');
 				} else {
 					state = IDLE;
 				}
@@ -314,7 +314,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				else if (c=='`')
 					h_state.saved_s[0] = '\'';
 				else
-					h_state.saved_s[0] = c;
+					h_state.saved_s[0] = TO_CHAR_OK(c);
 			}
 
 			/* Start buffering? */
@@ -346,7 +346,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 		/* Save character in buffer */
 		if (buf_idx<23 && buf_en)
-			buf[buf_idx++]=c;
+			buf[buf_idx++] = TO_CHAR_OK(c);
 		if (!buf_en)
 			++ofst;
 		buf[buf_idx] = 0;

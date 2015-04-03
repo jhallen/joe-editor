@@ -24,7 +24,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 int auto_scroll = 0;		/* Set for autoscroll */
 int auto_rate;			/* Rate */
-int auto_trig_time;		/* Time of next scroll */
+long auto_trig_time;		/* Time of next scroll */
 
 int rtbutton=0;			/* use button 3 instead of 1 */
 int floatmouse=0;		/* don't fix xcol after tomouse */
@@ -175,11 +175,11 @@ int base64_accu = 0;
 int base64_count = 0;
 int base64_pad = 0;
 
-static void ttputs64(char *pp, unsigned length)
+static void ttputs64(char *pp, int length)
 {
 	unsigned char *p = (unsigned char *)pp;
         char buf[65];
-        unsigned x = 0;
+        int x = 0;
         while (length--) {
             switch (base64_count) {
                 case 0:
@@ -233,8 +233,8 @@ static void ttputs64_flush()
             break;
     }
     if (base64_pad & 3) {
-        x = 4 - (base64_pad & 3);
-        while (x--)
+        int z = 4 - (base64_pad & 3);
+        while (z--)
         	ttputc('=');
     }
     base64_count = 0;
@@ -272,7 +272,7 @@ void select_done(struct charmap *map)
 						c = from_uni(locale_map,c);
 						if (c == -1)
 							c = '?';
-						buf[0] = c;
+						buf[0] = TO_CHAR_OK(c);
 						ttputs64(buf, 1);
 					}
 				else
@@ -285,7 +285,7 @@ void select_done(struct charmap *map)
 						ttputs64(buf, len);
 					} else {
 						/* Non-UTF-8 to non-UTF-8 terminal */
-						buf[0] = c;
+						buf[0] = TO_CHAR_OK(c);
 						ttputs64(buf, 1);
 					}
 			}

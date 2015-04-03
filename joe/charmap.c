@@ -1050,7 +1050,7 @@ int byte_toupper(struct charmap *map,int c)
 
 static void set_bit(char *map,int n)
 {
-	map[n>>3] |= (1<<(n&7));
+	map[n>>3] |= (char)(1<<(n&7));
 }
 
 static int rtn_arg(struct charmap *map,int c)
@@ -1090,7 +1090,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 		}
 	}
 		
-	qsort(map->from_map,map->from_size,SIZEOF(struct pair), (int (*)(const void *, const void *))pair_cmp);
+	qsort(map->from_map,map->from_size,sizeof(struct pair), (int (*)(const void *, const void *))pair_cmp);
 
 	/* Fill in print, alpha and alnum bit maps */
 
@@ -1129,22 +1129,22 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	/* Build case conversion tables */
 
 	for (x=0; x!=256; ++x) {
-		map->lower_map[x] = x;
+		map->lower_map[x] = TO_CHAR_OK(x);
 		if (map->to_map[x] != -1) {
 			int y = joe_towlower(NULL,map->to_map[x]);
 			int z = from_uni(map,y);
 			if (z != -1)
-				map->lower_map[x] = z;
+				map->lower_map[x] = TO_CHAR_OK(z);
 		}
 	}
 
 	for (x=0; x!=256; ++x) {
-		map->upper_map[x] = x;
+		map->upper_map[x] = TO_CHAR_OK(x);
 		if (map->to_map[x] != -1) {
 			int y = joe_towupper(NULL,map->to_map[x]);
 			int z = from_uni(map,y);
 			if (z != -1)
-				map->upper_map[x] = z;
+				map->upper_map[x] = TO_CHAR_OK(z);
 		}
 	}
 
@@ -1187,7 +1187,7 @@ struct builtin_charmap *parse_charmap(char *name,FILE *f)
 {
 	char buf[1024];
 	char bf1[1024];
-	unsigned comment_char = '#';
+	int comment_char = '#';
 	int in_map = 0;
 	int x;
 
@@ -1211,7 +1211,7 @@ struct builtin_charmap *parse_charmap(char *name,FILE *f)
 		if (!zcmp(bf1,"<comment_char>")) {
 			parse_ws(&p, comment_char);
 			parse_tows(&p, bf1);
-			comment_char = bf1[0];
+			comment_char = ((unsigned char *)bf1)[0];
 		} else if (!zcmp(bf1,"<escape_char>")) {
 			parse_ws(&p, comment_char);
 			parse_tows(&p, bf1);

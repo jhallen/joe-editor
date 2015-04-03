@@ -59,5 +59,5 @@ extern int floatmouse;	/* Allow mouse to set cursor past end of lines */
 extern int rtbutton; /* Use button 3 instead of button 1 */
 
 extern int auto_scroll; /* Set for autoscroll */
-extern int auto_trig_time; /* Time of next scroll */
+extern long auto_trig_time; /* Time of next scroll */
 extern int joexterm; /* Set if xterm can do base64 paste */

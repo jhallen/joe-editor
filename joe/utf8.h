@@ -53,7 +53,7 @@ extern struct charmap *locale_map;	/* Default bytemap of terminal */
 extern char *locale_lang;	/* Locale language (like de_DE) */
 extern char *locale_msgs;	/* Locale language for editor messages (like de_DE) */
 
-void my_iconv(char *dest, size_t destsiz, struct charmap *dest_map,
+void my_iconv(char *dest, int destsiz, struct charmap *dest_map,
               char *src,struct charmap *src_map);
 
 struct charmap *guess_map(char *buf, int len);

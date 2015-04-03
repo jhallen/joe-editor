@@ -312,9 +312,9 @@ int zicmp(char *a, char *b)
 		ca = *a;
 		cb = *b;
 		if (ca >= 'a' && ca <= 'z')
-			ca += 'A' - 'a';
+			ca = (char)(ca + ('A' - 'a'));
 		if (cb >= 'a' && cb <= 'z')
-			cb += 'A' - 'a';
+			cb = (char)(cb + ('A' - 'a'));
 		if (ca > cb)
 			return 1;
 		if (ca < cb)
@@ -359,7 +359,7 @@ char *zdup(char *bf)
 {
 	int size = zlen(bf);
 	char *p = joe_malloc(size+1);
-	memcpy(p,bf,size+1);
+	memcpy(p, bf, size + 1);
 	return p;
 }
 
@@ -504,91 +504,25 @@ off_t ztoo(char *s)
 long ztol(char *s)
 {
 	off_t val = ztoo(s);
-	return val;
+	return (long)val;
 }
 
 int ztoi(char *s)
 {
 	off_t val = ztoo(s);
-	return val;
+	return (int)val;
 }
 
 long zhtol(char *s)
 {
 	off_t val = zhtoo(s);
-	return val;
+	return (long)val;
 }
 
 int zhtoi(char *s)
 {
 	off_t val = zhtoo(s);
-	return val;
-}
-
-#ifdef junk
-
-void *replenish(void **list,int size)
-{
-	char *i = joe_malloc(size*16);
-	int x;
-	for (x=0; x!=15; ++x) {
-		fr_single(list, i);
-		i += size;
-	}
-	return i;
-}
-
-/* Destructors */
-
-GC *gc_free_list = 0;
-
-void gc_add(GC **gc, void **var, void (*rm)(void *val))
-{
-	GC *g;
-	for (g = *gc; g; g=g->next)
-		if (g->var == var)
-			return;
-	g = al_single(&gc_free_list, GC);
-	g = gc_free_list;
-	gc_free_list = g->next;
-	g->next = *gc;
-	*gc = g;
-	g->var = var;
-	g->rm = rm;
-}
-
-void gc_collect(GC **gc)
-{
-	GC *g = *gc;
-	while (g) {
-		GC *next = g->next;
-		if (*g->var) {
-			g->rm(*g->var);
-			*g->var = 0;
-		}
-		fr_single(&gc_free_list,g);
-		g = next;
-	}
-	*gc = 0;
-}
-
-#endif
-
-/* Zstrings */
-
-void rm_zs(ZS z)
-{
-	joe_free(z.s);
-}
-
-ZS raw_mk_zs(GC **gc,char *s,int len)
-{
-	ZS zs;
-	zs.s = joe_malloc(len+1);
-	if (len)
-		memcpy(zs.s,s,len);
-	zs.s[len] = 0;
-	return zs;
+	return (int)val;
 }
 
 #ifndef SIG_ERR
@@ -777,7 +711,7 @@ int parse_string(char **pp, char *buf, int len)
 		while(len > 1 && *p && *p!='\"') {
 			int x = 50;
 			int c = escape(0, &p, &x);
-			*buf++ = c;
+			*buf++ = TO_CHAR_OK(c);
 			--len;
 		}
 		*buf = 0;

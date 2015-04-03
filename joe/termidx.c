@@ -46,7 +46,7 @@ static void gen(char *s, FILE *fd)
 						fputs((s + z), stdout);
 						flg = 1;
 					}
-					s[y] = c;
+					s[y] = (char)c;
 					z = y + 1;
 				} while (c && c != ':');
 				if (flg)
@@ -56,7 +56,7 @@ static void gen(char *s, FILE *fd)
 		} else if (c == '\r')
 			/* do nothing */ ;
 		else
-			s[x++] = c;
+			s[x++] = (char)c;
 	}
 }
 

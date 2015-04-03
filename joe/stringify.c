@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
         int c;
         int instring = 0;
         int first_string = 1;
-        int z;
+        size_t z;
         int type;
         FILE *f;
         f = fopen(argv[x], "r");
