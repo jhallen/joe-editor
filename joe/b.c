@@ -3181,7 +3181,7 @@ int lock_it(char *qpath,char *bf)
 	if (!host) host="here";
 	lock_name=vsncpy(sv(lock_name),sc(".#"));
 	lock_name=vsncpy(sv(lock_name),sv(name));
-	joe_snprintf_3(buf,SIZEOF(buf),"%s@%s.%d",user,host,getpid());
+	joe_snprintf_3(buf,SIZEOF(buf),"%s@%s.%ld",user,host,(long)getpid());
 	/* Fail only if there was an existing lock */
 	if (!symlink(buf,lock_name) || errno != EEXIST) {
 		vsrm(lock_name);
