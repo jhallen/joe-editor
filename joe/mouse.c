@@ -244,7 +244,7 @@ static void ttputs64_flush()
     base64_pad = 0;
 }
 
-void select_done(struct charmap *map)
+static void select_done(struct charmap *map)
 {
 	/* Feed text to xterm */
 	if (joexterm && markv(1)) {

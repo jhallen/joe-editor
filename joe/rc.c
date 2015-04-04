@@ -50,7 +50,7 @@ int validate_rc()
 
 /* Parse a macro- allow it to cross lines */
 
-MACRO *multiparse(JFILE *fd, int *refline, char *buf, ptrdiff_t *ofst, int *referr, char *name)
+static MACRO *multiparse(JFILE *fd, int *refline, char *buf, ptrdiff_t *ofst, int *referr, char *name)
 {
 	MACRO *m;
 	ptrdiff_t x = *ofst;

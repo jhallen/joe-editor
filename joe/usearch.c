@@ -25,7 +25,7 @@ SRCHREC fsr = { {&fsr, &fsr} };
 char **word_list;
 
 #define MAX_WORD_SIZE 64
-char **get_word_list(B *b,off_t ignore)
+static char **get_word_list(B *b,off_t ignore)
 {
 	char buf[MAX_WORD_SIZE];
 	char *s;
@@ -87,7 +87,7 @@ char **get_word_list(B *b,off_t ignore)
 	return list;
 }
 
-void fcmplt_ins(BW *bw, char *line)
+static void fcmplt_ins(BW *bw, char *line)
 {
 	P *p;
 	int c;
@@ -119,7 +119,7 @@ void fcmplt_ins(BW *bw, char *line)
 	}
 }
 
-int fcmplt_abrt(BW *bw, int x, char *line)
+static int fcmplt_abrt(BW *bw, int x, char *line)
 {
 	if (line) {
 		fcmplt_ins(bw, line);
@@ -128,7 +128,7 @@ int fcmplt_abrt(BW *bw, int x, char *line)
 	return -1;
 }
 
-int fcmplt_rtn(MENU *m, int x, char *line)
+static int fcmplt_rtn(MENU *m, int x, char *line)
 {
 	fcmplt_ins(m->parent->win->object, m->list[x]);
 	vsrm(line);
@@ -691,7 +691,7 @@ static int set_pattern(BW *bw, char *s, SRCH *srch, int *notify)
 
 /* Unescape for text going to genfmt */
 
-void unesc_genfmt(char *d, char *s, ptrdiff_t len,ptrdiff_t max)
+static void unesc_genfmt(char *d, char *s, ptrdiff_t len,ptrdiff_t max)
 {
 	while (max > 0 && len) {
 		if (!*s) {

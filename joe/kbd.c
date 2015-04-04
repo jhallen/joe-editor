@@ -394,7 +394,7 @@ int kmap_empty(KMAP *k)
 
 B *keymaphist=0;
 
-int dokeymap(BW *bw,char *s,void *object,int *notify)
+static int dokeymap(BW *bw,char *s,void *object,int *notify)
 {
 	KMAP *k=ngetcontext(s);
 	vsrm(s);

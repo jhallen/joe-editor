@@ -12,7 +12,7 @@
 
 HASH *gettext_ht;
 
-char *ignore_prefix(char *set)
+static char *ignore_prefix(char *set)
 {
 	char *s = zrchr(set, '|');
 	if (s)
@@ -38,7 +38,7 @@ char *my_gettext(char *s)
 /* Load a .po file, convert entries to local character set and add them to
  * hash table */
 
-int load_po(FILE *f)
+static int load_po(FILE *f)
 {
 	char buf[1024];
 	char msgid[1024];

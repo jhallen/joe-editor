@@ -30,7 +30,7 @@ struct high_syntax ansi_syntax[1] = { { NULL, "ansi" } };
 #define AFTER_BRACK 2
 #define IN_NUMBER 3
 
-HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
+static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 {
 	int *attr = attr_buf;
 	int *attr_end = attr_buf + attr_size;
@@ -427,7 +427,7 @@ static struct high_cmd *mkcmd()
 
 struct high_color *global_colors;
 
-struct high_color *find_color(struct high_color *colors,char *name,char *syn)
+static struct high_color *find_color(struct high_color *colors,char *name,char *syn)
 {
 	char bf[256];
 	struct high_color *color;
@@ -526,7 +526,7 @@ void dump_syntax(BW *bw)
 	}
 }
 
-struct high_param *parse_params(struct high_param *current_params,char **ptr,char *name,int line)
+static struct high_param *parse_params(struct high_param *current_params,char **ptr,char *name,int line)
 {
 	char *p = *ptr;
 	char bf[256];
@@ -594,7 +594,7 @@ struct high_syntax *load_syntax_subr(char *name,char *subr,struct high_param *pa
 
 /* Parse options */
 
-int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,char *p,int parsing_strings,char *name,int line)
+static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,char *p,int parsing_strings,char *name,int line)
 {
 	char buf[1024];
 	char bf[256];
@@ -696,7 +696,7 @@ struct ifstack {
 
 /* Load dfa */
 
-struct high_state *load_dfa(struct high_syntax *syntax)
+static struct high_state *load_dfa(struct high_syntax *syntax)
 {
 	char name[1024];
 	char buf[1024];
@@ -906,7 +906,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	return first;
 }
 
-int syntax_match(struct high_syntax *syntax,char *name,char *subr,struct high_param *params)
+static int syntax_match(struct high_syntax *syntax,char *name,char *subr,struct high_param *params)
 {
 	struct high_param *syntax_params;
 	if (zcmp(syntax->name,name))

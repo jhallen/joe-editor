@@ -53,7 +53,7 @@ void htrm(HASH *ht)
 
 /* Expand hash table */
 
-void htexpand(HASH *h)
+static void htexpand(HASH *h)
 {
 	ptrdiff_t x;
 	/* Allocate new table */

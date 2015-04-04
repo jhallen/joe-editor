@@ -2409,7 +2409,7 @@ char *canonical(char *n)
 		return n;
 }
 
-off_t euclid(off_t a, off_t b)
+static off_t euclid(off_t a, off_t b)
 {
 	if (!a)
 		return b;
@@ -2425,7 +2425,7 @@ off_t euclid(off_t a, off_t b)
 int found_space;
 int found_tab;
 
-off_t pisindentg(P *p)
+static off_t pisindentg(P *p)
 {
 	int i_spc = 0;
 	int i_tab = 0;

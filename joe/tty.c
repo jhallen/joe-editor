@@ -613,8 +613,6 @@ void mpxdied(MPX *m);
 
 time_t last_time;
 
-extern MACRO *timer_play();
-
 int ttgetc(void)
 {
         MACRO *m;

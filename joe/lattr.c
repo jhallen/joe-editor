@@ -230,7 +230,7 @@ void lattr_del(struct lattr_db *db, ptrdiff_t line, ptrdiff_t size)
 	}
 }
 
-HIGHLIGHT_STATE *lattr_gt(struct lattr_db *db, ptrdiff_t line)
+static HIGHLIGHT_STATE *lattr_gt(struct lattr_db *db, ptrdiff_t line)
 {
 	HIGHLIGHT_STATE *st;
 	if (line >= db->hole)
@@ -240,7 +240,7 @@ HIGHLIGHT_STATE *lattr_gt(struct lattr_db *db, ptrdiff_t line)
 	return st;
 }
 
-void lattr_st(struct lattr_db *db, ptrdiff_t line, HIGHLIGHT_STATE *state)
+static void lattr_st(struct lattr_db *db, ptrdiff_t line, HIGHLIGHT_STATE *state)
 {
 	HIGHLIGHT_STATE *st = lattr_gt(db, line);
 	*st = *state;

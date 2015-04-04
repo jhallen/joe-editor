@@ -172,7 +172,7 @@ void bwfllw(BW *w)
    If the state is not known, it is computed and the state for all
    of the remaining lines of the window are also recalculated. */
 
-HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, off_t line)
+static HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, off_t line)
 {
 	HIGHLIGHT_STATE state;
 
@@ -353,7 +353,7 @@ struct ansi_sm
 	int state;
 };
 
-int ansi_decode(struct ansi_sm *sm, int bc)
+static int ansi_decode(struct ansi_sm *sm, int bc)
 {
 	if (sm->state) {
 		if ((bc >= 'a' && bc <= 'z') || (bc >= 'A' && bc <= 'Z'))
@@ -366,7 +366,7 @@ int ansi_decode(struct ansi_sm *sm, int bc)
 		return bc;
 }
 
-void ansi_init(struct ansi_sm *sm)
+static void ansi_init(struct ansi_sm *sm)
 {
 	sm->state = 0;
 }
@@ -1240,7 +1240,7 @@ static struct file_pos {
 
 static int file_pos_count;
 
-struct file_pos *find_file_pos(char *name)
+static struct file_pos *find_file_pos(char *name)
 {
 	struct file_pos *p;
 	for (p = file_pos.link.next; p != &file_pos; p = p->link.next)

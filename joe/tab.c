@@ -290,7 +290,7 @@ static int tababrt(BW *bw, int cursor, TAB *tab)
 	return -1;
 }
 
-P *p_goto_start_of_path(P *p)
+static P *p_goto_start_of_path(P *p)
 {
 	int c;
 	

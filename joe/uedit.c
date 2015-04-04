@@ -165,7 +165,7 @@ int u_goto_right(BW *bw)
  *
  * WORD is a sequence non-white-space characters
  */
-int p_goto_prev(P *ptr)
+static int p_goto_prev(P *ptr)
 {
 	P *p = pdup(ptr, "p_goto_prev");
 	struct charmap *map=ptr->b->o.charmap;
@@ -200,7 +200,7 @@ int u_goto_prev(BW *bw)
  *
  * WORD is a sequence non-white-space characters
  */
-int p_goto_next(P *ptr)
+static int p_goto_next(P *ptr)
 {
 	P *p = pdup(ptr, "p_goto_next");
 	struct charmap *map=ptr->b->o.charmap;
@@ -341,7 +341,7 @@ int unedge(BW *bw)
 /* Return pointer to first matching set in delimiter set list.  Returns NULL
    if no matches were found. */
 
-char *next_set(char *set)
+static char *next_set(char *set)
 {
 	while (*set && *set!=':')
 		++set;
@@ -350,7 +350,7 @@ char *next_set(char *set)
 	return set;
 }
 
-char *next_group(char *group)
+static char *next_group(char *group)
 {
 	while (*group && *group!='=' && *group!=':')
 		++group;
@@ -359,7 +359,7 @@ char *next_group(char *group)
 	return group;
 }
 
-char *next_word(char *word)
+static char *next_word(char *word)
 {
 	while (*word && *word!='|' && *word!='=' && *word!=':')
 		++word;
@@ -368,7 +368,7 @@ char *next_word(char *word)
 	return word;
 }
 
-int match_word(char *word,char *s)
+static int match_word(char *word,char *s)
 {
 	while (*word==*s && *s && *word) {
 		++word;
@@ -380,7 +380,7 @@ int match_word(char *word,char *s)
 		return 0;
 }
 
-int is_in_group(char *group,char *s)
+static int is_in_group(char *group,char *s)
 {
 	while (*group && *group!='=' && *group!=':') {
 		if (match_word(group, s))
@@ -391,7 +391,7 @@ int is_in_group(char *group,char *s)
 	return 0;
 }
 
-int is_in_any_group(char *group,char *s)
+static int is_in_any_group(char *group,char *s)
 {
 	while (*group && *group!=':') {
 		if (match_word(group, s))
@@ -405,7 +405,7 @@ int is_in_any_group(char *group,char *s)
 	return 0;
 }
 
-char *find_last_group(char *group)
+static char *find_last_group(char *group)
 {
 	char *s;
 	for (s = group; *s && *s!=':'; s=next_group(s))
@@ -417,7 +417,7 @@ char *find_last_group(char *group)
 
 /* Search for matching delimiter: ignore things in comments or strings */
 
-int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,char *set,char *group,int backward)
+static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,char *set,char *group,int backward)
 {
 	P *p = pdup(bw->cursor, "tomatch_char_or_word");
 	P *q = pdup(p, "tomatch_char_or_word");
@@ -746,19 +746,19 @@ int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,char *set,char *g
 	return -1;
 }
 
-int tomatch_char(BW *bw,int c,int f,int dir)
+static int tomatch_char(BW *bw,int c,int f,int dir)
 {
 	return tomatch_char_or_word(bw, 0, c, f, 0, 0, dir == -1);
 }
 
-int tomatch_word(BW *bw,char *set,char *group)
+static int tomatch_word(BW *bw,char *set,char *group)
 {
 	return tomatch_char_or_word(bw, 1, 0, 0, set, group, !*group || *group==':');
 }
 
 /* Return true if <foo /> */
 
-int xml_startend(P *p)
+static int xml_startend(P *p)
 {
 	int c, d=0;
 	p=pdup(p, "xml_startend");
@@ -774,7 +774,7 @@ int xml_startend(P *p)
 	return 0;
 }
 
-int tomatch_xml(BW *bw,char *word,int dir)
+static int tomatch_xml(BW *bw,char *word,int dir)
 {
 	if (dir== -1) {
 		/* Backward search */
@@ -866,7 +866,7 @@ int tomatch_xml(BW *bw,char *word,int dir)
 	}
 }
 
-void get_xml_name(P *p,char *buf)
+static void get_xml_name(P *p,char *buf)
 {
 	int c;
 	int len=0;
@@ -882,7 +882,7 @@ void get_xml_name(P *p,char *buf)
 	prm(p);
 }
 
-void get_delim_name(P *q,char *buf)
+static void get_delim_name(P *q,char *buf)
 {
 	int c;
 	int len=0;
@@ -1676,7 +1676,7 @@ int uinsc(BW *bw)
 
 /* Move p backwards to first non-blank line and return its indentation */
 
-off_t find_indent(P *p)
+static off_t find_indent(P *p)
 {
 	int x;
 	for (x=0; x != 10; ++x) {
@@ -1697,7 +1697,7 @@ off_t find_indent(P *p)
 
 struct utf8_sm utype_utf8_sm;
 
-int utypebw_raw(BW *bw, int k, int no_decode)
+static int utypebw_raw(BW *bw, int k, int no_decode)
 {
 	char c = TO_CHAR_OK(k);
 	struct charmap *map=bw->b->o.charmap;

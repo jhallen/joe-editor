@@ -60,7 +60,7 @@ void genexmsg(BW *bw, int saved, char *name)
 }
 
 /* For ^X ^C */
-void genexmsgmulti(BW *bw, int saved, int skipped)
+static void genexmsgmulti(BW *bw, int saved, int skipped)
 {
 	if (saved)
 		if (skipped)
@@ -247,7 +247,7 @@ struct savereq {
 	char *message; /* String for messages to be shown to the user */
 };
 
-struct savereq *mksavereq(int (*callback)(), char *name, B *first,int rename, int block_save)
+static struct savereq *mksavereq(int (*callback)(), char *name, B *first,int rename, int block_save)
 {
 	struct savereq *req = (struct savereq *) joe_malloc(SIZEOF(struct savereq));
 	req->callback = callback;
@@ -550,7 +550,7 @@ int ublksave(BW *bw)
 
 /* Load file to edit */
 
-int doedit1(BW *bw,int c,char *s,int *notify)
+static int doedit1(BW *bw,int c,char *s,int *notify)
 {
 	int omid;
 	int ret = 0;
@@ -681,7 +681,7 @@ int doedit1(BW *bw,int c,char *s,int *notify)
 	}
 }
 
-int doedit(BW *bw, char *s, void *obj, int *notify)
+static int doedit(BW *bw, char *s, void *obj, int *notify)
 {
 	B *b;
 
@@ -699,7 +699,7 @@ int doedit(BW *bw, char *s, void *obj, int *notify)
 		return doedit1(bw, YES_CODE, s, notify);
 }
 
-int dosetcd(BW *bw, char *s, void *obj, int *notify)
+static int dosetcd(BW *bw, char *s, void *obj, int *notify)
 {
 	if (notify) {
 		*notify = 1;
@@ -755,7 +755,7 @@ int uswitch(BW *bw)
 	}
 }
 
-void wpush(BW *bw)
+static void wpush(BW *bw)
 {
 	struct bstack *e;
 	e = (struct bstack *)malloc(SIZEOF(struct bstack));
@@ -769,7 +769,7 @@ void wpush(BW *bw)
 	bw->parent->bstack = e;
 }
 
-int doscratch(BW *bw, char *s, void *obj, int *notify)
+static int doscratch(BW *bw, char *s, void *obj, int *notify)
 {
 	int ret = 0;
 	int er;
@@ -822,7 +822,7 @@ int doscratch(BW *bw, char *s, void *obj, int *notify)
 	return ret;
 }
 
-int doscratchpush(BW *bw, char *s, void *obj, int *notify)
+static int doscratchpush(BW *bw, char *s, void *obj, int *notify)
 {
 	int ret = 0;
 	int er;

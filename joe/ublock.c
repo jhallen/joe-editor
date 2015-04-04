@@ -654,7 +654,7 @@ void setindent(BW *bw)
 /* Verifies that at least n indentation characters (for non-blank lines) match c */
 /* If n is 0 (for urindent), this fails if c is space but indentation begins with tab */
 
-int purity_check(int c, off_t n)
+static int purity_check(int c, off_t n)
 {
 	P *p = pdup(markb, "purity_check");
 	while (p->byte < markk->byte) {
@@ -678,7 +678,7 @@ int purity_check(int c, off_t n)
 /* Left indent check */
 /* Verify that there is enough whitespace to do the left indent */
 
-int lindent_check(int c, off_t n)
+static int lindent_check(int c, off_t n)
 {
 	P *p = pdup(markb, "lindent_check");
 	off_t indwid;

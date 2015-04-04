@@ -9,7 +9,7 @@
 
 /* Return width of a string */
 
-ptrdiff_t joe_wcswidth(struct charmap *map,char *s, ptrdiff_t len)
+static ptrdiff_t joe_wcswidth(struct charmap *map,char *s, ptrdiff_t len)
 {
 	if (!map->type) {
 		return len;
@@ -30,7 +30,7 @@ ptrdiff_t joe_wcswidth(struct charmap *map,char *s, ptrdiff_t len)
    Also this finds the nth line and returns the position of the substring which is
    that line. Set n to -1 if you just want the height. */
 
-ptrdiff_t break_height(struct charmap *map,char **src,ptrdiff_t *src_len,ptrdiff_t wid,ptrdiff_t n)
+static ptrdiff_t break_height(struct charmap *map,char **src,ptrdiff_t *src_len,ptrdiff_t wid,ptrdiff_t n)
 {
 	char *s = *src;
 	ptrdiff_t len = *src_len;
