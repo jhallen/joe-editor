@@ -596,7 +596,8 @@ struct charmap *guess_map(char *buf, ptrdiff_t len)
 		   the middle of utf-8 sequence */
 		if (plen < 7)
 			break;
-		if (*p >= 128)
+		/* if (*p >= 128) (for unsigned char) */
+		if (*p < 0)
 			flag = 1;
 		c = utf8_decode_fwrd(&p, &plen);
 		if (c < 0)

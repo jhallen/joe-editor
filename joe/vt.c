@@ -662,7 +662,7 @@ MACRO *vt_data(VT *vt, char **indat, ptrdiff_t *insiz)
 								vt->state = vt_utf;
 							}
 						} else {
-							if (c >= 32 && c <= 255)
+							if (!(c >= 0 && c < 32))
 								vt_type(vt, c);
 						}
 						break;
