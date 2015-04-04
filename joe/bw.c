@@ -1279,7 +1279,7 @@ void save_file_pos(FILE *f)
 {
 	struct file_pos *p;
 	for (p = file_pos.link.prev; p != &file_pos; p = p->link.prev) {
-		fprintf(f,"	%ld ",p->line);
+		fprintf(f,"	%ld ",(long)p->line);
 		emit_string(f,p->name,zlen(p->name));
 		fprintf(f,"\n");
 	}

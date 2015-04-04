@@ -305,9 +305,9 @@ char *duplicate_backslashes(char *s, ptrdiff_t len)
 				break;
 			case 'r':
 				if (field)
-					joe_snprintf_1(buf, SIZEOF(buf), "%-4ld", bw->cursor->line + 1);
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4ld", (long)(bw->cursor->line + 1));
 				else
-					joe_snprintf_1(buf, SIZEOF(buf), "%ld", bw->cursor->line + 1);
+					joe_snprintf_1(buf, SIZEOF(buf), "%ld", (long)(bw->cursor->line + 1));
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -377,9 +377,9 @@ char *duplicate_backslashes(char *s, ptrdiff_t len)
 				break;
 			case 'c':
 				if (field)
-					joe_snprintf_1(buf, SIZEOF(buf), "%-3ld", piscol(bw->cursor) + 1);
+					joe_snprintf_1(buf, SIZEOF(buf), "%-3ld", (long)(piscol(bw->cursor) + 1));
 				else
-					joe_snprintf_1(buf, SIZEOF(buf), "%ld", piscol(bw->cursor) + 1);
+					joe_snprintf_1(buf, SIZEOF(buf), "%ld", (long)(piscol(bw->cursor) + 1));
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -407,9 +407,9 @@ char *duplicate_backslashes(char *s, ptrdiff_t len)
 				break;
 			case 'l':
 				if (field)
-					joe_snprintf_1(buf, SIZEOF(buf), "%-4ld", bw->b->eof->line + 1);
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4ld", (long)(bw->b->eof->line + 1));
 				else
-					joe_snprintf_1(buf, SIZEOF(buf), "%ld", bw->b->eof->line + 1);
+					joe_snprintf_1(buf, SIZEOF(buf), "%ld", (long)(bw->b->eof->line + 1));
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;

@@ -341,7 +341,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 				a[1] = ' ';
 			}
 		} else
-			joe_snprintf_2(buf, SIZEOF(buf), "%s:%ld",ta->file,ta->line /* ,(ta->cmnt ? ta->cmnt : "") */);
+			joe_snprintf_2(buf, SIZEOF(buf), "%s:%ld",ta->file,(long)ta->line /* ,(ta->cmnt ? ta->cmnt : "") */);
 		tag_array = vaadd(tag_array, vsncpy(NULL, 0, sz(buf)));
 	}
 	last_cursor = 0;

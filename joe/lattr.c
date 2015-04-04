@@ -90,7 +90,7 @@ void reset_all_lattr_db(struct lattr_db *db)
 
 /* Set gap position */
 
-void lattr_hole(struct lattr_db *db, long pos)
+void lattr_hole(struct lattr_db *db, ptrdiff_t pos)
 {
 	if (pos > db->hole)
 		mmove(db->buffer + db->hole, db->buffer + db->ehole, (pos - db->hole) * SIZEOF(HIGHLIGHT_STATE));
@@ -102,7 +102,7 @@ void lattr_hole(struct lattr_db *db, long pos)
 
 /* Make sure there is enough space for an insert */
 
-void lattr_check(struct lattr_db *db, long amnt)
+void lattr_check(struct lattr_db *db, ptrdiff_t amnt)
 {
 	if (amnt > db->ehole - db->hole) {
 		/* Not enough space */
@@ -149,7 +149,7 @@ void drop_lattr_db(B *b, struct lattr_db *db)
 
 /* An insert occurred */
 
-void lattr_ins(struct lattr_db *db,long line,long size)
+void lattr_ins(struct lattr_db *db,ptrdiff_t line,ptrdiff_t size)
 {
 	++line; /* First invalid line is the one following the insert */
 
@@ -181,7 +181,7 @@ void lattr_ins(struct lattr_db *db,long line,long size)
 
 /* A deletion occurred */
 
-void lattr_del(struct lattr_db *db, long line, long size)
+void lattr_del(struct lattr_db *db, ptrdiff_t line, ptrdiff_t size)
 {
 	++line; /* First invalid line is the one following the delete */
 
@@ -230,7 +230,7 @@ void lattr_del(struct lattr_db *db, long line, long size)
 	}
 }
 
-HIGHLIGHT_STATE *lattr_gt(struct lattr_db *db, long line)
+HIGHLIGHT_STATE *lattr_gt(struct lattr_db *db, ptrdiff_t line)
 {
 	HIGHLIGHT_STATE *st;
 	if (line >= db->hole)
@@ -240,7 +240,7 @@ HIGHLIGHT_STATE *lattr_gt(struct lattr_db *db, long line)
 	return st;
 }
 
-void lattr_st(struct lattr_db *db, long line, HIGHLIGHT_STATE *state)
+void lattr_st(struct lattr_db *db, ptrdiff_t line, HIGHLIGHT_STATE *state)
 {
 	HIGHLIGHT_STATE *st = lattr_gt(db, line);
 	*st = *state;
@@ -248,7 +248,7 @@ void lattr_st(struct lattr_db *db, long line, HIGHLIGHT_STATE *state)
 
 /* Get attribute for a specific line */
 
-HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long line)
+HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, ptrdiff_t line)
 {
 	/* Past end of file? */
 	if (line > p->b->eof->line) {
@@ -260,7 +260,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 	/* Check if we need to expand */
 	if (line >= lattr_size(db)) {
 		/* Expand by this amount */
-		long amnt = line - lattr_size(db) + 1;
+		ptrdiff_t amnt = line - lattr_size(db) + 1;
 		/* Set position to end */
 		lattr_hole(db, lattr_size(db));
 		lattr_check(db, amnt);
@@ -289,7 +289,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 
 	/* Check if we are pointing to a valid record */
 	if (line >= db->first_invalid) {
-		long ln;
+		ptrdiff_t ln;
 		P *tmp = 0;
 		HIGHLIGHT_STATE state;
 		tmp = pdup(p, "lattr_get");

@@ -50,7 +50,7 @@ static void gen(char *s, FILE *fd)
 					z = y + 1;
 				} while (c && c != ':');
 				if (flg)
-					printf(" %lx\n", addr - oaddr);
+					printf(" %lx\n", (long)(addr - oaddr));
 			}
 			goto loop;
 		} else if (c == '\r')
