@@ -135,3 +135,5 @@ int parse_range(char **p,int *first,int *second);
 void emit_string(FILE *f,char *s,ptrdiff_t len);
 
 void jsort(void *base, ptrdiff_t num, ptrdiff_t size, int (*compar)(const void *a, const void *b));
+
+off_t oabs(off_t);

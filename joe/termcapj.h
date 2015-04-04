@@ -66,7 +66,7 @@ struct cap {
  * done for self-refering 'tc=filename' links (so all of core will be
  * allocated if there are any).
  */
-CAP *my_getcap(char *name, unsigned int baud, void (*out) (char *, char), void *outptr);
+CAP *my_getcap(char *name, long baud, void (*out) (char *, char), void *outptr);
 
 /* CAP *setcap(CAP *cap,int baud,void (*out)(void *outptr,char c),void *outptr);
  *

@@ -138,7 +138,7 @@ int joe_ioctl(int fd, int req, void *ptr)
 {
 	int rt;
 	do {
-		rt = ioctl(fd, (unsigned)req, ptr);
+		rt = ioctl(fd, req, ptr);
 	} while (rt == -1 && errno == EINTR);
 	return rt;
 }
@@ -851,4 +851,12 @@ int parse_range(char **pp, int *first, int *second)
 void jsort(void *base, ptrdiff_t num, ptrdiff_t size, int (*compar)(const void *a, const void *b))
 {
 	return qsort(base, (size_t)num, (size_t)size, compar);
+}
+
+off_t oabs(off_t a)
+{
+	if (a < 0)
+		return -a;
+	else
+		return a;
 }

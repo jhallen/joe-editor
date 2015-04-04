@@ -906,7 +906,11 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, ptrdiff_t y, int *com
 	off_t lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
+#ifdef HAVE_LONG_LONG
+		joe_snprintf_1(buf, SIZEOF(buf), "%9lld ", (long long)(w->top->line + y - w->y + 1));
+#else
 		joe_snprintf_1(buf, SIZEOF(buf), "%9ld ", (long)(w->top->line + y - w->y + 1));
+#endif
 	else {
 		ptrdiff_t x;
 		for (x = 0; x != LINCOLS; ++x)
@@ -1279,7 +1283,11 @@ void save_file_pos(FILE *f)
 {
 	struct file_pos *p;
 	for (p = file_pos.link.prev; p != &file_pos; p = p->link.prev) {
+#ifdef HAVE_LONG_LONG
+		fprintf(f,"	%lld ",(long long)p->line);
+#else
 		fprintf(f,"	%ld ",(long)p->line);
+#endif
 		emit_string(f,p->name,zlen(p->name));
 		fprintf(f,"\n");
 	}
@@ -1355,27 +1363,6 @@ char *ustat_line;
 
 int ustat(BW *bw)
 {
-#if 0
-	static char buf[160];
-	char bf1[100];
-	char bf2[100];
-	int c = brch(bw->cursor);
-
-#if HAVE_LONG_LONG
-		joe_snprintf_1(bf1, SIZEOF(bf1), "%llu", (unsigned long long)bw->cursor->byte);
-		joe_snprintf_1(bf2, SIZEOF(bf2), "%llx", (unsigned long long)bw->cursor->byte);
-#else
-		joe_snprintf_1(bf1, SIZEOF(bf1), "%lu", (unsigned long)bw->cursor->byte);
-		joe_snprintf_1(bf2, SIZEOF(bf2), "%lx", (unsigned long)bw->cursor->byte);
-#endif
-
-	if (c == NO_MORE_DATA)
-		joe_snprintf_4(buf, SIZEOF(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2);
-	else
-		joe_snprintf_9(buf, SIZEOF(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
-	msgnw(bw->parent, buf);
-#endif
-
 	int c = brch(bw->cursor);
 	char *msg;
 
@@ -1387,7 +1374,7 @@ int ustat(BW *bw)
 		else msg = "** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w **";
 	}
 
-	ustat_line = stagen(ustat_line, bw, msg, zlen(msg) ? msg[zlen(msg) - 1] : ' ');
+	ustat_line = stagen(ustat_line, bw, msg, (char)(zlen(msg) ? msg[zlen(msg) - 1] : ' '));
 	msgnw(bw->parent, ustat_line);
 
 	return 0;

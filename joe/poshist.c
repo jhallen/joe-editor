@@ -48,7 +48,7 @@ void afterpos(void)
 
 void aftermove(W *w, P *p)
 {
-	if (pos.link.prev != &pos && pos.link.prev->w == w && pos.link.prev->p && labs(pos.link.prev->p->line - p->line) < 3) {
+	if (pos.link.prev != &pos && pos.link.prev->w == w && pos.link.prev->p && oabs(pos.link.prev->p->line - p->line) < 3) {
 		poffline(pset(pos.link.prev->p, p));
 	} else {
 		markpos(w, p);

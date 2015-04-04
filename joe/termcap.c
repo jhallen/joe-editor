@@ -140,7 +140,7 @@ static off_t findidx(FILE *file, char *name)
 
 /* Load termcap entry */
 
-CAP *my_getcap(char *name, unsigned int baud, void (*out) (char *, char), void *outptr)
+CAP *my_getcap(char *name, long baud, void (*out) (char *, char), void *outptr)
 {
 	CAP *cap;
 	FILE *f, *f1;
@@ -241,7 +241,7 @@ CAP *my_getcap(char *name, unsigned int baud, void (*out) (char *, char), void *
 		fclose(f);
 	}
 	vsrm(idxname);
-	fseek(f1, idx, 0);
+	fseeko(f1, idx, 0);
 	cap->tbuf = lfind(cap->tbuf, ti, f1, name);
 	fclose(f1);
 	if (sLEN(cap->tbuf) == ti)

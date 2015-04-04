@@ -105,7 +105,7 @@ static char *mema(ptrdiff_t align, ptrdiff_t size)
 {
 	char *z = joe_malloc(align + size);
 
-	return z + align - physical(z) % align;
+	return z + align - (ptrdiff_t)(physical(z) % (unsigned)align);
 }
 
 char *vlock(VFILE *vfile, off_t addr)
@@ -141,7 +141,7 @@ char *vlock(VFILE *vfile, off_t addr)
 					vbase = vp->data;
 				} else if (physical(vp->data) < physical(vbase)) {
 					VPAGE **t = vheaders;
-					ptrdiff_t amnt = (physical(vbase) - physical(vp->data)) >> LPGSIZE;
+					ptrdiff_t amnt = (ptrdiff_t)((physical(vbase) - physical(vp->data)) >> LPGSIZE);
 
 					vheaders = (VPAGE **) joe_malloc((amnt + vheadsz) * SIZEOF(VPAGE *));
 					mmove(vheaders + amnt, t, vheadsz * SIZEOF(VPAGE *));
@@ -150,7 +150,7 @@ char *vlock(VFILE *vfile, off_t addr)
 					joe_free(t);
 				} else if (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE) > vheadsz) {
 					vheaders = (VPAGE **)
-					    joe_realloc(vheaders, (vheadsz = (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE))) * SIZEOF(VPAGE *));
+					    joe_realloc(vheaders, (vheadsz = (ptrdiff_t)(((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE))) * SIZEOF(VPAGE *));
 				}
 				for (q = 1; q != INC; ++q) {
 					vp[q].next = freepages;

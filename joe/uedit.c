@@ -1160,11 +1160,11 @@ int ubos(BW *bw)
  * If flg is clr: cursor stays fixed on the buffer line
  */
 
-void scrup(BW *bw, off_t n, int flg)
+void scrup(BW *bw, ptrdiff_t n, int flg)
 {
-	off_t scrollamnt = 0;
-	off_t cursoramnt = 0;
-	off_t x;
+	ptrdiff_t scrollamnt = 0;
+	ptrdiff_t cursoramnt = 0;
+	ptrdiff_t x;
 
 	/* Decide number of lines we're really going to scroll */
 
@@ -1172,18 +1172,18 @@ void scrup(BW *bw, off_t n, int flg)
 		if (bw->top->byte/16 >= n)
 			scrollamnt = cursoramnt = n;
 		else if (bw->top->byte/16)
-			scrollamnt = cursoramnt = bw->top->byte/16;
+			scrollamnt = cursoramnt = (ptrdiff_t)(bw->top->byte/16);
 		else if (flg)
-			cursoramnt = bw->cursor->byte/16;
+			cursoramnt = (ptrdiff_t)(bw->cursor->byte/16);
 		else if (bw->cursor->byte/16 >= n)
 			cursoramnt = n;
 	} else {
 		if (bw->top->line >= n)
 			scrollamnt = cursoramnt = n;
 		else if (bw->top->line)
-			scrollamnt = cursoramnt = bw->top->line;
+			scrollamnt = cursoramnt = (ptrdiff_t)bw->top->line;
 		else if (flg)
-			cursoramnt = bw->cursor->line;
+			cursoramnt = (ptrdiff_t)bw->cursor->line;
 		else if (bw->cursor->line >= n)
 			cursoramnt = n;
 	}
@@ -1222,31 +1222,31 @@ void scrup(BW *bw, off_t n, int flg)
  * If flg is clr: cursor stays fixed on the buffer line
  */
 
-void scrdn(BW *bw, off_t n, int flg)
+void scrdn(BW *bw, ptrdiff_t n, int flg)
 {
-	off_t scrollamnt = 0;
-	off_t cursoramnt = 0;
-	off_t x;
+	ptrdiff_t scrollamnt = 0;
+	ptrdiff_t cursoramnt = 0;
+	ptrdiff_t x;
 
 	/* How much we're really going to scroll... */
 	if (bw->o.hex) {
 		if (bw->top->b->eof->byte/16 < bw->top->byte/16 + bw->h) {
-			cursoramnt = bw->top->b->eof->byte/16 - bw->cursor->byte/16;
+			cursoramnt = (ptrdiff_t)(bw->top->b->eof->byte/16 - bw->cursor->byte/16);
 			if (!flg && cursoramnt > n)
 				cursoramnt = n;
 		} else if (bw->top->b->eof->byte/16 - (bw->top->byte/16 + bw->h) >= n)
 			cursoramnt = scrollamnt = n;
 		else
-			cursoramnt = scrollamnt = bw->top->b->eof->byte/16 - (bw->top->byte/16 + bw->h) + 1;
+			cursoramnt = scrollamnt = (ptrdiff_t)(bw->top->b->eof->byte/16 - (bw->top->byte/16 + bw->h) + 1);
 	} else {
 		if (bw->top->b->eof->line < bw->top->line + bw->h) {
-			cursoramnt = bw->top->b->eof->line - bw->cursor->line;
+			cursoramnt = (ptrdiff_t)(bw->top->b->eof->line - bw->cursor->line);
 			if (!flg && cursoramnt > n)
 				cursoramnt = n;
 		} else if (bw->top->b->eof->line - (bw->top->line + bw->h) >= n)
 			cursoramnt = scrollamnt = n;
 		else
-			cursoramnt = scrollamnt = bw->top->b->eof->line - (bw->top->line + bw->h) + 1;
+			cursoramnt = scrollamnt = (ptrdiff_t)(bw->top->b->eof->line - (bw->top->line + bw->h) + 1);
 	}
 
 	if (bw->o.hex) {
@@ -1769,7 +1769,7 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 	} else {
 		int upd;
 		int simple;
-		off_t x;
+		ptrdiff_t x;
 
 		/* Picture mode */
 		if (bw->o.picture && bw->cursor->xcol!=piscol(bw->cursor))

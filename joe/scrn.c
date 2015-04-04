@@ -2092,10 +2092,10 @@ ptrdiff_t txtwidth(char *s,ptrdiff_t len)
 		return len;
 }
 
-ptrdiff_t txtwidth1(struct charmap *map,ptrdiff_t tabwidth,char *s,ptrdiff_t len)
+off_t txtwidth1(struct charmap *map,off_t tabwidth,char *s,ptrdiff_t len)
 {
 	if (map->type) {
-		ptrdiff_t col=0;
+		off_t col=0;
 		struct utf8_sm sm;
 		utf8_init(&sm);
 
@@ -2110,7 +2110,7 @@ ptrdiff_t txtwidth1(struct charmap *map,ptrdiff_t tabwidth,char *s,ptrdiff_t len
 
 		return col;
 	} else {
-		ptrdiff_t col = 0;
+		off_t col = 0;
 		while (len--) {
 			if (*s++ == '\t') {
 				++col;

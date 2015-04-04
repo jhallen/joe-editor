@@ -1223,7 +1223,7 @@ char *blkget()
 {
 	if (markv(1)) {
 		P *q;
-		char *buf=joe_malloc(markk->byte-markb->byte+1);
+		char *buf=joe_malloc(markk->byte-markb->byte+1); /* Risky... */
 		char *s=buf;
 		off_t left = markb->xcol;
 		off_t right = markk->xcol;
@@ -1235,7 +1235,15 @@ char *blkget()
 
 			/* Copy text into buffer */
 			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
-				*s++ = pgetc(q);
+				int ch = pgetc(q);
+				if (q->b->o.charmap->type) {
+					char buf[8];
+					ptrdiff_t len = utf8_encode(buf, ch);
+					ptrdiff_t x;
+					for (x = 0; x != len; ++x)
+						*s++ = TO_CHAR_OK(buf[x]);
+				} else
+					*s++ = TO_CHAR_OK(ch);
 			}
 			/* Add a new line if we went past right edge of column */
 			if (square && q->byte<markk->byte && piscol(q) >= right)

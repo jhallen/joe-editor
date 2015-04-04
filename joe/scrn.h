@@ -343,7 +343,7 @@ void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst
 /* Column width of a string takes into account utf-8) */
 ptrdiff_t txtwidth(char *s,ptrdiff_t len);
 
-ptrdiff_t txtwidth1(struct charmap *map, ptrdiff_t tabwidth, char *s, ptrdiff_t len);
+off_t txtwidth1(struct charmap *map, off_t tabwidth, char *s, ptrdiff_t len);
 
 /* Generate a field: formatted */
 void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, char *s, int atr, int flg);

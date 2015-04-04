@@ -54,8 +54,8 @@ char *msgs[] = {
 #define GSIZE(hdr) (SEGSIZ - GGAPSZ(hdr))
 
 /* Get char from buffer (with jumping around the gap) */
-#define GCHAR(p) ((p)->ofst >= (p)->hdr->hole ? (p)->ptr[(p)->ofst + GGAPSZ((p)->hdr)] \
-					      : (p)->ptr[(p)->ofst])
+#define GCHAR(p) ((p)->ofst >= (p)->hdr->hole ? ((unsigned char *)(p)->ptr)[(p)->ofst + GGAPSZ((p)->hdr)] \
+					      : ((unsigned char *)(p)->ptr)[(p)->ofst])
 
 /* Set position of gap */
 static void gstgap(H *hdr, char *ptr, ptrdiff_t ofst)
@@ -583,7 +583,7 @@ int piseol(P *p)
 /* This needs to be fast and should not disturb valcol or valattr.  It's used by fixupins(). */
 int pisbol(P *p)
 {
-	char c;
+	int c;
 
 	if (pisbof(p))
 		return 1;
@@ -719,7 +719,7 @@ int pprev(P *p)
 /* return current byte and move p to the next byte.  column will be unchanged. */
 int pgetb(P *p)
 {
-	char c;
+	int c;
 
 	if (p->ofst == GSIZE(p->hdr))
 		return NO_MORE_DATA;
@@ -883,7 +883,7 @@ int pgetc(P *p)
 
 		return c;
 	} else {
-		char c;
+		int c;
 
 		if (p->ofst == GSIZE(p->hdr))
 			return NO_MORE_DATA;
@@ -903,7 +903,7 @@ int pgetc(P *p)
                         int v = p->valcol;
                         char buf[ANSIMAX];
                         ptrdiff_t bufx = 0;
-                        buf[bufx++] = c;
+                        buf[bufx++] = TO_CHAR_OK(c);
                         while ((d = pgetb(p)) != NO_MORE_DATA) {
                         	if (bufx < SIZEOF(buf) - 1)
                         		buf[bufx++] = TO_CHAR_OK(d);
@@ -960,7 +960,7 @@ P *pfwrd(P *p, off_t n)
 /* move p to the previous byte: does not take into account -crlf mode */
 static int prgetb1(P *p)
 {
-	char c;
+	int c;
 
 	if (!p->ofst)
 		if (!pprev(p))
@@ -1138,7 +1138,7 @@ P *p_goto_eol(P *p)
 			pgetc(p);
 	else
 		while (p->ofst != GSIZE(p->hdr)) {
-			char c;
+			int c;
 
 			c = GCHAR(p);
 			if (c == '\n')
@@ -1218,10 +1218,10 @@ P *pline(P *p, off_t line)
 		pset(p, p->b->eof);
 		return p;
 	}
-	if (line < labs(p->line - line)) {
+	if (line < oabs(p->line - line)) {
 		pset(p, p->b->bof);
 	}
-	if (labs(p->b->eof->line - line) < labs(p->line - line)) {
+	if (oabs(p->b->eof->line - line) < oabs(p->line - line)) {
 		pset(p, p->b->eof);
 	}
 	if (p->line == line) {
@@ -1271,7 +1271,7 @@ P *pcol(P *p, off_t goalcol)
 		} while (p->col != goalcol);
 	} else {
 		do {
-			char c;
+			int c;
 			off_t wid;
 
 			if (p->ofst == GSIZE(p->hdr))
@@ -1333,7 +1333,7 @@ P *pcoli(P *p, off_t goalcol)
 		}
 	} else {
 		while (p->col < goalcol) {
-			char c;
+			int c;
 
 			if (p->ofst == GSIZE(p->hdr))
 				break;
@@ -1390,7 +1390,7 @@ void pbackws(P *p)
 	prm(q);
 }
 
-static char frgetc(P *p)
+static int frgetc(P *p)
 {
 	if (!p->ofst)
 		pprev(p);
@@ -1414,7 +1414,7 @@ static P *ffind(P *p, char *s, ptrdiff_t len)
 {
 	off_t amnt = p->b->eof->byte - p->byte;
 	ptrdiff_t x;
-	char c;
+	int c;
 	ptrdiff_t table[256];
 
 	if (len > amnt)
@@ -1430,7 +1430,7 @@ static P *ffind(P *p, char *s, ptrdiff_t len)
 	amnt -= len;
 	x = len;
 	do {
-		if ((c = frgetc(p)) != s[--x]) {
+		if ((c = frgetc(p)) != ((unsigned char *)s)[--x]) {
 			if (table[(unsigned char)c] == -1) {
 				ffwrd(p, len + 1);
 				amnt -= x + 1;
