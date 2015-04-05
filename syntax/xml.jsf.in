@@ -278,6 +278,7 @@ done
 
 :cdata3 CdataBody
 	*		cdata
+	"]"		cdata3
 	">"		cdata_end	recolor=-3
 
 :cdata_end CdataEnd
