@@ -1869,16 +1869,16 @@ static B *bcut(P *from, P *to)
 		h = halloc();
 		ptr = vlock(vmem, h->seg);
 		mmove(ptr, from->ptr + from->hdr->ehole, (ptrdiff_t) amnt);
-		h->hole = TO_INT_OK(amnt);
-		h->nlines = TO_INT_OK(nlines);
+		h->hole = TO_DIFF_OK(amnt);
+		h->nlines = TO_DIFF_OK(nlines);
 		vchanged(ptr);
 		vunlock(ptr);
 
 		/* Delete */
-		from->hdr->ehole += TO_INT_OK(amnt);
-		from->hdr->nlines -= TO_INT_OK(nlines);
+		from->hdr->ehole += TO_DIFF_OK(amnt);
+		from->hdr->nlines -= TO_DIFF_OK(nlines);
 
-		toamnt = TO_INT_OK(amnt);
+		toamnt = TO_DIFF_OK(amnt);
 	} else {		/* Delete crosses segments */
 		H *a;
 

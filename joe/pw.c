@@ -67,13 +67,13 @@ static void disppw(BW *bw, int flg)
 			pw->promptofst = pw->promptlen;
 			bw->offset = piscol(bw->cursor) - (w->w - 1);
 		} else {
-			pw->promptofst = pw->promptlen - TO_INT_OK((w->w - piscol(bw->cursor) - 1));
+			pw->promptofst = pw->promptlen - TO_DIFF_OK((w->w - piscol(bw->cursor) - 1));
 			bw->offset = piscol(bw->cursor) - (w->w - (pw->promptlen - pw->promptofst) - 1);
 		}
 	}
 
 	/* Set cursor position */
-	w->curx = TO_INT_OK(piscol(bw->cursor) - bw->offset + pw->promptlen - pw->promptofst);
+	w->curx = TO_DIFF_OK(piscol(bw->cursor) - bw->offset + pw->promptlen - pw->promptofst);
 	w->cury = 0;
 
 	/* Generate prompt */

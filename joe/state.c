@@ -16,7 +16,7 @@ int joe_state;
 static void save_hist(FILE *f,B *b)
 {
 	char buf[512];
-	int len;
+	ptrdiff_t len = SIZEOF(buf);
 	if (b) {
 		P *p = pdup(b->bof, "save_hist");
 		P *q = pdup(b->bof, "save_hist");
@@ -25,12 +25,11 @@ static void save_hist(FILE *f,B *b)
 		pset(q,p);
 		while (!piseof(p)) {
 			pnextl(q);
-			if (q->byte-p->byte<512) {
-				len = TO_INT_OK(q->byte - p->byte);
+			if (q->byte-p->byte < len) {
+				len = TO_DIFF_OK(q->byte - p->byte);
 				brmem(p,buf,len);
 			} else {
-				brmem(p,buf,512);
-				len = 512;
+				brmem(p,buf,len);
 			}
 			fprintf(f,"\t");
 			emit_string(f,buf,len);

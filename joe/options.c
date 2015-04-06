@@ -170,9 +170,9 @@ void lazy_opts(B *b, OPTIONS *o)
 	if (!o->map_name) {
 		/* Guess encoding if it's not explicitly given */
 		char buf[1024];
-		int len = 1024;
-		if (b->eof->byte < 1024)
-			len = TO_INT_OK(b->eof->byte);
+		ptrdiff_t len = SIZEOF(buf);
+		if (b->eof->byte < len)
+			len = TO_DIFF_OK(b->eof->byte);
 		brmem(b->bof, buf, len);
 		o->charmap = guess_map(buf, len);
 		o->map_name = zdup(o->charmap->name);

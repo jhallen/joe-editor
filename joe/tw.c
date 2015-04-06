@@ -510,11 +510,11 @@ static void disptw(BW *bw, int flg)
 	}
 
 	if (bw->o.hex) {
-		w->cury = TO_INT_OK((bw->cursor->byte-bw->top->byte)/16 + bw->y - w->y);
-		w->curx = TO_INT_OK((bw->cursor->byte-bw->top->byte)%16 + 60 - bw->offset);
+		w->cury = TO_DIFF_OK((bw->cursor->byte-bw->top->byte)/16 + bw->y - w->y);
+		w->curx = TO_DIFF_OK((bw->cursor->byte-bw->top->byte)%16 + 60 - bw->offset);
 	} else {
-		w->cury = TO_INT_OK(bw->cursor->line - bw->top->line + bw->y - w->y);
-		w->curx = TO_INT_OK(bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0));
+		w->cury = TO_DIFF_OK(bw->cursor->line - bw->top->line + bw->y - w->y);
+		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0));
 	}
 
 	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen)) {

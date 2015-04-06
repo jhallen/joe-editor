@@ -279,7 +279,7 @@ void bwins(BW *w, off_t l, off_t n, int flg)
 		if (l < w->top->line) {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
 		} else if ((l + 1) < w->top->line + w->h) {
-			int start = TO_INT_OK(l + 1 - w->top->line);
+			ptrdiff_t start = TO_DIFF_OK(l + 1 - w->top->line);
 			ptrdiff_t size = w->h - start;
 			msetI(w->t->t->updtab + w->y + start, 1, size);
 		}
@@ -312,7 +312,7 @@ void bwdel(BW *w, off_t l, off_t n, int flg)
 		if (l < w->top->line) {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
 		} else if ((l + 1) < w->top->line + w->h) {
-			int start = TO_INT_OK(l + 1 - w->top->line);
+			ptrdiff_t start = TO_DIFF_OK(l + 1 - w->top->line);
 			ptrdiff_t size = w->h - start;
 			msetI(w->t->t->updtab + w->y + start, 1, size);
 		}
@@ -1036,7 +1036,7 @@ void bwgenh(BW *w)
 					flg = 1;
 			}
 		}
-		genfield(t, screen, attr, 0, y, TO_INT_OK(w->offset), txt, 76, 0, w->w, 1, fmt);
+		genfield(t, screen, attr, 0, y, TO_DIFF_OK(w->offset), txt, 76, 0, w->w, 1, fmt);
 	}
 	prm(q);
 }

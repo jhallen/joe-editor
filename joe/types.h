@@ -1,10 +1,9 @@
 /* JOE global header file */
 
 #define _FILE_OFFSET_BITS 64
-#define TO_INT_OK(a) ((int)(a)) /* Means it's OK that we are converting off_t to int in this case */
 #define TO_DIFF_OK(a) ((ptrdiff_t)(a)) /* Means it's OK that we are converting off_t to ptrdiff_t in this case */
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
-#define SIZEOF(a) ((int)sizeof(a))
+#define SIZEOF(a) ((int)sizeof(a)) /* Signed version of sizeof() */
 
 #include "config.h"
 

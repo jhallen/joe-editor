@@ -277,8 +277,8 @@ static void yankdel(off_t where, B *b)
 				binsb(rec->big->eof, bcpy(b->bof, b->eof));
 				boffline(rec->big);
 			} else {
-				rec->small = joe_realloc(rec->small, TO_INT_OK(rec->len + size));
-				brmem(b->bof, rec->small + rec->len, TO_INT_OK(size));
+				rec->small = joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
+				brmem(b->bof, rec->small + rec->len, TO_DIFF_OK(size));
 			}
 			rec->len += size;
 		} else if (rec != &yanked && where + size == rec->where && justkilled) {
@@ -293,9 +293,9 @@ static void yankdel(off_t where, B *b)
 				binsb(rec->big->bof, bcpy(b->bof, b->eof));
 				boffline(rec->big);
 			} else {
-				rec->small = joe_realloc(rec->small, TO_INT_OK(rec->len + size));
-				mmove(rec->small + size, rec->small, TO_INT_OK(rec->len));
-				brmem(b->bof, rec->small, TO_INT_OK(size));
+				rec->small = joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
+				mmove(rec->small + size, rec->small, TO_DIFF_OK(rec->len));
+				brmem(b->bof, rec->small, TO_DIFF_OK(size));
 			}
 			rec->len += size;
 			rec->where = where;
@@ -306,8 +306,8 @@ static void yankdel(off_t where, B *b)
 			}
 			rec = alrec();
 			if (size < SMALL && size > 0) {
-				rec->small = joe_malloc(TO_INT_OK(size));
-				brmem(b->bof, rec->small, TO_INT_OK(b->eof->byte));
+				rec->small = joe_malloc(TO_DIFF_OK(size));
+				brmem(b->bof, rec->small, TO_DIFF_OK(b->eof->byte));
 			} else {
 				rec->big = bcpy(b->bof, b->eof);
 				boffline(rec->big);
@@ -349,8 +349,8 @@ void undodel(UNDO *undo, off_t where, B *b)
 			binsb(rec->big->eof, b);
 			boffline(rec->big);
 		} else {
-			rec->small = joe_realloc(rec->small, TO_INT_OK(rec->len + size));
-			brmem(b->bof, rec->small + rec->len, TO_INT_OK(size));
+			rec->small = joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
+			brmem(b->bof, rec->small + rec->len, TO_DIFF_OK(size));
 			brm(b);
 		}
 		rec->len += size;
@@ -366,9 +366,9 @@ void undodel(UNDO *undo, off_t where, B *b)
 			binsb(rec->big->bof, b);
 			boffline(rec->big);
 		} else {
-			rec->small = joe_realloc(rec->small, TO_INT_OK(rec->len + size));
-			mmove(rec->small + size, rec->small, TO_INT_OK(rec->len));
-			brmem(b->bof, rec->small, TO_INT_OK(size));
+			rec->small = joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
+			mmove(rec->small + size, rec->small, TO_DIFF_OK(rec->len));
+			brmem(b->bof, rec->small, TO_DIFF_OK(size));
 			brm(b);
 		}
 		rec->len += size;
@@ -376,8 +376,8 @@ void undodel(UNDO *undo, off_t where, B *b)
 	} else {
 		rec = alrec();
 		if (size < SMALL) {
-			rec->small = joe_malloc(TO_INT_OK(size));
-			brmem(b->bof, rec->small, (int) b->eof->byte);
+			rec->small = joe_malloc(TO_DIFF_OK(size));
+			brmem(b->bof, rec->small, TO_DIFF_OK(b->eof->byte));
 			brm(b);
 		} else {
 			rec->big = b;
@@ -476,7 +476,7 @@ void save_yank(FILE *f)
 	for (rec = yanked.link.next; rec != &yanked; rec = rec->link.next) {
 		if (rec->len < SMALL) {
 			fprintf(f,"	");
-			emit_string(f,rec->small,TO_INT_OK(rec->len));
+			emit_string(f,rec->small,TO_DIFF_OK(rec->len));
 			fprintf(f,"\n");
 		}
 	}
