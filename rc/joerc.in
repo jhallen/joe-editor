@@ -810,22 +810,23 @@ aspellword	^[ n
 
  Compile
 
-:def compile mwind!,mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
+:def compile mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
 
  Grep
 
-:def grep_find mwind!,mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
+:def grep_find mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
 
  Man page
 
 :def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
 
  Shell windows
+ We load the already existing Startup Log first so that Shell does not inherit the current directory.
 
-:def shell1 scratch,"* Shell 1 *",rtn,vtbknd!,eof
-:def shell2 scratch,"* Shell 2 *",rtn,vtbknd!,eof
-:def shell3 scratch,"* Shell 3 *",rtn,vtbknd!,eof
-:def shell4 scratch,"* Shell 4 *",rtn,vtbknd!,eof
+:def shell1 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 1 *",rtn,vtbknd!,eof
+:def shell2 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 2 *",rtn,vtbknd!,eof
+:def shell3 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 3 *",rtn,vtbknd!,eof
+:def shell4 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 4 *",rtn,vtbknd!,eof
 
  Macros allowed in shell window commands
 :def shell_clear psh,bof,markb,eof,markk,blkdel
@@ -1108,6 +1109,7 @@ splitw		^K O		Split window
 splitw		^K ^O
 splitw		^K o
 stat		^K SP		Show status
+stat		^K ^@		Show status
 tag		^K ;		Tags file search
 tomatch		^G		Goto matching parenthasis
 undo		^_		Undo changes

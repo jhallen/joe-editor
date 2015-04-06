@@ -729,54 +729,123 @@ void wpush(BW *bw)
 
 int uscratch(BW *bw)
 {
+	int ret = 0;
+	int er;
+	void *object;
+	W *w;
+	B *b;
+	unsigned char *current_dir;
 	unsigned char *s;
-	s = ask(bw->parent, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, USTR "Names", cmplt, locale_map, 1, 0, NULL);
-	if (s) {
-		int ret = 0;
-		int er;
-		void *object;
-		W *w;
-		B *b;
 
-		b = bfind_scratch(s);
-		er = berror;
+	s = ask(bw->parent, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, USTR "Names", cmplt, locale_map, 1, 0, NULL);
+	if (!s)
+		return -1;
+
+	current_dir = vsdup(bw->b->current_dir);
+
+	b = bfind_scratch(s);
+	/* Propogate current directory to scratch buffer */
+	if (!b->current_dir) {
+		b->current_dir = current_dir;
+		obj_perm(current_dir);
+	}
+
+	er = berror;
+
+	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) { /* Last reference on dirty buffer */
+		if (orphan || bw->b->scratch) {
+			orphit(bw);
+		} else {
+			if (uduptw(bw)) {
+				brm(b);
+				return -1;
+			}
+			bw = (BW *) maint->curwin->object;
+		}
+	}
+	
+	if (er) {
+		msgnwt(bw->parent, joe_gettext(msgs[-er]));
+		if (er != -1) {
+			ret = -1;
+		}
+	}
+
+	object = bw->object;
+	w = bw->parent;
+	bwrm(bw);
+	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+	wredraw(bw->parent);
+	bw->object = object;
+
+	if (er == -1 && bw->o.mnew)
+		exmacro(bw->o.mnew,1);
+	if (er == 0 && bw->o.mold)
+		exmacro(bw->o.mold,1);
+
+	return ret;
+}
+
+int uscratch_push(BW *bw)
+{
+	int ret = 0;
+	int er;
+	void *object;
+	W *w;
+	B *b;
+	unsigned char *current_dir;
+	unsigned char *s;
+
+	s = ask(bw->parent, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, USTR "Names", cmplt, locale_map, 1, 0, NULL);
+	if (!s)
+		return -1;
+
+	current_dir = vsdup(bw->b->current_dir);
+
+	b = bfind_scratch(s);
+	/* Propogate current directory to scratch buffer */
+	if (!b->current_dir) {
+		b->current_dir = current_dir;
+		obj_perm(current_dir);
+	}
+
+	er = berror;
 
 	if (!bw->b->scratch)
 		wpush(bw);
 
 	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) { /* Last reference on dirty buffer */
 		if (orphan || bw->b->scratch) {
-				orphit(bw);
-			} else {
-				if (uduptw(bw)) {
-					brm(b);
-					return -1;
-				}
-				bw = (BW *) maint->curwin->object;
+			orphit(bw);
+		} else {
+			if (uduptw(bw)) {
+				brm(b);
+				return -1;
 			}
+			bw = (BW *) maint->curwin->object;
 		}
-		if (er) {
-			msgnwt(bw->parent, joe_gettext(msgs[-er]));
-			if (er != -1) {
-				ret = -1;
-			}
-		}
-		object = bw->object;
-		w = bw->parent;
-		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
-		wredraw(bw->parent);
-		bw->object = object;
-		if (er == -1 && bw->o.mnew) {
-			exmacro(bw->o.mnew,1);
-		}
-		if (er == 0 && bw->o.mold) {
-			exmacro(bw->o.mold,1);
-		}
-		return ret;
-	} else {
-		return -1;
 	}
+
+	if (er) {
+		msgnwt(bw->parent, joe_gettext(msgs[-er]));
+		if (er != -1) {
+			ret = -1;
+		}
+	}
+
+	object = bw->object;
+	w = bw->parent;
+	bwrm(bw);
+	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+	wredraw(bw->parent);
+	bw->object = object;
+	
+	if (er == -1 && bw->o.mnew)
+		exmacro(bw->o.mnew,1);
+	if (er == 0 && bw->o.mold)
+		exmacro(bw->o.mold,1);
+	
+	return ret;
 }
 
 /* Load file into buffer: can result in an orphaned buffer */
@@ -856,7 +925,9 @@ int get_buffer_in_window(BW *bw, B *b)
 int unbuf(BW *bw)
 {
 	B *b;
-	b = bnext();
+	b = bnext(); /* bnext() returns NULL if there are no non-internal buffers */
+	if (!b)
+		return -1; /* No non-internal buffer to switch to */
 	if (b == bw->b) {
 		b = bnext();
 	}
@@ -867,6 +938,8 @@ int upbuf(BW *bw)
 {
 	B *b;
 	b = bprev();
+	if (!b)
+		return -1;
 	if (b == bw->b) {
 		b = bprev();
 	}
@@ -1043,7 +1116,8 @@ static int doquerysave(BW *bw,int c,struct savereq *req)
 		next:
 		if (unbuf(bw)) {
 			rmsavereq(req);
-			return -1;
+			genexmsgmulti(bw,1,req->not_saved);
+			return 0;
 		}
 		bw = w->object;
 		if (bw->b==req->first) {
@@ -1081,8 +1155,9 @@ int uquerysave(BW *bw)
 	W *w = bw->parent;
 	B *first;
 
-	/* Get synchronized with buffer ring */
-	unbuf(bw);
+	/* Avoid infinite loop if this is an internal buffer- unbuf will never find it again */
+	if (bw->b->internal)
+		unbuf(bw);
 	bw = w->object;
 	first = bw->b;
 
@@ -1091,7 +1166,7 @@ int uquerysave(BW *bw)
 		if (bw->b->changed && !bw->b->scratch)
 			return doquerysave(bw,0,mksavereq(query_next,NULL,first,0,0));
 		else if (unbuf(bw))
-			return -1;
+			break;
 		bw = w->object;
 	} while(bw->b!=first);
 

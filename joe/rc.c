@@ -1232,6 +1232,34 @@ int umode(BW *bw)
 	}
 }
 
+/* Parse a macro- allow it to cross lines */
+
+MACRO *multiparse(JFILE *fd, int *refline, unsigned char **buf, int *ofst, int *referr, unsigned char *name)
+{
+	MACRO *m;
+	int x = *ofst;
+	int err = *referr;
+	int line = *refline;
+	m = 0;
+	for (;;) {
+		m = mparse(m, *buf + x, &x, 0);
+		if (x == -1) { /* Error */
+			err = -1;
+			logerror_2((char *)joe_gettext(_("%s %d: Unknown command in macro\n")), name, line);
+			break;
+		} else if (x == -2) { /* Get more input */
+			jfgets(buf, fd);
+			++line;
+			x = 0;
+		} else /* We're done */
+			break;
+	}
+	*referr = err;
+	*refline = line;
+	*ofst = x;
+	return m; 
+}
+
 /* Process rc file
  * Returns 0 if the rc file was succefully processed
  *        -1 if the rc file couldn't be opened
@@ -1243,7 +1271,8 @@ int procrc(CAP *cap, unsigned char *name)
 	OPTIONS *o = &fdefault;	/* Current options */
 	KMAP *context = NULL;	/* Current context */
 	struct rc_menu *current_menu = NULL;
-	unsigned char *buf = vsmk(128);	/* Input buffer */
+	unsigned char *buf = vsmk(128);		/* Input buffer */
+	unsigned char *buf1 = NULL;		/* Input buffer */
 	JFILE *fd;		/* rc file */
 	int line = 0;		/* Line number */
 	int err = 0;		/* Set to 1 if there was a syntax error */
@@ -1336,13 +1365,14 @@ int procrc(CAP *cap, unsigned char *name)
 						for (y = x; !joe_isspace_eof(locale_map,buf[y]); ++y) ;
 						c = buf[y];
 						buf[y] = 0;
+						buf1 = vsncpy(NULL, 0, sz(buf + x));
 						if (y != x) {
-							int sta;
+							int sta = y + 1;
 							MACRO *m;
 
 							if (joe_isblank(locale_map,c)
-							    && (m = mparse(NULL, buf + y + 1, &sta, 0)))
-								addcmd(buf + x, m);
+							    && (m = multiparse(fd, &line, &buf, &sta, &err, name)))
+								addcmd(buf1, m);
 							else {
 								err = 1;
 								logerror_2((char *)joe_gettext(_("%s %d: macro missing from :def\n")), name, line);
@@ -1458,18 +1488,10 @@ int procrc(CAP *cap, unsigned char *name)
 					break;
 				}
 
-				m = 0;
-			      macroloop:
-				m = mparse(m, buf, &x, 0);
-				if (x == -1) {
-					err = 1;
-					logerror_2((char *)joe_gettext(_("%s %d: Unknown command in macro\n")), name, line);
+				x = 0;
+				m = multiparse(fd, &line, &buf, &x, &err, name);
+				if (x == -1)
 					break;
-				} else if (x == -2) {
-					jfgets(&buf, fd);
-					++line;
-					goto macroloop;
-				}
 				if (!m)
 					break;
 

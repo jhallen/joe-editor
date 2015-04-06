@@ -976,6 +976,7 @@ splitw		^K O		Split window
 splitw		^K ^O
 splitw		^K o
 stat		^K SP		Show status
+stat		^K ^@		Show status
  tag		^K ;		Tags file search
 tomatch		^G		Goto matching parenthasis
 undo		^_		Undo changes

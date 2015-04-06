@@ -177,6 +177,7 @@ CMD cmds[] = {
 	{USTR "save", TYPETW + TYPEPW, usave, NULL, 0, NULL},
 	{USTR "savenow", TYPETW + TYPEPW, usavenow, NULL, 0, NULL},
 	{USTR "scratch", TYPETW + TYPEPW, uscratch, NULL, 0, NULL},
+	{USTR "scratch_push", TYPETW + TYPEPW, uscratch_push, NULL, 0, NULL},
 	{USTR "secure_type", TYPEPW + TYPEQW + TYPEMENU + EMINOR + EMOD, utype, NULL, 1, USTR "backs"},
 	{USTR "select", TYPETW + TYPEPW, uselect, NULL, 0, NULL},
 	{USTR "setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},

@@ -2,7 +2,41 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
+### JOE.next (not yet released changes in Mercurial)
+
+* Allow macros after :def to cross lines
+
+* Make ^K ^SPACE same as ^K SPACE
+
+* Fix lockup which would happen if you try querysave when the only buffer
+  left is the startup log.
+
+* Minor jmacs fixes:
+	* ^X b / ^X ^B were reversed
+	* ^X 0 printed an exit message for no reason
+	* ^X 0 now can pop shell windows
+	* M-^ deleted indentation but did not join with previous line
+	* Ignore case for letter commands: ^X i and ^X I are the same
+
+* ESC g (grep/find) and ESC c (compile) improvements
+	* Change to the current directory before running the command
+	* Show the current directory compile window
+	* Show the exit status in the compile window
+	* More consistent window setup
+
+* Default locale
+	* If no locale set, default to C / POSIX, not ISO-8859-1
+	* If locale is C / POSIX, set language to en_US (for aspell).
+
+### JOE 3.8 Native Windows Version
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/joewin.msi/download)
+
+* Thanks to John J. Jordan we now have a native Windows version of JOE
+
 ### JOE 4.0
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20sources/joe-4.0/joe-4.0.tar.gz/download)
 
 * JOE now has pop-up shell windows with full terminal emulation and shell commands
   that can control the editor.  Hit F1 - F4 to bring up a shell window.
@@ -42,6 +76,8 @@
 * Clean up documentation, convert much of it to Markdown.
 
 ### JOE 3.8
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20sources/joe-3.8/joe-3.8.tar.gz/download)
 
 - Search JOE image for :include files referenced by the joerc file.
   Include ftyperc file in the JOE image.

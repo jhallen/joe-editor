@@ -667,6 +667,8 @@ int main(int argc, char **real_argv, char **envv)
 	/* Create startup log buffer */
 	startup_log = bfind_scratch(USTR "* Startup Log *");
 	startup_log->internal = 1;
+	startup_log->current_dir = vsncpy(NULL, 0, NULL, 0);
+	obj_perm(startup_log->current_dir);
 
 	/* Copy some environment variables to global variables */
 	process_env();

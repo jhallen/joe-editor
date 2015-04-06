@@ -21,6 +21,7 @@ int uedit PARAMS((BW *bw));
 int usetcd PARAMS((BW *bw));
 int uswitch PARAMS((BW *bw));
 int uscratch PARAMS((BW *bw));
+int uscratch_push PARAMS((BW *bw));
 int uexsve PARAMS((BW *bw));
 int unbuf PARAMS((BW *bw));
 int upbuf PARAMS((BW *bw));

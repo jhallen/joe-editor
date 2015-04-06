@@ -8,11 +8,13 @@
 
 [List of Options](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#options)
 
+[JOE for Windows tips](https://sourceforge.net/p/joe-editor/mercurial/ci/windows/tree/docs/windows.md)
+
 [Hacking](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/hacking.md)
 
 [Project page](http://www.sourceforge.net/projects/joe-editor)
 
-[Download source](http://prdownloads.sourceforge.net/joe-editor/joe-3.7.tar.gz?download)
+[Download source](http://prdownloads.sourceforge.net/joe-editor/joe-4.0.tar.gz?download)
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL)
 
@@ -179,8 +181,6 @@ commands.
 <li>Built-in FTP</li>
 
 <li>X-Window version (use inside a terminal emulator)</li>
-
-<li>Native Windows version (but you can use JOE in Cygwin)</li>
 
 <li>Interface to debugger</li>
 

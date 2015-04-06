@@ -161,6 +161,9 @@ static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_na
 	y=0;
 	flg=0;
 
+	if (s[0] == 'J' && s[1] == 'O' && s[2] == 'E' && s[3] == ':')
+		goto bye;
+
 	do {
 		/* Skip to first word */
 		for (x = y; s[x] && !(joe_isalnum_(map,s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
@@ -201,6 +204,8 @@ static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_na
 		++y;
 	}
 
+	bye:
+
 	if (!flg)
 		line = -1;
 
@@ -221,6 +226,9 @@ void parseone_grep(struct charmap *map,unsigned char *s,unsigned char **rtn_name
 	unsigned char *name = NULL;
 	long line = -1;
 
+	if (s[0] == 'J' && s[1] == 'O' && s[2] == 'E' && s[3] == ':')
+		goto bye;
+
 	/* Skip to first : or end of line */
 	for (y = 0;s[y] && s[y] != ':';++y);
 	if (y) {
@@ -239,6 +247,8 @@ void parseone_grep(struct charmap *map,unsigned char *s,unsigned char **rtn_name
 			}
 		}
 	}
+
+	bye:
 
 	*rtn_name = name;
 	*rtn_line = line;

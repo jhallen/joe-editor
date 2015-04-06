@@ -1,3 +1,35 @@
+Scratch always pushes.  Do we want this?  It's weird for ESC c.  Maybe have
+a no-push version of scratch.
+
+jmacs vs. mg vs gnu-emacs:
+
+	c-x b  jmacs: nbuf, gnu: offers prompt with next buffer [fixed, before in jmacs this was bufed]
+	c-x c-b	jmacs: bufed prompt.  gnu: menu. [fixed, before in jmacs this was nbuf]
+	c-x 0  (delete window) prints exit message even when we are not abandoning the file - why? [fixed]
+	M-^: jmacs: deletes indentation, blank lines below.  gnu: deletes indentation, blank line above- pulls current line to end of previous [fixed]
+
+	c-x c-s	jmacs: saves file.  gnu: prompts before saving.
+	c-x c-v jmacs: reload original.  gnu: prompts with original as default.
+	c-x d: jmacs: nothing.  gnu: menu.
+	c-x c-r: jmacs: nothing.  gnu: load file in read-only mode.
+
+	esc m  back to indentation (math in joe)
+
+	Non-standard:
+
+	c-x g  is goto line in mg, is goto matching delimiter in jmacs, udf gnu
+	c-x p  previous window in mg  (prev error in jmacs), udf gnu
+	c-x n  other window in mg   (next error in jmacs), udf gnu
+	esc s search forwards   (suspend in jmacs, submenus in gnu)
+	esc r  search backwards  (move to center line in jmacs and gnu)
+
+Timing fix for bracketed paste should disable spaces.  We should have a mode
+to disable the timing fix.
+
+cd command: if you leave out the trailing / it ignores it
+cd command: should canonicalized version of path be stored in history?
+
+in ^KE: any nicer way to clear the current path other than Ctrl-Y?
 
 Improvements:
 
@@ -50,6 +82,23 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
+build should report return value of make
+[done]
+
+grep and build should switch to the current directory first.
+   "scratch" needs to inherit current directory
+     hmm..
+     [done- also load "* Startup Log *" first to prevent inheriting- for
+example when we start shell windows]
+
+   "grep" and "build" need to change directory before running
+     [fixed]
+   parse already does the right thing
+
+maybe grep and build need to clear the block?
+   they don't because they clear markb/markk in process of clearing scratch
+   buffer
+
  parsed file names with spaces not working correctly
  parse file names with no line numbers?
  [fixed]
