@@ -4,6 +4,8 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Backspace now jumps back to parent menu in ^T submenus.
+
 * Allow macros after :def to cross lines
 
 * Make ^K ^SPACE same as ^K SPACE

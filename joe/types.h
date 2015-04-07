@@ -308,3 +308,6 @@ struct highlight_state {
 #include "gettext.h"
 #include "builtin.h"
 #include "vt.h"
+#include "mmenu.h"
+#include "state.h"
+#include "options.h"
