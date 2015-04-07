@@ -219,9 +219,9 @@ int utag(BW *bw)
 		/* if there's no tags file in the current dir, then query
 		   for the environment variable TAGS.
 		*/
-		char *tagspath = getenv("TAGS");
+		unsigned char *tagspath = (unsigned char *)getenv("TAGS");
 		if(tagspath) {
-			f = fopen(tagspath, "r");
+			f = fopen((char *)tagspath, "r");
 			prefix = dirprt(USTR tagspath);
 		}
 		if(!f) {

@@ -20,3 +20,6 @@ configure$
 depcomp$
 install-sh$
 missing$
+
+__pycache__$
+\.pyc$
