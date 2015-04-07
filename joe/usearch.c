@@ -92,7 +92,7 @@ unsigned char **get_word_list(B *b,long ignore)
 
 void fcmplt_ins(BW *bw, unsigned char *line)
 {
-	P *p = pdup(bw->cursor, USTR "fcmplt_ins");
+	P *p;
 	int c;
 
 	if (!piseol(bw->cursor)) {

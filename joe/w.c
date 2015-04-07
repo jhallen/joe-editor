@@ -861,8 +861,8 @@ int umwind(BW *bw)
 	}
 }
 
-/* Fit previous window and current window on screen.  If there is no previous window,
- * split the current window to create one. */
+/* Fit previous window and current window on screen.  If there is no
+ * previous window, split the current window to create one.  */
 
 int umfit(BW *bw)
 {
@@ -874,11 +874,12 @@ int umfit(BW *bw)
 	if (p == w) {
 		/* We have to split */
 		usplitw(bw);
-	}
-	w = t->curwin;
-	p = findtopw(w)->link.prev->main;
-	if (p == w) {
-		return -1;
+		w = t->curwin;
+		p = findtopw(w)->link.prev->main;
+		if (p == w) {
+			return -1;
+		}
+		get_buffer_in_window((BW *)p->object, bfind(USTR ""));
 	}
 	/* Request size */
 	if ((p->t->h >> 1) < 3) /* -6 */
