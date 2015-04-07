@@ -16,41 +16,41 @@
    character is loaded from a string into an 'int', the codes 0-255 are
    used, not -128 - 127. */
 
-size_t zlen PARAMS((unsigned char *s));
-int zcmp PARAMS((unsigned char *a, unsigned char *b));
-int zicmp PARAMS((unsigned char *a, unsigned char *b));
-int zmcmp PARAMS((unsigned char *a, unsigned char *b));
-int zncmp PARAMS((unsigned char *a, unsigned char *b, size_t len));
-unsigned char *zdup PARAMS((unsigned char *s));
-/* unsigned char *zcpy PARAMS((unsigned char *a, unsigned char *b)); */
-unsigned char *mcpy PARAMS((unsigned char *a, unsigned char *b, size_t len));
-unsigned char *zncpy PARAMS((unsigned char *a, unsigned char *b,size_t len));
-unsigned char *zlcpy PARAMS((unsigned char *a, size_t siz, unsigned char *b));
-unsigned char *zstr PARAMS((unsigned char *a, unsigned char *b));
-unsigned char *zchr PARAMS((unsigned char *s, int c));
-unsigned char *zrchr PARAMS((unsigned char *s, int c));
-/* unsigned char *zcat PARAMS((unsigned char *a, unsigned char *b)); */
-unsigned char *zlcat PARAMS((unsigned char *a, size_t siz, unsigned char *b));
+size_t zlen(unsigned char *s);
+int zcmp(unsigned char *a, unsigned char *b);
+int zicmp(unsigned char *a, unsigned char *b);
+int zmcmp(unsigned char *a, unsigned char *b);
+int zncmp(unsigned char *a, unsigned char *b, size_t len);
+unsigned char *zdup(unsigned char *s);
+/* unsigned char *zcpy(unsigned char *a, unsigned char *b); */
+unsigned char *mcpy(unsigned char *a, unsigned char *b, size_t len);
+unsigned char *zncpy(unsigned char *a, unsigned char *b,size_t len);
+unsigned char *zlcpy(unsigned char *a, size_t siz, unsigned char *b);
+unsigned char *zstr(unsigned char *a, unsigned char *b);
+unsigned char *zchr(unsigned char *s, int c);
+unsigned char *zrchr(unsigned char *s, int c);
+/* unsigned char *zcat(unsigned char *a, unsigned char *b); */
+unsigned char *zlcat(unsigned char *a, size_t siz, unsigned char *b);
 
 /*
  * Functions which return minimum/maximum of two numbers  
  */
-unsigned int uns_min PARAMS((unsigned int a, unsigned int b));
-signed int int_min PARAMS((signed int a, int signed b));
-signed long long_max PARAMS((signed long a, signed long b));
-signed long long_min PARAMS((signed long a, signed long b));
+unsigned int uns_min(unsigned int a, unsigned int b);
+signed int int_min(signed int a, int signed b);
+signed long long_max(signed long a, signed long b);
+signed long long_min(signed long a, signed long b);
 
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
-ssize_t joe_read PARAMS((int fd, void *buf, size_t siz));
-ssize_t joe_write PARAMS((int fd, void *buf, size_t siz));
-int joe_ioctl PARAMS((int fd, int req, void *ptr));
+ssize_t joe_read(int fd, void *buf, size_t siz);
+ssize_t joe_write(int fd, void *buf, size_t siz);
+int joe_ioctl(int fd, int req, void *ptr);
 
 /* wrappers to *alloc routines */
-void *joe_malloc PARAMS((size_t size));
-unsigned char *joe_strdup PARAMS((unsigned char *ptr));
-void *joe_calloc PARAMS((size_t nmemb, size_t size));
-void *joe_realloc PARAMS((void *ptr, size_t size));
-void joe_free PARAMS((void *ptr));
+void *joe_malloc(size_t size);
+unsigned char *joe_strdup(unsigned char *ptr);
+void *joe_calloc(size_t nmemb, size_t size);
+void *joe_realloc(void *ptr, size_t size);
+void joe_free(void *ptr);
 
 #ifndef HAVE_SIGHANDLER_T
 typedef RETSIGTYPE (*sighandler_t)(int);
@@ -63,21 +63,21 @@ typedef RETSIGTYPE (*sighandler_t)(int);
 #endif
 
 /* wrapper to hide signal interface differrencies */
-int joe_set_signal PARAMS((int signum, sighandler_t handler));
+int joe_set_signal(int signum, sighandler_t handler);
 
 /* Simple parsers */
-int parse_ws PARAMS((unsigned char **p,int cmt));
-int parse_ident PARAMS((unsigned char **p,unsigned char **buf));
-int parse_kw PARAMS((unsigned char **p,unsigned char *kw));
-long parse_num PARAMS((unsigned char **p));
-int parse_tows PARAMS((unsigned char **p,unsigned char **buf));
-int parse_field PARAMS((unsigned char **p,unsigned char *field));
-int parse_char PARAMS((unsigned char  **p,unsigned char c));
-int parse_int PARAMS((unsigned char **p,int *buf));
-int parse_long PARAMS((unsigned char **p,long  *buf));
-int parse_string PARAMS((unsigned char **p,unsigned char **dst));
-int parse_range PARAMS((unsigned char **p,int *first,int *second));
-void emit_string PARAMS((FILE *f,unsigned char *s,int len));
-int escape PARAMS((int utf8,unsigned char **a, int *b));
+int parse_ws(unsigned char **p,int cmt);
+int parse_ident(unsigned char **p,unsigned char **buf);
+int parse_kw(unsigned char **p,unsigned char *kw);
+long parse_num(unsigned char **p);
+int parse_tows(unsigned char **p,unsigned char **buf);
+int parse_field(unsigned char **p,unsigned char *field);
+int parse_char(unsigned char  **p,unsigned char c);
+int parse_int(unsigned char **p,int *buf);
+int parse_long(unsigned char **p,long  *buf);
+int parse_string(unsigned char **p,unsigned char **dst);
+int parse_range(unsigned char **p,int *first,int *second);
+void emit_string(FILE *f,unsigned char *s,int len);
+int escape(int utf8,unsigned char **a, int *b);
 
 #endif

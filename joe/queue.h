@@ -145,10 +145,10 @@ struct stditem {
 
 /* Allocate an item */
 
-void *alitem PARAMS((void *list, int itemsize));
+void *alitem(void *list, int itemsize);
 
 /* Free an item */
 
-void frchn PARAMS((void *list, void *ch));
+void frchn(void *list, void *ch);
 
 #endif

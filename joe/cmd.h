@@ -39,19 +39,19 @@ extern int joe_beep;		/* Enable beep on command error */
 /* CMD *findcmd(char *s);
  * Return command address for given name
  */
-CMD *findcmd PARAMS((unsigned char *s));
-void addcmd PARAMS((unsigned char *s, MACRO *m));
+CMD *findcmd(unsigned char *s);
+void addcmd(unsigned char *s, MACRO *m);
 
 /* Execute a command.  Returns return value of command */
-int execmd PARAMS((CMD *cmd, int k));
+int execmd(CMD *cmd, int k);
 void do_auto_scroll();
 
 extern B *cmdhist; /* Command history buffer */
 
-int try_lock PARAMS((BW *bw,B *b));
-int modify_logic PARAMS((BW *bw,B *b));
+int try_lock(BW *bw,B *b);
+int modify_logic(BW *bw,B *b);
 
-int uexecmd PARAMS((BW *bw));
+int uexecmd(BW *bw);
 
 extern int nolocks; /* Disable file locking */
 extern int nomodcheck; /* Disable file modified check */

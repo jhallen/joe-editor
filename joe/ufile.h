@@ -10,29 +10,29 @@
 
 extern int exask; /* Ask for file name during ^K X */
 
-void genexmsg PARAMS((BW *bw, int saved, unsigned char *name));
+void genexmsg(BW *bw, int saved, unsigned char *name);
 
-int ublksave PARAMS((BW *bw));
-int ushell PARAMS((BW *bw));
-int usys PARAMS((BW *bw));
-int usave PARAMS((BW *bw));
-int usavenow PARAMS((BW *bw));
-int uedit PARAMS((BW *bw));
-int usetcd PARAMS((BW *bw));
-int uswitch PARAMS((BW *bw));
-int uscratch PARAMS((BW *bw));
-int uscratch_push PARAMS((BW *bw));
-int uexsve PARAMS((BW *bw));
-int unbuf PARAMS((BW *bw));
-int upbuf PARAMS((BW *bw));
-int uask PARAMS((BW *bw));
-int ubufed PARAMS((BW *bw));
-int ulose PARAMS((BW *bw));
-int okrepl PARAMS((BW *bw));
-int doswitch PARAMS((BW *bw, unsigned char *s));
-int uquerysave PARAMS((BW *bw));
-int ukilljoe PARAMS((BW *bw));
-int get_buffer_in_window PARAMS((BW *bw, B *b));
+int ublksave(BW *bw);
+int ushell(BW *bw);
+int usys(BW *bw);
+int usave(BW *bw);
+int usavenow(BW *bw);
+int uedit(BW *bw);
+int usetcd(BW *bw);
+int uswitch(BW *bw);
+int uscratch(BW *bw);
+int uscratch_push(BW *bw);
+int uexsve(BW *bw);
+int unbuf(BW *bw);
+int upbuf(BW *bw);
+int uask(BW *bw);
+int ubufed(BW *bw);
+int ulose(BW *bw);
+int okrepl(BW *bw);
+int doswitch(BW *bw, unsigned char *s);
+int uquerysave(BW *bw);
+int ukilljoe(BW *bw);
+int get_buffer_in_window(BW *bw, B *b);
 
 extern B *filehist; /* History of file names */
 
@@ -44,8 +44,8 @@ extern unsigned char *yes_key;
 extern unsigned char *no_key;
 #define YES_CODE -10
 #define NO_CODE -20
-int yncheck PARAMS((unsigned char *string, int c));
-int ynchecks PARAMS((unsigned char *string, unsigned char *s));
+int yncheck(unsigned char *string, int c);
+int ynchecks(unsigned char *string, unsigned char *s);
 
 int ureload(BW *bw);
 int ureload_all(BW *bw);

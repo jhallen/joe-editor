@@ -8,6 +8,6 @@
 #ifndef _JOE_REGEX_H
 #define _JOE_REGEX_H 1
 
-int pmatch PARAMS((unsigned char **pieces, unsigned char *regex, int len, P *p, int n, int icase));
+int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, int icase);
 
 #endif

@@ -30,31 +30,31 @@ struct menu {
 
 /* Create a menu */
 /* FIXME: ??? ---> */
-MENU *mkmenu PARAMS((W *loc, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object));
+MENU *mkmenu(W *loc, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object);
 
 /* Menu user functions */
 
-int umuparw PARAMS((MENU *m));
-int umdnarw PARAMS((MENU *m));
-int umpgup PARAMS((MENU *m));
-int umpgdn PARAMS((MENU *m));
-int umscrup PARAMS((MENU *m));
-int umscrdn PARAMS((MENU *m));
-int umltarw PARAMS((MENU *m));
-int umrtarw PARAMS((MENU *m));
-int umtab PARAMS((MENU *m));
-int umbof PARAMS((MENU *m));
-int umeof PARAMS((MENU *m));
-int umbol PARAMS((MENU *m));
-int umeol PARAMS((MENU *m));
-int umbacks PARAMS((MENU *m));
+int umuparw(MENU *m);
+int umdnarw(MENU *m);
+int umpgup(MENU *m);
+int umpgdn(MENU *m);
+int umscrup(MENU *m);
+int umscrdn(MENU *m);
+int umltarw(MENU *m);
+int umrtarw(MENU *m);
+int umtab(MENU *m);
+int umbof(MENU *m);
+int umeof(MENU *m);
+int umbol(MENU *m);
+int umeol(MENU *m);
+int umbacks(MENU *m);
 
-void ldmenu PARAMS((MENU *m, unsigned char **s, int cursor));
+void ldmenu(MENU *m, unsigned char **s, int cursor);
 
-unsigned char *mcomplete PARAMS((MENU *m));
-unsigned char *find_longest PARAMS((unsigned char **lst));
+unsigned char *mcomplete(MENU *m);
+unsigned char *find_longest(unsigned char **lst);
 
-void menujump PARAMS((MENU *m, int x, int y));
+void menujump(MENU *m, int x, int y);
 
 extern int lines; /* Number of menu lines */
 

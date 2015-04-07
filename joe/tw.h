@@ -19,19 +19,19 @@ struct tw {
 	B	*prev_b;	/* Previous buffer (we need to update status line on nbuf/pbuf) */
 };
 
-BW *wmktw PARAMS((Screen *t, B *b));
+BW *wmktw(Screen *t, B *b);
 
-int usplitw PARAMS((BW *bw));
-int uduptw PARAMS((BW *bw));
-int utw0 PARAMS((BASE *b));
-int utw1 PARAMS((BASE *b));
-int uabortbuf PARAMS((BW *bw));
-int ucancel PARAMS((BW *bw, int k));
-int upopabort PARAMS((BW *bw));
-int uabort PARAMS((BW *bw, int k));
-int uabort1 PARAMS((BW *bw, int k));
-void setline PARAMS((B *b, long int line));
-int abortit PARAMS((BW *bw));
+int usplitw(BW *bw);
+int uduptw(BW *bw);
+int utw0(BASE *b);
+int utw1(BASE *b);
+int uabortbuf(BW *bw);
+int ucancel(BW *bw, int k);
+int upopabort(BW *bw);
+int uabort(BW *bw, int k);
+int uabort1(BW *bw, int k);
+void setline(B *b, long int line);
+int abortit(BW *bw);
 unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, int fill);
 extern int staen;
 extern int staupd;
