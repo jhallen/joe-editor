@@ -103,7 +103,7 @@ int utagjump(W *w, int k)
 	return dotagjump(bw, 1);
 }
 
-static int last_cursor;
+static ptrdiff_t last_cursor;
 
 static int dotagmenu(MENU *m, ptrdiff_t x, void *obj, int k)
 {
