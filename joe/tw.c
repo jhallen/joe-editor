@@ -703,7 +703,8 @@ int uabort(BW *bw, int k)
 		if (!yncheck(yes_key, c))
 			return -1;
 	}
-	genexmsg(bw, 0, NULL);
+	if (bw->b->count == 1)
+		genexmsg(bw, 0, NULL);
 	return abortit(bw);
 }
 
@@ -756,7 +757,8 @@ int uabortbuf(BW *bw)
 		return 0;
 	}
 
-	genexmsg(bw, 0, NULL);
+	if (bw->b->count == 1)
+		genexmsg(bw, 0, NULL);
 	return abortit(bw);
 }
 

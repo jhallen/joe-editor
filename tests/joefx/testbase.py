@@ -152,7 +152,7 @@ class JoeTestBase(unittest.TestCase):
     def mode(self, mode):
         """Sets a mode (option menu)"""
         self.cmd("mode")
-        self.assertTextAt("Option:", x=0)
+        self.assertTextAt("Options:", x=0)
         self.write(mode)
         self.rtn()
     
