@@ -93,8 +93,10 @@ static int mouse_event(BW *bw)
 
 /* Parse old style mouse event parameters. */
 
-int uxtmouse(BW *bw)
+int uxtmouse(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	Cb = ttgetc()-32;
 	if (Cb < 0)
 		return -1;
@@ -112,9 +114,11 @@ int uxtmouse(BW *bw)
 
 /* Parse xterm extended 1006 mode mouse event parameters. */
 
-int uextmouse(BW *bw)
+int uextmouse(W *w, int k)
 {
 	int c;
+	BW *bw;
+	WIND_BW(bw, w);
 	Cb = 0;
 	Cx = Cy = 0;
 	while ((c = ttgetc()) != ';') {
@@ -347,7 +351,7 @@ void mousedrag(ptrdiff_t x,ptrdiff_t y)
 
 ptrdiff_t drag_size; /* Set if we are resizing a window */
 
-int utomouse(BW *xx)
+int utomouse(W *xx, int k)
 {
 	BW *bw;
 	ptrdiff_t x = Cx - 1, y = Cy - 1;
@@ -355,7 +359,7 @@ int utomouse(BW *xx)
 	if (!w)
 		return -1;
 	maint->curwin = w;
-	bw = w->object;
+	WIND_BW(bw, w);
 	drag_size = 0;
 	if (w->watom->what == TYPETW) {
 		if (bw->o.hex) {
@@ -433,7 +437,7 @@ static int tomousestay()
 		return -1;
 	*/
 	w = maint->curwin;
-	bw = w->object;
+	bw = (BW *)w->object;
 	if (w->watom->what == TYPETW) {
 		if (bw->o.hex) {
 			off_t goal_col = x - w->x + bw->offset - 60;
@@ -514,10 +518,10 @@ static off_t anchorn;		/* near side of the anchored word */
 static int marked;		/* mark was set by defmdrag? */
 static int reversed;		/* mouse was dragged above the anchor? */
 
-int udefmdown(BW *xx)
+int udefmdown(W *xx, int k)
 {
 	BW *bw;
-	if (utomouse(xx))
+	if (utomouse(xx, 0))
 		return -1;
 	if ((maint->curwin->watom->what & (TYPEPW | TYPETW)) == 0)
 		return 0;
@@ -534,7 +538,7 @@ void reset_trig_time()
 	auto_trig_time = mnow() + 300 / (1 + auto_rate);
 }
 
-int udefmdrag(BW *xx)
+int udefmdrag(W *xx, int k)
 {
 	BW *bw = (BW *)maint->curwin->object;
 	ptrdiff_t ay = Cy - 1;
@@ -588,14 +592,14 @@ int udefmdrag(BW *xx)
 	}
 
 	if (!marked)
-		marked++, umarkb(bw);
+		marked++, umarkb(bw->parent, 0);
 	if (tomousestay())
 		return -1;
 	selecting = 1;
 	if (reversed)
-		umarkb(bw);
+		umarkb(bw->parent, 0);
 	else
-		umarkk(bw);
+		umarkk(bw->parent, 0);
 	if ((!reversed && bw->cursor->byte < anchor) || (reversed && bw->cursor->byte > anchor)) {
 		P *q = pdup(markb, "udefmdrag");
 		off_t tmp = markb->xcol;
@@ -610,32 +614,32 @@ int udefmdrag(BW *xx)
 	return 0;
 }
 
-int udefmup(BW *bw)
+int udefmup(W *w, int k)
 {
 	return 0;
 }
 
-int udefm2down(BW *xx)
+int udefm2down(W *xx, int k)
 {
 	BW *bw;
-	if (utomouse(xx))
+	if (utomouse(xx, k))
 		return -1;
 	if (maint->curwin->watom->what & TYPEMENU) {
-		return maint->curwin->watom->rtn((MENU *)maint->curwin->object);
+		return maint->curwin->watom->rtn(maint->curwin);
 	}
 	if ((maint->curwin->watom->what & (TYPEPW | TYPETW)) == 0)
 		return 0;
 	bw = (BW *)maint->curwin->object;
 	/* set anchor to left side, anchorn to right side */
-	u_goto_prev(bw); anchor = bw->cursor->byte; umarkb(bw); markb->xcol = piscol(markb);
-	u_goto_next(bw); anchorn = bw->cursor->byte; umarkk(bw); markk->xcol = piscol(markk);
+	u_goto_prev(bw->parent, 0); anchor = bw->cursor->byte; umarkb(bw->parent, 0); markb->xcol = piscol(markb);
+	u_goto_next(bw->parent, 0); anchorn = bw->cursor->byte; umarkk(bw->parent, 0); markk->xcol = piscol(markk);
 	reversed = 0;
 	bw->cursor->xcol = piscol(bw->cursor);
 	selecting = 1;
 	return 0;
 }
 
-int udefm2drag(BW *xx)
+int udefm2drag(W *xx, int k)
 {
 	BW *bw=(BW *)maint->curwin->object;
 	if (tomousestay())
@@ -652,40 +656,40 @@ int udefm2drag(BW *xx)
 	bw->cursor->xcol = piscol(bw->cursor);
 	if(reversed) {
 		if (!pisbol(bw->cursor))
-			u_goto_prev(bw), bw->cursor->xcol = piscol(bw->cursor);
-		umarkb(bw);
+			u_goto_prev(bw->parent, 0), bw->cursor->xcol = piscol(bw->cursor);
+		umarkb(bw->parent, 0);
 	} else {
 		if (!piseol(bw->cursor))
-			u_goto_next(bw), bw->cursor->xcol = piscol(bw->cursor);
-		umarkk(bw);
+			u_goto_next(bw->parent, 0), bw->cursor->xcol = piscol(bw->cursor);
+		umarkk(bw->parent, 0);
 	}
 	return 0;
 }
 
-int udefm2up(BW *bw)
+int udefm2up(W *w, int k)
 {
 	return 0;
 }
 
-int udefm3down(BW *xx)
+int udefm3down(W *xx, int k)
 {
 	BW *bw;
-	if (utomouse(xx))
+	if (utomouse(xx, k))
 		return -1;
 	if ((maint->curwin->watom->what & (TYPEPW | TYPETW)) == 0)
 		return 0;
 	bw = (BW *)maint->curwin->object;
 	/* set anchor to beginning of line, anchorn to beginning of next line */
 	p_goto_bol(bw->cursor); bw->cursor->xcol = piscol(bw->cursor);
-	anchor = bw->cursor->byte; umarkb(bw);
-	umarkk(bw); pnextl(markk); anchorn = markk->byte;
+	anchor = bw->cursor->byte; umarkb(bw->parent, 0);
+	umarkk(bw->parent, 0); pnextl(markk); anchorn = markk->byte;
 	reversed = 0;
 	bw->cursor->xcol = piscol(bw->cursor);
 	selecting = 1;
 	return 0;
 }
 
-int udefm3drag(BW *xx)
+int udefm3drag(W *xx, int k)
 {
 	BW *bw = (BW *)maint->curwin->object;
 	if (tomousestay())
@@ -702,13 +706,13 @@ int udefm3drag(BW *xx)
 	p_goto_bol(bw->cursor);
 	bw->cursor->xcol = piscol(bw->cursor);
 	if(reversed)
-		umarkb(bw), markb->xcol = piscol(markb);
+		umarkb(bw->parent, 0), markb->xcol = piscol(markb);
 	else
-		umarkk(bw), pnextl(markk), markk->xcol = piscol(markk);
+		umarkk(bw->parent, 0), pnextl(markk), markk->xcol = piscol(markk);
 	return 0;
 }
 
-int udefm3up(BW *bw)
+int udefm3up(W *w, int k)
 {
 	return 0;
 }

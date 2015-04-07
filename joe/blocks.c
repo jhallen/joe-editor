@@ -22,7 +22,7 @@
 /* Set 'sz' 'int's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
-int *msetI(void *dest, int c, ptrdiff_t sz)
+int *msetI(int *dest, int c, ptrdiff_t sz)
 {
 	int	*d = dest;
 	int	*orgd = dest;
@@ -68,7 +68,7 @@ int *msetI(void *dest, int c, ptrdiff_t sz)
 	return orgd;
 }
 
-ptrdiff_t *msetD(void *dest, ptrdiff_t c, ptrdiff_t sz)
+ptrdiff_t *msetD(ptrdiff_t *dest, ptrdiff_t c, ptrdiff_t sz)
 {
 	ptrdiff_t	*d = dest;
 	ptrdiff_t	*orgd = dest;
@@ -165,7 +165,7 @@ void **msetP(void **d, void *c, ptrdiff_t sz)
 /* Set 'sz' 'char's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
-char *mset(void *dest, char c, ptrdiff_t sz)
+char *mset(char *dest, char c, ptrdiff_t sz)
 {
 	char	*d = dest;
 	char	*orgd = dest;
@@ -206,7 +206,7 @@ char *mset(void *dest, char c, ptrdiff_t sz)
 			d += z;
 			sz -= z;
 		}
-		msetI(d,
+		msetI((int *)d,
 #if SIZEOF_INT >= 8
 		      (c << (BITS * 7)) + (c << (BITS * 6)) + (c << (BITS * 5)) + (c << (BITS * 4)) +
 #endif
@@ -235,7 +235,7 @@ char *mset(void *dest, char c, ptrdiff_t sz)
 /* Copy a block of integers */
 /* Copy from highest address to lowest */
 
-static int *mbkwdI(void *dest, void *src, ptrdiff_t sz)
+static int *mbkwdI(int *dest, int *src, ptrdiff_t sz)
 {
 	int	*d = dest;
 	int	*s = src;
@@ -290,7 +290,7 @@ static int *mbkwdI(void *dest, void *src, ptrdiff_t sz)
 
 /* Copy a block of 'int's.  Copy from lowest address to highest */
 
-static int *mfwrdI(void *dest, void *src, ptrdiff_t sz)
+static int *mfwrdI(int *dest, int *src, ptrdiff_t sz)
 {
 	int	*d = dest;
 	int	*s = src;
@@ -347,8 +347,10 @@ static int *mfwrdI(void *dest, void *src, ptrdiff_t sz)
  * are copied before the ones at the lowest ('s') are.
  */
 
-static char *mbkwd(register char *d, register char *s, register ptrdiff_t sz)
+static void *mbkwd(register void *orgd, register const void *orgs, register ptrdiff_t sz)
 {
+	char *d = (char *)orgd;
+	char *s = (char *)orgs;
 	if (s == d)
 		return d;
 	s += sz;
@@ -374,7 +376,7 @@ static char *mbkwd(register char *d, register char *s, register ptrdiff_t sz)
 		case 0:		/* do nothing */;
 		}
 		sz -= z;
-		mbkwdI(d - (sz & ~(SIZEOF_INT - 1)), s - (sz & ~(SIZEOF_INT - 1)), sz >> SHFT);
+		mbkwdI((int *)(d - (sz & ~(SIZEOF_INT - 1))), (int *)(s - (sz & ~(SIZEOF_INT - 1))), sz >> SHFT);
 		d -= sz;
 		s -= sz;
 		switch (sz & (SIZEOF_INT - 1)) {
@@ -438,9 +440,10 @@ static char *mbkwd(register char *d, register char *s, register ptrdiff_t sz)
  * are copied before the ones at the highest ('s'+'sz'-1) are.
  */
 
-static char *mfwrd(register char *d, register char *s, register ptrdiff_t sz)
+static void *mfwrd(register void *orgd, register const void *orgs, register ptrdiff_t sz)
 {
-	char *od = d;
+	char *d = (char *)orgd;
+	char *s = (char *)orgs;
 
 	if (d == s)
 		return d;
@@ -483,7 +486,7 @@ static char *mfwrd(register char *d, register char *s, register ptrdiff_t sz)
 			d += SIZEOF_INT;
 			sz -= SIZEOF_INT - z;
 		}
-		mfwrdI(d, s, sz >> SHFT);
+		mfwrdI((int *)d, (int *)s, sz >> SHFT);
 		s += sz - (SIZEOF_INT - 1);
 		d += sz - (SIZEOF_INT - 1);
 		switch (sz & (SIZEOF_INT - 1)) {
@@ -553,10 +556,10 @@ static char *mfwrd(register char *d, register char *s, register ptrdiff_t sz)
 		case 0:		/* do nothing */;
 		}
 	}
-	return od;
+	return orgd;
 }
 
-void *mmove(void *d, void *s, ptrdiff_t sz)
+void *mmove(void *d, const void *s, ptrdiff_t sz)
 {
 	if (d > s)
 		mbkwd(d, s, sz);
@@ -567,7 +570,7 @@ void *mmove(void *d, void *s, ptrdiff_t sz)
 
 /* Utility to count number of lines within a segment */
 
-ptrdiff_t mcnt(register char *blk, register char c, ptrdiff_t size)
+ptrdiff_t mcnt(register const char *blk, register char c, ptrdiff_t size)
 {
 	register ptrdiff_t nlines = 0;
 
@@ -614,8 +617,7 @@ ptrdiff_t mcnt(register char *blk, register char c, ptrdiff_t size)
 
 #ifdef junk
 
-char *mchr(blk, c)
-register char *blk, c;
+char *mchr(register char *blk, char c)
 {
     loop:
 	if (blk[0] == c) return blk + 0;

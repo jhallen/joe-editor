@@ -10,8 +10,8 @@
 
 struct query {
 	W	*parent;	/* Window we're in */
-	int	(*func) ();	/* Func. which gets called when key is hit */
-	int	(*abrt) ();
+	int	(*func)(W *w, int k, void *object, int *notify);	/* Func. which gets called when key is hit */
+	int	(*abrt)(W *w, void *object);
 	void	*object;
 	char	*prompt;	/* Prompt string */
 	ptrdiff_t	promptlen;	/* Width of prompt string */
@@ -22,7 +22,7 @@ struct query {
 /* QW *mkqw(W *w, char *prompt, int (*func)(), int (*abrt)(), void *object);
  * Create a query window for the given window
  */
-/* FIXME: ??? ----> */
-QW *mkqw(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
-QW *mkqwna(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
-QW *mkqwnsr(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
+
+QW *mkqw(W *w, const char *prompt, ptrdiff_t len, int (*func)(W *w, int k, void *object, int *notify), int (*abrt)(W *w, void *object), void *object, int *notify);
+QW *mkqwna(W *w, const char *prompt, ptrdiff_t len, int (*func)(W *w, int k, void *object, int *notify), int (*abrt)(W *w, void *object), void *object, int *notify);
+QW *mkqwnsr(W *w, const char *prompt, ptrdiff_t len, int (*func)(W *w, int k, void *object, int *notify), int (*abrt)(W *w, void *object), void *object, int *notify);

@@ -51,10 +51,10 @@ int help_init(JFILE *fd,char *bf,int line)
 			bfl = zlen(buf);
 			if (hlpsiz + bfl > hlpbsz) {
 				if (tmp->text) {
-					tempbuf = joe_realloc(tmp->text, hlpbsz + bfl + 1024);
+					tempbuf = (char *)joe_realloc(tmp->text, hlpbsz + bfl + 1024);
 					tmp->text = tempbuf;
 				} else {
-					tmp->text = joe_malloc(bfl + 1024);
+					tmp->text = (char *)joe_malloc(bfl + 1024);
 					tmp->text[0] = 0;
 				}
 				hlpbsz += bfl + 1024;
@@ -84,7 +84,7 @@ int help_init(JFILE *fd,char *bf,int line)
  * Find context help - find help entry with the same name
  */
 
-struct help *find_context_help(char *name)
+struct help *find_context_help(const char *name)
 {
 	struct help *tmp = help_actual;
 
@@ -104,7 +104,7 @@ int help_is_utf8;
  */
 void help_display(Screen *t)
 {
-	char *str;
+	const char *str;
 	int y, x, c, z;
 	int atr = BG_COLOR(bg_help);
 
@@ -116,7 +116,7 @@ void help_display(Screen *t)
 
 	for (y = skiptop; y != t->wind; ++y) {
 		if (t->t->updtab[y]) {
-			char *start = str, *eol;
+			const char *start = str, *eol;
 			ptrdiff_t width=0;
 			ptrdiff_t nspans=0;
 			ptrdiff_t spanwidth;
@@ -124,7 +124,7 @@ void help_display(Screen *t)
 			ptrdiff_t spanextra;
 			ptrdiff_t len;
 
-			eol = zchr(str, '\n');
+			eol = (const char *)zchr((char *)str, '\n');
 
 			/* First pass: count no. springs \| and determine minimum width */
 			while(*str && *str!='\n') {
@@ -295,9 +295,8 @@ static void help_off(Screen *t)
 /*
  * Show/hide current help screen
  */
-int u_help(BASE *base)
+int u_help(W *w, int k)
 {
-	W *w = base->parent;
 	struct help *new_help;
 
 	if (w->huh && (new_help = find_context_help(w->huh)) != NULL) {
@@ -318,10 +317,8 @@ int u_help(BASE *base)
 /*
  * Show next help screen (if it is possible)
  */
-int u_help_next(BASE *base)
+int u_help_next(W *w, int k)
 {
-	W *w = base->parent;
-
 	if (help_actual && help_actual->next) {		/* is there any next help screen? */
 		if (w->t->wind != skiptop) {
 			help_off(w->t);			/* if help screen was visible, then hide it */
@@ -336,10 +333,8 @@ int u_help_next(BASE *base)
 /*
  * Show previous help screen (if it is possible)
  */
-int u_help_prev(BASE *base)
+int u_help_prev(W *w, int k)
 {
-	W *w = base->parent;
-
 	if (help_actual && help_actual->prev) {		/* is there any previous help screen? */
 		if (w->t->wind != skiptop)
 			help_off(w->t);			/* if help screen was visible, then hide it */

@@ -17,7 +17,7 @@ struct pair {
 
 struct charmap {
 	struct charmap *next;		/* Linked list of loaded character maps */
-	char *name;		/* Name of this one */
+	const char *name;		/* Name of this one */
 
 	int type;			/* 0=byte, 1=UTF-8 */
 
@@ -71,7 +71,7 @@ int joe_isspace_eof(struct charmap *map,int c);
 char *lowerize(char *s);
 
 /* Find (load if necessary) a character set */
-struct charmap *find_charmap(char *name);
+struct charmap *find_charmap(const char *name);
 
 /* Get available encodings */
 char **get_encodings(void);

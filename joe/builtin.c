@@ -7,7 +7,7 @@
  */
 #include "types.h"
 
-JFILE *jfopen(char *name, char *mode)
+JFILE *jfopen(const char *name, const char *mode)
 {
 	if (name[0] == '*') {
 		int x;
@@ -62,7 +62,7 @@ char *jfgets(char *buf,int len,JFILE *f)
 	}
 }
 
-char **jgetbuiltins(char *suffix)
+char **jgetbuiltins(const char *suffix)
 {
 	ptrdiff_t x;
 	ptrdiff_t sflen = 0;
@@ -72,7 +72,7 @@ char **jgetbuiltins(char *suffix)
 		sflen = zlen(suffix);
 	
 	for (x = 0; builtins[x]; x += 2) {
-		char *name = builtins[x];
+		const char *name = builtins[x];
 		ptrdiff_t nlen = zlen(name);
 		
 		if (!suffix || (sflen <= nlen && !zcmp(suffix, &name[nlen - sflen]))) {

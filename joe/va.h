@@ -234,4 +234,4 @@ aELEMENT *vasort(aELEMENT *ary, ptrdiff_t len);
  * Generate list of strings out of words in 's' seperated with the characters
  * in 'sep'.  The characters in 'sep' must be sorted.
  */
-aELEMENT *vawords(aELEMENT *a, char *s, ptrdiff_t len, char *sep, ptrdiff_t seplen);
+aELEMENT *vawords(aELEMENT *a, const char *s, ptrdiff_t len, const char *sep, ptrdiff_t seplen);

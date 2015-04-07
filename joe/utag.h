@@ -7,5 +7,5 @@
  */
 
 extern int notagsmenu;
-int utagjump(BW *bw);
-int utag(BW *bw);
+int utagjump(W *w, int k);
+int utag(W *w, int k);

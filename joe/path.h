@@ -16,8 +16,8 @@ char *joesep(char *path);
  * The name part of "/hello/" is ""
  * The name part if "/" is ""
  */
-char *namprt(char *path);
-char *namepart(char *tmp, ptrdiff_t tmpsiz, char *path);
+char *namprt(const char *path);
+char *namepart(char *tmp, ptrdiff_t tmpsiz, const char *path);
 
 /* char *dirprt(char *path);
  * Return directory and drive part of a path.  I.E., everything to the
@@ -27,7 +27,7 @@ char *namepart(char *tmp, ptrdiff_t tmpsiz, char *path);
  * The directory part of "/hello/" is "/hello/"
  * The directory part of "/" is "/"
  */
-char *dirprt(char *path);
+char *dirprt(const char *path);
 
 /* char *begprt(char *path);
  * Return the beginning part of a path.
@@ -36,7 +36,7 @@ char *dirprt(char *path);
  * The beginning part of "/hello/" is "/"
  * The beginning part of "/" is "/"
  */
-char *begprt(char *path);
+char *begprt(const char *path);
 
 /* char *endprt(char *path);
  * Return the ending part of a path.
@@ -45,7 +45,7 @@ char *begprt(char *path);
  * The ending part of "/hello/" is "hello/"
  * The ending part of "/" is ""
  */
-char *endprt(char *path);
+char *endprt(const char *path);
 
 /* int mkpath(char *path);
  * Make sure path exists.  If it doesn't, try to create it
@@ -62,7 +62,7 @@ int mkpath(char *path);
  * to this function postfixed with /joe.tmp.XXXXXX, where XXXXXX is some
  * string six chars long which makes this file unique.
 */
-char *mktmp(char *where);
+char *mktmp(const char *where);
 
 /* Change drive and directory */
 #define chddir chdir
@@ -84,16 +84,16 @@ char *mktmp(char *where);
  *  '-' may be specified in sets by placing it at the ends
  *  '[' may be specified in sets by placing it first
  */
-int rmatch(char *a, char *b);
-int isreg(char *s);
+int rmatch(const char *a, const char *b);
+int isreg(const char *s);
 
 /* char **rexpnd(char *path,char *pattern);
  * Generate array (see va.h) of file names from directory in 'path'
  * which match the pattern 'pattern'
  */
-char **rexpnd(char *word);
-char **rexpnd_users(char *word);
+char **rexpnd(const char *word);
+char **rexpnd_users(const char *word);
 
-int chpwd(char *path);
+int chpwd(const char *path);
 char *pwd(void);
-char *simplify_prefix(char *path);
+char *simplify_prefix(const char *path);

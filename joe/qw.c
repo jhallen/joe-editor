@@ -9,7 +9,7 @@
 
 /* Return width of a string */
 
-ptrdiff_t joe_wcswidth(struct charmap *map,char *s, ptrdiff_t len)
+ptrdiff_t joe_wcswidth(struct charmap *map,const char *s, ptrdiff_t len)
 {
 	if (!map->type) {
 		return len;
@@ -30,9 +30,9 @@ ptrdiff_t joe_wcswidth(struct charmap *map,char *s, ptrdiff_t len)
    Also this finds the nth line and returns the position of the substring which is
    that line. Set n to -1 if you just want the height. */
 
-ptrdiff_t break_height(struct charmap *map,char **src,ptrdiff_t *src_len,ptrdiff_t wid,ptrdiff_t n)
+ptrdiff_t break_height(struct charmap *map,const char **src,ptrdiff_t *src_len,ptrdiff_t wid,ptrdiff_t n)
 {
-	char *s = *src;
+	const char *s = *src;
 	ptrdiff_t len = *src_len;
 	ptrdiff_t h = 1; /* Number of lines */
 	ptrdiff_t col = 0; /* Current column */
@@ -71,14 +71,14 @@ ptrdiff_t break_height(struct charmap *map,char **src,ptrdiff_t *src_len,ptrdiff
 	return h;
 }
 
-static void dispqw(QW *qw)
+static void dispqw(W *w, int flg)
 {
+	QW *qw = (QW *)w->object;
 	ptrdiff_t y;
-	W *w = qw->parent;
 
 	/* Generate prompt */
 	for (y = 0; y != w->h; ++y) {
-		char *s = qw->prompt;
+		const char *s = qw->prompt;
 		ptrdiff_t l = qw->promptlen;
 		break_height(locale_map, &s, &l, qw->org_w, y);
 		w->t->t->updtab[w->y + y] = 1;
@@ -98,22 +98,22 @@ static void dispqw(QW *qw)
 	}
 }
 
-static void dispqwn(QW *qw)
+static void dispqwn(W *w, int flg)
 {
+	QW *qw = (QW *)w->object;
 	ptrdiff_t y;
-	W *w = qw->parent;
 
 	/* Set cursor position */
 	if (w->win->watom->follow && w->win->object)
-		w->win->watom->follow(w->win->object);
+		w->win->watom->follow(w->win);
 	if (w->win->watom->disp && w->win->object)
-		w->win->watom->disp(w->win->object, 1);
+		w->win->watom->disp(w->win, 1);
 	w->curx = w->win->curx;
 	w->cury = w->win->cury + w->win->y - w->y;
 
 	/* Generate prompt */
 	for (y = 0; y != w->h; ++y) {
-		char *s = qw->prompt;
+		const char *s = qw->prompt;
 		ptrdiff_t l = qw->promptlen;
 		break_height(locale_map, &s, &l, qw->org_w, y);
 		w->t->t->updtab[w->y + y] = 1;
@@ -135,12 +135,12 @@ static void dispqwn(QW *qw)
 
 struct utf8_sm qw_sm;
 
-static int utypeqw(QW *qw, int c)
+static int utypeqw(W *w, int c)
 {
+	QW *qw = (QW *)w->object;
 	W *win;
-	W *w = qw->parent;
 	int *notify = w->notify;
-	int (*func) ();
+	int (*func)(W *w, int k, void *object, int *notify);
 	void *object = qw->object;
 
 	if (locale_map->type) {
@@ -157,20 +157,21 @@ static int utypeqw(QW *qw, int c)
 	w->notify = NULL;
 	wabort(w);
 	if (func)
-		return func(win->object, c, object, notify);
+		return func(win, c, object, notify);
 	return -1;
 }
 
-static int abortqw(QW *qw)
+static int abortqw(W *w)
 {
-	W *win = qw->parent->win;
+	QW *qw = (QW *)w->object;
+	W *win = w->win;
 	void *object = qw->object;
-	int (*abrt) () = qw->abrt;
+	int (*abrt)(W *w, void *object) = qw->abrt;
 
 	vsrm(qw->prompt);
 	joe_free(qw);
 	if (abrt)
-		return abrt(win->object, object);
+		return abrt(win, object);
 	else
 		return -1;
 }
@@ -219,23 +220,23 @@ static WATOM watqwsr = {
 
 /* Create a query window */
 
-QW *mkqw(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqw(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, void *object, int *notify), int (*abrt)(W *w, void *object), void *object, int *notify)
 {
-	W *new;
+	W *neww;
 	QW *qw;
-	char *s = prompt;
+	const char *s = prompt;
 	ptrdiff_t l = len;
 	ptrdiff_t h = break_height(locale_map, &s, &l, w->w, -1);
 
-	new = wcreate(w->t, &watomqw, w, w, w->main, h, NULL, notify);
-	if (!new) {
+	neww = wcreate(w->t, &watomqw, w, w, w->main, h, NULL, notify);
+	if (!neww) {
 		if (notify)
 			*notify = 1;
 		return NULL;
 	}
-	wfit(new->t);
-	new->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
-	qw->parent = new;
+	wfit(neww->t);
+	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
+	qw->parent = neww;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;
 	qw->org_w = w->w;
@@ -243,30 +244,30 @@ QW *mkqw(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt)
 	qw->func = func;
 	qw->abrt = abrt;
 	qw->object = object;
-	w->t->curwin = new;
+	w->t->curwin = neww;
 	return qw;
 }
 
 /* Same as above, but cursor is left in original window */
 /* For Ctrl-Meta thing */
 
-QW *mkqwna(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwna(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, void *object, int *notify), int (*abrt)(W *w, void *object), void *object, int *notify)
 {
-	W *new;
+	W *neww;
 	QW *qw;
-	char *s = prompt;
+	const char *s = prompt;
 	ptrdiff_t l = len;
 	ptrdiff_t h = break_height(locale_map, &s, &l, w->w, -1);
 
-	new = wcreate(w->t, &watqwn, w, w, w->main, h, NULL, notify);
-	if (!new) {
+	neww = wcreate(w->t, &watqwn, w, w, w->main, h, NULL, notify);
+	if (!neww) {
 		if (notify)
 			*notify = 1;
 		return NULL;
 	}
-	wfit(new->t);
-	new->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
-	qw->parent = new;
+	wfit(neww->t);
+	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
+	qw->parent = neww;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;
 	qw->org_w = w->w;
@@ -274,30 +275,30 @@ QW *mkqwna(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abr
 	qw->func = func;
 	qw->abrt = abrt;
 	qw->object = object;
-	w->t->curwin = new;
+	w->t->curwin = neww;
 	return qw;
 }
 
 /* Same as above, but cursor is left in original window */
 /* For search and replace thing */
 
-QW *mkqwnsr(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwnsr(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, void *object, int *notify), int (*abrt) (W *w, void *object), void *object, int *notify)
 {
-	W *new;
+	W *neww;
 	QW *qw;
-	char *s = prompt;
+	const char *s = prompt;
 	ptrdiff_t l = len;
 	ptrdiff_t h = break_height(locale_map, &s, &l, w->w, -1);
 
-	new = wcreate(w->t, &watqwsr, w, w, w->main, h, NULL, notify);
-	if (!new) {
+	neww = wcreate(w->t, &watqwsr, w, w, w->main, h, NULL, notify);
+	if (!neww) {
 		if (notify)
 			*notify = 1;
 		return NULL;
 	}
-	wfit(new->t);
-	new->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
-	qw->parent = new;
+	wfit(neww->t);
+	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
+	qw->parent = neww;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;
 	qw->org_w = w->w;
@@ -305,6 +306,6 @@ QW *mkqwnsr(W *w, char *prompt, ptrdiff_t len, int (*func) (/* ??? */), int (*ab
 	qw->func = func;
 	qw->abrt = abrt;
 	qw->object = object;
-	w->t->curwin = new;
+	w->t->curwin = neww;
 	return qw;
 }

@@ -35,13 +35,13 @@ struct scrn {
 	ptrdiff_t	li;		/* Screen height */
         ptrdiff_t	co;		/* Screen width */
 
-	char	*ti;		/* Initialization string */
-	char	*cl;		/* Home and clear screen... really an
+	const char	*ti;		/* Initialization string */
+	const char	*cl;		/* Home and clear screen... really an
 				   init. string */
-	char	*cd;		/* Clear to end of screen */
-	char	*te;		/* Restoration string */
-	char	*brp;		/* Bracketed paste mode */
-	char	*bre;		/* Stop bracketed paste */
+	const char	*cd;		/* Clear to end of screen */
+	const char	*te;		/* Restoration string */
+	const char	*brp;		/* Bracketed paste mode */
+	const char	*bre;		/* Stop bracketed paste */
 
 	int	haz;		/* Terminal can't print ~s */
 	int	os;		/* Terminal overstrikes */
@@ -50,77 +50,77 @@ struct scrn {
 	int	am;		/* Terminal has autowrap, but not magicwrap */
 	int	xn;		/* Terminal has magicwrap */
 
-	char	*so;		/* Enter standout (inverse) mode */
-	char	*se;		/* Exit standout mode */
+	const char	*so;		/* Enter standout (inverse) mode */
+	const char	*se;		/* Exit standout mode */
 
-	char	*us;		/* Enter underline mode */
-	char	*ue;		/* Exit underline mode */
-	char	*uc;		/* Single time underline character */
+	const char	*us;		/* Enter underline mode */
+	const char	*ue;		/* Exit underline mode */
+	const char	*uc;		/* Single time underline character */
 
 	int	ms;		/* Ok to move when in standout/underline mode */
 
-	char	*mb;		/* Enter blinking mode */
-	char	*md;		/* Enter bold mode */
-	char	*mh;		/* Enter dim mode */
-	char	*mr;		/* Enter inverse mode */
-	char	*me;		/* Exit above modes */
+	const char	*mb;		/* Enter blinking mode */
+	const char	*md;		/* Enter bold mode */
+	const char	*mh;		/* Enter dim mode */
+	const char	*mr;		/* Enter inverse mode */
+	const char	*me;		/* Exit above modes */
 
-	char	*ZH;		/* Enter italic mode */
-	char	*ZR;		/* Exit italic mode */
+	const char	*ZH;		/* Enter italic mode */
+	const char	*ZR;		/* Exit italic mode */
 
-	char	*Sb;		/* Set background color */
-	char	*Sf;		/* Set foregrond color */
+	const char	*Sb;		/* Set background color */
+	const char	*Sf;		/* Set foregrond color */
 	int	Co;			/* No. of colors */
 	int	ut;		/* Screen erases with background color */
 
 	int	da, db;		/* Extra lines exist above, below */
-	char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
-	char	*cs;		/* Set scrolling region */
+	const char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
+	const char	*cs;		/* Set scrolling region */
 	int	rr;		/* Set for scrolling region relative addressing */
-	char	*sf, *SF, *sr, *SR;	/* Scroll */
+	const char	*sf, *SF, *sr, *SR;	/* Scroll */
 
-	char	*dm, *dc, *DC, *ed;	/* Delete characters */
-	char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
+	const char	*dm, *dc, *DC, *ed;	/* Delete characters */
+	const char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
 	int	mi;		/* Set if ok to move while in insert mode */
 
-	char	*bs;		/* Move cursor left 1 */
+	const char	*bs;		/* Move cursor left 1 */
 	ptrdiff_t	cbs;
-	char	*lf;		/* Move cursor down 1 */
+	const char	*lf;		/* Move cursor down 1 */
 	ptrdiff_t	clf;
-	char	*up;		/* Move cursor up 1 */
+	const char	*up;		/* Move cursor up 1 */
 	ptrdiff_t	cup;
-	char	*nd;		/* Move cursor right 1 */
+	const char	*nd;		/* Move cursor right 1 */
 
-	char	*ta;		/* Move cursor to next tab stop */
+	const char	*ta;		/* Move cursor to next tab stop */
 	ptrdiff_t	cta;
-	char	*bt;		/* Move cursor to previous tab stop */
+	const char	*bt;		/* Move cursor to previous tab stop */
 	ptrdiff_t	cbt;
 	ptrdiff_t	tw;		/* Tab width */
 
-	char	*ho;		/* Home cursor to upper left */
+	const char	*ho;		/* Home cursor to upper left */
 	ptrdiff_t	cho;
-	char	*ll;		/* Home cursor to lower left */
+	const char	*ll;		/* Home cursor to lower left */
 	ptrdiff_t	cll;
-	char	*cr;		/* Move cursor to left edge */
+	const char	*cr;		/* Move cursor to left edge */
 	ptrdiff_t	ccr;
-	char	*RI;		/* Move cursor right n */
+	const char	*RI;		/* Move cursor right n */
 	ptrdiff_t	cRI;
-	char	*LE;		/* Move cursor left n */
+	const char	*LE;		/* Move cursor left n */
         ptrdiff_t	cLE;
-	char	*UP;		/* Move cursor up n */
+	const char	*UP;		/* Move cursor up n */
 	ptrdiff_t	cUP;
-	char	*DO;		/* Move cursor down n */
+	const char	*DO;		/* Move cursor down n */
 	ptrdiff_t	cDO;
-	char	*ch;		/* Set cursor column */
+	const char	*ch;		/* Set cursor column */
 	ptrdiff_t	cch;
-	char	*cv;		/* Set cursor row */
+	const char	*cv;		/* Set cursor row */
 	ptrdiff_t	ccv;
-	char	*cV;		/* Goto beginning of specified line */
+	const char	*cV;		/* Goto beginning of specified line */
 	ptrdiff_t	ccV;
-	char	*cm;		/* Set cursor row and column */
+	const char	*cm;		/* Set cursor row and column */
 	ptrdiff_t	ccm;
 
-	char	*ce;		/* Clear to end of line */
+	const char	*ce;		/* Clear to end of line */
 	ptrdiff_t	cce;
 
 	int assume_256;		/* Assume terminal has 256 color mode, but use
@@ -293,12 +293,6 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdif
 
 #endif
 
-/*
- * translate character and its attribute into something printable
- */
-void xlat(int *attr, char *c);
-void xlat_utf_ctrl(int *attr, char *c);
-
 /* int eraeol(SCRN *t,int x,int y);
  *
  * Erase from screen coordinate to end of line.
@@ -335,24 +329,24 @@ void magic(SCRN *t, ptrdiff_t y, int *cs, int *ca, int *s, int *a,ptrdiff_t plac
 
 int clrins(SCRN *t);
 
-int meta_color(char *s);
+int meta_color(const char *s);
 
 /* Generate a field */
-void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt);
+void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,const char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt);
 
 /* Column width of a string takes into account utf-8) */
-ptrdiff_t txtwidth(char *s,ptrdiff_t len);
+ptrdiff_t txtwidth(const char *s,ptrdiff_t len);
 
-off_t txtwidth1(struct charmap *map, off_t tabwidth, char *s, ptrdiff_t len);
+off_t txtwidth1(struct charmap *map, off_t tabwidth, const char *s, ptrdiff_t len);
 
 /* Generate a field: formatted */
-void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, char *s, int atr, int flg);
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg);
 
 /* Column width of formatted string */
-ptrdiff_t fmtlen(char *s);
+ptrdiff_t fmtlen(const char *s);
 
 /* Offset within formatted string of particular column */
-ptrdiff_t fmtpos(char *s, ptrdiff_t goal);
+ptrdiff_t fmtpos(const char *s, ptrdiff_t goal);
 
 extern int bg_text;
 extern int columns;

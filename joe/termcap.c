@@ -40,7 +40,7 @@ char defentry[] = "\
 
 /* Return true if termcap line matches name */
 
-static int match(char *s, char *name)
+static int match(const char *s, const char *name)
 {
 	if (s[0] == 0 || s[0] == '#')
 		return 0;
@@ -59,7 +59,7 @@ static int match(char *s, char *name)
 
 /* Find termcap entry in a file */
 
-static char *lfind(char *s, ptrdiff_t pos, FILE *fd, char *name)
+static char *lfind(char *s, ptrdiff_t pos, FILE *fd, const char *name)
 {
 	int c;
 	ptrdiff_t x;
@@ -113,7 +113,7 @@ static char *lfind(char *s, ptrdiff_t pos, FILE *fd, char *name)
 
 /* Lookup termcap entry in index */
 
-static off_t findidx(FILE *file, char *name)
+static off_t findidx(FILE *file, const char *name)
 {
 	char buf[80];
 	off_t addr = 0;
@@ -140,7 +140,7 @@ static off_t findidx(FILE *file, char *name)
 
 /* Load termcap entry */
 
-CAP *my_getcap(char *name, long baud, void (*out) (char *, char), void *outptr)
+CAP *my_getcap(const char *name, long baud, void (*out) (void *, char), void *outptr)
 {
 	CAP *cap;
 	FILE *f, *f1;
@@ -159,7 +159,7 @@ CAP *my_getcap(char *name, long baud, void (*out) (char *, char), void *outptr)
 	cap->sort = NULL;
 
 #ifdef TERMINFO
-	cap->abuf = joe_malloc(4096);
+	cap->abuf = (char *)joe_malloc(4096);
 	cap->abufp = cap->abuf;
 	if (tgetent(cap->tbuf, name) == 1)
 		return setcap(cap, baud, out, outptr);
@@ -344,7 +344,7 @@ CAP *my_getcap(char *name, long baud, void (*out) (char *, char), void *outptr)
 	}
 
 	varm(npbuf);
-	vsrm(name);
+	vsrm((char *)name);
 
 	cap->pad = jgetstr(cap, "pc");
 	if (dopadding)
@@ -359,7 +359,7 @@ CAP *my_getcap(char *name, long baud, void (*out) (char *, char), void *outptr)
 	return setcap(cap, baud, out, outptr);
 }
 
-static struct sortentry *findcap(CAP *cap, char *name)
+static struct sortentry *findcap(CAP *cap, const char *name)
 {
 	ptrdiff_t x, y, z;
 	int found;
@@ -380,7 +380,7 @@ static struct sortentry *findcap(CAP *cap, char *name)
 	return NULL;
 }
 
-CAP *setcap(CAP *cap, long baud, void (*out) (char *, char), void *outptr)
+CAP *setcap(CAP *cap, long baud, void (*out) (void *, char), void *outptr)
 {
 	cap->baud = baud;
 	cap->div = 100000 / baud;
@@ -389,7 +389,7 @@ CAP *setcap(CAP *cap, long baud, void (*out) (char *, char), void *outptr)
 	return cap;
 }
 
-int getflag(CAP *cap, char *name)
+int getflag(CAP *cap, const char *name)
 {
 #ifdef TERMINFO
 	if (cap->abuf)
@@ -398,7 +398,7 @@ int getflag(CAP *cap, char *name)
 	return findcap(cap, name) != NULL;
 }
 
-char *jgetstr(CAP *cap, char *name)
+const char *jgetstr(CAP *cap, const char *name)
 {
 	struct sortentry *s;
 
@@ -418,7 +418,7 @@ char *jgetstr(CAP *cap, char *name)
 		return NULL;
 }
 
-int getnum(CAP *cap, char *name)
+int getnum(CAP *cap, const char *name)
 {
 	struct sortentry *s;
 
@@ -442,7 +442,7 @@ void rmcap(CAP *cap)
 	joe_free(cap);
 }
 
-static char escape1(char **s)
+static char escape1(const char **s)
 {
 	char c = *(*s)++;
 
@@ -500,7 +500,7 @@ static int outout(int c)
 }
 #endif
 
-void texec(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
+void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
 {
 	int c;
 	ptrdiff_t x;
@@ -674,14 +674,14 @@ void texec(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t
 
 static ptrdiff_t total;
 
-static void cst(char *ptr, char c)
+static void cst(void *ptr, char c)
 {
 	++total;
 }
 
-ptrdiff_t tcost(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
+ptrdiff_t tcost(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
 {
-	void (*out) (char *, char) = cap->out;
+	void (*out) (void *, char) = cap->out;
 
 	if (!s)
 		return 10000;
@@ -693,14 +693,14 @@ ptrdiff_t tcost(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrd
 }
 
 static char *ssp;
-static void cpl(char *ptr, char c)
+static void cpl(void *ptr, char c)
 {
 	ssp = vsadd(ssp, c);
 }
 
-char *tcompile(CAP *cap, char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
+char *tcompile(CAP *cap, const char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
 {
-	void (*out) (char *, char) = cap->out;
+	void (*out) (void *, char) = cap->out;
 	long div = cap->div;
 
 	if (!s)

@@ -46,8 +46,8 @@ int from_uni(struct charmap *cset, int c)
 /* Aliases */
 
 static struct {
-	char *alias;
-	char *builtin;
+	const char *alias;
+	const char *builtin;
 } alias_table[] = {
 	{ "c", "ascii" },
 	{ "posix", "ascii" },
@@ -89,7 +89,7 @@ static struct {
 /* I took all the ISO-8859- ones, plus any ones referenced by a locale */
 
 struct builtin_charmap {
-	char *name;
+	const char *name;
 	int to_uni[256];
 };
 
@@ -1068,7 +1068,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 {
 	int x;
 	struct charmap *map;
-	map = joe_malloc(SIZEOF(struct charmap));
+	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
 	map->name = zdup(builtin->name);
 	map->type = 0;
 	map->is_punct = byte_ispunct;
@@ -1159,7 +1159,7 @@ static void load_builtins(void)
 	struct charmap *map;
 
 	/* install UTF-8 map (ties into i18n module) */
-	map = joe_malloc(SIZEOF(struct charmap));
+	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
 	map->name = "utf-8";
 	map->type = 1;
 	map->to_uni = rtn_arg;
@@ -1183,7 +1183,7 @@ static void load_builtins(void)
 
 /* Parse character map file */
 
-struct builtin_charmap *parse_charmap(char *name,FILE *f)
+struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 {
 	char buf[1024];
 	char bf1[1024];
@@ -1196,7 +1196,7 @@ struct builtin_charmap *parse_charmap(char *name,FILE *f)
 	if (!f)
 		return 0;
 
-	b = joe_malloc(SIZEOF(struct builtin_charmap));
+	b = (struct builtin_charmap *)joe_malloc(SIZEOF(struct builtin_charmap));
 
 	b->name = zdup(name);
 
@@ -1261,7 +1261,7 @@ static int map_up(int c)
 		return c;
 }
 
-int map_name_cmp(char *a,char *b)
+int map_name_cmp(const char *a,const char *b)
 {
 	while (*a=='-') ++a;
 	while (*b=='-') ++b;
@@ -1279,7 +1279,7 @@ int map_name_cmp(char *a,char *b)
 
 /* Find a character map */
 
-struct charmap *find_charmap(char *name)
+struct charmap *find_charmap(const char *name)
 {
 	char buf[1024];
 	char *p;

@@ -19,21 +19,21 @@ struct tw {
 
 BW *wmktw(Screen *t, B *b);
 
-int usplitw(BW *bw);
-int uduptw(BW *bw);
-int utw0(BASE *b);
-int utw1(BASE *b);
-int uabortbuf(BW *bw);
-int ucancel(BW *bw, int k);
-int upopabort(BW *bw);
-int uabort(BW *bw, int k);
-int uabort1(BW *bw, int k);
+int usplitw(W *w, int k);
+int uduptw(W *w, int k);
+int utw0(W *w, int k);
+int utw1(W *w, int k);
+int uabortbuf(W *w, int k);
+int ucancel(W *w, int k);
+int upopabort(W *w, int k);
+int uabort(W *w, int k);
+int uabort1(W *w, int k);
 void setline(B *b, off_t line);
-int abortit(BW *bw);
+int abortit(W *w, int k);
 extern int staen;
 extern int staupd;
 extern int keepup;
 extern int bg_stalin;
 
 extern WATOM watomtw;
-char *stagen(char *stalin, BW *bw, char *s, char fill);
+char *stagen(char *stalin, BW *bw, const char *s, char fill);

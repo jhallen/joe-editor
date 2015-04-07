@@ -32,6 +32,6 @@ struct rc_menu *create_menu(char *name, MACRO *bs);
 void add_menu_entry(struct rc_menu *menu, char *entry_name, MACRO *m);
 
 /* Menu command */
-int umenu(BW *bw);
+int umenu(W *w, int k);
 
 extern int menu_flg;

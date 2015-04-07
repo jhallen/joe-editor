@@ -2,7 +2,7 @@
 
 #include "types.h"
 
-char *builtins[]=
+const char *builtins[]=
 {
 	"joerc",
 		"-notite         Don't send terminal initialization and termination strings:\n"

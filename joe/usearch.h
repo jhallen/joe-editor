@@ -45,13 +45,13 @@ void rmsrch(SRCH *srch);
 
 int dopfnext(BW *bw, SRCH *srch, int *notify);
 
-int pffirst(BW *bw);
-int pfnext(BW *bw);
+int pffirst(W *w, int k);
+int pfnext(W *w, int k);
 
-int pqrepl(BW *bw);
-int prfirst(BW *bw);
+int pqrepl(W *w, int k);
+int prfirst(W *w, int k);
 
-int ufinish(BW *bw);
+int ufinish(W *w, int k);
 int dofirst(BW *bw, int back, int repl, char *hint);
 
 extern B *findhist; /* Search history buffer */
@@ -68,7 +68,7 @@ extern int pico;
 extern char srchstr[];
 extern SRCH *globalsrch;
 
-extern char *rest_key;
-extern char *backup_key;
+extern const char *rest_key;
+extern const char *backup_key;
 
-int fwrd_c(char **s);
+int fwrd_c(const char **s);

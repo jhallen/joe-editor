@@ -103,7 +103,7 @@ void vflshf(VFILE *vfile)
 
 static char *mema(ptrdiff_t align, ptrdiff_t size)
 {
-	char *z = joe_malloc(align + size);
+	char *z = (char *)joe_malloc(align + size);
 
 	return z + align - (ptrdiff_t)(physical(z) % (unsigned)align);
 }
@@ -214,19 +214,19 @@ char *vlock(VFILE *vfile, off_t addr)
 
 VFILE *vtmp(void)
 {
-	VFILE *new = (VFILE *) joe_malloc(SIZEOF(VFILE));
+	VFILE *newf = (VFILE *) joe_malloc(SIZEOF(VFILE));
 
-	new->fd = 0;
-	new->name = NULL;
-	new->alloc = 0;
-	new->size = 0;
-	new->left = 0;
-	new->lv = 0;
-	new->vpage = NULL;
-	new->flags = 1;
-	new->vpage1 = NULL;
-	new->addr = -1;
-	return enqueb_f(VFILE, link, &vfiles, new);
+	newf->fd = 0;
+	newf->name = NULL;
+	newf->alloc = 0;
+	newf->size = 0;
+	newf->left = 0;
+	newf->lv = 0;
+	newf->vpage = NULL;
+	newf->flags = 1;
+	newf->vpage1 = NULL;
+	newf->addr = -1;
+	return enqueb_f(VFILE, link, &vfiles, newf);
 }
 
 #ifdef junk
@@ -235,25 +235,25 @@ VFILE *vopen(name)
 char *name;
 {
 	struct stat buf;
-	VFILE *new = (VFILE *) joe_malloc(SIZEOF(VFILE));
+	VFILE *newf = (VFILE *) joe_malloc(SIZEOF(VFILE));
 
-	new->name = vsncpy(NULL, 0, sz(name));
-	new->fd = open(name, O_RDWR);
-	if (!new->fd) {
+	newf->name = vsncpy(NULL, 0, sz(name));
+	newf->fd = open(name, O_RDWR);
+	if (!newf->fd) {
 		fprintf(stderr, joe_gettext(_("Couldn\'t open file \'%s\'\n")), name);
-		joe_free(new);
+		joe_free(newf);
 		return NULL;
 	}
-	fstat(new->fd, &buf);
-	new->size = buf.st_size;
-	new->alloc = new->size;
-	new->left = 0;
-	new->lv = 0;
-	new->vpage = NULL;
-	new->flags = 0;
-	new->vpage1 = NULL;
-	new->addr = -1;
-	return enqueb_f(VFILE, link, &vfiles, new);
+	fstat(newf->fd, &buf);
+	newf->size = buf.st_size;
+	newf->alloc = newf->size;
+	newf->left = 0;
+	newf->lv = 0;
+	newf->vpage = NULL;
+	newf->flags = 0;
+	newf->vpage1 = NULL;
+	newf->addr = -1;
+	return enqueb_f(VFILE, link, &vfiles, newf);
 }
 
 #endif

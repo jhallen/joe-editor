@@ -22,8 +22,8 @@ struct cap {
 
 	long	div;		/* tenths of MS per char */
 	long	baud;		/* Baud rate */
-	char	*pad;		/* Padding string or NULL to use NUL */
-	void	(*out) (char *, char);		/* Character output routine */
+	const char *pad;	/* Padding string or NULL to use NUL */
+	void	(*out) (void *, char);		/* Character output routine */
 	void	*outptr;	/* First arg passed to output routine.  Second
 				   arg is character to write */
 	int	dopadding;	/* Set if pad characters should be used */
@@ -66,36 +66,36 @@ struct cap {
  * done for self-refering 'tc=filename' links (so all of core will be
  * allocated if there are any).
  */
-CAP *my_getcap(char *name, long baud, void (*out) (char *, char), void *outptr);
+CAP *my_getcap(const char *name, long baud, void (*out) (void *, char), void *outptr);
 
 /* CAP *setcap(CAP *cap,int baud,void (*out)(void *outptr,char c),void *outptr);
  *
  * Reset baud, out and outptr for a CAP
  */
-CAP *setcap(CAP *cap, long baud, void (*out) (char *, char), void *outptr);
+CAP *setcap(CAP *cap, long baud, void (*out) (void *, char), void *outptr);
 
-/* char *jgetstr(CAP *cap,char *name);
+/* const char *jgetstr(CAP *cap,const char *name);
  *
  * Get value of string capability or return NULL if it's not found.  A fast
  * binary search is used to find the capability.  The char * returned points into
  * the buffer used to load the termcap entry.  It should not be modified or
  * freed.
  */
-char *jgetstr(CAP *cap, char *name);
+const char *jgetstr(CAP *cap, const char *name);
 
 /* int getflag(CAP *cap,char *name);
  *
  * Return true if the named capability is found in 'cap'.  A fast binary
  * search is used to lookup the capability.
  */
-int getflag(CAP *cap, char *name);
+int getflag(CAP *cap, const char *name);
 
 /* int getnum(CAP *cap,char *name);
  *
  * Return value of numeric capability or return -1 if it's not found.  A fast
  * binary search is used to lookup the capability.
  */
-int getnum(CAP *cap, char *name);
+int getnum(CAP *cap, const char *name);
 
 /* void rmcap(CAP *cap);
  *
@@ -119,7 +119,7 @@ void rmcap(CAP *cap);
 
    'a0' - 'a1' are the arguments for the string
 */
-void texec(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
+void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* int tcost(CAP *cap,char *str, int l, int a0, int a1, int a2, int a3);
    Return cost in number of characters which need to be sent
@@ -137,7 +137,7 @@ void texec(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t
 
    'a0' - 'a3' are arguements passed to the string
 */
-ptrdiff_t tcost(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
+ptrdiff_t tcost(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* char *tcompile(CAP *cap,char *str,int a0,int a1,int a2,int a3);
 
@@ -145,7 +145,7 @@ ptrdiff_t tcost(CAP *cap, char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrd
    string (see vs.h) containing the compiled string capability.
    Pad characters are not placed in the string.
 */
-char *tcompile(CAP *cap, char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
+char *tcompile(CAP *cap, const char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* Old termcap support */
 #ifdef junk

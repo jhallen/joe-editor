@@ -25,4 +25,4 @@ extern char **mainenv; /* Environment variables passed to JOE */
 extern char i_msg[128];
 void internal_msg(char *);
 void setlogerrs(void);
-int ushowlog(BW *);
+int ushowlog(W *w, int k);

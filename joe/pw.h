@@ -9,10 +9,10 @@
 /* Prompt window (a BW) */
 
 struct pw {
-	int	(*pfunc) ();	/* Func which gets called when RTN is hit */
-	int	(*abrt) ();	/* Func which gets called when window is aborted */
-	int	(*tab) ();	/* Func which gets called when TAB is hit */
-	char	*prompt;	/* Prompt string */
+	int	(*pfunc) (W *w, char *s, void *object, int *notify);	/* Func which gets called when RTN is hit */
+	int	(*abrt) (W *w, void *object);	/* Func which gets called when window is aborted */
+	int	(*tab) (BW *bw, int k);	/* Func which gets called when TAB is hit */
+	const char *prompt;		/* Prompt string */
 	ptrdiff_t	promptlen;	/* Width of prompt string */
 	ptrdiff_t	promptofst;	/* Prompt scroll offset */
 	B	*hist;		/* History buffer */
@@ -28,9 +28,12 @@ struct pw {
  *   bit 1: update directory
  *   bit 2: seed with directory
  */
-BW *wmkpw(W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify, struct charmap *map, int file_prompt);
+BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, void *object, int *notify),
+          const char *huh, int (*abrt)(W *w, void *object),
+          int (*tab)(BW *bw, int k),
+          void *object, int *notify, struct charmap *map, int file_prompt);
 
-int ucmplt(BW *bw, int k);
+int ucmplt(W *w, int k);
 
 /* Function for TAB completion */
 
@@ -38,7 +41,7 @@ char **regsub(char **z, ptrdiff_t len, char *s);
 
 void cmplt_ins(BW *bw,char *line);
 
-int cmplt_abrt(BW *bw,ptrdiff_t x, char *line);
+int cmplt_abrt(BW *bw,ptrdiff_t x,char *line);
 
 int cmplt_rtn(MENU *m,ptrdiff_t x,char *line);
 

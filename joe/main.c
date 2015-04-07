@@ -28,8 +28,8 @@ void dofollows(void)
 
 	do {
 		if (w->y != -1 && w->watom->follow && w->object)
-			w->watom->follow(w->object);
-		w = (W *) (w->link.next);
+			w->watom->follow(w);
+		w = (W *)(w->link.next);
 	} while (w != maint->curwin);
 }
 
@@ -62,7 +62,7 @@ void edupd(int flg)
 	do {
 		if (w->y != -1) {
 			if (w->object && w->watom->disp)
-				w->watom->disp(w->object, flg);
+				w->watom->disp(w, flg);
 			msgout(w);
 		}
 		w = (W *) (w->link.next);
@@ -246,15 +246,14 @@ void setlogerrs(void)
 }
 
 /* Opens new bw with startup log */
-int ushowlog(BW *bw)
+int ushowlog(W *w, int k)
 {
 	if (startup_log) {
 		B *copied;
 		BW *newbw;
 		void *object;
-		W *w;
 		
-		if (uduptw(bw)) {
+		if (uduptw(w, k)) {
 			return -1;
 		}
 		
@@ -618,7 +617,7 @@ int main(int argc, char **real_argv, char **envv)
 	}
 
 	if (!idleout) {
-		if (!isatty(fileno(stdin)) && modify_logic(maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
+		if (!isatty(fileno(stdin)) && modify_logic((BW *)maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
 			/* Start shell going in first window */
 			char **a;
 			char *cmd;
@@ -631,7 +630,7 @@ int main(int argc, char **real_argv, char **envv)
 			cmd = vsncpy(NULL, 0, sc("/bin/cat"));
 			a = vaadd(a, cmd);
 			
-			cstart (maint->curwin->object, "/bin/sh", a, NULL, NULL, 0, 1, NULL, 0);
+			cstart ((BW *)maint->curwin->object, "/bin/sh", a, NULL, NULL, 0, 1, NULL, 0);
 		}
 	}
 

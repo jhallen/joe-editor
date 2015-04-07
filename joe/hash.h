@@ -8,7 +8,7 @@
 
 struct entry {
 	HENTRY *next;
-	char *name;
+	const char *name;
 	ptrdiff_t hash_val;
 	void *val;
 };
@@ -30,7 +30,7 @@ void htrm(HASH *ht);
 
 /* Add an entry to a hash table.
   Note: 'name' is _not_ strdup()ed */
-void *htadd(HASH *ht, char *name, void *val);
+void *htadd(HASH *ht, const char *name, void *val);
 
 /* Look up an entry in a hash table, returns NULL if not found */
-void *htfind(HASH *ht, char *name);
+void *htfind(HASH *ht, const char *name);

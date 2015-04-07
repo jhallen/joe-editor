@@ -102,10 +102,13 @@ static void doundo(BW *bw, UNDOREC *ptr)
 	bw->b->changed = ptr->changed;
 }
 
-int uundo(BW *bw)
+int uundo(W *w, int k)
 {
 	UNDOREC *upto;
-	UNDO *undo = bw->b->undo;
+	UNDO *undo;
+	BW *bw;
+	WIND_BW(bw, w);
+	undo = bw->b->undo;
 
 	if (!undo)
 		return -1;
@@ -132,11 +135,14 @@ int uundo(BW *bw)
 	return 0;
 }
 
-int uredo(BW *bw)
+int uredo(W *w, int k)
 {
+	BW *bw;
 	UNDOREC *upto;
 	UNDOREC *ptr;
-	UNDO *undo = bw->b->undo;
+	UNDO *undo;
+	WIND_BW(bw, w);
+	undo = bw->b->undo;
 
 	if (!undo)
 		return -1;
@@ -248,9 +254,11 @@ void undoins(UNDO *undo, P *p, off_t size)
 }
 
 
-int uyapp(BW *bw)
+int uyapp(W *w, int k)
 {
 	UNDOREC *rec = yanked.link.prev;
+	BW *bw;
+	WIND_BW(bw, w);
 
 	if (rec != &yanked)
 		rec->where = bw->cursor->byte;
@@ -277,7 +285,7 @@ static void yankdel(off_t where, B *b)
 				binsb(rec->big->eof, bcpy(b->bof, b->eof));
 				boffline(rec->big);
 			} else {
-				rec->small = joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
+				rec->small = (char *)joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
 				brmem(b->bof, rec->small + rec->len, TO_DIFF_OK(size));
 			}
 			rec->len += size;
@@ -293,7 +301,7 @@ static void yankdel(off_t where, B *b)
 				binsb(rec->big->bof, bcpy(b->bof, b->eof));
 				boffline(rec->big);
 			} else {
-				rec->small = joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
+				rec->small = (char *)joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
 				mmove(rec->small + size, rec->small, TO_DIFF_OK(rec->len));
 				brmem(b->bof, rec->small, TO_DIFF_OK(size));
 			}
@@ -306,7 +314,7 @@ static void yankdel(off_t where, B *b)
 			}
 			rec = alrec();
 			if (size < SMALL && size > 0) {
-				rec->small = joe_malloc(TO_DIFF_OK(size));
+				rec->small = (char *)joe_malloc(TO_DIFF_OK(size));
 				brmem(b->bof, rec->small, TO_DIFF_OK(b->eof->byte));
 			} else {
 				rec->big = bcpy(b->bof, b->eof);
@@ -349,7 +357,7 @@ void undodel(UNDO *undo, off_t where, B *b)
 			binsb(rec->big->eof, b);
 			boffline(rec->big);
 		} else {
-			rec->small = joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
+			rec->small = (char *)joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
 			brmem(b->bof, rec->small + rec->len, TO_DIFF_OK(size));
 			brm(b);
 		}
@@ -366,7 +374,7 @@ void undodel(UNDO *undo, off_t where, B *b)
 			binsb(rec->big->bof, b);
 			boffline(rec->big);
 		} else {
-			rec->small = joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
+			rec->small = (char *)joe_realloc(rec->small, TO_DIFF_OK(rec->len + size));
 			mmove(rec->small + size, rec->small, TO_DIFF_OK(rec->len));
 			brmem(b->bof, rec->small, TO_DIFF_OK(size));
 			brm(b);
@@ -376,7 +384,7 @@ void undodel(UNDO *undo, off_t where, B *b)
 	} else {
 		rec = alrec();
 		if (size < SMALL) {
-			rec->small = joe_malloc(TO_DIFF_OK(size));
+			rec->small = (char *)joe_malloc(TO_DIFF_OK(size));
 			brmem(b->bof, rec->small, TO_DIFF_OK(b->eof->byte));
 			brm(b);
 		} else {
@@ -399,9 +407,11 @@ void undodel(UNDO *undo, off_t where, B *b)
 B *yankbuf = NULL;
 off_t yankwhere = -1;
 
-int uyank(BW *bw)
+int uyank(W *w, int k)
 {
 	UNDOREC *ptr = yanked.link.prev;
+	BW *bw;
+	WIND_BW(bw, w);
 
 	if (ptr != &yanked) {
 		if (ptr->len < SMALL)
@@ -421,8 +431,10 @@ int uyank(BW *bw)
 		return -1;
 }
 
-int uyankpop(BW *bw)
+int uyankpop(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (bw->b == yankbuf && bw->cursor->byte == yankwhere) {
 		P *q;
 		UNDOREC *ptr = yanked.link.prev;
@@ -435,15 +447,17 @@ int uyankpop(BW *bw)
 		bdel(q, bw->cursor);
 		inyank = 0;
 		prm(q);
-		return uyank(bw);
+		return uyank(bw->parent, 0);
 	} else
-		return uyank(bw);
+		return uyank(bw->parent, 0);
 }
 
 /* Clear changed-flag: make buffer look unmodified */
 
-int unotmod(BW *bw)
+int unotmod(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	bw_unlock(bw);
 	bw->b->changed = 0;
 	msgnw(bw->parent, joe_gettext(_("Modified flag cleared")));
@@ -452,7 +466,7 @@ int unotmod(BW *bw)
 
 
 
-int ucopy(BW *bw)
+int ucopy(W *w, int k)
 {
 	if (markv(1) && !square) {
 		B *b = bcpy(markb, markk);
@@ -460,10 +474,10 @@ int ucopy(BW *bw)
 		yankdel(markb->byte, b);
 		brm(b);
 		if (lightoff)
-			unmark(bw);
+			unmark(w, 0);
 		return 0;
 	} else {
-		msgnw(bw->parent, joe_gettext(_("No block")));
+		msgnw(w, joe_gettext(_("No block")));
 		return -1;
 	}
 }
@@ -501,7 +515,7 @@ void load_yank(FILE *f)
 				--nyanked;
 			}
 			rec = alrec();
-			rec->small = joe_malloc(len);
+			rec->small = (char *)joe_malloc(len);
 			mcpy(rec->small,bf,len);
 			rec->where = -1;
 			rec->len = len;

@@ -59,8 +59,9 @@ void add_menu_entry(struct rc_menu *menu, char *entry_name, MACRO *m)
 
 /* When user hits backspace */
 
-static int backsmenu(MENU *m, int x, struct menu_instance *mi)
+static int backsmenu(MENU *m, ptrdiff_t x, void *obj)
 {
+	struct menu_instance *mi = (struct menu_instance *)obj;
 	struct rc_menu *menu = mi->menu;
 	int *notify = m->parent->notify;
 	if (notify)
@@ -72,8 +73,9 @@ static int backsmenu(MENU *m, int x, struct menu_instance *mi)
 		return 0;
 }
 
-static int doabrt(MENU *m, int x, struct menu_instance *mi)
+static int doabrt(W *w, ptrdiff_t x, void *obj)
 {
+	struct menu_instance *mi = (struct menu_instance *)obj;
 	mi->menu->last_position = x;
 	for (x = 0; mi->s[x]; ++x)
 		vsrm(mi->s[x]);
@@ -87,8 +89,9 @@ static int doabrt(MENU *m, int x, struct menu_instance *mi)
 
 int menu_flg; /* Record of key used to select menu entry */
 
-static int execmenu(MENU *m, int x, struct menu_instance *mi, int flg)
+static int execmenu(MENU *m, ptrdiff_t x, void *obj, int flg)
 {
+	struct menu_instance *mi = (struct menu_instance *)obj;
 	struct rc_menu *menu = mi->menu;
 	int *notify = m->parent->notify;
 	if (notify)
@@ -132,7 +135,7 @@ static char **getmenus(void)
 
 /* When user hits tab */
 
-static int menucmplt(BW *bw)
+static int menucmplt(BW *bw, int k)
 {
 	if (!smenus)
 		smenus = getmenus();
@@ -141,12 +144,15 @@ static int menucmplt(BW *bw)
 
 /* When user selects a menu to bring up */
 
-static int domenu(BW *bw, char *s, void *object, int *notify)
+static int domenu(W *w, char *s, void *object, int *notify)
 {
-	struct rc_menu *menu = find_menu(s);
+	BW *bw;
+	struct rc_menu *menu;
+	WIND_BW(bw, w);
+	menu = find_menu(s);
 	vsrm(s);
 	if (!menu) {
-		msgnw(bw->parent, joe_gettext(_("No such menu")));
+		msgnw(w, joe_gettext(_("No such menu")));
 		if (notify)
 			*notify = 1;
 		return -1;
@@ -158,9 +164,9 @@ static int domenu(BW *bw, char *s, void *object, int *notify)
 
 /* Menu of macros command: prompt for a menu to bring up */
 
-int umenu(BW *bw)
+int umenu(W *w, int k)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Menu: ")), &menuhist, domenu, "menu", NULL, menucmplt, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(w, joe_gettext(_("Menu: ")), &menuhist, domenu, "menu", NULL, menucmplt, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

@@ -78,13 +78,13 @@ static int get_entries(TAB *tab, ino_t prv)
 	vasort(files, tab->len);
 	if (tab->type)
 		joe_free(tab->type);
-	tab->type = joe_malloc(tab->len);
+	tab->type = (char *)joe_malloc(tab->len);
 	for (a = 0; a != tab->len; a++)
 		if(users_flg) {
 			tab->type[a] = F_DIR;
 		} else {
 			struct stat buf;
-			mset(&buf, 0, SIZEOF(struct stat));
+			mset((char *)&buf, 0, SIZEOF(struct stat));
 
 			stat((files[a]), &buf);
 			if (buf.st_ino == prv)
@@ -192,8 +192,9 @@ static void rmtab(TAB *tab)
 /*****************************************************************************/
 /****************** The user hit return **************************************/
 /*****************************************************************************/
-static int tabrtn(MENU *m, int cursor, TAB *tab)
+static int tabrtn(MENU *m, ptrdiff_t cursor, void *object, int op)
 {
+	TAB *tab = (TAB *)object;
 	if (menu_explorer && tab->type[cursor] == F_DIR) {	/* Switch directories */
 		char *orgpath = tab->path;
 		char *orgpattern = tab->pattern;
@@ -208,7 +209,7 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 		}
 		vsrm(e);
 		tab->pattern = vsncpy(NULL, 0, sc("*"));
-		if (!treload(m->object, m, m->parent->win->object, 0, NULL)) {
+		if (!treload((TAB *)m->object, m, (BW *)m->parent->win->object, 0, NULL)) {
 			msgnw(m->parent, joe_gettext(_("Couldn't read directory ")));
 			vsrm(tab->pattern);
 			tab->pattern = orgpattern;
@@ -221,7 +222,7 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 			return 0;
 		}
 	} else {		/* Select name */
-		BW *bw = m->parent->win->object;
+		BW *bw = (BW *)m->parent->win->object;
 
 		insnam(bw, tab->path, tab->files[cursor], (tab->type[cursor]==F_DIR), tab->ofst);
 		rmtab(tab);
@@ -238,7 +239,7 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 static int tabrtn1(MENU *m, int cursor, TAB *tab)
 {
 	/* New way: just add directory to path */
-	BW *bw = m->parent->win->object;
+	BW *bw = (BW *)m->parent->win->object;
 
 	insnam(bw, tab->path, tab->files[cursor], (tab->type[cursor]==F_DIR ? 1 : 0), tab->ofst);
 	rmtab(tab);
@@ -252,8 +253,9 @@ static int tabrtn1(MENU *m, int cursor, TAB *tab)
 /*****************************************************************************/
 /****************** The user hit backspace ***********************************/
 /*****************************************************************************/
-static int tabbacks(MENU *m, int cursor, TAB *tab)
+static int tabbacks(MENU *m, ptrdiff_t cursor, void *object)
 {
+	TAB *tab = (TAB *)object;
 	char *orgpath = tab->path;
 	char *orgpattern = tab->pattern;
 	char *e = endprt(tab->path);
@@ -267,7 +269,7 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 	vsrm(e);
 	tab->pattern = vsncpy(NULL, 0, sc("*"));
 
-	if (!treload(m->object, m, m->parent->win->object, 1, NULL)) {
+	if (!treload((TAB *)m->object, m, (BW *)m->parent->win->object, 1, NULL)) {
 		msgnw(m->parent, joe_gettext(_("Couldn't read directory ")));
 		vsrm(tab->pattern);
 		tab->pattern = orgpattern;
@@ -282,8 +284,9 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 }
 /*****************************************************************************/
 /* This should verify that bw still exists... */
-static int tababrt(BW *bw, int cursor, TAB *tab)
+static int tababrt(W *w, ptrdiff_t cursor, void *object)
 {
+	TAB *tab = (TAB *)object;
 	/* bash */
 	/* insnam(bw, tab->orgpath, tab->orgnam, 0, tab->ofst); */
 	rmtab(tab);
@@ -331,9 +334,9 @@ P *p_goto_start_of_path(P *p)
 /****************** Create a tab window **************************************/
 /*****************************************************************************/
 
-int cmplt(BW *bw)
+int cmplt(BW *bw, int k)
 {
-	MENU *new;
+	MENU *newmenu;
 	TAB *tab;
 	P *p, *q;
 	char *cline;
@@ -385,10 +388,10 @@ int cmplt(BW *bw)
 		}
 	}
 
-	if (l && (new = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
+	if (l && (newmenu = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
 		if (sLEN(tab->files) == 1)
 			/* Only one file found, so select it */
-			return tabrtn1(new, 0, tab);
+			return tabrtn1(newmenu, 0, tab);
 		else if (smode || isreg(tab->orgnam)) {
 			/* User tried to complete twice (see smode=2 below), so leave menu on */
 			/* bash */
@@ -397,13 +400,13 @@ int cmplt(BW *bw)
 			return 0;
 		} else {
 			/* Complete name as much as possible, turn menu off */
-			char *com = mcomplete(new);
+			char *com = mcomplete(newmenu);
 
 			vsrm(tab->orgnam);
 			tab->orgnam = com;
 			/* wabort causes tab->orgnam to be copied to prompt */
 			insnam(bw, tab->orgpath, tab->orgnam, 0, tab->ofst);
-			wabort(new->parent);
+			wabort(newmenu->parent);
 			smode = 2;
 			/* if(joe_beep) */
 				ttputc(7);

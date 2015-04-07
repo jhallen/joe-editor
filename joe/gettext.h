@@ -1,2 +1,2 @@
-char *my_gettext(char *s);
-void init_gettext(char *s);
+const char *my_gettext(const char *s);
+void init_gettext(const char *s);

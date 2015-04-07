@@ -7,10 +7,10 @@
  */
 #include "types.h"
 
-int escape(int utf8,char **a, ptrdiff_t *b)
+int escape(int utf8,const char **a, ptrdiff_t *b)
 {
 	int c;
-	char *s = *a;
+	const char *s = *a;
 	ptrdiff_t l = *b;
 
 	if (*s == '\\' && l >= 2) {
@@ -117,11 +117,11 @@ int escape(int utf8,char **a, ptrdiff_t *b)
 	return c;
 }
 
-static int brack(int utf8,char **a, ptrdiff_t *la, int c)
+static int brack(int utf8,const char **a, ptrdiff_t *la, int c)
 {
 	int inverse = 0;
 	int flag = 0;
-	char *s = *a;
+	const char *s = *a;
 	ptrdiff_t l = *la;
 
 	if (!l)
@@ -261,7 +261,7 @@ skip:
 	return s;
 }
 
-int pmatch(char **pieces, char *regex, ptrdiff_t len, P *p, ptrdiff_t n, int icase)
+int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, int icase)
 {
 	int c, d;
 	P *q = pdup(p, "pmatch");
@@ -354,10 +354,10 @@ int pmatch(char **pieces, char *regex, ptrdiff_t len, P *p, ptrdiff_t n, int ica
 				break;
 			case '+':
 				{
-					char *oregex = regex;	/* Point to character to skip */
+					const char *oregex = regex;	/* Point to character to skip */
 					ptrdiff_t olen = len;
 
-					char *tregex;
+					const char *tregex;
 					ptrdiff_t tlen;
 
 					int match;

@@ -124,7 +124,7 @@ ptrdiff_t joe_read(int fd, void *buf, ptrdiff_t size)
 	return rt;
 }
 
-ptrdiff_t joe_write(int fd, void *buf, ptrdiff_t size)
+ptrdiff_t joe_write(int fd, const void *buf, ptrdiff_t size)
 {
 	ptrdiff_t rt;
 
@@ -302,19 +302,19 @@ void joe_free(void *ptr)
 
 #endif
 
-ptrdiff_t zlen(char *s)
+ptrdiff_t zlen(const char *s)
 {
 	return (ptrdiff_t)strlen(s);
 }
 
-int zcmp(char *a, char *b)
+int zcmp(const char *a, const char *b)
 {
 	return strcmp(a, b);
 }
 
 /* Only if you know for sure that the text is ASCII */
 
-int zicmp(char *a, char *b)
+int zicmp(const char *a, const char *b)
 {
 	char ca;
 	char cb;
@@ -349,7 +349,7 @@ int zicmp(char *a, char *b)
  *    class::subclass::member
  */
 
-int zmcmp(char *a, char *b)
+int zmcmp(const char *a, const char *b)
 {
 	ptrdiff_t x = zlen(a);
 	do {
@@ -360,15 +360,15 @@ int zmcmp(char *a, char *b)
 	return zcmp(a, b);
 }
 
-int zncmp(char *a, char *b, ptrdiff_t len)
+int zncmp(const char *a, const char *b, ptrdiff_t len)
 {
 	return strncmp(a, b, (size_t)len);
 }
 
-char *zdup(char *bf)
+char *zdup(const char *bf)
 {
 	ptrdiff_t size = zlen(bf);
-	char *p = joe_malloc(size+1);
+	char *p = (char *)joe_malloc(size+1);
 	memcpy(p, bf, (size_t)(size + 1));
 	return p;
 }
@@ -381,18 +381,18 @@ char *zcpy(char *a, char *b)
 }
 #endif
 
-char *zstr(char *a, char *b)
+char *zstr(const char *a, const char *b)
 {
-	return strstr(a,b);
+	return (char *)strstr(a,b);
 }
 
-char *zncpy(char *a, char *b, ptrdiff_t len)
+char *zncpy(char *a, const char *b, ptrdiff_t len)
 {
 	strncpy(a,b,(size_t)len);
 	return a;
 }
 
-char *zlcpy(char *a, ptrdiff_t len, char *b)
+char *zlcpy(char *a, ptrdiff_t len, const char *b)
 {
 	char *org = a;
 	if (!len) {
@@ -408,7 +408,7 @@ char *zlcpy(char *a, ptrdiff_t len, char *b)
 	return org;
 }
 
-void *mcpy(void *a, void *b, ptrdiff_t len)
+void *mcpy(void *a, const void *b, ptrdiff_t len)
 {
 	if (len)
 		memcpy(a, b, (size_t)len);
@@ -423,7 +423,7 @@ char *zcat(char *a, char *b)
 }
 #endif
 
-char *zlcat(char *a, ptrdiff_t siz, char *b)
+char *zlcat(char *a, ptrdiff_t siz, const char *b)
 {
 	char *org = a;
 	while (*a && siz) {
@@ -444,7 +444,7 @@ char *zrchr(char *s, int c)
 	return strrchr(s,c);
 }
 
-off_t zhtoo(char *s)
+off_t zhtoo(const char *s)
 {
 	off_t val = 0;
 	int flg = 0;
@@ -471,7 +471,7 @@ off_t zhtoo(char *s)
 		return val;
 }
 
-off_t ztoo(char *s)
+off_t ztoo(const char *s)
 {
 	off_t val = 0;
 	int flg = 0;
@@ -511,37 +511,37 @@ off_t ztoo(char *s)
 		return val;
 }
 
-long ztol(char *s)
+long ztol(const char *s)
 {
 	off_t val = ztoo(s);
 	return (long)val;
 }
 
-int ztoi(char *s)
+int ztoi(const char *s)
 {
 	off_t val = ztoo(s);
 	return (int)val;
 }
 
-ptrdiff_t ztodiff(char *s)
+ptrdiff_t ztodiff(const char *s)
 {
 	off_t val = ztoo(s);
 	return (ptrdiff_t)val;
 }
 
-long zhtol(char *s)
+long zhtol(const char *s)
 {
 	off_t val = zhtoo(s);
 	return (long)val;
 }
 
-int zhtoi(char *s)
+int zhtoi(const char *s)
 {
 	off_t val = zhtoo(s);
 	return (int)val;
 }
 
-ptrdiff_t zhtodiff(char *s)
+ptrdiff_t zhtodiff(const char *s)
 {
 	off_t val = zhtoo(s);
 	return (ptrdiff_t)val;
@@ -558,7 +558,7 @@ int joe_set_signal(int signum, sighandler_t handler)
 #ifdef HAVE_SIGACTION
 	struct sigaction sact;
 
-	mset(&sact, 0, SIZEOF(sact));
+	mset((char *)&sact, 0, SIZEOF(sact));
 	sact.sa_handler = handler;
 #ifdef SA_INTERRUPT
 	sact.sa_flags = SA_INTERRUPT;
@@ -591,7 +591,7 @@ int parse_ws(char **pp,int cmt)
 	char *p = *pp;
 	while (*p==' ' || *p=='\t')
 		++p;
-	if (*p=='\r' || *p=='\n' || *p==cmt)
+ 	if (*p=='\r' || *p=='\n' || *p==cmt)
 		*p = 0;
 	*pp = p;
 	return *p;
@@ -599,7 +599,7 @@ int parse_ws(char **pp,int cmt)
 
 /* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len-1 chars. */
 
-int parse_ident(char **pp, char *buf, ptrdiff_t len)
+int parse_ident(char * *pp, char *buf, ptrdiff_t len)
 {
 	char *p = *pp;
 	if (joe_isalpha_(locale_map,*p)) {
@@ -616,7 +616,7 @@ int parse_ident(char **pp, char *buf, ptrdiff_t len)
 
 /* Parse to next whitespace */
 
-int parse_tows(char **pp, char *buf)
+int parse_tows(char * *pp, char *buf)
 {
 	char *p = *pp;
 	while (*p && *p!=' ' && *p!='\t' && *p!='\n' && *p!='\r' && *p!='#')
@@ -629,7 +629,7 @@ int parse_tows(char **pp, char *buf)
 
 /* Parse over a specific keyword */
 
-int parse_kw(char **pp, char *kw)
+int parse_kw(char * *pp, const char *kw)
 {
 	char *p = *pp;
 	while(*kw && *kw==*p)
@@ -643,7 +643,7 @@ int parse_kw(char **pp, char *kw)
 
 /* Parse a field (same as parse_kw, but string must be terminated with whitespace) */
 
-int parse_field(char **pp, char *kw)
+int parse_field(char **pp, const char *kw)
 {
 	char *p = *pp;
 	while(*kw && *kw==*p)
@@ -701,7 +701,7 @@ int parse_diff(char **pp, ptrdiff_t *buf)
 
 /* Parse a long */
 
-int parse_off_t(char **pp, off_t *buf)
+int parse_off_t(char * *pp, off_t *buf)
 {
 	char *p = *pp;
 	off_t val = 0;
@@ -747,7 +747,7 @@ ptrdiff_t parse_string(char **pp, char *buf, ptrdiff_t len)
 		++p;
 		while(len > 1 && *p && *p!='\"') {
 			ptrdiff_t x = 50;
-			int c = escape(0, &p, &x);
+			int c = escape(0, (const char **)&p, &x);
 			*buf++ = TO_CHAR_OK(c);
 			--len;
 		}
@@ -771,7 +771,7 @@ ptrdiff_t parse_string(char **pp, char *buf, ptrdiff_t len)
 
 /* Used originally for printing macros */
 
-void emit_string(FILE *f,char *s,ptrdiff_t len)
+void emit_string(FILE *f,const char *s,ptrdiff_t len)
 {
 	char buf[8];
 	char *p, *q;
@@ -788,7 +788,7 @@ void emit_string(FILE *f,char *s,ptrdiff_t len)
 
 /* Emit a string */
 
-void emit_string(FILE *f,char *s,ptrdiff_t len)
+void emit_string(FILE *f,const char *s,ptrdiff_t len)
 {
 	fputc('"',f);
 	while(len) {
@@ -810,7 +810,7 @@ void emit_string(FILE *f,char *s,ptrdiff_t len)
 
 /* Parse a character range: a-z */
 
-int parse_range(char **pp, int *first, int *second)
+int parse_range(char * *pp, int *first, int *second)
 {
 	char *p= *pp;
 	int a, b;

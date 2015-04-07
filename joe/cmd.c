@@ -11,7 +11,7 @@ int joe_beep = 0;
 
 /* Command table */
 
-int ubeep(BW *bw, int k)
+int ubeep(W *w, int k)
 {
 	ttputc(7);
 	return 0;
@@ -227,12 +227,13 @@ int nolocks;
 #define LOCKMSG2 _("Could not create lock. (I) edit anyway, (Q) cancel edit? ")
 #define LOCKMSG1 _("Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? ")
 
-char *steallock_key= _("|steal the lock|sS");
-char *canceledit_key= _("|cancel edit due to lock|qQ");
-char *ignorelock_key=  _("|ignore lock, continue with edit|iI");
+const char *steallock_key= _("|steal the lock|sS");
+const char *canceledit_key= _("|cancel edit due to lock|qQ");
+const char *ignorelock_key=  _("|ignore lock, continue with edit|iI");
 
-int steal_lock(BW *bw,int c,B *b,int *notify)
+int steal_lock(W *w,int c,void *object,int *notify)
 {
+	B *b = (B *)object;
 	if (yncheck(steallock_key, c)) {
 		char bf1[256];
 		char bf[300];
@@ -245,7 +246,7 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 				joe_snprintf_1(bf,SIZEOF(bf),joe_gettext(LOCKMSG1),bf1);
 			else
 				joe_snprintf_0(bf, SIZEOF(bf), joe_gettext(LOCKMSG2));
-			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, notify)) {
+			if (mkqw(w, sz(bf), steal_lock, NULL, b, notify)) {
 				return 0;
 			} else {
 				if (notify)
@@ -269,16 +270,17 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 			*notify = 1;
 		return 0;
 	} else {
-		if (mkqw(bw->parent, sz(joe_gettext(LOCKMSG2)), steal_lock, NULL, b, notify)) {
+		if (mkqw(w, sz(joe_gettext(LOCKMSG2)), steal_lock, NULL, b, notify)) {
 			return 0;
 		} else
 			return -1;
 	}
 }
 
-int file_changed(BW *bw,int c,B *b,int *notify)
+int file_changed(W *w,int c,void *object,int *notify)
 {
-	if (mkqw(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), file_changed, NULL, b, notify)) {
+	B *b = (B *)object;
+	if (mkqw(w, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), file_changed, NULL, b, notify)) {
 		b->gave_notice = 1;
 		return 0;
 	} else
@@ -304,7 +306,7 @@ int try_lock(BW *bw,B *b)
 			else
 				joe_snprintf_0(bf, SIZEOF(bf), joe_gettext(LOCKMSG2));
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, NULL)) {
-				uquery(bw);
+				uquery(bw->parent, 0);
 				if (!b->locked)
 					return 0;
 			} else
@@ -328,7 +330,7 @@ int modify_logic(BW *bw,B *b)
 	if (last_time > b->check_time + CHECK_INTERVAL) {
 		b->check_time = last_time;
 		if (!nomodcheck && !b->gave_notice && check_mod(b)) {
-			file_changed(bw,0,b,NULL);
+			file_changed(bw->parent,0,b,NULL);
 			return 0;
 		}
 	}
@@ -411,7 +413,7 @@ int execmd(CMD *cmd, int k)
 
 	/* Complete selection for block commands */
 	if ((cmd->flag & EBLOCK) && nowmarking)
-		utoggle_marking(maint->curwin->object);
+		utoggle_marking(maint->curwin, 0);
 
 	/* We are about to modify the file */
 	if ((maint->curwin->watom->what & TYPETW) && (cmd->flag & EMOD)) {
@@ -420,7 +422,7 @@ int execmd(CMD *cmd, int k)
 	}
 
 	/* Execute command */
-	ret = cmd->func(maint->curwin->object, k);
+	ret = cmd->func(maint->curwin, k);
 
 	if (smode)
 		--smode;
@@ -504,14 +506,14 @@ static void izcmds(void)
 		htadd(cmdhash, cmds[x].name, cmds + x);
 }
 
-CMD *findcmd(char *s)
+CMD *findcmd(const char *s)
 {
 	if (!cmdhash)
 		izcmds();
 	return (CMD *) htfind(cmdhash, s);
 }
 
-void addcmd(char *s, MACRO *m)
+void addcmd(const char *s, MACRO *m)
 {
 	CMD *cmd = (CMD *) joe_malloc(SIZEOF(CMD));
 
@@ -543,14 +545,14 @@ static char **getcmds(void)
 
 char **scmds = NULL;	/* Array of command names */
 
-static int cmdcmplt(BW *bw)
+static int cmdcmplt(BW *bw, int k)
 {
 	if (!scmds)
 		scmds = getcmds();
 	return simple_cmplt(bw,scmds);
 }
 
-static int docmd(BW *bw, char *s, void *object, int *notify)
+static int docmd(W *w, char *s, void *object, int *notify)
 {
 	MACRO *mac;
 	int ret = -1;
@@ -559,7 +561,7 @@ static int docmd(BW *bw, char *s, void *object, int *notify)
 
 	mac = mparse(NULL, s, &sta,0);
 	if (sta < 0) {
-		msgnw(bw->parent,joe_gettext(_("No such command")));
+		msgnw(w,joe_gettext(_("No such command")));
 	} else {
 		ret = exmacro(mac, 1);
 		rmmacro(mac);
@@ -584,9 +586,9 @@ static int docmd(BW *bw, char *s, void *object, int *notify)
 
 B *cmdhist = NULL;
 
-int uexecmd(BW *bw)
+int uexecmd(W *w, int k)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Command: ")), &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(w, joe_gettext(_("Command: ")), &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

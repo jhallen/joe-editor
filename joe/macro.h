@@ -44,20 +44,20 @@ int exemac(MACRO *m);
 int exmacro(MACRO *m, int u);
 
 /* Keyboard macros user interface */
-int uplay(BW *bw, int c);
-int ustop(void);
-int urecord(BW *bw, int c);
-int uquery(BW *bw);
-int umacros(BW *bw);
-int utimer(BW *bw);
+int uplay(W *w, int c);
+int ustop(W *w, int c);
+int urecord(W *w, int c);
+int uquery(W *w, int c);
+int umacros(W *w, int c);
+int utimer(W *w, int c);
 
 /* Repeat prefix user command */
-int uarg(BW *bw);
-int uuarg(BW *bw, int c);
-int uif(BW *bw);
-int uelsif(BW *bw);
-int uelse(BW *bw);
-int uendif(BW *bw);
+int uarg(W *w, int k);
+int uuarg(W *w, int c);
+int uif(W *w, int k);
+int uelsif(W *w, int k);
+int uelse(W *w, int k);
+int uendif(W *w, int k);
 
 char *unescape(char *ptr,int c);
 

@@ -31,9 +31,9 @@ void rmkbd(KBD *k)
 
 /* Process next key for KBD */
 
-void *dokey(KBD *kbd, int n)
+MACRO *dokey(KBD *kbd, int n)
 {
-	void *bind = NULL;
+	MACRO *bind = NULL;
 
 	/* If we were passed a negative character */
 	if (n < 0)
@@ -154,14 +154,15 @@ static char *range(char *seq, int *vv, int *ww)
 
 /* Add a binding to a keymap */
 
-static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char *capseq, ptrdiff_t seql)
+static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, MACRO *bind, int *err, const char *capseq, ptrdiff_t seql)
 {
 	int v, w;
 
 	if (!seql && seq[0] == '.' && seq[1]) {
 		int x;
 		char c;
-		char *s;
+		const char *s;
+		char *v;
 
 		for (x = 0; seq[x] && seq[x] != ' '; ++x) ;
 		c = seq[x];
@@ -235,10 +236,10 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char 
 #else
 		s = jgetstr(cap, seq + 1);
 		seq[x] = c;
-		if (s && (s = tcompile(cap, s, 0, 0, 0, 0))
-		    && (sLEN(s) > 1 || (signed char)s[0] < 0)) {
-			capseq = s;
-			seql = sLEN(s);
+		if (s && (v = tcompile(cap, s, 0, 0, 0, 0))
+		    && (sLEN(v) > 1 || (signed char)v[0] < 0)) {
+			capseq = v;
+			seql = sLEN(v);
 			for (seq += x; *seq == ' '; ++seq) ;
 		}
 #endif
@@ -286,7 +287,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char 
 	return kmap;
 }
 
-int kadd(CAP *cap, KMAP *kmap, char *seq, void *bind)
+int kadd(CAP *cap, KMAP *kmap, char *seq, MACRO *bind)
 {
 	int err = 0;
 
@@ -351,7 +352,7 @@ int kdel(KMAP *kmap, char *seq)
  * is created.
  */
 
-KMAP *kmap_getcontext(char *name)
+KMAP *kmap_getcontext(const char *name)
 {
 	struct context *c;
 
@@ -370,7 +371,7 @@ KMAP *kmap_getcontext(char *name)
  * doesn't exist, instead of creating a new one.
  */
 
-KMAP *ngetcontext(char *name)
+KMAP *ngetcontext(const char *name)
 {
 	struct context *c;
 	for(c=contexts;c;c=c->next)
@@ -394,17 +395,17 @@ int kmap_empty(KMAP *k)
 
 B *keymaphist=0;
 
-int dokeymap(BW *bw,char *s,void *object,int *notify)
+int dokeymap(W *w,char *s,void *object,int *notify)
 {
 	KMAP *k=ngetcontext(s);
 	vsrm(s);
 	if(notify) *notify=1;
 	if(!k) {
-		msgnw(bw->parent,joe_gettext(_("No such keymap")));
+		msgnw(w,joe_gettext(_("No such keymap")));
 		return -1;
 	}
-	rmkbd(bw->parent->kbd);
-	bw->parent->kbd=mkkbd(k);
+	rmkbd(w->kbd);
+	w->kbd=mkkbd(k);
 	return 0;
 }
 
@@ -418,7 +419,7 @@ static char **get_keymap_list()
 	return lst;
 }
 
-static int keymap_cmplt(BW *bw)
+static int keymap_cmplt(BW *bw, int k)
 {
 	/* Reload every time: we should really check date of tags file...
 	  if (tag_word_list)
@@ -435,8 +436,8 @@ static int keymap_cmplt(BW *bw)
 	return simple_cmplt(bw,keymap_list);
 }
 
-int ukeymap(BASE *bw)
+int ukeymap(W *w, int k)
 {
-	if (wmkpw(bw->parent,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,"keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
+	if (wmkpw(w,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,"keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }

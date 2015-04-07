@@ -5,6 +5,18 @@
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
 #define SIZEOF(a) ((int)sizeof(a)) /* Signed version of sizeof() */
 
+#define WIND_BW(x, y) do { \
+  if (!((y)->watom->what & (TYPETW | TYPEPW))) \
+    return -1; \
+  (x) = (BW *)(y)->object; \
+  } while(0)
+
+#define WIND_MENU(x, y) do { \
+  if ((y)->watom->what != TYPEMENU) \
+    return -1; \
+  (x) = (MENU *)(y)->object; \
+  } while(0)
+
 #include "config.h"
 
 /* Common header files */

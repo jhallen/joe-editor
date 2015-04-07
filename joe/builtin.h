@@ -1,13 +1,13 @@
 /* Support for built-in config files */
 
 struct jfile {
-	FILE *f;		/* Regular file, or NULL for built-in */
-	char *p;	/* Built-in file pointer */
+	FILE *f;	/* Regular file, or NULL for built-in */
+	const char *p;	/* Built-in file pointer */
 };
 
-JFILE *jfopen(char *name, char *mode);
+JFILE *jfopen(const char *name, const char *mode);
 char *jfgets(char *buf,int len,JFILE *f);
 int jfclose(JFILE *f);
-char **jgetbuiltins(char *suffix);
+char **jgetbuiltins(const char *suffix);
 
-extern char *builtins[];
+extern const char *builtins[];

@@ -7,7 +7,7 @@
  */
 #include "types.h"
 
-char *merr;
+const char *merr;
 
 int mode_hex;
 int mode_eng;
@@ -31,7 +31,7 @@ struct var {
 	struct var *next;
 } *vars = NULL;
 
-static struct var *get(char *str)
+static struct var *get(const char *str)
 {
 	struct var *v;
 
@@ -844,9 +844,12 @@ double calc(BW *bw, char *s, int secure)
 }
 
 /* Main user interface */
-static int domath(BW *bw, char *s, void *object, int *notify, int secure)
+static int domath(W *w, char *s, void *object, int *notify, int secure)
 {
-	double result = calc(bw, s, secure);
+	double result;
+	BW *bw;
+	WIND_BW(bw, w);
+	result = calc(bw, s, secure);
 
 	if (notify) {
 		*notify = 1;
@@ -877,23 +880,23 @@ static int domath(BW *bw, char *s, void *object, int *notify, int secure)
 	return 0;
 }
 
-static int doumath(BW *bw, char *s, void *object, int *notify)
+static int doumath(W *w, char *s, void *object, int *notify)
 {
-	return domath(bw, s, object, notify, 0);
+	return domath(w, s, object, notify, 0);
 }
 
-static int dosmath(BW *bw, char *s, void *object, int *notify)
+static int dosmath(W *w, char *s, void *object, int *notify)
 {
-	return domath(bw, s, object, notify, 1);
+	return domath(w, s, object, notify, 1);
 }
 
 
 B *mathhist = NULL;
 
-int umath(BW *bw)
+int umath(W *w, int k)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, "=", &mathhist, doumath, "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(w, "=", &mathhist, doumath, "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;
@@ -902,10 +905,10 @@ int umath(BW *bw)
 
 /* Secure version: no macros allowed */
 
-int usmath(BW *bw)
+int usmath(W *w, int k)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, "=", &mathhist, dosmath, "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(w, "=", &mathhist, dosmath, "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

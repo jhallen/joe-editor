@@ -9,11 +9,15 @@
 
 /* Center line cursor is on and move cursor to beginning of next line */
 
-int ucenter(BW *bw)
+int ucenter(W *w, int k)
 {
-	P *p = bw->cursor, *q;
+	BW *bw;
+	P *p, *q;
 	off_t endcol, begcol, x;
 	int c;
+
+	WIND_BW(bw, w);
+	p = bw->cursor;
 
 	p_goto_eol(p);
 	while (joe_isblank(bw->b->o.charmap, (c = prgetc(p))))
@@ -287,9 +291,12 @@ P *peop(BW *bw, P *p)
 
 /* Motion commands */
 
-int ubop(BW *bw)
+int ubop(W *w, int k)
 {
-	P *q = pdup(bw->cursor, "ubop");
+	BW *bw;
+	P *q;
+	WIND_BW(bw, w);
+	q = pdup(bw->cursor, "ubop");
 
       up:
 	while (pisnpara(bw, q) && !pisbof(q) && (!within || !markb || q->byte > markb->byte))
@@ -308,9 +315,12 @@ int ubop(BW *bw)
 	}
 }
 
-int ueop(BW *bw)
+int ueop(W *w, int k)
 {
-	P *q = pdup(bw->cursor, "ueop");
+	P *q;
+	BW *bw;
+	WIND_BW(bw, w);
+	q = pdup(bw->cursor, "ueop");
 
       up:
 	while (pisnpara(bw, q) && !piseof(q))
@@ -401,7 +411,7 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 			if (!indents[x]) {
 				joe_free(indents);
 				indent = bw->o.lmargin;
-				indents = joe_malloc(indent+1); /* Risky */
+				indents = (char *)joe_malloc(indent+1); /* Risky */
 				for (x = 0; x != indent; ++x)
 					indents[x] = ' ';
 				indents[x] = 0;
@@ -527,7 +537,7 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 
 /* Reformat paragraph */
 
-int uformat(BW *bw)
+int uformat(W *w, int k)
 {
 	off_t indent;
 	char *indents;
@@ -536,6 +546,8 @@ int uformat(BW *bw)
 	off_t curoff;
 	int c;
 	P *p, *q;
+	BW *bw;
+	WIND_BW(bw, w);
 
 	p = pdup(bw->cursor, "uformat");
 	p_goto_bol(p);
@@ -607,7 +619,7 @@ int uformat(BW *bw)
 		if (!indents[x]) {
 			joe_free(indents);
 			indent = bw->o.lmargin;
-			indents = joe_malloc(indent+1); /* Risky, indent could be very large in theory */
+			indents = (char *)joe_malloc(indent+1); /* Risky, indent could be very large in theory */
 			for (x = 0; x != indent; ++x)
 				indents[x] = ' ';
 			indents[x] = 0;
@@ -747,20 +759,22 @@ int uformat(BW *bw)
 
 /* Format entire block */
 
-int ufmtblk(BW *bw)
+int ufmtblk(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markv(1) && bw->cursor->byte >= markb->byte && bw->cursor->byte <= markk->byte) {
 		markk->end = 1;
-		utomarkk(bw);
+		utomarkk(w, 0);
 		within = 1;
 		do {
-			ubop(bw), uformat(bw);
+			ubop(w, 0), uformat(w, 0);
 		} while (bw->cursor->byte > markb->byte);
 		within = 0;
 		markk->end = 0;
 		if (lightoff)
-			unmark(bw);
+			unmark(w, 0);
 		return 0;
 	} else
-		return uformat(bw);
+		return uformat(w, 0);
 }

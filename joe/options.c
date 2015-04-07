@@ -136,11 +136,13 @@ OPTIONS fdefault = {
 
 /* Commands which just type in variable values */
 
-int ucharset(BW *bw)
+int ucharset(W *w, int k)
 {
-	char *s;
-	W *w=bw->parent->main;
-	s=((BW *)w->object)->o.charmap->name;
+	const char *s;
+	BW *bw;
+	w = w->main;
+	WIND_BW(bw, w);
+	s=bw->o.charmap->name;
 	if (!s || !*s)
 		return -1;
 	while (*s)
@@ -149,10 +151,12 @@ int ucharset(BW *bw)
 	return 0;
 }
 
-int ulanguage(BW *bw)
+int ulanguage(W *w, int k)
 {
-	char *s;
-	W *w=bw->parent->main;
+	BW *bw;
+	const char *s;
+	WIND_BW(bw, w);
+	w = bw->parent->main;
 	s=((BW *)w->object)->o.language;
 	if (!s || !*s)
 		return -1;
@@ -201,7 +205,7 @@ void lazy_opts(B *b, OPTIONS *o)
 
 /* Set local options depending on file name and contents */
 
-void setopt(B *b, char *parsed_name)
+void setopt(B *b, const char *parsed_name)
 {
 	OPTIONS *o;
 	int x;
@@ -242,7 +246,7 @@ void setopt(B *b, char *parsed_name)
  * variable */
 
 struct glopts {
-	char *name;		/* Option name */
+	const char *name;		/* Option name */
 	int type;		/*      0 for global option flag
 				   1 for global option int
 				   2 for global option string
@@ -253,10 +257,10 @@ struct glopts {
 				   7 for local option off_t+1, with range checking
 				 */
 	void *set;		/* Address of global option */
-	char *addr;		/* Local options structure member address */
-	char *yes;		/* Message if option was turned on, or prompt string */
-	char *no;		/* Message if option was turned off */
-	char *menu;		/* Menu string */
+	const char *addr;		/* Local options structure member address */
+	const char *yes;		/* Message if option was turned on, or prompt string */
+	const char *no;		/* Message if option was turned off */
+	const char *menu;		/* Menu string */
 	ptrdiff_t ofst;		/* Local options structure member offset */
 	int low;		/* Low limit for numeric options */
 	int high;		/* High limit for numeric options */
@@ -421,7 +425,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 		++s;
 	}
 
-	opt = htfind(opt_tab, s);
+	opt = (struct glopts *)htfind(opt_tab, s);
 
 	if (opt) {
 		switch (opt->type) {
@@ -647,17 +651,21 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 
 /* Option setting user interface (^T command) */
 
-static int doabrt1(BW *bw, int *xx)
+static int doabrt1(W *w, void *obj)
 {
+	int *xx = (int *)obj;
 	joe_free(xx);
 	return -1;
 }
 
-static int doopt1(BW *bw, char *s, int *xx, int *notify)
+static int doopt1(W *w, char *s, void *obj, int *notify)
 {
+	BW *bw;
 	int ret = 0;
+	int *xx = (int *)obj;
 	int x = *xx;
 	int v;
+	WIND_BW(bw, w);
 
 	joe_free(xx);
 	switch (glopts[x].type) {
@@ -714,10 +722,12 @@ static int doopt1(BW *bw, char *s, int *xx, int *notify)
 	return ret;
 }
 
-static int dosyntax(BW *bw, char *s, int *xx, int *notify)
+static int dosyntax(W *w, char *s, void *obj, int *notify)
 {
+	BW *bw;
 	int ret = 0;
 	struct high_syntax *syn;
+	WIND_BW(bw, w);
 
 	syn = load_syntax(s);
 
@@ -736,7 +746,7 @@ static int dosyntax(BW *bw, char *s, int *xx, int *notify)
 
 char **syntaxes = NULL; /* Array of available syntaxes */
 
-static int syntaxcmplt(BW *bw)
+static int syntaxcmplt(BW *bw, int k)
 {
 	if (!syntaxes) {
 		char *oldpwd = pwd();
@@ -815,11 +825,12 @@ int check_for_hex(BW *bw)
 	return 0;
 }
 
-static int doencoding(BW *bw, char *s, int *xx, int *notify)
+static int doencoding(W *w, char *s, void *obj, int *notify)
 {
+	BW *bw;
 	int ret = 0;
 	struct charmap *map;
-
+	WIND_BW(bw, w);
 
 	map = find_charmap(s);
 
@@ -849,7 +860,7 @@ static int doencoding(BW *bw, char *s, int *xx, int *notify)
 
 char **encodings = NULL; /* Array of available encodinges */
 
-static int encodingcmplt(BW *bw)
+static int encodingcmplt(BW *bw, int k)
 {
 	if (!encodings) {
 		encodings = get_encodings();
@@ -912,7 +923,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 					bw->o.hex = 1;
 					if (bw->b->o.charmap->type) {
 						/* Switch out of UTF-8 mode */
-						doencoding(bw, vsncpy(NULL, 0, sc("C")), NULL, NULL);
+						doencoding(bw->parent, vsncpy(NULL, 0, sc("C")), NULL, NULL);
 						bw->o.hex |= HEX_RESTORE_UTF8;
 					}
 					
@@ -924,7 +935,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				} else if (!bw->o.hex && oldval) {
 					if ((oldval & HEX_RESTORE_UTF8) && !zcmp(bw->b->o.charmap->name, "ascii")) {
 						/* Switch back into UTF-8 */
-						doencoding(bw, vsncpy(NULL, 0, sc("UTF-8")), NULL, NULL);
+						doencoding(bw->parent, vsncpy(NULL, 0, sc("UTF-8")), NULL, NULL);
 					}
 					
 					if (oldval & HEX_RESTORE_CRLF) {
@@ -1003,7 +1014,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 	return 0;
 }
 
-char *get_status(BW *bw, char *s)
+const char *get_status(BW *bw, char *s)
 {
 	static char buf[OPT_BUF_SIZE];
 	int y = find_option(s);
@@ -1048,16 +1059,18 @@ char **getoptions(void)
 
 char **sopts = NULL;	/* Array of command names */
 
-static int optcmplt(BW *bw)
+static int optcmplt(BW *bw, int k)
 {
 	if (!sopts)
 		sopts = getoptions();
 	return simple_cmplt(bw,sopts);
 }
 
-static int doopt(BW *bw, char *s, void *object, int *notify)
+static int doopt(W *w, char *s, void *object, int *notify)
 {
+	BW *bw;
 	int y = find_option(s);
+	WIND_BW(bw, w);
 	vsrm(s);
 	if (y == -1) {
 		msgnw(bw->parent, joe_gettext(_("No such option")));
@@ -1073,9 +1086,9 @@ static int doopt(BW *bw, char *s, void *object, int *notify)
 
 B *opthist = NULL;
 
-int umode(BW *bw)
+int umode(W *w, int k)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Option: ")), &opthist, doopt, "opt", NULL, optcmplt, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(w, joe_gettext(_("Option: ")), &opthist, doopt, "opt", NULL, optcmplt, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

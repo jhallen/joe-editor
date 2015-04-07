@@ -10,7 +10,7 @@
 
 struct high_color {
 	struct high_color *next;
-	char *name;		/* Symbolic name of color */
+	const char *name;		/* Symbolic name of color */
 	int color;			/* Color value */
 };
 
@@ -18,7 +18,7 @@ struct high_color {
 
 struct high_state {
 	ptrdiff_t no;			/* State number */
-	char *name;			/* Highlight state name */
+	const char *name;			/* Highlight state name */
 	int color;			/* Color for this state */
 	struct high_cmd *cmd[256];	/* Character table */
 	struct high_cmd *delim;		/* Matching delimiter */
@@ -66,7 +66,7 @@ struct high_frame {
 
 struct high_syntax {
 	struct high_syntax *next;	/* Linked list of loaded syntaxes */
-	char *name;		/* Name of this syntax */
+	const char *name;		/* Name of this syntax */
 	char *subr;		/* Name of the subroutine (or NULL for whole file) */
 	struct high_param *params;	/* Parameters defined */
 	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
@@ -80,7 +80,7 @@ struct high_syntax {
 
 /* Find a syntax.  Load it if necessary. */
 
-struct high_syntax *load_syntax(char *name);
+struct high_syntax *load_syntax(const char *name);
 
 /* Parse a lines.  Returns new state. */
 

@@ -86,9 +86,9 @@ char *joesep(char *path)
 	return path;
 }
 /********************************************************************/
-char *namprt(char *path)
+char *namprt(const char *path)
 {
-	char *z;
+	const char *z;
 
 	skip_drive_letter(path);
 	z = path + slen(path);
@@ -97,9 +97,9 @@ char *namprt(char *path)
 	return vsncpy(NULL, 0, sz(z));
 }
 /********************************************************************/
-char *namepart(char *tmp, ptrdiff_t tmpsiz, char *path)
+char *namepart(char *tmp, ptrdiff_t tmpsiz, const char *path)
 {
-	char *z;
+	const char *z;
 
 	skip_drive_letter(path);
 	z = path + zlen(path);
@@ -108,10 +108,10 @@ char *namepart(char *tmp, ptrdiff_t tmpsiz, char *path)
 	return zlcpy(tmp, tmpsiz, z);
 }
 /********************************************************************/
-char *dirprt(char *path)
+char *dirprt(const char *path)
 {
-	char *b = path;
-	char *z = path + slen(path);
+	const char *b = path;
+	const char *z = path + slen(path);
 
 	skip_drive_letter(b);
 	while ((z != b) && (z[-1] != '/'))
@@ -119,9 +119,9 @@ char *dirprt(char *path)
 	return vsncpy(NULL, 0, path, z - path);
 }
 /********************************************************************/
-char *begprt(char *path)
+char *begprt(const char *path)
 {
-	char *z = path + slen(path);
+	const char *z = path + slen(path);
 	int drv = 0;
 
 	do_if_drive_letter(path, drv = 2);
@@ -136,9 +136,9 @@ char *begprt(char *path)
 	}
 }
 /********************************************************************/
-char *endprt(char *path)
+char *endprt(const char *path)
 {
-	char *z = path + slen(path);
+	const char *z = path + slen(path);
 	int drv = 0;
 
 	do_if_drive_letter(path, drv = 2);
@@ -187,7 +187,7 @@ int mkpath(char *path)
 /********************************************************************/
 /* Create a temporary file */
 /********************************************************************/
-char *mktmp(char *where)
+char *mktmp(const char *where)
 {
 #ifndef HAVE_MKSTEMP
 	static unsigned seq = 0;
@@ -232,7 +232,7 @@ char *mktmp(char *where)
 	return name;
 }
 /********************************************************************/
-int rmatch(char *a, char *b)
+int rmatch(const char *a, const char *b)
 {
 	int flag, inv, c;
 
@@ -283,7 +283,7 @@ int rmatch(char *a, char *b)
 		}
 }
 /********************************************************************/
-int isreg(char *s)
+int isreg(const char *s)
 {
 	int x;
 
@@ -334,9 +334,9 @@ struct direct *readdir()
 }
 #endif
 /********************************************************************/
-char **rexpnd(char *word)
+char **rexpnd(const char *word)
 {
-	void *dir;
+	DIR *dir;
 	char **lst = NULL;
 
 	struct dirent *de;
@@ -351,7 +351,7 @@ char **rexpnd(char *word)
 	return lst;
 }
 /********************************************************************/
-char **rexpnd_users(char *word)
+char **rexpnd_users(const char *word)
 {
 	char **lst = NULL;
 	struct passwd *pw;
@@ -366,7 +366,7 @@ char **rexpnd_users(char *word)
 	return lst;
 }
 /********************************************************************/
-int chpwd(char *path)
+int chpwd(const char *path)
 {
 #ifdef __MSDOS__
 	char buf[256];
@@ -417,9 +417,9 @@ char *pwd(void)
 /* Simplify prefix by using ~ */
 /* Expects s to have trailing / */
 
-char *simplify_prefix(char *s)
+char *simplify_prefix(const char *s)
 {
-	char *t = getenv("HOME");
+	const char *t = getenv("HOME");
 	char *n;
 
 #ifdef junk

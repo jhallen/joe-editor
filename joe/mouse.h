@@ -38,18 +38,18 @@ void mouseup(ptrdiff_t x, ptrdiff_t y);
 void mousedrag(ptrdiff_t x, ptrdiff_t y);
 
 /* user command handlers */
-int uxtmouse(BW *);		/* handle an xterm mouse control sequence */
-int uextmouse(BW *);		/* handle an extended xterm mouse control sequence */
-int utomouse(BW *);		/* move the pointer to the mouse */
-int udefmdown(BW *);	/* default mouse click handlers */
-int udefmup(BW *);
-int udefmdrag(BW *);
-int udefm2down(BW *);
-int udefm2up(BW *);
-int udefm2drag(BW *);
-int udefm3down(BW *);
-int udefm3up(BW *);
-int udefm3drag(BW *);
+int uxtmouse(W *, int);		/* handle an xterm mouse control sequence */
+int uextmouse(W *, int);		/* handle an extended xterm mouse control sequence */
+int utomouse(W *, int);		/* move the pointer to the mouse */
+int udefmdown(W *, int);	/* default mouse click handlers */
+int udefmup(W *, int);
+int udefmdrag(W *, int);
+int udefm2down(W *, int);
+int udefm2up(W *, int);
+int udefm2drag(W *, int);
+int udefm3down(W *, int);
+int udefm3up(W *, int);
+int udefm3drag(W *, int);
 
 long mnow();
 void reset_trig_time();

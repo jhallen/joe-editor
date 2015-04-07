@@ -9,8 +9,9 @@
 
 /* Executed when shell process terminates */
 
-static void cdone(B *b)
+static void cdone(void *obj)
 {
+	B *b = (B *)obj;
 	b->pid = 0;
 	close(b->out);
 	b->out = -1;
@@ -20,8 +21,9 @@ static void cdone(B *b)
 	}
 }
 
-static void cdone_parse(B *b)
+static void cdone_parse(void *obj)
 {
+	B *b = (B *)obj;
 	b->pid = 0;
 	close(b->out);
 	b->out = -1;
@@ -130,8 +132,9 @@ void vt_scrdn()
 	 }
 }
 
-static void cdata(B *b, char *dat, ptrdiff_t siz)
+static void cdata(void *obj, char *dat, ptrdiff_t siz)
 {
+	B *b = (B *)obj;
 	if (b->vt) { /* ANSI terminal emulator */
 		MACRO *m;
 		do {
@@ -185,7 +188,7 @@ static void cdata(B *b, char *dat, ptrdiff_t siz)
 	}
 }
 
-int cstart(BW *bw, char *name, char **s, void *obj, int *notify, int build, int out_only, char *first_command, int vt)
+int cstart(BW *bw, const char *name, char **s, void *obj, int *notify, int build, int out_only, const char *first_command, int vt)
 {
 #ifdef __MSDOS__
 	if (notify) {
@@ -245,9 +248,9 @@ static int dobknd(BW *bw, int vt)
 {
 	char **a;
 	char *s;
-        char *sh;
-	char start_sh[] = ". " JOERC "shell.sh\n";
-	char start_csh[] = "source " JOERC "shell.csh\n";
+	const char *sh;
+	const char start_sh[] = ". " JOERC "shell.sh\n";
+	const char start_csh[] = "source " JOERC "shell.csh\n";
 
         if (!modify_logic(bw,bw->b))
         	return -1;
@@ -273,8 +276,10 @@ static int dobknd(BW *bw, int vt)
 
 /* Start ANSI shell */
 
-int uvtbknd(BW *bw)
+int uvtbknd(W *w, int  k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (kmap_empty(kmap_getcontext("vtshell"))) {
 		msgnw(bw->parent, joe_gettext(_(":vtshell keymap is missing")));
 		return -1;
@@ -284,8 +289,10 @@ int uvtbknd(BW *bw)
 
 /* Start dumb shell */
 
-int ubknd(BW *bw)
+int ubknd(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (kmap_empty(shell_kbd->topmap)) {
 		msgnw(bw->parent, joe_gettext(_(":shell keymap is missing")));
 		return -1;
@@ -295,11 +302,12 @@ int ubknd(BW *bw)
 
 /* Run a program in a window */
 
-static int dorun(BW *bw, char *s, void *object, int *notify)
+static int dorun(W *w, char *s, void *object, int *notify)
 {
+	BW *bw;
 	char **a;
 	char *cmd;
-
+	WIND_BW(bw, w);
         if (!modify_logic(bw,bw->b))
         	return -1;
 
@@ -315,20 +323,22 @@ static int dorun(BW *bw, char *s, void *object, int *notify)
 
 B *runhist = NULL;
 
-int urun(BW *bw)
+int urun(W *w, int k)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Program to run: ")), &runhist, dorun, "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+	if (wmkpw(w, joe_gettext(_("Program to run: ")), &runhist, dorun, "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
 		return 0;
 	} else {
 		return -1;
 	}
 }
 
-static int dobuild(BW *bw, char *s, void *object, int *notify)
+static int dobuild(W *w, char *s, void *object, int *notify)
 {
+	BW *bw;
 	char **a = vamk(10);
 	char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
 	char *t = NULL;
+	WIND_BW(bw, w);
 
 
 	bw->b->o.ansi = 1;
@@ -356,12 +366,14 @@ static int dobuild(BW *bw, char *s, void *object, int *notify)
 
 B *buildhist = NULL;
 
-int ubuild(BW *bw)
+int ubuild(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (buildhist) {
 		if ((bw=wmkpw(bw->parent, joe_gettext(_("Build command: ")), &buildhist, dobuild, "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
-			uuparw(bw);
-			u_goto_eol(bw);
+			uuparw(bw->parent, 0);
+			u_goto_eol(bw->parent, 0);
 			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
@@ -378,14 +390,16 @@ int ubuild(BW *bw)
 
 B *grephist = NULL;
 
-int ugrep(BW *bw)
+int ugrep(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	/* Set parser to grep */
 	bw->b->parseone = parseone_grep;
 	if (grephist) {
 		if ((bw=wmkpw(bw->parent, joe_gettext(_("Grep command: ")), &grephist, dobuild, "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
-			uuparw(bw);
-			u_goto_eol(bw);
+			uuparw(bw->parent, 0);
+			u_goto_eol(bw->parent, 0);
 			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
@@ -402,8 +416,10 @@ int ugrep(BW *bw)
 
 /* Kill program */
 
-static int pidabort(BW *bw, int c, void *object, int *notify)
+static int pidabort(W *w, int c, void *object, int *notify)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (notify) {
 		*notify = 1;
 	}
@@ -418,8 +434,10 @@ static int pidabort(BW *bw, int c, void *object, int *notify)
 	}
 }
 
-int ukillpid(BW *bw)
+int ukillpid(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (bw->b->pid) {
 		if (mkqw(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), pidabort, NULL, NULL, NULL)) {
 			return 0;

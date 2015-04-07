@@ -12,9 +12,9 @@
 
 HASH *gettext_ht;
 
-char *ignore_prefix(char *set)
+const char *ignore_prefix(const char *set)
 {
-	char *s = zrchr(set, '|');
+	const char *s = zrchr((char *)set, '|');
 	if (s)
 		++s;
 	else
@@ -22,10 +22,10 @@ char *ignore_prefix(char *set)
 	return s;
 }
 
-char *my_gettext(char *s)
+const char *my_gettext(const char *s)
 {
 	if (gettext_ht) {
-		char *r = htfind(gettext_ht, s);
+		const char *r = (const char *)htfind(gettext_ht, s);
 		if (r)
 			s = r;
 	}
@@ -121,7 +121,7 @@ int load_po(FILE *f)
 
 /* Initialize my_gettext().  Call after locale_map has been set. */
 
-void init_gettext(char *s)
+void init_gettext(const char *s)
 {
 	FILE *f;
 	char buf[1024];

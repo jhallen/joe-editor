@@ -10,7 +10,7 @@ extern OPTIONS pdefault;
 extern OPTIONS fdefault;
 
 /* Set local options depending on file name and contents */
-void setopt(B *b, char *name);
+void setopt(B *b, const char *name);
 
 /* Set a global or local option:
  * 's' is option name
@@ -35,16 +35,16 @@ void setopt(B *b, char *name);
 int glopt(char *s, char *arg, OPTIONS *options, int set);
 
 /* Option setting user command */
-int umode(BW *bw);
+int umode(W *w, int k);
 
 /* Update options */
 void lazy_opts(B *b, OPTIONS *o);
 
 /* Commands which just convert an option into text and type it in */
-int ucharset(BW *bw);
-int ulanguage(BW *bw);
+int ucharset(W *w, int k);
+int ulanguage(W *w, int k);
 
 /* Get current value of an option (ON / OFF) */
-char *get_status(BW *bw, char *s);
+const char *get_status(BW *bw, char *s);
 
 extern OPTIONS *options;

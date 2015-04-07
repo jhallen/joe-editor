@@ -6,11 +6,11 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-int ucenter(BW *bw);
+int ucenter(W *w, int k);
 P *pbop(BW *bw, P *p);
 P *peop(BW *bw, P *p);
-int ubop(BW *bw);
-int ueop(BW *bw);
+int ubop(W *w, int k);
+int ueop(W *w, int k);
 void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents);
-int uformat(BW *bw);
-int ufmtblk(BW *bw);
+int uformat(W *w, int k);
+int ufmtblk(W *w, int k);

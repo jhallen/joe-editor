@@ -45,7 +45,7 @@ struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn)
 	db->end = 512;
 	db->hole = 1;
 	db->ehole = db->end;
-	db->buffer = joe_malloc(db->end * SIZEOF(HIGHLIGHT_STATE));
+	db->buffer = (HIGHLIGHT_STATE *)joe_malloc(db->end * SIZEOF(HIGHLIGHT_STATE));
 	db->first_invalid = 1;
 	db->invalid_window = -1;
 	/* State of first line is idle */
@@ -108,7 +108,7 @@ void lattr_check(struct lattr_db *db, ptrdiff_t amnt)
 		/* Not enough space */
 		/* Amount of additional space needed */
 		amnt = amnt - (db->ehole - db->hole) + 16;
-		db->buffer = joe_realloc(db->buffer, (db->end + amnt) * SIZEOF(HIGHLIGHT_STATE));
+		db->buffer = (HIGHLIGHT_STATE *)joe_realloc(db->buffer, (db->end + amnt) * SIZEOF(HIGHLIGHT_STATE));
 		mmove(db->buffer + db->ehole + amnt, db->buffer + db->ehole, (db->end - db->ehole) * SIZEOF(HIGHLIGHT_STATE));
 		db->ehole += amnt;
 		db->end += amnt;

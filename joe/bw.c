@@ -49,8 +49,9 @@ int mid = 0;
 
 /* For hex */
 
-void bwfllwh(BW *w)
+void bwfllwh(W *thew)
 {
+	BW *w = (BW *)thew->object;
 	/* Top must be a muliple of 16 bytes */
 	if (w->top->byte%16) {
 		pbkwd(w->top,w->top->byte%16);
@@ -100,8 +101,9 @@ void bwfllwh(BW *w)
 
 /* For text */
 
-void bwfllwt(BW *w)
+void bwfllwt(W *thew)
 {
+	BW *w = (BW *)thew->object;
 	P *newtop;
 
 	if (!pisbol(w->top)) {
@@ -160,9 +162,10 @@ void bwfllwt(BW *w)
 
 /* For either */
 
-void bwfllw(BW *w)
+void bwfllw(W *w)
 {
-	if (w->o.hex)
+	BW *bw = (BW *)w->object;
+	if (bw->o.hex)
 		bwfllwh(w);
 	else
 		bwfllwt(w);
@@ -1240,7 +1243,7 @@ static struct file_pos {
 
 static int file_pos_count;
 
-struct file_pos *find_file_pos(char *name)
+struct file_pos *find_file_pos(const char *name)
 {
 	struct file_pos *p;
 	for (p = file_pos.link.next; p != &file_pos; p = p->link.next)
@@ -1261,7 +1264,7 @@ struct file_pos *find_file_pos(char *name)
 
 int restore_file_pos;
 
-off_t get_file_pos(char *name)
+off_t get_file_pos(const char *name)
 {
 	if (name && restore_file_pos) {
 		struct file_pos *p = find_file_pos(name);
@@ -1271,7 +1274,7 @@ off_t get_file_pos(char *name)
 	}
 }
 
-void set_file_pos(char *name, off_t pos)
+void set_file_pos(const char *name, off_t pos)
 {
 	if (name) {
 		struct file_pos *p = find_file_pos(name);
@@ -1319,7 +1322,7 @@ void set_file_pos_all(Screen *t)
 	W *w = t->topwin;
 	do {
 		if (w->watom == &watomtw) {
-			BW *bw = w->object;
+			BW *bw = (BW *)w->object;
 			set_file_pos(bw->b->name, bw->cursor->line);
 		}
 		w = w->link.next;
@@ -1337,7 +1340,7 @@ BW *vtmaster(Screen *t, B *b)
 	BW *m = 0;
 	do {
 		if (w->watom == &watomtw) {
-			BW *bw = w->object;
+			BW *bw = (BW *)w->object;
 			if (bw && w->y != -1 && bw->b == b && (!b->vt || b->vt->vtcur->byte == bw->cursor->byte))
 				m = bw;
 		}
@@ -1361,10 +1364,13 @@ void bwrm(BW *w)
 
 char *ustat_line;
 
-int ustat(BW *bw)
+int ustat(W *w, int k)
 {
-	int c = brch(bw->cursor);
-	char *msg;
+	BW *bw;
+	int c;
+	const char *msg;
+	WIND_BW(bw, w);
+	c = brch(bw->cursor);
 
 	if (c == NO_MORE_DATA) {
 		if (bw->o.zmsg) msg = bw->o.zmsg;
@@ -1380,8 +1386,10 @@ int ustat(BW *bw)
 	return 0;
 }
 
-int ucrawlr(BW *bw)
+int ucrawlr(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	ptrdiff_t amnt = bw->w / 2;
 
 	pcol(bw->cursor, bw->cursor->xcol + amnt);
@@ -1391,8 +1399,10 @@ int ucrawlr(BW *bw)
 	return 0;
 }
 
-int ucrawll(BW *bw)
+int ucrawll(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	off_t amnt = bw->w / 2;
 	off_t curamnt = bw->w / 2;
 

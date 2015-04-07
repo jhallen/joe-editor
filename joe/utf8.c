@@ -159,7 +159,7 @@ void utf8_init(struct utf8_sm *utf8_sm)
 
 /* Decode an entire string */
 
-int utf8_decode_string(char *s)
+int utf8_decode_string(const char *s)
 {
 	struct utf8_sm sm;
 	ptrdiff_t x;
@@ -180,10 +180,10 @@ int utf8_decode_string(char *s)
  * infinite loops.
  */
 
-int utf8_decode_fwrd(char **p,ptrdiff_t *plen)
+int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
 {
 	struct utf8_sm sm;
-	char *s = *p;
+	const char *s = *p;
 	ptrdiff_t len;
 	int c = -2; /* Return this on no more input. */
 	if (plen)
@@ -258,7 +258,7 @@ int utf8_decode_fwrd(char **p,ptrdiff_t *plen)
  *   http://www.cl.cam.ac.uk/~mgk25/ucs/langinfo.c
  */
 
-char *joe_getcodeset(char *l)
+const char *joe_getcodeset(char *l)
 {
   static char buf[16];
   char *p;
@@ -327,15 +327,15 @@ char *joe_getcodeset(char *l)
 
 /* Initialize locale for JOE */
 
-char *codeset;	/* Codeset of terminal */
+const char *codeset;	/* Codeset of terminal */
 
-char *non_utf8_codeset;
+const char *non_utf8_codeset;
 			/* Codeset of local language non-UTF-8 */
 
-char *locale_lang;
+const char *locale_lang;
 			/* Our local language */
 
-char *locale_msgs;
+const char *locale_msgs;
 			/* Language to use for editor messages */
 
 struct charmap *locale_map;
@@ -346,20 +346,20 @@ struct charmap *locale_map_non_utf8;
 
 void joe_locale()
 {
+	const char *sc;
 	char *s, *t, *u;
 
-	s=getenv("LC_ALL");
-	if (!s || !*s) {
-		s=getenv("LC_MESSAGES");
-		if (!s || !*s) {
-			s=getenv("LANG");
+	sc=getenv("LC_ALL");
+	if (!sc || !*sc) {
+		sc=getenv("LC_MESSAGES");
+		if (!sc || !*sc) {
+			sc=getenv("LANG");
 		}
 	}
 
-	if (s)
-		s=zdup(s);
-	else
-		s="C";
+	if (!sc)
+		sc = "C";
+	s=zdup(sc);
 
 	if ((t=zrchr(s,'.')))
 		*t = 0;
@@ -369,18 +369,18 @@ void joe_locale()
 	else
 		locale_msgs = s;
 
-	s=getenv("LC_ALL");
-	if (!s || !*s) {
-		s=getenv("LC_CTYPE");
-		if (!s || !*s) {
-			s=getenv("LANG");
+	sc=getenv("LC_ALL");
+	if (!sc || !*sc) {
+		sc=getenv("LC_CTYPE");
+		if (!sc || !*sc) {
+			sc=getenv("LANG");
 		}
 	}
 
-	if (s)
-		s=zdup(s);
-	else
-		s="C";
+	if (!sc)
+		sc = "C";
+
+	s = zdup(sc);
 
 	u = zdup(s);
 
@@ -475,7 +475,7 @@ void to_utf8(struct charmap *map,char *s,int c)
 #endif
 }
 
-int from_utf8(struct charmap *map,char *s)
+int from_utf8(struct charmap *map,const char *s)
 {
 	int d = utf8_decode_string(s);
 	int c = from_uni(map,d);
@@ -502,7 +502,7 @@ int from_utf8(struct charmap *map,char *s)
 }
 
 void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
-              char *src, struct charmap *src_map)
+              const char *src, struct charmap *src_map)
 {
 	if (dest_map == src_map) {
 		zlcpy (dest, destsiz, src);
@@ -575,9 +575,9 @@ void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
 int guess_non_utf8;
 int guess_utf8;
 
-struct charmap *guess_map(char *buf, ptrdiff_t len)
+struct charmap *guess_map(const char *buf, ptrdiff_t len)
 {
-	char *p;
+	const char *p;
 	ptrdiff_t plen;
 	int c;
 	int flag;

@@ -4,7 +4,7 @@
 
 VT *mkvt(B *b, P *top, ptrdiff_t height, ptrdiff_t width)
 {
-	VT *vt = joe_malloc(SIZEOF(VT));
+	VT *vt = (VT *)joe_malloc(SIZEOF(VT));
 	vt->b = b;
 	vt->vtcur = pdup(b->eof, "vt");
 	vt->state = vt_idle;

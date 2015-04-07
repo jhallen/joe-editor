@@ -18,12 +18,12 @@ int sicmp(char a, char b)
 
 sELEMENT *vsmk(ptrdiff_t len)
 {
-	ptrdiff_t *new = joe_malloc((1 + len) * SIZEOF(sELEMENT) + 2 * SIZEOF(ptrdiff_t));
+	ptrdiff_t *news = (ptrdiff_t *)joe_malloc((1 + len) * SIZEOF(sELEMENT) + 2 * SIZEOF(ptrdiff_t));
 
-	new[0] = len;
-	new[1] = 0;
-	((sELEMENT *)(new + 2))[0] = sdup(sterm);
-	return (sELEMENT *)(new + 2);
+	news[0] = len;
+	news[1] = 0;
+	((sELEMENT *)(news + 2))[0] = sdup(sterm);
+	return (sELEMENT *)(news + 2);
 }
 
 void vsrm(sELEMENT *vary)
@@ -32,10 +32,10 @@ void vsrm(sELEMENT *vary)
 		joe_free((ptrdiff_t *) vary - 2);
 }
 
-ptrdiff_t slen(sELEMENT *ary)
+ptrdiff_t slen(const sELEMENT *ary)
 {
 	if (ary) {
-		sELEMENT *beg = ary;
+		const sELEMENT *beg = ary;
 		while (scmp(*ary, sterm))
 			++ary;
 		return ary - beg;
@@ -86,7 +86,7 @@ sELEMENT *vsfill(sELEMENT *vary, ptrdiff_t pos, sELEMENT el, ptrdiff_t len)
 	return vary;
 }
 
-sELEMENT *vsncpy(sELEMENT *vary, ptrdiff_t pos, sELEMENT *array, ptrdiff_t len)
+sELEMENT *vsncpy(sELEMENT *vary, ptrdiff_t pos, const sELEMENT *array, ptrdiff_t len)
 {
 	ptrdiff_t olen = sLEN(vary);
 
@@ -185,7 +185,7 @@ sELEMENT *vssort(sELEMENT *ary, ptrdiff_t len)
 
 #endif
 
-ptrdiff_t vsbsearch(sELEMENT *ary, ptrdiff_t len, sELEMENT el)
+ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el)
 {
 	ptrdiff_t x, y, z;
 
@@ -315,7 +315,7 @@ ptrdiff_t vss(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
 
 #endif
 
-ptrdiff_t vsscan(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
+ptrdiff_t vsscan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x;
 
@@ -328,7 +328,7 @@ ptrdiff_t vsscan(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
 	return ~0;
 }
 
-ptrdiff_t vsspan(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
+ptrdiff_t vsspan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x;
 

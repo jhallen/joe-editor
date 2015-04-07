@@ -14,9 +14,10 @@ int bg_stalin;
 
 /* Move text window */
 
-static void movetw(BW *bw, ptrdiff_t x, ptrdiff_t y)
+static void movetw(W *w, ptrdiff_t x, ptrdiff_t y)
 {
-	TW *tw = (TW *) bw->object;
+	BW *bw = (BW *)w->object;
+	TW *tw = (TW *)bw->object;
 
 	if (y || !staen) {
 		if (!tw->staon) {	/* Scroll down and shrink */
@@ -35,8 +36,9 @@ static void movetw(BW *bw, ptrdiff_t x, ptrdiff_t y)
 
 /* Resize text window */
 
-static void resizetw(BW *bw, ptrdiff_t wi, ptrdiff_t he)
+static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
 {
+	BW *bw = (BW *)w->object;
 	if (bw->parent->ny || !staen)
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he - 1);
 	else
@@ -141,7 +143,7 @@ char *duplicate_backslashes(char *s, ptrdiff_t len)
 	return m;
 }
 
-/* static */char *stagen(char *stalin, BW *bw, char *s, char fill)
+/* static */char *stagen(char *stalin, BW *bw, const char *s, char fill)
 {
 	char buf[80];
 	int x;
@@ -231,7 +233,7 @@ char *duplicate_backslashes(char *s, ptrdiff_t len)
 
 			case 'Z':
 				{
-					char *ch;
+					const char *ch;
 					int l;
 					buf[0]=0;
 					for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
@@ -497,16 +499,16 @@ char *duplicate_backslashes(char *s, ptrdiff_t len)
 	return stalin;
 }
 
-static void disptw(BW *bw, int flg)
+static void disptw(W *w, int flg)
 {
-	W *w = bw->parent;
-	TW *tw = (TW *) bw->object;
+	BW *bw = (BW *)w->object;
+	TW *tw = (TW *)bw->object;
 
 	if (bw->o.linums != bw->linums) {
 		bw->linums = bw->o.linums;
-		resizetw(bw, w->w, w->h);
-		movetw(bw, w->x, w->y);
-		bwfllw(bw);
+		resizetw(w, w->w, w->h);
+		movetw(w, w->x, w->y);
+		bwfllw(w);
 	}
 
 	if (bw->o.hex) {
@@ -561,69 +563,73 @@ static void iztw(TW *tw, ptrdiff_t y)
 	tw->prev_b = 0;
 }
 
-int usplitw(BW *bw)
+int usplitw(W *w, int k)
 {
-	W *w = bw->parent;
+	BW *bw;
 	ptrdiff_t newh = getgrouph(w);
-	W *new;
+	W *neww;
 	TW *newtw;
 	BW *newbw;
+	WIND_BW(bw, w);
 
 	dostaupd = 1;
 	if (newh / 2 < FITHEIGHT)
 		return -1;
-	new = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL, NULL);
-	if (!new)
+	neww = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL, NULL);
+	if (!neww)
 		return -1;
-//	wfit(new->t);
-	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
+//	wfit(neww->t);
+	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0));
 	++bw->b->count;
 	newbw->offset = bw->offset;
 	newbw->object = (void *) (newtw = (TW *) joe_malloc(SIZEOF(TW)));
-	iztw(newtw, new->y);
+	iztw(newtw, neww->y);
 	pset(newbw->top, bw->top);
 	pset(newbw->cursor, bw->cursor);
 	newbw->cursor->xcol = bw->cursor->xcol;
-	new->t->curwin = new;
-	wfit(new->t);
+	neww->t->curwin = neww;
+	wfit(neww->t);
 	return 0;
 }
 
-int uduptw(BW *bw)
+int uduptw(W *w, int k)
 {
-	W *w = bw->parent;
+	BW *bw;
 	ptrdiff_t newh = getgrouph(w);
-	W *new;
+	W *neww;
 	TW *newtw;
 	BW *newbw;
+	WIND_BW(bw, w);
 
 	dostaupd = 1;
-	new = wcreate(w->t, w->watom, findbotw(w), NULL, NULL, newh, NULL, NULL);
-	if (!new)
+	neww = wcreate(w->t, w->watom, findbotw(w), NULL, NULL, newh, NULL, NULL);
+	if (!neww)
 		return -1;
 	if (demotegroup(w))
-		new->t->topwin = new;
-	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
+		neww->t->topwin = neww;
+	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0));
 	++bw->b->count;
 	newbw->offset = bw->offset;
 	newbw->object = (void *) (newtw = (TW *) joe_malloc(SIZEOF(TW)));
-	iztw(newtw, new->y);
+	iztw(newtw, neww->y);
 	pset(newbw->top, bw->top);
 	pset(newbw->cursor, bw->cursor);
 	newbw->cursor->xcol = bw->cursor->xcol;
-	new->t->curwin = new;
+	neww->t->curwin = neww;
 	wfit(w->t);
 	return 0;
 }
 
-static void instw(BW *bw, B *b, off_t l, off_t n, int flg)
+static void instw(W *w, B *b, off_t l, off_t n, int flg)
 {
+	BW *bw = (BW *)w->object;
 	if (b == bw->b)
 		bwins(bw, l, n, flg);
 }
 
-static void deltw(BW *bw, B *b, off_t l, off_t n, int flg)
+static void deltw(W *w, B *b, off_t l, off_t n, int flg)
 {
+	BW *bw = (BW *)w->object;
 	if (b == bw->b)
 		bwdel(bw, l, n, flg);
 }
@@ -634,7 +640,7 @@ WATOM watomtw = {
 	bwfllw,
 	NULL,
 	rtntw,
-	utypebw,
+	utypew,
 	resizetw,
 	movetw,
 	instw,
@@ -642,15 +648,16 @@ WATOM watomtw = {
 	TYPETW
 };
 
-int abortit(BW *bw)
+int abortit(W *w, int k)
 {
-	W *w;
+	BW *bw;
 	TW *tw;
 	B *b;
+	WIND_BW(bw, w);
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
 	if (bw->b->pid && bw->b->count==1)
-		return ukillpid(bw);
+		return ukillpid(bw->parent, 0);
 	w = bw->parent;
 	tw = (TW *) bw->object;
 	/* If only one main window on the screen... */
@@ -679,8 +686,9 @@ int abortit(BW *bw)
 
 /* User routine for aborting a text window */
 
-static int naborttw(BW *bw, int k, void *object, int *notify)
+static int naborttw(W *w, int k, void *object, int *notify)
 {
+	BW *bw = (BW *)w->object;
 	if (notify)
 		*notify = 1;
 	if (k != YES_CODE && !yncheck(yes_key, k))
@@ -688,18 +696,19 @@ static int naborttw(BW *bw, int k, void *object, int *notify)
 
 	if (bw->b->count == 1)
 		genexmsg(bw, 0, NULL);
-	return abortit(bw);
+	return abortit(bw->parent, 0);
 }
 
-static int naborttw1(BW *bw, int k, void *object, int *notify)
+static int naborttw1(W *w, int k, void *object, int *notify)
 {
+	BW *bw = (BW *)w->object;
 	if (notify)
 		*notify = 1;
 	if (k != YES_CODE && !yncheck(yes_key, k))
 		return -1;
 
 	if (!exmsg) genexmsg(bw, 0, NULL);
-	return abortit(bw);
+	return abortit(bw->parent, 0);
 }
 
 B *wpop(BW *bw)
@@ -718,8 +727,10 @@ B *wpop(BW *bw)
 }
 
 /* Pop, or do nothing if no window on stack */
-int upopabort(BW *bw)
+int upopabort(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (bw->parent->bstack) {
 		int rtn;
 		B *b = wpop(bw);
@@ -736,10 +747,12 @@ int upopabort(BW *bw)
 /* k is last character types which lead to uabort.  If k is -1, it means uabort
    was called internally, and not by the user: which means uabort will not send
    Ctrl-C to process */
-int uabort(BW *bw, int k)
+int uabort(W *w, int k)
 {
-	if (bw->parent->watom != &watomtw)
-		return wabort(bw->parent);
+	BW *bw;
+	if (w->watom != &watomtw)
+		return wabort(w);
+	WIND_BW(bw, w);
 	if (bw->parent->bstack) {
 		int rtn;
 		B *b = wpop(bw);
@@ -750,51 +763,55 @@ int uabort(BW *bw, int k)
 		return rtn;
 	}
 	if (bw->b->pid && bw->b->count==1)
-		return ukillpid(bw);
+		return ukillpid(bw->parent, 0);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw, NULL, NULL, NULL))
+		if (mkqw(w, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw, NULL, NULL, NULL))
 			return 0;
 		else
 			return -1;
 	else
-		return naborttw(bw, YES_CODE, NULL, NULL);
+		return naborttw(bw->parent, YES_CODE, NULL, NULL);
 }
 
-int ucancel(BW *bw, int k)
+int ucancel(W *w, int k)
 {
-	if (bw->parent->watom != &watomtw) {
-		wabort(bw->parent);
+	if (w->watom != &watomtw) {
+		wabort(w);
 		return 0;
 	} else
-		return uabort(bw,k);
+		return uabort(w, k);
 }
 
 /* Same as above, but only calls genexmsg if nobody else has */
 
-int uabort1(BW *bw, int k)
+int uabort1(W *w, int k)
 {
-	if (bw->parent->watom != &watomtw)
-		return wabort(bw->parent);
+	BW *bw;
+	if (w->watom != &watomtw)
+		return wabort(w);
+	bw = (BW *)w->object;
 	if (bw->b->pid && bw->b->count==1)
-		return ukillpid(bw);
+		return ukillpid(bw->parent, 0);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw1, NULL, NULL, NULL))
+		if (mkqw(w, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw1, NULL, NULL, NULL))
 			return 0;
 		else
 			return -1;
 	else
-		return naborttw1(bw, YES_CODE, NULL, NULL);
+		return naborttw1(w, YES_CODE, NULL, NULL);
 }
 
 /* Abort buffer without prompting: just fail if this is last window on buffer */
 
-int uabortbuf(BW *bw)
+int uabortbuf(W *w, int k)
 {
-	W *w = bw->parent;
+	BW *bw;
 	B *b;
 
+	WIND_BW(bw, w);
+
 	if (bw->b->pid && bw->b->count==1)
-		return ukillpid(bw);
+		return ukillpid(w, 0);
 
 	if (okrepl(bw))
 		return -1;
@@ -809,29 +826,31 @@ int uabortbuf(BW *bw)
 		return 0;
 	}
 
-	return naborttw(bw, YES_CODE, NULL, NULL);
+	return naborttw(w, YES_CODE, NULL, NULL);
 }
 
 /* Kill current window (orphans buffer) */
 
-int utw0(BASE *b)
+int utw0(W *w, int k)
 {
-	BW *bw = b->parent->main->object;
+	BW *bw;
+	w = w->main;
+	bw = (BW *)w->object;
 
-	if (bw->parent->bstack)
-		return uabort(bw, -1);
-	if (countmain(b->parent->t) == 1)
+	if (w->bstack)
+		return uabort(w, -1);
+	if (countmain(w->t) == 1)
 		return -1;
 	if (bw->b->count == 1)
 		orphit(bw);
-	return uabort(bw, -1);
+	return uabort(w, -1);
 }
 
 /* Kill all other windows (orphans buffers) */
 
-int utw1(BASE *b)
+int utw1(W *w, int k)
 {
-	W *starting = b->parent;
+	W *starting = w;
 	W *mainw = starting->main;
 	Screen *t = mainw->t;
 	int yn;
@@ -843,8 +862,7 @@ int utw1(BASE *b)
 			wnext(t);
 		} while (t->curwin->main == mainw && t->curwin != starting);
 		if (t->curwin->main != mainw) {
-			BW *bw = t->curwin->main->object;
-			utw0((BASE *)bw);
+			utw0(t->curwin->main, 0);
 			yn = 1;
 			goto loop;
 		}
@@ -858,7 +876,7 @@ void setline(B *b, off_t line)
 
 	do {
 		if (w->watom->what == TYPETW) {
-			BW *bw = w->object;
+			BW *bw = (BW *)w->object;
 
 			if (bw->b == b) {
 				off_t oline = bw->top->line;

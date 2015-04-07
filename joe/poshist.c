@@ -22,17 +22,17 @@ int npos = 0;
 
 static void markpos(W *w, P *p)
 {
-	POS *new = alitem(&frpos, SIZEOF(POS));
+	POS *newpos = (POS *)alitem(&frpos, SIZEOF(POS));
 
-	new->p = NULL;
-	pdupown(p, &new->p, "markpos");
-	poffline(new->p);
-	new->w = w;
-	enqueb(POS, link, &pos, new);
+	newpos->p = NULL;
+	pdupown(p, &newpos->p, "markpos");
+	poffline(newpos->p);
+	newpos->w = w;
+	enqueb(POS, link, &pos, newpos);
 	if (npos == 20) {
-		new = pos.link.next;
-		prm(new->p);
-		demote(POS, link, &frpos, new);
+		newpos = pos.link.next;
+		prm(newpos->p);
+		demote(POS, link, &frpos, newpos);
 	} else {
 		++npos;
 	}
@@ -66,9 +66,10 @@ void windie(W *w)
 	}
 }
 
-int unextpos(BW *bw)
+int unextpos(W *w, int k)
 {
-	W *w = bw->parent;
+	BW *bw;
+	WIND_BW(bw, w);
 
       lp:
 	if (curpos->link.next != &pos && curpos != &pos) {
@@ -101,9 +102,10 @@ int unextpos(BW *bw)
 	}
 }
 
-int uprevpos(BW *bw)
+int uprevpos(W *w, int k)
 {
-	W *w = bw->parent;
+	BW *bw;
+	WIND_BW(bw, w);
 
       lp:
 	if (curpos->link.prev != &pos) {

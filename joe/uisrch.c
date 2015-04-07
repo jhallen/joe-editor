@@ -34,7 +34,7 @@ IREC fri = { {&fri, &fri} };	/* Free-list of irecs */
 
 static IREC *alirec(void)
 {				/* Allocate an IREC */
-	return alitem(&fri, SIZEOF(IREC));
+	return (IREC *)alitem(&fri, SIZEOF(IREC));
 }
 
 static void frirec(IREC *i)
@@ -52,8 +52,9 @@ static void rmisrch(struct isrch *isrch)
 	}
 }
 
-static int iabrt(BW *bw, struct isrch *isrch)
+static int iabrt(W *w, void *obj)
 {				/* User hit ^C */
+	struct isrch *isrch = (struct isrch *)obj;
 	rmisrch(isrch);
 	return -1;
 }
@@ -103,10 +104,13 @@ static void iappend(BW *bw, struct isrch *isrch, char *s, ptrdiff_t len)
 
 /* Main user interface */
 /* When called with c==-1, it just creates the prompt */
-static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
+static int itype(W *w, int c, void *obj, int *notify)
 {
 	IREC *i;
 	int omid;
+	BW *bw;
+	struct isrch *isrch = (struct isrch *)obj;
+	WIND_BW(bw,w);
 
 	if (isrch->quote) {
 		goto in;
@@ -234,7 +238,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		}
 	} else if (!locale_map->type && bw->b->o.charmap->type) {
 		/* Translate utf-8 to bytes */
-		char *p = isrch->pattern;
+		const char *p = isrch->pattern;
 		ptrdiff_t len = sLEN(isrch->pattern);
 		while (len) {
 			int c = utf8_decode_fwrd(&p, &len);
@@ -266,16 +270,18 @@ static int doisrch(BW *bw, int dir)
 	isrch->quote = 0;
 	isrch->prompt = vsncpy(NULL, 0, sz(joe_gettext(_("I-find: "))));
 	isrch->ofst = sLen(isrch->prompt);
-	return itype(bw, -1, isrch, NULL);
+	return itype(bw->parent, -1, isrch, NULL);
 }
 
-int uisrch(BW *bw)
+int uisrch(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (smode && lastisrch) {
 		struct isrch *isrch = lastisrch;
 
 		lastisrch = 0;
-		return itype(bw, 'S' - '@', isrch, NULL);
+		return itype(bw->parent, 'S' - '@', isrch, NULL);
 	} else {
 		if (globalsrch) {
 			rmsrch(globalsrch);
@@ -291,13 +297,15 @@ int uisrch(BW *bw)
 	}
 }
 
-int ursrch(BW *bw)
+int ursrch(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (smode && lastisrch) {
 		struct isrch *isrch = lastisrch;
 
 		lastisrch = 0;
-		return itype(bw, 'R' - '@', isrch, NULL);
+		return itype(bw->parent, 'R' - '@', isrch, NULL);
 	} else {
 		if (globalsrch) {
 			rmsrch(globalsrch);

@@ -37,7 +37,7 @@ VFILE *vmem;
 
 int nodeadjoe = 0;
 
-char *msgs[] = {
+const char *msgs[] = {
 	_("No error"),
 	_("New File"),
 	_("Error reading file"),
@@ -72,7 +72,7 @@ static void gstgap(H *hdr, char *ptr, ptrdiff_t ofst)
 }
 
 /* Insert a block */
-static void ginsm(H *hdr, char *ptr, ptrdiff_t ofst, char *blk, ptrdiff_t size)
+static void ginsm(H *hdr, char *ptr, ptrdiff_t ofst, const char *blk, ptrdiff_t size)
 {
 	if (ofst != hdr->hole)
 		gstgap(hdr, ptr, ofst);
@@ -131,7 +131,7 @@ static P frptrs = { {&frptrs, &frptrs} };
 /* Pointer allocation */
 static P *palloc(void)
 {
-	return alitem(&frptrs, SIZEOF(P));
+	return (P *)alitem(&frptrs, SIZEOF(P));
 }
 
 static void pfree(P *p)
@@ -164,12 +164,13 @@ B *bafter(B *b)
 		return b;
 }
 
-int udebug_joe(BW *bw)
+int udebug_joe(W *w, int k)
 {
 	char buf[1024];
-
+	BW *bw;
 	B *b;
 	P *p;
+	WIND_BW(bw, w);
 
 	binss(bw->cursor, "Buffers and pointers (the number of pointers per buffer should not grow, except for 20 from markpos):\n\n");
 	pnextl(bw->cursor);
@@ -220,14 +221,14 @@ B *bprev(void)
 /* Make a buffer out of a chain */
 static B *bmkchn(H *chn, B *prop, off_t amnt, off_t nlines)
 {
-	B *b = alitem(&frebufs, SIZEOF(B));
+	B *b = (B *)alitem(&frebufs, SIZEOF(B));
 
 	b->undo = undomk(b);
 	if (prop)
 		b->o = prop->o;
 	else
 		b->o = pdefault;
-	mset(b->marks, 0, SIZEOF(b->marks));
+	mset((char *)b->marks, 0, SIZEOF(b->marks));
 	b->rdonly = 0;
 	b->orphan = 0;
 	b->oldcur = NULL;
@@ -310,7 +311,7 @@ void brm(B *b)
 			prm(b->bof);
 		}
 		if (b->name)
-			joe_free(b->name);
+			joe_free((void *)b->name);
 		if (b->db)
 			rm_all_lattr_db(b->db);
 		vsrm(b->current_dir);
@@ -359,7 +360,7 @@ void breplace(B *b, B *n)
 
 	/* Delete file name */
 	if (b->name)
-		joe_free(b->name);
+		joe_free((void *)b->name);
 
 	reset_all_lattr_db(b->db);
 	
@@ -471,7 +472,7 @@ B *bonline(B *b)
 	return b;
 }
 
-P *pdup(P *p, char *tr)
+P *pdup(P *p, const char *tr)
 {
 	P *n = palloc();
 
@@ -483,7 +484,7 @@ P *pdup(P *p, char *tr)
 	return pset(n, p);
 }
 
-P *pdupown(P *p, P **o, char *tr)
+P *pdupown(P *p, P **o, const char *tr)
 {
 	P *n = palloc();
 
@@ -763,9 +764,9 @@ int ansi_code(char *s)
 	struct ansi_entry *e;
 	if (!ansi_hash)
 		ansi_hash = htmk(128);
-	e = htfind(ansi_hash, s);
+	e = (struct ansi_entry *)htfind(ansi_hash, s);
 	if (!e) {
-		e = joe_malloc(SIZEOF(struct ansi_entry));
+		e = (struct ansi_entry *)joe_malloc(SIZEOF(struct ansi_entry));
 		e->name = zdup(s);
 		e->code = ansi_len;
 		htadd(ansi_hash, e->name, e);
@@ -1410,7 +1411,7 @@ static void ffwrd(P *p, ptrdiff_t n)
 }
 
 /* forward find pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
-static P *ffind(P *p, char *s, ptrdiff_t len)
+static P *ffind(P *p, const char *s, ptrdiff_t len)
 {
 	off_t amnt = p->b->eof->byte - p->byte;
 	ptrdiff_t x;
@@ -1452,7 +1453,7 @@ static P *ffind(P *p, char *s, ptrdiff_t len)
 
 /* Forward find (case insensitive) pattern 's' in text pointed by 'p' (Boyer-Moore algorithm)
    Only use this for 8-bit character sets.  Do not use for UTF-8. */
-static P *fifind(P *p, char *s, ptrdiff_t len)
+static P *fifind(P *p, const char *s, ptrdiff_t len)
 {
 	off_t amnt = p->b->eof->byte - p->byte;
 	ptrdiff_t x;
@@ -1514,7 +1515,7 @@ static P *getto(P *p, P *q)
 }
 
 /* find forward substring s in text pointed by p and set p after found substring */
-P *pfind(P *p, char *s, ptrdiff_t len)
+P *pfind(P *p, const char *s, ptrdiff_t len)
 {
 	P *q = pdup(p, "pfind");
 
@@ -1529,7 +1530,7 @@ P *pfind(P *p, char *s, ptrdiff_t len)
 }
 
 /* same as pfind() but case insensitive */
-P *pifind(P *p, char *s, ptrdiff_t len)
+P *pifind(P *p, const char *s, ptrdiff_t len)
 {
 	P *q = pdup(p, "pifind");
 
@@ -1569,7 +1570,7 @@ static int fpgetc(P *p)
 }
 
 /* backward find pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
-static P *frfind(P *p, char *s, ptrdiff_t len)
+static P *frfind(P *p, const char *s, ptrdiff_t len)
 {
 	off_t amnt = p->byte;
 	ptrdiff_t x;
@@ -1615,7 +1616,7 @@ static P *frfind(P *p, char *s, ptrdiff_t len)
 /* backward find (case insensitive) pattern 's' in text pointed by 'p' (Boyer-Moore algorithm)
  * Use only for 8-bit character sets.  Will not work properly for UTF-8 */
 
-static P *frifind(P *p, char *s, ptrdiff_t len)
+static P *frifind(P *p, const char *s, ptrdiff_t len)
 {
 	off_t amnt = p->byte;
 	ptrdiff_t x;
@@ -1681,7 +1682,7 @@ static P *rgetto(P *p, P *q)
 }
 
 /* find backward substring s in text pointed by p and set p on the first of found substring */
-P *prfind(P *p, char *s, ptrdiff_t len)
+P *prfind(P *p, const char *s, ptrdiff_t len)
 {
 	P *q = pdup(p, "prfind");
 
@@ -1696,7 +1697,7 @@ P *prfind(P *p, char *s, ptrdiff_t len)
 }
 
 /* same as prfind() but case insensitive */
-P *prifind(P *p, char *s, ptrdiff_t len)
+P *prifind(P *p, const char *s, ptrdiff_t len)
 {
 	P *q = pdup(p, "prifind");
 
@@ -2075,7 +2076,7 @@ static void bsplit(P *p)
 }
 
 /* Make a chain out of a block of memory (the block must not be empty) */
-static H *bldchn(char *blk, ptrdiff_t size, off_t *nlines)
+static H *bldchn(const char *blk, ptrdiff_t size, off_t *nlines)
 {
 	H anchor, *l;
 
@@ -2197,7 +2198,7 @@ P *binsb(P *p, B *b)
 }
 
 /* insert memory block 'blk' at 'p' */
-P *binsm(P *p, char *blk, ptrdiff_t amnt)
+P *binsm(P *p, const char *blk, ptrdiff_t amnt)
 {
 	ptrdiff_t nlines;
 	off_t nlines1;
@@ -2259,7 +2260,7 @@ P *binsc(P *p, int c)
 }
 
 /* insert zero-terminated string 's' at 'p' */
-P *binss(P *p, char *s)
+P *binss(P *p, const char *s)
 {
 	return binsm(p, s, zlen(s));
 }
@@ -2321,7 +2322,7 @@ B *bread(int fi, off_t max)
  *
  * Returns new variable length string.
  */
-char *parsens(char *s, off_t *skip, off_t *amnt)
+char *parsens(const char *s, off_t *skip, off_t *amnt)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
 	ptrdiff_t x;
@@ -2452,7 +2453,7 @@ off_t pisindentg(P *p)
 	return col;
 }
 
-char *dequote(char *s)
+char *dequote(const char *s)
 {
         static char buf[1024];
         char *p = buf;
@@ -2473,7 +2474,7 @@ char *dequote(char *s)
  * -3 for seek error
  * -4 for open error
  */
-B *bload(char *s)
+B *bload(const char *s)
 {
 	char buffer[SEGSIZ];
 	FILE *fi = 0;
@@ -2713,7 +2714,7 @@ opnerr:
 }
 
 /* Find already loaded buffer or load file into new buffer */
-B *bfind(char *s)
+B *bfind(const char *s)
 {
 	B *b;
 
@@ -2742,7 +2743,7 @@ B *bfind(char *s)
 }
 
 /* Find already loaded buffer or load file into new buffer */
-B *bfind_scratch(char *s)
+B *bfind_scratch(const char *s)
 {
 	B *b;
 
@@ -2776,7 +2777,7 @@ B *bfind_scratch(char *s)
 	return b;
 }
 
-B *bfind_reload(char *s)
+B *bfind_reload(const char *s)
 {
 	B *b;
 	b = bload(s);
@@ -2784,7 +2785,7 @@ B *bfind_reload(char *s)
 	return b;
 }
 
-B *bcheck_loaded(char *s)
+B *bcheck_loaded(const char *s)
 {
 	B *b;
 
@@ -2880,15 +2881,14 @@ err:
 int break_links; /* Set to break hard links on writes */
 int break_symlinks; /* Set to break symbolic links and hard links on writes */
 
-int bsave(P *p, char *s, off_t size, int flag)
+int bsave(P *p, const char *as, off_t size, int flag)
 {
 	struct stat sbuf;
 	int have_stat = 0;
 	FILE *f;
 	off_t skip, amnt;
 	int norm = 0;
-
-	s = parsens(s, &skip, &amnt);
+	char *s = parsens(as, &skip, &amnt);
 
 	if (amnt < size)
 		size = amnt;
@@ -3053,7 +3053,7 @@ char *brmem(P *p, char *blk, ptrdiff_t size)
 
 char *brs(P *p, ptrdiff_t size)
 {
-	char *s = joe_malloc(size + 1);
+	char *s = (char *)joe_malloc(size + 1);
 
 	s[size] = 0;
 	return brmem(p, s, size);
@@ -3169,14 +3169,14 @@ skipfile:
    Return 0 for success or -1 for failure
 */
 
-int lock_it(char *qpath,char *bf)
+int lock_it(const char *qpath,char *bf)
 {
         char *path = dequote(qpath);
 	char *lock_name=dirprt(path);
 	char *name=namprt(path);
 	char buf[1024];
-	char *user = getenv("USER");
-	char *host = getenv("HOSTNAME");
+	const char *user = getenv("USER");
+	const char *host = getenv("HOSTNAME");
 	if (!user) user="me";
 	if (!host) host="here";
 	lock_name=vsncpy(sv(lock_name),sc(".#"));
@@ -3198,7 +3198,7 @@ int lock_it(char *qpath,char *bf)
 	return -1;
 }
 
-void unlock_it(char *qpath)
+void unlock_it(const char *qpath)
 {
         char *path = dequote(qpath);
 	char *lock_name=dirprt(path);
@@ -3238,7 +3238,7 @@ int check_mod(B *b)
 
 /* True if file exists */
 
-int file_exists(char *path)
+int file_exists(const char *path)
 {
 	struct stat sbuf;
 	if (!path) return 0;

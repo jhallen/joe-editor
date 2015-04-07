@@ -33,17 +33,17 @@ extern int justkilled; /* Last edit was a delete, so store data in yank buffer *
 
 UNDO *undomk(B *b);
 void undorm(UNDO *undo);
-int uundo(BW *bw);
-int uredo(BW *bw);
+int uundo(W *w, int k);
+int uredo(W *w, int k);
 void umclear(void); /* Call this to finalize current undo records.  New changes will create new records. */
 void undomark(void);
 void undoins(UNDO *undo, P *p, off_t size);
 void undodel(UNDO *undo, off_t where, B *b);
-int uyank(BW *bw);
-int uyankpop(BW *bw);
-int uyapp(BW *bw);
-int unotmod(BW *bw);
-int ucopy(BW *bw);
+int uyank(W *w, int k);
+int uyankpop(W *w, int k);
+int uyapp(W *w, int k);
+int unotmod(W *w, int k);
+int ucopy(W *w, int k);
 
 void load_yank(FILE *f);
 void save_yank(FILE *f);

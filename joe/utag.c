@@ -67,7 +67,7 @@ static int dotagjump(BW *bw, int flag)
 	line = tags.link.next->line;
 	last = tags.link.next->last;
 	demote(TAG,link,&tags,tags.link.next);
-	if (doswitch(bw, vsncpy(NULL, 0, sv(file)), NULL, NULL)) {
+	if (doswitch(bw->parent, vsncpy(NULL, 0, sv(file)), NULL, NULL)) {
 		return -1;
 	}
 	bw = (BW *)maint->curwin->object;
@@ -96,20 +96,22 @@ static int dotagjump(BW *bw, int flag)
 	}
 }
               
-int utagjump(BW *bw)
+int utagjump(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	return dotagjump(bw, 1);
 }
 
 static int last_cursor;
 
-static int dotagmenu(MENU *m, int x, char **s)
+static int dotagmenu(MENU *m, ptrdiff_t x, void *obj, int k)
 {
 	char *file;
 	char *srch;
 	off_t line;
 	struct tag *t = tags.link.next;
-	BW *bw = m->parent->win->object;
+	BW *bw = (BW *)m->parent->win->object;
 	last_cursor = x;
 	if (t == &tags)
 		return -1;
@@ -122,7 +124,7 @@ static int dotagmenu(MENU *m, int x, char **s)
 	srch = t->srch;
 	line = t->line;
 	wabort(m->parent);
-	if (doswitch(bw, vsncpy(NULL, 0, sv(file)), NULL, NULL)) {
+	if (doswitch(bw->parent, vsncpy(NULL, 0, sv(file)), NULL, NULL)) {
 		return -1;
 	}
 	bw = (BW *)maint->curwin->object;
@@ -144,15 +146,16 @@ static int dotagmenu(MENU *m, int x, char **s)
 
 char **tag_array;
 
-static int dotag(BW *bw, char *s, void *obj, int *notify)
+static int dotag(W *w, char *s, void *obj, int *notify)
 {
+	BW *bw;
 	char buf[512];
 	char buf1[512];
 	FILE *f;
 	char *prefix = NULL;
 	char *t = NULL;
 	struct tag *ta;
-
+	WIND_BW(bw, w);
 	if (notify) {
 		*notify = 1;
 	}
@@ -434,7 +437,7 @@ static void get_tag_list()
 	}
 }
 
-static int tag_cmplt(BW *bw)
+static int tag_cmplt(BW *bw, int k)
 {
 	get_tag_list();
 
@@ -448,14 +451,16 @@ static int tag_cmplt(BW *bw)
 
 static B *taghist = NULL;
 
-int utag(BW *bw)
+int utag(W *w, int k)
 {
+	BW *bw;
 	BW *pbw;
+	WIND_BW(bw, w);
 
 	/* Repeat previous search */
 	if (smode && !qempty(TAG, link, &tags)) {
 		if (notagsmenu)
-			return utagjump(bw);
+			return utagjump(bw->parent, 0);
 		if (mkmenu(bw->parent, bw->parent, tag_array, dotagmenu, NULL, NULL, last_cursor, tag_array, NULL))
 			return 0;
 		else

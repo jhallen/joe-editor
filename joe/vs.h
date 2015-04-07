@@ -175,7 +175,7 @@ void vsrm(sELEMENT *vary);
  * Compute length of char or variable length array by searching for termination
  * element.  Returns 0 if 'vary' is 0.
  */
-ptrdiff_t slen(sELEMENT *ary);
+ptrdiff_t slen(const sELEMENT *ary);
 
 /* sELEMENT *vsensure(sELEMENT *vary, int len);
  * Make sure there's enough space in the array for 'len' elements.  Whenever
@@ -211,7 +211,7 @@ sELEMENT *vsfill(sELEMENT *vary, ptrdiff_t pos, sELEMENT el, ptrdiff_t len);
  * elements are copied, not duplicated.  A new array is created if 'vary' is
  * 0.  This does not zap previous elements.
  */
-sELEMENT *vsncpy(sELEMENT *vary, ptrdiff_t pos, sELEMENT *array, ptrdiff_t len);
+sELEMENT *vsncpy(sELEMENT *vary, ptrdiff_t pos, const sELEMENT *array, ptrdiff_t len);
 
 /* sELEMENT *vsndup(sELEMENT *vary, int pos, sELEMENT *array, int len));
  * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
@@ -345,7 +345,7 @@ sELEMENT *vssort(sELEMENT *ary, ptrdiff_t len);
  *
  * Hmm... this should really indicate whether or not the element was found.
  */
-ptrdiff_t vsbsearch(sELEMENT *ary, ptrdiff_t len, sELEMENT el);
+ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el);
 
 #ifdef junk
 /* int vsfirst(sELEMENT *ary, int len, sELEMENT element);
@@ -401,13 +401,13 @@ int vsicmp(sELEMENT *a, sELEMENT *b);
  *
  * Hmm... this really needs to return what the found element is.
  */
-ptrdiff_t vsscan(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen);
+ptrdiff_t vsscan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t blen);
 
 /* int vsspan(sELEMENT *a, int alen, sELEMENT *b, int blen);
  * Find offset of first matching element in 'a' which does not match any
  * of the elements passed in 'b'.  Array 'b' must be sorted.
  */
-ptrdiff_t vsspan(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen);
+ptrdiff_t vsspan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t blen);
 
 /***************/
 /* Other stuff */

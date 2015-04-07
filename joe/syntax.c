@@ -55,10 +55,10 @@ HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 		if (attr == attr_end) {
 			if (!attr_buf) {
 				attr_size = 1024;
-				attr_buf = joe_malloc(SIZEOF(int) * attr_size);
+				attr_buf = (int *)joe_malloc(SIZEOF(int) * attr_size);
 				attr = attr_buf;
 			} else {
-				attr_buf = joe_realloc(attr_buf, SIZEOF(int) * (attr_size * 2));
+				attr_buf = (int *)joe_realloc(attr_buf, SIZEOF(int) * (attr_size * 2));
 				attr = attr_buf + attr_size;
 				attr_size *= 2;
 			}
@@ -195,10 +195,10 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		if(attr==attr_end) {
 			if(!attr_buf) {
 				attr_size = 1024;
-				attr_buf = joe_malloc(SIZEOF(int)*attr_size);
+				attr_buf = (int *)joe_malloc(SIZEOF(int)*attr_size);
 				attr = attr_buf;
 			} else {
-				attr_buf = joe_realloc(attr_buf,SIZEOF(int)*(attr_size*2));
+				attr_buf = (int *)joe_realloc(attr_buf,SIZEOF(int)*(attr_size*2));
 				attr = attr_buf + attr_size;
 				attr_size *= 2;
 			}
@@ -240,7 +240,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			if (cmd->delim && (cmd->ignore ? !zcmp(lsaved_s,lbuf) : !zcmp(h_state.saved_s,buf))) {
 				cmd = cmd->delim;
 				recolor_delimiter_or_keyword = 1;
-			} else if (cmd->keywords && (cmd->ignore ? (kw_cmd=htfind(cmd->keywords,lbuf)) : (kw_cmd=htfind(cmd->keywords,buf)))) {
+			} else if (cmd->keywords && (cmd->ignore ? (kw_cmd=(struct high_cmd *)htfind(cmd->keywords,lbuf)) : (kw_cmd=(struct high_cmd *)htfind(cmd->keywords,buf)))) {
 				cmd = kw_cmd;
 				recolor_delimiter_or_keyword = 1;
 			}
@@ -255,7 +255,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				if (*frame_ptr)
 					stack = *frame_ptr;
 				else {
-					struct high_frame *frame = joe_malloc(SIZEOF(struct high_frame));
+					struct high_frame *frame = (struct high_frame *)joe_malloc(SIZEOF(struct high_frame));
 					frame->parent = stack;
 					frame->child = 0;
 					frame->sibling = 0;
@@ -372,18 +372,18 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 	struct high_state *state;
 
 	/* Find state */
-	state = htfind(syntax->ht_states, name);
+	state = (struct high_state *)htfind(syntax->ht_states, name);
 
 	/* It doesn't exist, so create it */
 	if(!state) {
 		int y;
-		state=joe_malloc(SIZEOF(struct high_state));
+		state=(struct high_state *)joe_malloc(SIZEOF(struct high_state));
 		state->name=zdup(name);
 		state->no=syntax->nstates;
 		state->color=FG_WHITE;
 		/* Expand the state table if necessary */
 		if(syntax->nstates==syntax->szstates)
-			syntax->states=joe_realloc(syntax->states,SIZEOF(struct high_state *)*(syntax->szstates*=2));
+			syntax->states=(struct high_state **)joe_realloc(syntax->states,SIZEOF(struct high_state *)*(syntax->szstates*=2));
 		syntax->states[syntax->nstates++]=state;
 		for(y=0; y!=256; ++y)
 			state->cmd[y] = &syntax->default_cmd;
@@ -418,7 +418,7 @@ static void iz_cmd(struct high_cmd *cmd)
 
 static struct high_cmd *mkcmd()
 {
-	struct high_cmd *cmd = joe_malloc(SIZEOF(struct high_cmd));
+	struct high_cmd *cmd = (struct high_cmd *)joe_malloc(SIZEOF(struct high_cmd));
 	iz_cmd(cmd);
 	return cmd;
 }
@@ -452,7 +452,7 @@ void parse_color_def(struct high_color **color_list,char *p,char *name,int line)
 
 		/* If it doesn't exist, create it */
 		if(!color) {
-			color = joe_malloc(SIZEOF(struct high_color));
+			color = (struct high_color *)joe_malloc(SIZEOF(struct high_color));
 			color->name = zdup(bf);
 			color->color = 0;
 			color->next = *color_list;
@@ -536,7 +536,7 @@ struct high_param *parse_params(struct high_param *current_params,char **ptr,cha
 	/* Propagate currently defined parameters */
 	param_ptr = &params;
 	while (current_params) {
-		*param_ptr = joe_malloc(SIZEOF(struct high_param));
+		*param_ptr = (struct high_param *)joe_malloc(SIZEOF(struct high_param));
 		(*param_ptr)->name = zdup(current_params->name);
 		param_ptr = &(*param_ptr)->next;
 		current_params = current_params->next;
@@ -573,7 +573,7 @@ struct high_param *parse_params(struct high_param *current_params,char **ptr,cha
 					param_ptr = &(*param_ptr)->next;
 				/* Discard duplicates */
 				if (!*param_ptr || cmp) {
-					struct high_param *param = joe_malloc(SIZEOF(struct high_param));
+					struct high_param *param = (struct high_param *)joe_malloc(SIZEOF(struct high_param));
 					param->name = zdup(bf);
 					param->next = *param_ptr;
 					*param_ptr = param;
@@ -590,7 +590,7 @@ struct high_param *parse_params(struct high_param *current_params,char **ptr,cha
 }
 
 
-struct high_syntax *load_syntax_subr(char *name,char *subr,struct high_param *params);
+struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_param *params);
 
 /* Parse options */
 
@@ -739,7 +739,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 		if (!parse_char(&p, '.')) {
 			if (!parse_ident(&p, bf, SIZEOF(bf))) {
 				if (!zcmp(bf, "ifdef")) {
-					struct ifstack *st = joe_malloc(SIZEOF(struct ifstack));
+					struct ifstack *st = (struct ifstack *)joe_malloc(SIZEOF(struct ifstack));
 					st->next = stack;
 					st->else_part = 0;
 					st->ignore = 1;
@@ -906,7 +906,7 @@ struct high_state *load_dfa(struct high_syntax *syntax)
 	return first;
 }
 
-int syntax_match(struct high_syntax *syntax,char *name,char *subr,struct high_param *params)
+int syntax_match(struct high_syntax *syntax,const char *name,const char *subr,struct high_param *params)
 {
 	struct high_param *syntax_params;
 	if (zcmp(syntax->name,name))
@@ -925,7 +925,7 @@ int syntax_match(struct high_syntax *syntax,char *name,char *subr,struct high_pa
 	return syntax_params == params;
 }
 
-struct high_syntax *load_syntax_subr(char *name,char *subr,struct high_param *params)
+struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_param *params)
 {
 	struct high_syntax *syntax;	/* New syntax table */
 
@@ -937,14 +937,14 @@ struct high_syntax *load_syntax_subr(char *name,char *subr,struct high_param *pa
 			return syntax;
 
 	/* Create new one */
-	syntax = joe_malloc(SIZEOF(struct high_syntax));
+	syntax = (struct high_syntax *)joe_malloc(SIZEOF(struct high_syntax));
 	syntax->name = zdup(name);
 	syntax->subr = subr ? zdup(subr) : 0;
 	syntax->params = params;
 	syntax->next = syntax_list;
 	syntax->nstates = 0;
 	syntax->color = 0;
-	syntax->states = joe_malloc(SIZEOF(struct high_state *)*(syntax->szstates = 64));
+	syntax->states = (struct high_state **)joe_malloc(SIZEOF(struct high_state *)*(syntax->szstates = 64));
 	syntax->ht_states = htmk(syntax->szstates);
 	iz_cmd(&syntax->default_cmd);
 	syntax->default_cmd.reset = 1;
@@ -963,14 +963,14 @@ struct high_syntax *load_syntax_subr(char *name,char *subr,struct high_param *pa
 			syn->next = syntax->next;
 		}
 		htrm(syntax->ht_states);
-		joe_free(syntax->name);
+		joe_free((void *)syntax->name);
 		joe_free(syntax->states);
 		joe_free(syntax);
 		return 0;
 	}
 }
 
-struct high_syntax *load_syntax(char *name)
+struct high_syntax *load_syntax(const char *name)
 {
 	if (!name)
 		return 0;

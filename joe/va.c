@@ -9,12 +9,12 @@
 
 aELEMENT *vamk(ptrdiff_t len)
 {
-	ptrdiff_t *new = (ptrdiff_t *) joe_malloc((1 + len) * SIZEOF(aELEMENT) + 2 * SIZEOF(ptrdiff_t));
+	ptrdiff_t *newa = (ptrdiff_t *) joe_malloc((1 + len) * SIZEOF(aELEMENT) + 2 * SIZEOF(ptrdiff_t));
 
-	new[0] = len;
-	new[1] = 0;
-	((aELEMENT *)(new + 2))[0] = aterm;
-	return (aELEMENT *)(new + 2);
+	newa[0] = len;
+	newa[1] = 0;
+	((aELEMENT *)(newa + 2))[0] = aterm;
+	return (aELEMENT *)(newa + 2);
 }
 
 void varm(aELEMENT *vary)
@@ -171,7 +171,7 @@ aELEMENT *vasort(aELEMENT *ary, ptrdiff_t len)
 	return ary;
 }
 
-aELEMENT *vawords(aELEMENT *a, char *s, ptrdiff_t len, char *sep, ptrdiff_t seplen)
+aELEMENT *vawords(aELEMENT *a, const char *s, ptrdiff_t len, const char *sep, ptrdiff_t seplen)
 {
 	ptrdiff_t x;
 

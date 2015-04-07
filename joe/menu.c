@@ -11,8 +11,9 @@ int bg_menu;
 
 int transpose;
 
-static void menufllw(MENU *m)
+static void menufllw(W *w)
 {
+	MENU *m = (MENU *)w->object;
 	if (transpose) {
 		if ((m->cursor % m->lines) < m->top)
 			m->top = m->cursor % m->lines;
@@ -26,15 +27,17 @@ static void menufllw(MENU *m)
 	}
 }
 
-static void menudisp(MENU *m)
+static void menudisp(W *w, int flg)
 {
+	MENU *m = (MENU *)w->object;
 	ptrdiff_t col;
 	int x;
 	int y;
+	struct utf8_sm sm;
 	int *s = m->t->t->scrn + m->x + m->y * m->t->t->co;
 	int *a = m->t->t->attr + m->x + m->y * m->t->t->co;
-	struct utf8_sm sm;
 	ptrdiff_t cut = m->nitems % m->lines;
+
 	if (!cut) cut = m->lines;
 
 	utf8_init(&sm);
@@ -134,8 +137,9 @@ static void menudisp(MENU *m)
 	}
 }
 
-static void menumove(MENU *m, int x, int y)
+static void menumove(W *w, ptrdiff_t x, ptrdiff_t y)
 {
+	MENU *m = (MENU *)w->object;
 	m->x = x;
 	m->y = y;
 }
@@ -191,15 +195,18 @@ static void mconfig(MENU *m)
 	}
 }
 
-static void menuresz(MENU *m, ptrdiff_t wi, ptrdiff_t he)
+static void menuresz(W *w, ptrdiff_t wi, ptrdiff_t he)
 {
+	MENU *m = (MENU *)w->object;
 	m->w = wi;
 	m->h = he;
 	mconfig(m);
 }
 
-int umbol(MENU *m)
+int umbol(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (transpose)
 		m->cursor %= m->lines;
 	else
@@ -207,14 +214,18 @@ int umbol(MENU *m)
 	return 0;
 }
 
-int umbof(MENU *m)
+int umbof(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	m->cursor = 0;
 	return 0;
 }
 
-int umeof(MENU *m)
+int umeof(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (m->nitems) {
 		if (transpose && (m->nitems % m->lines != 0)) {
 			m->cursor = m->lines - 1 + (m->lines * (m->perline - 2));
@@ -225,8 +236,10 @@ int umeof(MENU *m)
 	return 0;
 }
 
-int umeol(MENU *m)
+int umeol(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (transpose) {
 		ptrdiff_t cut = m->nitems % m->lines;
 		if (!cut) cut = m->lines;
@@ -247,8 +260,10 @@ int umeol(MENU *m)
 	return 0;
 }
 
-int umrtarw(MENU *m)
+int umrtarw(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (transpose) {
 		ptrdiff_t cut = m->nitems % m->lines;
 		if (!cut) cut = m->lines;
@@ -275,8 +290,10 @@ int umrtarw(MENU *m)
 		return -1;
 }
 
-int umtab(MENU *m)
+int umtab(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (m->cursor + 1 >= m->nitems)
 		m->cursor = 0;
 	else
@@ -284,8 +301,10 @@ int umtab(MENU *m)
 	return 0;
 }
 
-int umltarw(MENU *m)
+int umltarw(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (transpose && m->cursor >= m->lines) {
 		m->cursor -= m->lines;
 		return 0;
@@ -305,8 +324,10 @@ int umltarw(MENU *m)
 		return -1;
 }
 
-int umuparw(MENU *m)
+int umuparw(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (transpose && (m->cursor % m->lines)) {
 		--m->cursor;
 		return 0;
@@ -317,8 +338,10 @@ int umuparw(MENU *m)
 		return -1;
 }
 
-int umdnarw(MENU *m)
+int umdnarw(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (transpose) {
 		if (m->cursor != m->nitems - 1 && m->cursor % m->lines != m->lines - 1) {
 			++m->cursor;
@@ -398,13 +421,17 @@ int mscrup(MENU *m,ptrdiff_t amnt)
 	}
 }
 
-int umscrup(MENU *m)
+int umscrup(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	return mscrup(m, 1);
 }
 
-int umpgup(MENU *m)
+int umpgup(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	return mscrup(m, (m->h + 1) / 2);
 }
 
@@ -491,18 +518,23 @@ int mscrdn(MENU *m, ptrdiff_t amnt)
 	}
 }
 
-int umscrdn(MENU *m)
+int umscrdn(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	return mscrdn(m, 1);
 }
 
-int umpgdn(MENU *m)
+int umpgdn(W *w, int k)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	return mscrdn(m, (m->h + 1) / 2);
 }
 
-static int umrtn(MENU *m)
+static int umrtn(W *w)
 {
+	MENU *m = (MENU *)w->object;
 	dostaupd = 1;
 	if (m->func)
 		return m->func(m, m->cursor, m->object, 0);
@@ -510,8 +542,10 @@ static int umrtn(MENU *m)
 		return -1;
 }
 
-int umbacks(MENU *m)
+int umbacks(W *w, int c)
 {
+	MENU *m;
+	WIND_MENU(m, w);
 	if (m->backs)
 		return m->backs(m, m->cursor, m->object);
 	else
@@ -530,8 +564,9 @@ static int menufold(int c)
 		return c;
 }
 
-static int umkey(MENU *m, int c)
+static int umkey(W *w, int c)
 {
+	MENU *m = (MENU *)w->object;
 	int x;
 	int n = 0;
 
@@ -558,7 +593,7 @@ static int umkey(MENU *m, int c)
 		for (x = 0; x != m->nitems; ++x)
 			if (menufold(m->list[x][0]) == c) {
 				m->cursor = x;
-				return umrtn(m);
+				return umrtn(m->parent);
 			}
 	do {
 		++m->cursor;
@@ -569,17 +604,17 @@ static int umkey(MENU *m, int c)
 	return -1;
 }
 
-static int menuabort(MENU *m)
+static int menuabort(W *w)
 {
-	W *w = m->parent;
-	int (*func) () = m->abrt;
+	MENU *m = (MENU *)w->object;
+	int (*abrt)(W *w, ptrdiff_t cursor, void *object) = m->abrt;
 	void *object = m->object;
 	ptrdiff_t x = m->cursor;
 	W *win = w->win;
 
 	joe_free(m);
-	if (func)
-		return func(win->object, x, object);
+	if (abrt)
+		return abrt(win, x, object);
 	else
 		return -1;
 }
@@ -607,9 +642,10 @@ void ldmenu(MENU *m, char **s, ptrdiff_t cursor)
 
 int menu_above;
 
-MENU *mkmenu(W *w, W *targ, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), ptrdiff_t cursor, void *object, int *notify)
+MENU *mkmenu(W *w, W *targ, char **s, int (*func)(MENU *m, ptrdiff_t cursor, void *object, int k),
+             int (*abrt)(W *w, ptrdiff_t cursor, void *object), int (*backs)(MENU *m, ptrdiff_t cursor, void *object), ptrdiff_t cursor, void *object, int *notify)
 {
-	W *new;
+	W *neww;
 	MENU *m;
 	ptrdiff_t lines;
 	ptrdiff_t h = (w->main->h*40) / 100; /* 40% of window size */
@@ -622,28 +658,28 @@ MENU *mkmenu(W *w, W *targ, char **s, int (*func) (/* ??? */), int (*abrt) (/* ?
 			h = lines;
 	}
 
-	new = wcreate(w->t, &watommenu, w, targ, targ->main, h, NULL, notify);
+	neww = wcreate(w->t, &watommenu, w, targ, targ->main, h, NULL, notify);
 
-	if (!new) {
+	if (!neww) {
 		if (notify)
 			*notify = 1;
 		return NULL;
 	}
-	wfit(new->t);
-	new->object = (void *) (m = (MENU *) joe_malloc(SIZEOF(MENU)));
-	m->parent = new;
+	wfit(neww->t);
+	neww->object = (void *) (m = (MENU *) joe_malloc(SIZEOF(MENU)));
+	m->parent = neww;
 	m->func = func;
 	m->abrt = abrt;
 	m->backs = backs;
 	m->object = object;
 	m->t = w->t;
-	m->h = new->h;
-	m->w = new->w;
-	m->x = new->x;
-	m->y = new->y;
+	m->h = neww->h;
+	m->w = neww->w;
+	m->x = neww->x;
+	m->y = neww->y;
 	m->top = 0;
 	ldmenu(m, s, cursor);
-	w->t->curwin = new;
+	w->t->curwin = neww;
 	return m;
 }
 

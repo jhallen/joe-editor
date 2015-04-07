@@ -489,7 +489,7 @@ static void outatri(SCRN *t, ptrdiff_t x, ptrdiff_t y, int c, int a)
 	/* ++t->x; */
 }
 
-static void out(char *t, char c)
+static void out(void *t, char c)
 {
 	ttputc(c);
 }
@@ -867,13 +867,13 @@ int nresize(SCRN *t, ptrdiff_t w, ptrdiff_t h)
 		joe_free(t->ofst);
 	if (t->ary)
 		joe_free(t->ary);
-	t->scrn = joe_malloc(t->li * t->co * SIZEOF(int));
-	t->attr = joe_malloc(t->li * t->co * SIZEOF(int));
-	t->sary = joe_calloc(t->li, SIZEOF(ptrdiff_t));
-	t->updtab = joe_malloc(t->li * SIZEOF(int));
-	t->compose = joe_malloc(t->co * SIZEOF(int));
-	t->ofst = joe_malloc(t->co * SIZEOF(ptrdiff_t));
-	t->ary = joe_malloc(t->co * SIZEOF(struct hentry));
+	t->scrn = (int *)joe_malloc(t->li * t->co * SIZEOF(int));
+	t->attr = (int *)joe_malloc(t->li * t->co * SIZEOF(int));
+	t->sary = (ptrdiff_t *)joe_calloc(t->li, SIZEOF(ptrdiff_t));
+	t->updtab = (int *)joe_malloc(t->li * SIZEOF(int));
+	t->compose = (int *)joe_malloc(t->co * SIZEOF(int));
+	t->ofst = (ptrdiff_t *)joe_malloc(t->co * SIZEOF(ptrdiff_t));
+	t->ary = (struct hentry *)joe_malloc(t->co * SIZEOF(struct hentry));
 
 	nredraw(t);
 	return 1;
@@ -1449,9 +1449,9 @@ void magic(SCRN *t, ptrdiff_t y, int *cs, int *ca,int *s, int *a, ptrdiff_t plac
 
 	if (!(t->im || t->ic || t->IC) || !(t->dc || t->DC))
 		return;
-	mset(htab, 0, 256 * SIZEOF(struct hentry));
+	mset((char *)htab, 0, 256 * SIZEOF(struct hentry));
 
-	msetI(ofst, 0, t->co);
+	msetD(ofst, 0, t->co);
 
 /* Build hash table */
 	for (x = 0; x != t->co; ++x) {
@@ -1858,7 +1858,7 @@ void nredraw(SCRN *t)
 
 /* Convert color/attribute name into internal code */
 
-int meta_color_single(char *s)
+int meta_color_single(const char *s)
 {
 	if(!zcmp(s,"inverse"))
 		return INVERSE;
@@ -1970,7 +1970,7 @@ int meta_color_single(char *s)
 		return 0;
 }
 
-int meta_color(char *s)
+int meta_color(const char *s)
 {
 	int code = 0;
 	while (*s) {
@@ -2005,7 +2005,7 @@ int meta_color(char *s)
  * 'fmt' is array of attributes, one for each byte.  OK if NULL.
  */
 
-void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt)
+void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,const char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt)
 {
 	ptrdiff_t col;
 	struct utf8_sm sm;
@@ -2074,7 +2074,7 @@ void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst
 
 /* Width function for above */
 
-ptrdiff_t txtwidth(char *s,ptrdiff_t len)
+ptrdiff_t txtwidth(const char *s,ptrdiff_t len)
 {
 	if (locale_map->type) {
 		ptrdiff_t col=0;
@@ -2092,7 +2092,7 @@ ptrdiff_t txtwidth(char *s,ptrdiff_t len)
 		return len;
 }
 
-off_t txtwidth1(struct charmap *map,off_t tabwidth,char *s,ptrdiff_t len)
+off_t txtwidth1(struct charmap *map,off_t tabwidth,const char *s,ptrdiff_t len)
 {
 	if (map->type) {
 		off_t col=0;
@@ -2124,7 +2124,7 @@ off_t txtwidth1(struct charmap *map,off_t tabwidth,char *s,ptrdiff_t len)
 
 /* Generate text with formatting escape sequences */
 
-void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, char *s, int atr, int flg)
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
@@ -2219,7 +2219,7 @@ void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, char *s, int atr,
 
 /* Determine column width of string with format codes */
 
-ptrdiff_t fmtlen(char *s)
+ptrdiff_t fmtlen(const char *s)
 {
 	ptrdiff_t col = 0;
 	struct utf8_sm sm;
@@ -2267,9 +2267,9 @@ ptrdiff_t fmtlen(char *s)
 
 /* FIXME: this is not valid if we land in the middle of a double-wide character */
 
-ptrdiff_t fmtpos(char *s, ptrdiff_t goal)
+ptrdiff_t fmtpos(const char *s, ptrdiff_t goal)
 {
-	char *org = s;
+	const char *org = s;
 	ptrdiff_t col = 0;
 	int c;
 	struct utf8_sm sm;

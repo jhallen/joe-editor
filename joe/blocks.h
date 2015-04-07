@@ -13,25 +13,25 @@
  * Chooses either mbkwd or mfwrd to do this such that the data won't get
  * clobbered.
  */
-void *mmove(void *d, void *s, ptrdiff_t sz);
+void *mmove(void *d, const void *s, ptrdiff_t sz);
 
 /* char *mset(char *d,char c,int sz); Set 'sz' bytes at 'd' to 'c'.
  * If 'sz'==0 nothing happens
  * Return original value of 'd'
  */
-char *mset(void *dest, char c, ptrdiff_t sz);
+char *mset(char *dest, char c, ptrdiff_t sz);
 
 /* int *msetI(int *d,int c,int sz); Set 'sz' ints at 'd' to 'c'.
  * If 'sz'==0 nothing happens
  * Returns orininal value of 'd'
  */
-int *msetI(void *dest, int c, ptrdiff_t sz);
+int *msetI(int *dest, int c, ptrdiff_t sz);
 
 /* int *msetI(int *d,int c,int sz); Set 'sz' ints at 'd' to 'c'.
  * If 'sz'==0 nothing happens
  * Returns orininal value of 'd'
  */
-ptrdiff_t *msetD(void *dest, ptrdiff_t c, ptrdiff_t sz);
+ptrdiff_t *msetD(ptrdiff_t *dest, ptrdiff_t c, ptrdiff_t sz);
 
 /* void **msetP(void **d,void *c,int sz); Set 'sz' pointers at 'd' to 'c'.
  * If 'sz'==0 nothing happens
@@ -43,12 +43,12 @@ void **msetP(void **dest, void *c, ptrdiff_t sz);
  *
  * Count the number of occurances a character appears in a block
  */
-ptrdiff_t mcnt(char *blk, char c, ptrdiff_t size);
+ptrdiff_t mcnt(const char *blk, char c, ptrdiff_t size);
 
 #ifdef junk
 /* char *mchr(char *s,char c);
  *
  * Return address of first 'c' following 's'.
  */
-char *mchr();
+char *mchr(char *s, char c);
 #endif

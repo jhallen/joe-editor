@@ -6,5 +6,5 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-int uisrch(BW *bw);
-int ursrch(BW *bw);
+int uisrch(W *w, int k);
+int ursrch(W *w, int k);

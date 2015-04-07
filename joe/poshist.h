@@ -9,5 +9,5 @@
 void afterpos(void);
 void aftermove(W *w, P *p);
 void windie(W *w);
-int uprevpos(BW *bw);
-int unextpos(BW *bw);
+int uprevpos(W *w, int k);
+int unextpos(W *w, int k);

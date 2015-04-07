@@ -78,7 +78,7 @@ char **get_word_list(B *b,off_t ignore)
 
 	for (idx = 0;idx != h->len;++idx)
 		for (t = h->tab[idx];t;t=t->next)
-			list = vaadd(list, t->name);
+			list = vaadd(list, (char *)t->val);
 	if (list)
 		vasort(list,sLEN(list));	
 
@@ -119,8 +119,11 @@ void fcmplt_ins(BW *bw, char *line)
 	}
 }
 
-int fcmplt_abrt(BW *bw, int x, char *line)
+int fcmplt_abrt(W *w, ptrdiff_t x, void *obj)
 {
+	BW *bw;
+	char *line = (char *)obj;
+	WIND_BW(bw, w);
 	if (line) {
 		fcmplt_ins(bw, line);
 		vsrm(line);
@@ -128,16 +131,17 @@ int fcmplt_abrt(BW *bw, int x, char *line)
 	return -1;
 }
 
-int fcmplt_rtn(MENU *m, int x, char *line)
+int fcmplt_rtn(MENU *m, ptrdiff_t x, void *obj, int k)
 {
-	fcmplt_ins(m->parent->win->object, m->list[x]);
+	char *line = (char *)obj;
+	fcmplt_ins((BW *)m->parent->win->object, m->list[x]);
 	vsrm(line);
 	m->object = NULL;
 	wabort(m->parent);
 	return 0;
 }
 
-int ufinish(BW *bw)
+int ufinish(W *w, int k)
 {
 	char *line;
 	char *line1;
@@ -145,6 +149,8 @@ int ufinish(BW *bw)
 	P *p;
 	int c;
 	MENU *m;
+	BW *bw;
+	WIND_BW(bw, w);
 
 	/* Make sure we're not in a word */
 
@@ -201,12 +207,12 @@ int ufinish(BW *bw)
 		/* Possible match list is now in lst */
 
 		if (aLEN(lst) == 1)
-			return fcmplt_rtn(m, 0, line);
+			return fcmplt_rtn(m, 0, line, 0);
 		else if (smode)
 			return 0;
 		else {
 			char *com = mcomplete(m);
-			vsrm(m->object);
+			vsrm((char *)m->object);
 			m->object = com;
 			wabort(m->parent);
 			smode = 2;
@@ -219,7 +225,7 @@ int ufinish(BW *bw)
 	}
 }
 
-static int srch_cmplt(BW *bw)
+static int srch_cmplt(BW *bw, int k)
 {
 	if (word_list)
 		varm(word_list);
@@ -461,7 +467,7 @@ void rmsrch(SRCH *srch)
  * p is advanced past the inserted text
  */
 
-static P *insert(SRCH *srch, P *p, char *s, ptrdiff_t len)
+static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len)
 {
 	ptrdiff_t x;
 	off_t starting = p->byte;
@@ -491,7 +497,7 @@ static P *insert(SRCH *srch, P *p, char *s, ptrdiff_t len)
 				s += 2;
 				len -= 2;
 			} else {
-				char *a=s+x;
+				const char *a=s+x;
 				ptrdiff_t l=len-x;
 				binsc(p,escape(p->b->o.charmap->type,&a,&l));
 				pgetc(p);
@@ -516,15 +522,19 @@ static P *insert(SRCH *srch, P *p, char *s, ptrdiff_t len)
 char srchstr[] = "Search";	/* Context sensitive help identifier */
 char srchopt[] = "SearchOptions";
 
-static int pfabort(BW *bw, SRCH *srch)
+static int pfabort(W *w, void *obj)
 {
+	SRCH *srch = (SRCH *)obj;
 	if (srch)
 		rmsrch(srch);
 	return -1;
 }
 
-static int pfsave(BW *bw, SRCH *srch)
+static int pfsave(W *w, void *obj)
 {
+	BW *bw;
+	SRCH *srch = (SRCH *)obj;
+	WIND_BW(bw, w);
 	if (srch) {
 		if (globalsrch)
 			rmsrch(globalsrch);
@@ -553,8 +563,12 @@ static int pfsave(BW *bw, SRCH *srch)
 	return -1;
 }
 
-static int set_replace(BW *bw, char *s, SRCH *srch, int *notify)
+static int set_replace(W *w, char *s, void *obj, int *notify)
 {
+	SRCH *srch = (SRCH *)obj;
+	BW *bw;
+	WIND_BW(bw, w);
+	
 	if (sLEN(s) || !globalsrch || !pico)
 		srch->replacement = s;
 	else {
@@ -568,19 +582,19 @@ static int set_replace(BW *bw, char *s, SRCH *srch, int *notify)
 
 /* Option characters */
 
-char *all_key = _("|all files|aA");
-char *list_key = _("|error list files|eE");
-char *replace_key = _("|search and replace|rR");
-char *backwards_key = _("|backwards|bB");
-char *ignore_key = _("|ignore case|iI");
-char *block_key = _("|restrict to highlighted block|kK");
-char *noignore_key = _("|don't ignore case|sS");
-char *wrap_key = _("|wrap|wW");
-char *nowrap_key = _("|don't wrap|nN");
+const char *all_key = _("|all files|aA");
+const char *list_key = _("|error list files|eE");
+const char *replace_key = _("|search and replace|rR");
+const char *backwards_key = _("|backwards|bB");
+const char *ignore_key = _("|ignore case|iI");
+const char *block_key = _("|restrict to highlighted block|kK");
+const char *noignore_key = _("|don't ignore case|sS");
+const char *wrap_key = _("|wrap|wW");
+const char *nowrap_key = _("|don't wrap|nN");
 
 /* Get next character from string and advance it, locale dependent */
 
-int fwrd_c(char **s)
+int fwrd_c(const char **s)
 {
 	if (locale_map->type)
 		return utf8_decode_fwrd(s, NULL);
@@ -591,11 +605,13 @@ int fwrd_c(char **s)
 	}
 }
 
-static int set_options(BW *bw, char *s, SRCH *srch, int *notify)
+static int set_options(W *w, char *s, void *obj, int *notify)
 {
+	SRCH *srch = (SRCH *)obj;
+	BW *bw;
 	char buf[80];
-	char *t;
-
+	const char *t;
+	WIND_BW(bw, w);
 	srch->ignore = icase;
 
 	t = s;
@@ -642,11 +658,13 @@ static int set_options(BW *bw, char *s, SRCH *srch, int *notify)
 		return dopfnext(bw, setmark(srch), notify);
 }
 
-static int set_pattern(BW *bw, char *s, SRCH *srch, int *notify)
+static int set_pattern(W *w, char *s, void *obj, int *notify)
 {
+	SRCH *srch = (SRCH *)obj;
+	BW *bw;
 	BW *pbw;
-	char *p;
-
+	const char *p;
+	WIND_BW(bw, w);
 	if (icase)
 		p = joe_gettext(_("case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
 	else
@@ -663,15 +681,15 @@ static int set_pattern(BW *bw, char *s, SRCH *srch, int *notify)
 		char buf[10];
 
 		if (srch->ignore) {
-			char *t = joe_gettext(ignore_key);
+			const char *t = joe_gettext(ignore_key);
 			binsc(pbw->cursor, fwrd_c(&t));
 		}
 		if (srch->replace) {
-			char *t = joe_gettext(replace_key);
+			const char *t = joe_gettext(replace_key);
 			binsc(pbw->cursor, fwrd_c(&t));
 		}
 		if (srch->backwards) {
-			char *t = joe_gettext(backwards_key);
+			const char *t = joe_gettext(backwards_key);
 			binsc(pbw->cursor, fwrd_c(&t));
 		}
 		if (srch->repeat >= 0)
@@ -723,7 +741,7 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 	if (smode && globalsrch) {
 		globalsrch->backwards = back;
 		globalsrch->replace = repl;
-		return pfnext(bw);
+		return pfnext(bw->parent, 0);
 	}
 	if (bw->parent->huh == srchstr) {
 		off_t byte;
@@ -733,7 +751,7 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 		p_goto_bol(bw->cursor);
 		if (byte == bw->cursor->byte)
 			prgetc(bw->cursor);
-		return urtn((BASE *)bw, -1);
+		return urtn(bw->parent, -1);
 	}
 	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, 0);
 	srch->addr = bw->cursor->byte;
@@ -757,18 +775,24 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 	}
 }
 
-int pffirst(BW *bw)
+int pffirst(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	return dofirst(bw, 0, 0, NULL);
 }
 
-int prfirst(BW *bw)
+int prfirst(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	return dofirst(bw, 1, 0, NULL);
 }
 
-int pqrepl(BW *bw)
+int pqrepl(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	return dofirst(bw, 0, 1, NULL);
 }
 
@@ -822,7 +846,7 @@ static void goback(SRCH *srch, BW *bw)
 	if (r != &srch->recs) {
 		srch->current = r->b;
 		if (r->yn) {
-			uundo(bw);
+			uundo(bw->parent, 0);
 		}
 		if (r->b != bw->b) {
 			W *w = bw->parent;
@@ -837,11 +861,14 @@ static void goback(SRCH *srch, BW *bw)
 	}
 }
 
-char *rest_key = _("|rest of file|rR");
-char *backup_key = _("|backup|bB");
+const char *rest_key = _("|rest of file|rR");
+const char *backup_key = _("|backup|bB");
 
-static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
+static int dopfrepl(W *w, int c, void *obj, int *notify)
 {
+	BW *bw;
+	SRCH *srch = (SRCH *)obj;
+	WIND_BW(bw, w);
 	srch->addr = bw->cursor->byte;
 	/* Backspace means no for jmacs */
 	if (c == NO_CODE || c == 8 || c == 127 || yncheck(no_key, c))
@@ -849,7 +876,7 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 	else if (c == YES_CODE || yncheck(yes_key, c) || c == ' ') {
 		srch->recs.link.prev->yn = 1;
 		if (doreplace(bw, srch)) {
-			pfsave(bw, srch);
+			pfsave(bw->parent, srch);
 			return -1;
 		} else
 			return dopfnext(bw, srch, notify);
@@ -866,14 +893,14 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 	} else if (c != -1) {
 		if (notify)
 			*notify = 1;
-		pfsave(bw, srch);
+		pfsave(bw->parent, srch);
 		nungetc(c);
 		return 0;
 	}
 	if (mkqwnsr(bw->parent, sz(joe_gettext(_("Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"))), dopfrepl, pfsave, srch, notify))
 		return 0;
 	else
-		return pfsave(bw, srch);
+		return pfsave(bw->parent, srch);
 }
 
 /* Test if found text is within region
@@ -1072,7 +1099,7 @@ bye:		if (!srch->flg && !srch->rest) {
 				markb->xcol = piscol(markb);
 			}
 			srch->flg = 1;
-			if (dopfrepl(bw, -1, srch, notify))
+			if (dopfrepl(bw->parent, -1, srch, notify))
 				ret = -1;
 			notify = 0;
 			srch = 0;
@@ -1085,16 +1112,18 @@ bye:		if (!srch->flg && !srch->rest) {
 	if (notify)
 		*notify = 1;
 	if (srch)
-		pfsave(bw, srch);
+		pfsave(bw->parent, srch);
 	else
 		updall();
 	return ret;
 }
 
-int pfnext(BW *bw)
+int pfnext(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (!globalsrch) {	/* Query for search string if there isn't any */
-		return pffirst(bw);
+		return pffirst(bw->parent, 0);
 	} else {
 		SRCH *srch = globalsrch;
 

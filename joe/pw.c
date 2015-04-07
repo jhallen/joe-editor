@@ -16,7 +16,7 @@ char *get_cd(W *w)
 {
 	BW *bw;
 	w = w->main;
-	bw = w->object;
+	bw = (BW *)w->object;
 	return bw->b->current_dir;
 }
 
@@ -24,7 +24,7 @@ void set_current_dir(BW *bw, char *s,int simp)
 {
 	W *w = bw->parent->main;
 	B *b;
-	bw = w->object;
+	bw = (BW *)w->object;
 	b = bw->b;
 	
 	if (s[0]=='!' || (s[0]=='>' && s[1]=='>'))
@@ -42,9 +42,9 @@ void set_current_dir(BW *bw, char *s,int simp)
 		b->current_dir = 0;
 }
 
-static void disppw(BW *bw, int flg)
+static void disppw(W *w, int flg)
 {
-	W *w = bw->parent;
+	BW *bw = (BW *)w->object;
 	PW *pw = (PW *) bw->object;
 
 	if (!flg) {
@@ -129,14 +129,14 @@ void promote_history(B *hist, off_t line)
 
 /* When user hits return in a prompt window */
 
-static int rtnpw(BW *bw)
+static int rtnpw(W *w)
 {
-	W *w = bw->parent;
-	PW *pw = (PW *) bw->object;
+	BW *bw = (BW *)w->object;
+	PW *pw = (PW *)bw->object;
 	char *s;
 	W *win;
 	int *notify;
-	int (*pfunc) ();
+	int (*pfunc)(W *w, char *s, void *object, int *notify);
 	void *object;
 	off_t byte;
 
@@ -144,7 +144,7 @@ static int rtnpw(BW *bw)
 	p_goto_eol(bw->cursor);
 	byte = bw->cursor->byte;
 	p_goto_bol(bw->cursor);
-	s = brvs(bw->cursor, (int) (byte - bw->cursor->byte));
+	s = brvs(bw->cursor, TO_DIFF_OK(byte - bw->cursor->byte));
 
 	if (pw->file_prompt) {
 		s = canonical(s);
@@ -168,8 +168,8 @@ static int rtnpw(BW *bw)
 	pfunc = pw->pfunc;
 	object = pw->object;
 	bwrm(bw);
-	joe_free(pw->prompt);
-	joe_free(pw);
+	joe_free((void *)pw->prompt);
+	joe_free((void *)pw);
 	w->object = NULL;
 	notify = w->notify;
 	w->notify = 0;
@@ -178,15 +178,18 @@ static int rtnpw(BW *bw)
 
 	/* Call callback function */
 	if (pfunc) {
-		return pfunc(win->object, s, object, notify);
+		return pfunc(win, s, object, notify);
 	} else {
 		return -1;
 	}
 }
 
-int ucmplt(BW *bw, int k)
+int ucmplt(W *w, int k)
 {
-	PW *pw = (PW *) bw->object;
+	BW *bw;
+	PW *pw;
+	WIND_BW(bw, w);
+	pw = (PW *) bw->object;
 
 	if (pw->tab) {
 		return pw->tab(bw, k);
@@ -195,33 +198,35 @@ int ucmplt(BW *bw, int k)
 	}
 }
 
-static void inspw(BW *bw, B *b, off_t l, off_t n, int flg)
+static void inspw(W *w, B *b, off_t l, off_t n, int flg)
 {
+	BW *bw = (BW *)w->object;
 	if (b == bw->b) {
 		bwins(bw, l, n, flg);
 	}
 }
 
-static void delpw(BW *bw, B *b, off_t l, off_t n, int flg)
+static void delpw(W *w, B *b, off_t l, off_t n, int flg)
 {
+	BW *bw = (BW *)w->object;
 	if (b == bw->b) {
 		bwdel(bw, l, n, flg);
 	}
 }
 
-static int abortpw(BW *b)
+static int abortpw(W *w)
 {
-	PW *pw = b->object;
+	BW *bw = (BW *)w->object;
+	PW *pw = (PW *)bw->object;
 	void *object = pw->object;
-	int (*abrt) () = pw->abrt;
+	int (*abrt)(W *w, void *object) = pw->abrt;
+	W *win = bw->parent->win;
 
-	W *win = b->parent->win;
-
-	bwrm(b);
-	joe_free(pw->prompt);
+	bwrm(bw);
+	joe_free((void *)pw->prompt);
 	joe_free(pw);
 	if (abrt) {
-		return abrt(win->object, object);
+		return abrt(win, object);
 	} else {
 		return -1;
 	}
@@ -233,7 +238,7 @@ WATOM watompw = {
 	bwfllwt,
 	abortpw,
 	rtnpw,
-	utypebw,
+	utypew,
 	NULL,
 	NULL,
 	inspw,
@@ -243,21 +248,23 @@ WATOM watompw = {
 
 /* Create a prompt window */
 
-BW *wmkpw(W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify,struct charmap *map,int file_prompt)
+BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, void *object, int *notify), const char *huh,
+          int (*abrt)(W *w, void *object),
+          int (*tab)(BW *bw, int k), void *object, int *notify,struct charmap *map,int file_prompt)
 {
-	W *new;
+	W *neww;
 	PW *pw;
 	BW *bw;
 
-	new = wcreate(w->t, &watompw, w, w, w->main, 1, huh, notify);
-	if (!new) {
+	neww = wcreate(w->t, &watompw, w, w, w->main, 1, huh, notify);
+	if (!neww) {
 		if (notify) {
 			*notify = 1;
 		}
 		return NULL;
 	}
-	wfit(new->t);
-	new->object = (void *) (bw = bwmk(new, bmk(NULL), 1));
+	wfit(neww->t);
+	neww->object = (void *) (bw = bwmk(neww, bmk(NULL), 1));
 	bw->b->o.charmap = map;
 	bw->object = (void *) (pw = (PW *) joe_malloc(SIZEOF(PW)));
 	pw->abrt = abrt;
@@ -292,7 +299,7 @@ BW *wmkpw(W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt
 		p_goto_eof(bw->cursor);
 		bw->cursor->xcol = piscol(bw->cursor);
 	}
-	w->t->curwin = new;
+	w->t->curwin = neww;
 	return bw;
 }
 
@@ -322,8 +329,9 @@ void cmplt_ins(BW *bw, char *line)
 	bw->cursor->xcol = piscol(bw->cursor);
 }
 
-int cmplt_abrt(BW *bw, ptrdiff_t x, char *line)
+int cmplt_abrt(W *w, ptrdiff_t x, void *object)
 {
+	char *line = (char *)object;
 	if (line) {
 		/* cmplt_ins(bw, line); */
 		vsrm(line);
@@ -331,9 +339,10 @@ int cmplt_abrt(BW *bw, ptrdiff_t x, char *line)
 	return -1;
 }
 
-int cmplt_rtn(MENU *m, ptrdiff_t x, char *line)
+int cmplt_rtn(MENU *m, ptrdiff_t x, void *object, int k)
 {
-	cmplt_ins(m->parent->win->object, m->list[x]);
+	char *line = (char *)object;
+	cmplt_ins((BW *)m->parent->win->object, m->list[x]);
 	vsrm(line);
 	m->object = NULL;
 	wabort(m->parent);
@@ -384,7 +393,7 @@ int simple_cmplt(BW *bw,char **list)
 		return -1;
 	}
 	if (aLEN(lst) == 1)
-		return cmplt_rtn(m, 0, line);
+		return cmplt_rtn(m, 0, line, 0);
 	else if (smode || isreg(line)) {
 		if (!menu_jump)
 			bw->parent->t->curwin=bw->parent;
@@ -392,7 +401,7 @@ int simple_cmplt(BW *bw,char **list)
 	} else {
 		char *com = mcomplete(m);
 
-		vsrm(m->object);
+		vsrm((char *)m->object);
 		m->object = com;
 		
 		cmplt_ins(bw, com);

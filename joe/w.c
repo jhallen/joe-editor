@@ -196,7 +196,7 @@ void scrins(B *b, off_t l, off_t n, int flg)
 		do {
 			if (w->y >= 0) {
 				if (w->object && w->watom->ins)
-					w->watom->ins(w->object, b, l, n, flg);
+					w->watom->ins(w, b, l, n, flg);
 			}
 		w = w->link.next;
 		} while (w != scr->topwin);
@@ -211,7 +211,7 @@ void scrdel(B *b, off_t l, off_t n, int flg)
 		do {
 			if (w->y >= 0) {
 				if (w->object && w->watom->del)
-					w->watom->del(w->object, b, l, n, flg);
+					w->watom->del(w, b, l, n, flg);
 			}
 		w = w->link.next;
 		} while (w != scr->topwin);
@@ -370,9 +370,9 @@ void wfit(Screen *t)
 		if (w->y >= 0) {
 			if (w->object) {
 				if (w->watom->move)
-					w->watom->move(w->object, w->x, w->y);
+					w->watom->move(w, w->x, w->y);
 				if (w->watom->resize)
-					w->watom->resize(w->object, w->w, w->h);
+					w->watom->resize(w, w->w, w->h);
 			}
 		}
 		w = w->link.next;
@@ -572,70 +572,70 @@ void wshowone(W *w)
 
 /* Create a window */
 
-W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, char *huh, int *notify)
+W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, const char *huh, int *notify)
 {
-	W *new;
+	W *neww;
 
 	if (height < 1)
 		return NULL;
 
 	/* Create the window */
-	new = (W *) joe_malloc(SIZEOF(W));
-	new->notify = notify;
-	new->t = t;
-	new->w = t->w;
-	seth(new, height);
-	new->h = new->reqh;
-	new->y = -1;
-	new->ny = 0;
-	new->nh = 0;
-	new->x = 0;
-	new->huh = huh;
-	new->orgwin = original;
-	new->watom = watom;
-	new->object = NULL;
-	new->msgb = NULL;
-	new->msgt = NULL;
-	new->bstack = 0;
+	neww = (W *) joe_malloc(SIZEOF(W));
+	neww->notify = notify;
+	neww->t = t;
+	neww->w = t->w;
+	seth(neww, height);
+	neww->h = neww->reqh;
+	neww->y = -1;
+	neww->ny = 0;
+	neww->nh = 0;
+	neww->x = 0;
+	neww->huh = huh;
+	neww->orgwin = original;
+	neww->watom = watom;
+	neww->object = NULL;
+	neww->msgb = NULL;
+	neww->msgt = NULL;
+	neww->bstack = 0;
 	/* Set window's target and family */
-/* was:	if (new->win = target) {	which may be mistyped == */
-	if ((new->win = target) != NULL) {	/* A subwindow */
-		new->main = target->main;
-		new->fixed = height;
+/* was:	if (neww->win = target) {	which may be mistyped == */
+	if ((neww->win = target) != NULL) {	/* A subwindow */
+		neww->main = target->main;
+		neww->fixed = height;
 	} else {		/* A parent window */
-		new->main = new;
-		new->fixed = 0;
+		neww->main = neww;
+		neww->fixed = 0;
 	}
 
 	/* Get space for window */
 	if (original) {
 		if (original->h - height <= 2) {
 			/* Not enough space for window */
-			joe_free(new);
+			joe_free(neww);
 			return NULL;
 		} else
 			seth(original, original->h - height);
 	}
 
-	/* Create new keyboard handler for window */
+	/* Create neww keyboard handler for window */
 	if (watom->context)
-		new->kbd = mkkbd(kmap_getcontext(watom->context));
+		neww->kbd = mkkbd(kmap_getcontext(watom->context));
 	else
-		new->kbd = NULL;
+		neww->kbd = NULL;
 
 	/* Put window on the screen */
 	if (where)
-		enquef(W, link, where, new);
+		enquef(W, link, where, neww);
 	else {
 		if (t->topwin)
-			enqueb(W, link, t->topwin, new);
+			enqueb(W, link, t->topwin, neww);
 		else {
-			izque(W, link, new);
-			t->curwin = t->topwin = new;
+			izque(W, link, neww);
+			t->curwin = t->topwin = neww;
 		}
 	}
 
-	return new;
+	return neww;
 }
 
 /* Abort group of windows */
@@ -674,7 +674,7 @@ static ptrdiff_t doabort(W *w, int *ret)
 	}
 	deque(W, link, w);
 	if (w->watom->abort && w->object) {
-		*ret = w->watom->abort(w->object);
+		*ret = w->watom->abort(w);
 		if (w->notify)
 			*w->notify = -1;
 	} else {
@@ -700,8 +700,8 @@ int wabort(W *w)
 		if (!leave)
 			wfit(t);
 	} else {
-		char *msgt = w->msgt;
-		char *msgb = w->msgb;
+		const char *msgt = w->msgt;
+		const char *msgb = w->msgb;
 		doabort(w, &ret);
 		if (!leave) {
 			if (lastw(t)->link.next != t->topwin)
@@ -719,7 +719,7 @@ int wabort(W *w)
 
 int bg_msg;
 
-static void mdisp(SCRN *t, ptrdiff_t y, char *s)
+static void mdisp(SCRN *t, ptrdiff_t y, const char *s)
 {
 	ptrdiff_t ofst;
 	ptrdiff_t len;
@@ -758,66 +758,66 @@ void msgclr(W *w)
 char msgbuf[JOE_MSGBUFSIZE];
 
 /* display message on bottom line of window */
-void msgnw(W *w, char *s)
+void msgnw(W *w, const char *s)
 {
 	w->msgb = s;
 }
 
-void msgnwt(W *w, char *s)
+void msgnwt(W *w, const char *s)
 {
 	w->msgt = s;
 }
 
-int urtn(BASE *b, int k)
+int urtn(W *w, int k)
 {
-	if (b->parent->watom->rtn)
-		return b->parent->watom->rtn(b, k);
+	if (w->watom->rtn)
+		return w->watom->rtn(w);
 	else
 		return -1;
 }
 
-int utype(BASE *b, int k)
+int utype(W *w, int k)
 {
-	if (b->parent->watom->type)
-		return b->parent->watom->type(b, k);
+	if (w->watom->type)
+		return w->watom->type(w, k);
 	else
 		return -1;
 }
 
 /* Window user commands */
 
-int uprevw(BASE *bw)
+int uprevw(W *w, int k)
 {
-	return wprev(bw->parent->t);
+	return wprev(w->t);
 }
 
-int unextw(BASE *bw)
+int unextw(W *w, int k)
 {
-	return wnext(bw->parent->t);
+	return wnext(w->t);
 }
 
-int ugroww(BASE *bw)
+int ugroww(W *w, int k)
 {
-	return wgrow(bw->parent);
+	return wgrow(w);
 }
 
-int ushrnk(BASE *bw)
+int ushrnk(W *w, int k)
 {
-	return wshrink(bw->parent);
+	return wshrink(w);
 }
 
-int uexpld(BASE *bw)
+int uexpld(W *w, int k)
 {
-	if (bw->parent->t->h - bw->parent->t->wind == getgrouph(bw->parent))
-		wshowall(bw->parent->t);
+	if (w->t->h - w->t->wind == getgrouph(w))
+		wshowall(w->t);
 	else
-		wshowone(bw->parent);
+		wshowone(w);
 	return 0;
 }
 
-int uretyp(BASE *bw)
+int uretyp(W *w, int k)
 {
-	nredraw(bw->parent->t->t);
+	nredraw(w->t->t);
 	return 0;
 }
 
@@ -834,25 +834,27 @@ W *find_window(Screen *t, B *b)
 	return 0;
 }
 
-int umwind(BW *bw)
+int umwind(W *w, int k)
 {
 	W *msgw;
+	BW *bw;
+	WIND_BW(bw, w);
 	if (!errbuf) {
-		msgnw(bw->parent, joe_gettext(_("There are no messages")));
+		msgnw(w, joe_gettext(_("There are no messages")));
 		return -1;
 	}
 
 	/* Find message window */
-	msgw = find_window(bw->parent->t, errbuf);
+	msgw = find_window(w->t, errbuf);
 
 	if (msgw) {
 		/* The window exists */
-		bw->parent->t->curwin = msgw;
+		w->t->curwin = msgw;
 		wshowone(msgw);
 		return 0;
 	} else {
 		/* Make it the current window */
-		msgw = bw->parent;
+		msgw = w;
 		get_buffer_in_window(bw, errbuf);
 		wshowone(msgw);
 		return 0;
@@ -862,16 +864,17 @@ int umwind(BW *bw)
 /* Fit previous window and current window on screen.  If there is no
  * previous window, split the current window to create one.  */
 
-int umfit(BW *bw)
+int umfit(W *w, int k)
 {
 	W *p;
-	W *w = bw->parent->main;
+	BW *bw;
 	Screen *t = w->t;
+	WIND_BW(bw, w);
 	wshowone(w);
 	p = findtopw(w)->link.prev->main;
 	if (p == w) {
 		/* We have to split */
-		usplitw(bw);
+		usplitw(w, 0);
 		w = t->curwin;
 		p = findtopw(w)->link.prev->main;
 		if (p == w) {
