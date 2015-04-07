@@ -383,7 +383,9 @@
 
  SECOND and 1/2 SECTION: Option menu layout
 
-	:defmenu name	Defines a menu.
+	:defmenu name [macro]
+			Defines a menu.
+			The macro here is executed when the user hits backspace.
 
 	macro string comment
 			A menu entry.  Macro is any JOE macro- see "Macros:"
@@ -418,7 +420,7 @@ mode,"language",rtn	V Language
 mode,"picture",rtn	P picture %Zpicture%
 menu,"more-options",rtn	  % % More options...
 
-:defmenu more-options
+:defmenu more-options menu,"root",rtn
 menu,"^G",rtn	% % ^G options
 menu,"search",rtn	% % search options
 menu,"paragraph",rtn	% % paragraph options
@@ -429,7 +431,7 @@ menu,"cursor",rtn	% % cursor options
 menu,"marking",rtn	% % marking options
 menu,"tab",rtn	% % tab/indent options
 
-:defmenu indent
+:defmenu indent menu,"root",rtn
 mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 1, Indent character = 32",rtn	1 Space
 mode,"istep",rtn,"2",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 2, Indent character = 32",rtn	2 Spaces
 mode,"istep",rtn,"3",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 3, Indent character = 32",rtn	3 Spaces
@@ -439,13 +441,13 @@ mode,"istep",rtn,"8",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 8, Inden
 mode,"istep",rtn,"10",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 10, Indent character = 32",rtn	0 Ten
 mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"9",rtn,msg,"Indent step = 1, Indent character = 9",rtn	T Tab
 
-:defmenu menu
+:defmenu menu menu,"more-options",rtn
 mode,"menu_explorer",rtn	% % Menu explorer %Zmenu_explorer%
 mode,"menu_above",rtn	% % Menu position %Zmenu_above%
 mode,"menu_jump",rtn	% % Jump into menu %Zmenu_jump%
 mode,"transpose",rtn	% % Transpose menus %Ztranspose%
 
-:defmenu ^G
+:defmenu ^G menu,"more-options",rtn
 mode,"highlighter_context",rtn	% % ^G uses highlighter context %Zhighlighter_context%
 mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
 mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
@@ -457,19 +459,19 @@ mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
 mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
 mode,"text_delimiters",rtn % % Text delimiters %Ztext_delimiters%
 
-:defmenu search
+:defmenu search menu,"more-options",rtn
 mode,"icase",rtn	% % Case insensitivity %Zicase%
 mode,"wrap",rtn	% % Search wraps %Zwrap%
 mode,"search_prompting",rtn	% % Search prompting %Zsearch_prompting%
 mode,"csmode",rtn	% % Continued search %Zcsmode%
 
-:defmenu paragraph
+:defmenu paragraph menu,"more-options",rtn
 mode,"french",rtn	% % French spacing %Zfrench%
 mode,"flowed",rtn	% % Flowed text %Zflowed%
 mode,"cpara",rtn	% % Paragraph indent chars %Zcpara%
 mode,"cnotpara",rtn	% % Not-paragraph chars %Zcnotpara%
 
-:defmenu file
+:defmenu file menu,"more-options",rtn
 mode,"restore",rtn	% % Restore cursor %Zrestore%
 mode,"guess_crlf",rtn	% % Auto detect CR-LF %Zguess_crlf%
 mode,"guess_indent",rtn	% % Guess indent %Zguess_indent%
@@ -478,7 +480,7 @@ mode,"guess_utf8",rtn	% % Guess UTF-8 %Zguess_utf8%
 mode,"force",rtn	% % Force last NL %Zforce%
 mode,"nobackup",rtn	% % No backup %Znobackup%
 
-:defmenu global
+:defmenu global menu,"more-options",rtn
 mode,"nolocks",rtn	% % Disable locks %Znolocks%
 mode,"nobackups",rtn	% % Disable backups %Znobackups%
 mode,"nodeadjoe",rtn	% % Disable DEADJOE %Znodeadjoe%
@@ -493,18 +495,18 @@ mode,"joe_state",rtn	% % Joe_state file %Zjoe_state%
 mode,"undo_keep",rtn	% % No. undo records %Zundo_keep%
 mode,"backpath",rtn	% % Path to backup files %Zbackpath%
 
-:defmenu cursor
+:defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
 mode,"mid",rtn	C Center on scroll %Zmid%
 mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
 mode,"rtbutton",rtn	% % Right button %Zrtbutton%
 
-:defmenu marking
+:defmenu marking menu,"more-options",rtn
 mode,"autoswap",rtn	% % Autoswap mode %Zautoswap%
 mode,"marking",rtn	% % Marking %Zmarking%
 mode,"lightoff",rtn	% % Auto unmask %Zlightoff%
 
-:defmenu tab
+:defmenu tab menu,"more-options",rtn
 mode,"smarthome",rtn	% % Smart home key %Zsmarthome%
 mode,"smartbacks",rtn	% % Smart backspace %Zsmartbacks%
 mode,"indentfirst",rtn	% % To indent first %Zindentfirst%
