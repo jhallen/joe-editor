@@ -140,9 +140,9 @@ int ucharset(W *w, int k)
 {
 	const char *s;
 	BW *bw;
-	w = w->main;
 	WIND_BW(bw, w);
-	s=bw->o.charmap->name;
+	w = w->main;
+	s = ((BW *)w->object)->o.charmap->name;
 	if (!s || !*s)
 		return -1;
 	while (*s)
@@ -157,7 +157,7 @@ int ulanguage(W *w, int k)
 	const char *s;
 	WIND_BW(bw, w);
 	w = bw->parent->main;
-	s=((BW *)w->object)->o.language;
+	s = ((BW *)w->object)->o.language;
 	if (!s || !*s)
 		return -1;
 	while (*s)
