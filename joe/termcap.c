@@ -393,7 +393,7 @@ int getflag(CAP *cap, const char *name)
 {
 #ifdef TERMINFO
 	if (cap->abuf)
-		return tgetflag(name);
+		return tgetflag((char *)name);
 #endif
 	return findcap(cap, name) != NULL;
 }
@@ -406,7 +406,7 @@ const char *jgetstr(CAP *cap, const char *name)
 	if (cap->abuf) {
 		char *new_ptr = cap->abufp;
 		char *rtn;
-		rtn = tgetstr(name, &new_ptr);
+		rtn = tgetstr((char *)name, &new_ptr);
 		cap->abufp = new_ptr;
 		return rtn;
 	}
@@ -424,7 +424,7 @@ int getnum(CAP *cap, const char *name)
 
 #ifdef TERMINFO
 	if (cap->abuf)
-		return tgetnum(name);
+		return tgetnum((char *)name);
 #endif
 	s = findcap(cap, name);
 	if (s && s->value)

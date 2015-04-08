@@ -148,7 +148,7 @@ char *vlock(VFILE *vfile, off_t addr)
 					vheadsz += amnt;
 					vbase = vp->data;
 					joe_free(t);
-				} else if (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE) > vheadsz) {
+				} else if (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE) > (size_t)vheadsz) {
 					vheaders = (VPAGE **)
 					    joe_realloc(vheaders, (vheadsz = (ptrdiff_t)(((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE))) * SIZEOF(VPAGE *));
 				}
