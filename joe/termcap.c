@@ -9,6 +9,11 @@
 
 #ifdef TERMINFO
 
+#ifdef __CYGWIN__
+#include <ncurses/curses.h>
+#include <ncurses/term.h>
+#endif
+
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
