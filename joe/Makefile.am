@@ -10,7 +10,7 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	scrn.h tab.h termcapj.h tty.h tw.h types.h ublock.h uedit.h uerror.h \
 	ufile.h uformat.h uisrch.h umath.h undo.h usearch.h ushell.h utag.h \
 	utils.h va.h vfile.h vs.h w.h utf8.h syntax.h i18n.h charmap.h mouse.h \
-	lattr.h gettext.h builtin.h vt.h mmenu.h state.h options.h
+	lattr.h gettext.h builtin.h vt.h mmenu.h state.h options.h selinux.h
 
 bin_PROGRAMS = joe termidx stringify
 INCLUDES = -DJOERC="\"$(sysconf_joedir)/\"" -DJOEDATA="\"$(data_joedir)/\""

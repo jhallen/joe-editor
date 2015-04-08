@@ -969,7 +969,7 @@ static int pair_cmp(struct pair *a,struct pair *b)
 
 /* Predicate and conversion functions for byte-oriented charmaps */
 
-int byte_ispunct(struct charmap *map,int c)
+static int byte_ispunct(struct charmap *map,int c)
 {
 	int ofst;
 	int bitn;
@@ -982,7 +982,7 @@ int byte_ispunct(struct charmap *map,int c)
 	return (map->print_map[ofst]&bitn) != 0 && (map->alnum__map[ofst]&bitn) == 0; 
 }
 
-int byte_isprint(struct charmap *map,int c)
+static int byte_isprint(struct charmap *map,int c)
 {
 	int ofst;
 	int bitn;
@@ -995,12 +995,12 @@ int byte_isprint(struct charmap *map,int c)
 	return (map->print_map[ofst]&bitn) != 0;
 }
 
-int byte_isspace(struct charmap *map,int c)
+static int byte_isspace(struct charmap *map,int c)
 {
 	return c==32 || (c >= 9 && c <= 13);
 }
 
-int byte_isalpha_(struct charmap *map,int c)
+static int byte_isalpha_(struct charmap *map,int c)
 {
 	int ofst;
 	int bitn;
@@ -1013,7 +1013,7 @@ int byte_isalpha_(struct charmap *map,int c)
 	return (map->alpha__map[ofst]&bitn) != 0;
 }
 
-int byte_isalnum_(struct charmap *map,int c)
+static int byte_isalnum_(struct charmap *map,int c)
 {
 	int ofst;
 	int bitn;
@@ -1026,7 +1026,7 @@ int byte_isalnum_(struct charmap *map,int c)
 	return (map->alnum__map[ofst]&bitn) != 0;
 }
 
-int byte_tolower(struct charmap *map,int c)
+static int byte_tolower(struct charmap *map,int c)
 {
 	if (c < 0)
 		c += 256;
@@ -1036,7 +1036,7 @@ int byte_tolower(struct charmap *map,int c)
 		return map->lower_map[c];
 }
 
-int byte_toupper(struct charmap *map,int c)
+static int byte_toupper(struct charmap *map,int c)
 {
 	if (c < 0)
 		c += 256;
@@ -1183,7 +1183,7 @@ static void load_builtins(void)
 
 /* Parse character map file */
 
-struct builtin_charmap *parse_charmap(const char *name,FILE *f)
+static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 {
 	char buf[1024];
 	char bf1[1024];
@@ -1261,7 +1261,7 @@ static int map_up(int c)
 		return c;
 }
 
-int map_name_cmp(const char *a,const char *b)
+static int map_name_cmp(const char *a,const char *b)
 {
 	while (*a=='-') ++a;
 	while (*b=='-') ++b;

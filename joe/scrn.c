@@ -1858,7 +1858,7 @@ void nredraw(SCRN *t)
 
 /* Convert color/attribute name into internal code */
 
-int meta_color_single(const char *s)
+static int meta_color_single(const char *s)
 {
 	if(!zcmp(s,"inverse"))
 		return INVERSE;

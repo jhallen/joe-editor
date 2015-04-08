@@ -823,7 +823,7 @@ int uretyp(W *w, int k)
 
 /* Get message window on screen */
 
-W *find_window(Screen *t, B *b)
+static W *find_window(Screen *t, B *b)
 {
 	W *w = t->topwin;
 	do {

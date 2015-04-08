@@ -346,7 +346,7 @@ static off_t parserr(B *b)
 	}
 }
 
-BW *find_a_good_bw(B *b)
+static BW *find_a_good_bw(B *b)
 {
 	W *w;
 	BW *bw = 0;
@@ -436,7 +436,7 @@ int ugparse(W *w, int k)
 	return 0;
 }
 
-int jump_to_file_line(BW *bw,char *file,off_t line,char *msg)
+static int jump_to_file_line(BW *bw,char *file,off_t line,char *msg)
 {
 	int omid;
 	if (!bw->b->name || zcmp(file, bw->b->name)) {
@@ -471,7 +471,7 @@ int ucurrent_msg(W *w, int k)
 
 /* Find line in error database: return pointer to message */
 
-ERROR *srcherr(BW *bw,char *file,off_t line)
+static ERROR *srcherr(BW *bw,char *file,off_t line)
 {
 	ERROR *p;
 	for (p = errors.link.next; p != &errors; p=p->link.next)

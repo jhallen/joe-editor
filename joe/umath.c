@@ -376,215 +376,215 @@ static double eval(char *s, int secure)
 /* These don't all exist on some systems... */
 
 #ifdef HAVE_SIN
-double m_sin(double n) { return sin(n); }
+static double m_sin(double n) { return sin(n); }
 #else
 #ifdef sin
-double m_sin(double n) { return sin(n); }
+static double m_sin(double n) { return sin(n); }
 #endif
 #endif
 
 #ifdef HAVE_COS
-double m_cos(double n) { return cos(n); }
+static double m_cos(double n) { return cos(n); }
 #else
 #ifdef cos
-double m_cos(double n) { return cos(n); }
+static double m_cos(double n) { return cos(n); }
 #endif
 #endif
 
 #ifdef HAVE_TAN
-double m_tan(double n) { return tan(n); }
+static double m_tan(double n) { return tan(n); }
 #else
 #ifdef tan
-double m_tan(double n) { return tan(n); }
+static double m_tan(double n) { return tan(n); }
 #endif
 #endif
 
 #ifdef HAVE_EXP
-double m_exp(double n) { return exp(n); }
+static double m_exp(double n) { return exp(n); }
 #else
 #ifdef exp
-double m_exp(double n) { return exp(n); }
+static double m_exp(double n) { return exp(n); }
 #endif
 #endif
 
 #ifdef HAVE_SQRT
-double m_sqrt(double n) { return sqrt(n); }
+static double m_sqrt(double n) { return sqrt(n); }
 #else
 #ifdef sqrt
-double m_sqrt(double n) { return sqrt(n); }
+static double m_sqrt(double n) { return sqrt(n); }
 #endif
 #endif
 
 #ifdef HAVE_CBRT
-double m_cbrt(double n) { return cbrt(n); }
+static double m_cbrt(double n) { return cbrt(n); }
 #else
 #ifdef cbrt
-double m_cbrt(double n) { return cbrt(n); }
+static double m_cbrt(double n) { return cbrt(n); }
 #endif
 #endif
 
 #ifdef HAVE_LOG
-double m_log(double n) { return log(n); }
+static double m_log(double n) { return log(n); }
 #else
 #ifdef log
-double m_log(double n) { return log(n); }
+static double m_log(double n) { return log(n); }
 #endif
 #endif
 
 #ifdef HAVE_LOG10
-double m_log10(double n) { return log10(n); }
+static double m_log10(double n) { return log10(n); }
 #else
 #ifdef log10
-double m_log10(double n) { return log10(n); }
+static double m_log10(double n) { return log10(n); }
 #endif
 #endif
 
 #ifdef HAVE_ASIN
-double m_asin(double n) { return asin(n); }
+static double m_asin(double n) { return asin(n); }
 #else
 #ifdef asin
-double m_asin(double n) { return asin(n); }
+static double m_asin(double n) { return asin(n); }
 #endif
 #endif
 
 #ifdef HAVE_ACOS
-double m_acos(double n) { return acos(n); }
+static double m_acos(double n) { return acos(n); }
 #else
 #ifdef acos
-double m_acos(double n) { return acos(n); }
+static double m_acos(double n) { return acos(n); }
 #endif
 #endif
 
 #ifdef HAVE_ATAN
-double m_atan(double n) { return atan(n); }
+static double m_atan(double n) { return atan(n); }
 #else
 #ifdef atan
-double m_atan(double n) { return atan(n); }
+static double m_atan(double n) { return atan(n); }
 #endif
 #endif
 
 #ifdef HAVE_SINH
-double m_sinh(double n) { return sinh(n); }
+static double m_sinh(double n) { return sinh(n); }
 #else
 #ifdef sinh
-double m_sinh(double n) { return sinh(n); }
+static double m_sinh(double n) { return sinh(n); }
 #endif
 #endif
 
 #ifdef HAVE_COSH
-double m_cosh(double n) { return cosh(n); }
+static double m_cosh(double n) { return cosh(n); }
 #else
 #ifdef cosh
-double m_cosh(double n) { return cosh(n); }
+static double m_cosh(double n) { return cosh(n); }
 #endif
 #endif
 
 #ifdef HAVE_TANH
-double m_tanh(double n) { return tanh(n); }
+static double m_tanh(double n) { return tanh(n); }
 #else
 #ifdef tanh
-double m_tanh(double n) { return tanh(n); }
+static double m_tanh(double n) { return tanh(n); }
 #endif
 #endif
 
 #ifdef HAVE_ASINH
-double m_asinh(double n) { return asinh(n); }
+static double m_asinh(double n) { return asinh(n); }
 #else
 #ifdef asinh
-double m_asinh(double n) { return asinh(n); }
+static double m_asinh(double n) { return asinh(n); }
 #endif
 #endif
 
 #ifdef HAVE_ACOSH
-double m_acosh(double n) { return acosh(n); }
+static double m_acosh(double n) { return acosh(n); }
 #else
 #ifdef acosh
-double m_acosh(double n) { return acosh(n); }
+static double m_acosh(double n) { return acosh(n); }
 #endif
 #endif
 
 #ifdef HAVE_ATANH
-double m_atanh(double n) { return atanh(n); }
+static double m_atanh(double n) { return atanh(n); }
 #else
 #ifdef atanh
-double m_atanh(double n) { return atanh(n); }
+static double m_atanh(double n) { return atanh(n); }
 #endif
 #endif
 
 #ifdef HAVE_FLOOR
-double m_floor(double n) { return floor(n); }
+static double m_floor(double n) { return floor(n); }
 #else
 #ifdef floor
-double m_floor(double n) { return floor(n); }
+static double m_floor(double n) { return floor(n); }
 #endif
 #endif
 
 #ifdef HAVE_CEIL
-double m_ceil(double n) { return ceil(n); }
+static double m_ceil(double n) { return ceil(n); }
 #else
 #ifdef ceil
-double m_ceil(double n) { return ceil(n); }
+static double m_ceil(double n) { return ceil(n); }
 #endif
 #endif
 
 #ifdef HAVE_FABS
-double m_fabs(double n) { return fabs(n); }
+static double m_fabs(double n) { return fabs(n); }
 #else
 #ifdef fabs
-double m_fabs(double n) { return fabs(n); }
+static double m_fabs(double n) { return fabs(n); }
 #endif
 #endif
 
 #ifdef HAVE_ERF
-double m_erf(double n) { return erf(n); }
+static double m_erf(double n) { return erf(n); }
 #else
 #ifdef erf
-double m_erf(double n) { return erf(n); }
+static double m_erf(double n) { return erf(n); }
 #endif
 #endif
 
 #ifdef HAVE_ERFC
-double m_erfc(double n) { return erfc(n); }
+static double m_erfc(double n) { return erfc(n); }
 #else
 #ifdef erfc
-double m_erfc(double n) { return erfc(n); }
+static double m_erfc(double n) { return erfc(n); }
 #endif
 #endif
 
 #ifdef HAVE_J0
-double m_j0(double n) { return j0(n); }
+static double m_j0(double n) { return j0(n); }
 #else
 #ifdef j0
-double m_j0(double n) { return j0(n); }
+static double m_j0(double n) { return j0(n); }
 #endif
 #endif
 
 #ifdef HAVE_J1
-double m_j1(double n) { return j1(n); }
+static double m_j1(double n) { return j1(n); }
 #else
 #ifdef j1
-double m_j1(double n) { return j1(n); }
+static double m_j1(double n) { return j1(n); }
 #endif
 #endif
 
 #ifdef HAVE_Y0
-double m_y0(double n) { return y0(n); }
+static double m_y0(double n) { return y0(n); }
 #else
 #ifdef y0
-double m_y0(double n) { return y0(n); }
+static double m_y0(double n) { return y0(n); }
 #endif
 #endif
 
 #ifdef HAVE_Y1
-double m_y1(double n) { return y1(n); }
+static double m_y1(double n) { return y1(n); }
 #else
 #ifdef y1
-double m_y1(double n) { return y1(n); }
+static double m_y1(double n) { return y1(n); }
 #endif
 #endif
 
 
-double m_int(double n) { return (int)(n); }
+static double m_int(double n) { return (int)(n); }
 
 double calc(BW *bw, char *s, int secure)
 {
@@ -636,17 +636,17 @@ double calc(BW *bw, char *s, int secure)
 		v = get("cbrt"); v->func = m_cbrt;
 #endif
 #endif
-#ifdef HAVE_LN
-		v = get("ln"); v->func = m_log;
-#else
-#ifdef ln
-		v = get("ln"); v->func = m_log;
-#endif
-#endif
 #ifdef HAVE_LOG
-		v = get("log"); v->func = m_log10;
+		v = get("ln"); v->func = m_log;
 #else
 #ifdef log
+		v = get("ln"); v->func = m_log;
+#endif
+#endif
+#ifdef HAVE_LOG10
+		v = get("log"); v->func = m_log10;
+#else
+#ifdef log10
 		v = get("log"); v->func = m_log10;
 #endif
 #endif
@@ -671,19 +671,11 @@ double calc(BW *bw, char *s, int secure)
 		v = get("atan"); v->func = m_atan;
 #endif
 #endif
-#ifdef HAVE_M_PI
-		v = get("pi"); v->val = M_PI; v->set = 1;
-#else
-#ifdef m_pi
+#ifdef M_PI
 		v = get("pi"); v->val = M_PI; v->set = 1;
 #endif
-#endif
-#ifdef HAVE_M_E
+#ifdef M_E
 		v = get("e"); v->val = M_E; v->set = 1;
-#else
-#ifdef m_e
-		v = get("e"); v->val = M_E; v->set = 1;
-#endif
 #endif
 #ifdef HAVE_SINH
 		v = get("sinh"); v->func = m_sinh;
@@ -741,10 +733,10 @@ double calc(BW *bw, char *s, int secure)
 		v = get("ceil"); v->func = m_ceil;
 #endif
 #endif
-#ifdef HAVE_ABS
+#ifdef HAVE_FABS
 		v = get("abs"); v->func = m_fabs;
 #else
-#ifdef abs
+#ifdef fabs
 		v = get("abs"); v->func = m_fabs;
 #endif
 #endif

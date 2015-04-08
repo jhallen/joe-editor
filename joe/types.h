@@ -324,3 +324,4 @@ struct highlight_state {
 #include "mmenu.h"
 #include "state.h"
 #include "options.h"
+#include "selinux.h"

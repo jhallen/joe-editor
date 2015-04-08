@@ -60,8 +60,7 @@ copy_security_context(const char *from_file, const char *to_file)
 	return status;
 }
 
-int
-match_default_security_context(const char *from_file)
+int match_default_security_context(const char *from_file)
 {
 #ifdef WITH_SELINUX
 	security_context_t scontext;
@@ -99,8 +98,7 @@ match_default_security_context(const char *from_file)
 }
 
 
-int
-reset_default_security_context()
+int reset_default_security_context()
 {
 #ifdef WITH_SELINUX
 	if (selinux_enabled == -1)
@@ -118,8 +116,7 @@ reset_default_security_context()
 }
 
 
-int
-output_security_context(char *from_file)
+int output_security_context(const char *from_file)
 {
 #ifdef WITH_SELINUX
 	security_context_t scontext;

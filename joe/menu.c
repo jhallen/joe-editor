@@ -388,7 +388,7 @@ void menujump(MENU *m,ptrdiff_t x,ptrdiff_t y)
 	m->cursor = pos;
 }
 
-int mscrup(MENU *m,ptrdiff_t amnt)
+static int mscrup(MENU *m,ptrdiff_t amnt)
 {
 	if (transpose) {
 		if (m->top >= amnt) {
@@ -435,7 +435,7 @@ int umpgup(W *w, int k)
 	return mscrup(m, (m->h + 1) / 2);
 }
 
-int mscrdn(MENU *m, ptrdiff_t amnt)
+static int mscrdn(MENU *m, ptrdiff_t amnt)
 {
 	if (transpose) {
 		ptrdiff_t col = m->cursor / m->lines;

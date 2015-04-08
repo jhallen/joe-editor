@@ -68,7 +68,7 @@ static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
  *
  */
 
-char *get_context(BW *bw)
+static char *get_context(BW *bw)
 {
 	P *p = pdup(bw->cursor, "get_context");
 	static char buf1[stdsiz];
@@ -127,7 +127,7 @@ char *get_context(BW *bw)
 	return buf1;
 }
 
-char *duplicate_backslashes(char *s, ptrdiff_t len)
+static char *duplicate_backslashes(char *s, ptrdiff_t len)
 {
 	char *m;
 	ptrdiff_t x, count;
@@ -711,7 +711,7 @@ static int naborttw1(W *w, int k, void *object, int *notify)
 	return abortit(bw->parent, 0);
 }
 
-B *wpop(BW *bw)
+static B *wpop(BW *bw)
 {
 	B *b;
 	struct bstack *e = bw->parent->bstack;

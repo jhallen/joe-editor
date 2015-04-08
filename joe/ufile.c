@@ -15,10 +15,6 @@
 #endif
 #endif
 
-#ifdef WITH_SELINUX
-int copy_security_context(const char *from_file, const char *to_file);
-#endif
-
 int orphan;
 char *backpath = NULL;		/* Place to store backup files */
 B *filehist = NULL;	/* History of file names */
@@ -60,7 +56,7 @@ void genexmsg(BW *bw, int saved, char *name)
 }
 
 /* For ^X ^C */
-void genexmsgmulti(BW *bw, int saved, int skipped)
+static void genexmsgmulti(BW *bw, int saved, int skipped)
 {
 	if (saved)
 		if (skipped)
@@ -249,7 +245,7 @@ struct savereq {
 	const char *message; /* String for messages to be shown to the user */
 };
 
-struct savereq *mksavereq(int (*callback)(BW *bw, struct savereq *req, int flg, int *notify), char *name, B *first,int rename, int block_save)
+static struct savereq *mksavereq(int (*callback)(BW *bw, struct savereq *req, int flg, int *notify), char *name, B *first,int rename, int block_save)
 {
 	struct savereq *req = (struct savereq *) joe_malloc(SIZEOF(struct savereq));
 	req->callback = callback;
@@ -567,7 +563,7 @@ int ublksave(W *w, int k)
 
 /* Load file to edit */
 
-int doedit1(W *w,int c,void *obj, int *notify)
+static int doedit1(W *w,int c,void *obj, int *notify)
 {
 	char *s = (char *)obj;
 	int omid;
@@ -698,7 +694,7 @@ int doedit1(W *w,int c,void *obj, int *notify)
 	}
 }
 
-int doedit(W *w, char *s, void *obj, int *notify)
+static int doedit(W *w, char *s, void *obj, int *notify)
 {
 	B *b;
 
@@ -716,7 +712,7 @@ int doedit(W *w, char *s, void *obj, int *notify)
 		return doedit1(w, YES_CODE, s, notify);
 }
 
-int dosetcd(W *w, char *s, void *obj, int *notify)
+static int dosetcd(W *w, char *s, void *obj, int *notify)
 {
 	BW *bw;
 	WIND_BW(bw, w);
@@ -776,7 +772,7 @@ int uswitch(W *w, int k)
 	}
 }
 
-void wpush(BW *bw)
+static void wpush(BW *bw)
 {
 	struct bstack *e;
 	e = (struct bstack *)malloc(SIZEOF(struct bstack));
@@ -790,7 +786,7 @@ void wpush(BW *bw)
 	bw->parent->bstack = e;
 }
 
-int doscratch(W *w, char *s, void *obj, int *notify)
+static int doscratch(W *w, char *s, void *obj, int *notify)
 {
 	int ret = 0;
 	int er;
@@ -845,7 +841,7 @@ int doscratch(W *w, char *s, void *obj, int *notify)
 	return ret;
 }
 
-int doscratchpush(W *w, char *s, void *obj, int *notify)
+static int doscratchpush(W *w, char *s, void *obj, int *notify)
 {
 	int ret = 0;
 	int er;

@@ -401,7 +401,7 @@ static int argset = 0;		/* Set if 'arg' is set */
 
 /* Execute a macro which is just a simple command */
 
-int exsimple(MACRO *m, int arg, int u)
+static int exsimple(MACRO *m, int arg, int u)
 {
 	CMD *cmd = m->cmd;
 	int flg = 0; /* set if we should not try to merge minor changes into single undo record */

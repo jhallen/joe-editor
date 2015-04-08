@@ -813,7 +813,7 @@ static int syntaxcmplt(BW *bw, int k)
 	return simple_cmplt(bw,syntaxes);
 }
 
-int check_for_hex(BW *bw)
+static int check_for_hex(BW *bw)
 {
 	W *w;
 	if (bw->o.hex)
@@ -869,7 +869,7 @@ static int encodingcmplt(BW *bw, int k)
 	return simple_cmplt(bw,encodings);
 }
 
-int find_option(char *s)
+static int find_option(char *s)
 {
 	int y;
 	for (y = 0; glopts[y].name; ++y)
@@ -1044,7 +1044,7 @@ const char *get_status(BW *bw, char *s)
 
 /* Simplified mode command */
 
-char **getoptions(void)
+static char **getoptions(void)
 {
 	char **s = vaensure(NULL, 20);
 	int x;

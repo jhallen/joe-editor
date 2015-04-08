@@ -258,7 +258,7 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
  *   http://www.cl.cam.ac.uk/~mgk25/ucs/langinfo.c
  */
 
-const char *joe_getcodeset(char *l)
+static const char *joe_getcodeset(char *l)
 {
   static char buf[16];
   char *p;

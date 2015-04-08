@@ -84,7 +84,7 @@ int help_init(JFILE *fd,char *bf,int line)
  * Find context help - find help entry with the same name
  */
 
-struct help *find_context_help(const char *name)
+static struct help *find_context_help(const char *name)
 {
 	struct help *tmp = help_actual;
 

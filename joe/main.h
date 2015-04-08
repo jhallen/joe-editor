@@ -26,3 +26,4 @@ extern char i_msg[128];
 void internal_msg(char *);
 void setlogerrs(void);
 int ushowlog(W *w, int k);
+extern MACRO *timer_play(void);

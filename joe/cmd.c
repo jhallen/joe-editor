@@ -11,7 +11,7 @@ int joe_beep = 0;
 
 /* Command table */
 
-int ubeep(W *w, int k)
+static int ubeep(W *w, int k)
 {
 	ttputc(7);
 	return 0;
@@ -231,7 +231,7 @@ const char *steallock_key= _("|steal the lock|sS");
 const char *canceledit_key= _("|cancel edit due to lock|qQ");
 const char *ignorelock_key=  _("|ignore lock, continue with edit|iI");
 
-int steal_lock(W *w,int c,void *object,int *notify)
+static int steal_lock(W *w,int c,void *object,int *notify)
 {
 	B *b = (B *)object;
 	if (yncheck(steallock_key, c)) {
@@ -277,7 +277,7 @@ int steal_lock(W *w,int c,void *object,int *notify)
 	}
 }
 
-int file_changed(W *w,int c,void *object,int *notify)
+static int file_changed(W *w,int c,void *object,int *notify)
 {
 	B *b = (B *)object;
 	if (mkqw(w, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), file_changed, NULL, b, notify)) {

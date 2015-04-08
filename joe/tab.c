@@ -293,7 +293,7 @@ static int tababrt(W *w, ptrdiff_t cursor, void *object)
 	return -1;
 }
 
-P *p_goto_start_of_path(P *p)
+static P *p_goto_start_of_path(P *p)
 {
 	int c;
 	
