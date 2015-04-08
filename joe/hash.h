@@ -20,7 +20,7 @@ struct hash {
 };
 
 /* Compute hash code for a string */
-ptrdiff_t hash(char *s);
+ptrdiff_t hash(const char *s);
 
 /* Create a hash table of specified size, which must be a power of 2 */
 HASH *htmk(ptrdiff_t len);

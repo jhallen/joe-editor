@@ -226,7 +226,7 @@ extern void setbreak();
 extern int breakflg;
 #endif
 
-char **mainenv;
+const char * const *mainenv;
 
 B *startup_log = NULL;
 static int logerrors = 0;
@@ -275,7 +275,7 @@ int ushowlog(W *w, int k)
 	return 1;
 }
 
-int main(int argc, char **real_argv, char **envv)
+int main(int argc, char **real_argv, const char * const *envv)
 {
 	CAP *cap;
 	char **argv = (char **)real_argv;
@@ -295,7 +295,7 @@ int main(int argc, char **real_argv, char **envv)
 
 	joe_locale();
 
-	mainenv = (char **)envv;
+	mainenv = envv;
 	
 	vmem = vtmp();
 	startup_log = bfind_scratch("* Startup Log *");

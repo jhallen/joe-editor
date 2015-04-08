@@ -41,9 +41,9 @@ char **regsub(char **z, ptrdiff_t len, char *s);
 
 void cmplt_ins(BW *bw,char *line);
 
-int cmplt_abrt(BW *bw,ptrdiff_t x,char *line);
+int cmplt_abrt(W *w,ptrdiff_t x,void *obj);
 
-int cmplt_rtn(MENU *m,ptrdiff_t x,char *line);
+int cmplt_rtn(MENU *m,ptrdiff_t x,void *obj, int k);
 
 int simple_cmplt(BW *bw,char **list);
 

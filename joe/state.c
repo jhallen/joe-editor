@@ -25,11 +25,13 @@ static void save_hist(FILE *f,B *b)
 		pset(q,p);
 		while (!piseof(p)) {
 			pnextl(q);
-			if (q->byte-p->byte < len) {
+			if (q->byte-p->byte < SIZEOF(buf)) {
 				len = TO_DIFF_OK(q->byte - p->byte);
 				brmem(p,buf,len);
 			} else {
+				len = SIZEOF(buf);
 				brmem(p,buf,len);
+				buf[len - 1] = '\n';
 			}
 			fprintf(f,"\t");
 			emit_string(f,buf,len);
@@ -63,6 +65,8 @@ static void load_hist(FILE *f,B **bp)
 		parse_ws(&p,'#');
 		len = parse_string(&p,bf,SIZEOF(bf));
 		if (len>0) {
+			if (bf[len - 1] != '\n')
+				bf[len - 1] = '\n';
 			binsm(q,bf,len);
 			pset(q,b->eof);
 		}

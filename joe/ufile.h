@@ -44,7 +44,7 @@ extern const char *no_key;
 #define YES_CODE -10
 #define NO_CODE -20
 int yncheck(const char *string, int c);
-int ynchecks(const char *string, char *s);
+int ynchecks(const char *string, const char *s);
 
 int ureload(W *w, int k);
 int ureload_all(W *w, int k);
