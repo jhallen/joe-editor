@@ -867,9 +867,7 @@ int umwind(W *w, int k)
 int umfit(W *w, int k)
 {
 	W *p;
-	BW *bw;
 	Screen *t = w->t;
-	WIND_BW(bw, w);
 	wshowone(w);
 	p = findtopw(w)->link.prev->main;
 	if (p == w) {

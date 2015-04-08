@@ -2369,8 +2369,6 @@ int ufwrdc(W *w, int k)
 
 int ubkwdc(W *w, int k)
 {
-	BW *bw;
-	WIND_BW(bw, w);
 	dobkwdc = 1;
 	if (k >= 0 && k < 256)
 		return dofwrdc(w, k, NULL, NULL);

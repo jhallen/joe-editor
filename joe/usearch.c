@@ -532,9 +532,7 @@ static int pfabort(W *w, void *obj)
 
 static int pfsave(W *w, void *obj)
 {
-	BW *bw;
 	SRCH *srch = (SRCH *)obj;
-	WIND_BW(bw, w);
 	if (srch) {
 		if (globalsrch)
 			rmsrch(globalsrch);
