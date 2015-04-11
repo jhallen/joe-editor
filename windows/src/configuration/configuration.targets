@@ -20,7 +20,7 @@
   <!-- Syntax File Targets -->
   <Target Name="CopySyntaxFiles" Inputs="@(SyntaxFile)" Outputs="@(SyntaxFile->'$(SyntaxOutDir)\%(Filename)')">
     <MakeDir Directories="$(SyntaxOutDir)" Condition="!Exists('$(SyntaxOutDir)')" />
-    <Copy SourceFiles="@(SyntaxFile)" DestinationFiles="@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)')" />
+    <CopyConvertLF SourceFiles="@(SyntaxFile)" DestinationFiles="@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)')" />
     <!-- Output minified files -->
     <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
     <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)')) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezejsf.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
@@ -53,8 +53,8 @@
   <!-- Doc File Targets -->
   <Target Name="CopyDocFiles" Inputs="@(DocFile)" Outputs="@(DocFile->'$(OutDir)\doc\%(Filename)%(Extension)')">
     <MakeDir Directories="$(OutDir)\doc" />
-    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(OutDir)\doc" />
-    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(IntDir)" />
+    <CopyConvertLF SourceFiles="@(DocFile)" DestinationFolder="$(OutDir)\doc" />
+    <CopyConvertLF SourceFiles="@(DocFile)" DestinationFolder="$(IntDir)" />
   </Target>
   <Target Name="CleanDocFiles">
     <RemoveDir Directories="$(OutDir)\doc" />
@@ -63,10 +63,62 @@
   <!-- Language File Targets -->
   <Target Name="CopyLanguageFiles" Inputs="@(LanguageFile)" Outputs="@(LanguageFile->'$(OutDir)\po\%(Filename)%(Extension)')">
     <MakeDir Directories="$(OutDir)\po" />
-    <Copy SourceFiles="@(LanguageFile)" DestinationFolder="$(OutDir)\po" />
+    <CopyConvertLF SourceFiles="@(LanguageFile)" DestinationFolder="$(OutDir)\po" />
     <Exec Condition="'$(_Python)' != '' and Exists('$(_Python)')" Command="FOR %%f IN (@(LanguageFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezepo.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
   </Target>
   <Target Name="CleanLanguageFiles">
     <RemoveDir Directories="$(OutDir)\po" />
   </Target>
+  
+  <!-- UNIX to DOS copy task -->
+  <UsingTask TaskName="CopyConvertLF" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+    <ParameterGroup>
+      <SourceFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="True" />
+      <DestinationFolder ParameterType="System.String" Required="False" />
+      <DestinationFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="False" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+
+for (int i = 0; i < SourceFiles.Length; i++)
+{
+	var srcfile = SourceFiles[i];
+	string filename = srcfile.GetMetadata("FullPath");
+	byte[] infile = File.ReadAllBytes(filename);
+	string outfilename;
+	
+	if (DestinationFolder != null)
+	{
+		outfilename = Path.Combine(DestinationFolder, Path.GetFileName(filename));
+	}
+	else
+	{
+		outfilename = DestinationFiles[i].GetMetadata("FullPath");
+	}
+	
+	using (var outf = File.Open(outfilename, FileMode.Create, FileAccess.Write))
+	{
+		int lastWrite = 0;
+		for (int t = 0; t < infile.Length; t++)
+		{
+			if (infile[t] == 10 && infile[Math.Max(0, t - 1)] != 13)
+			{
+				infile[t] = 13; // I'm all about avoiding that extra Write =p
+				outf.Write(infile, lastWrite, t - lastWrite + 1);
+				infile[t] = 10;
+				lastWrite = t;
+			}
+		}
+	
+		outf.Write(infile, lastWrite, infile.Length - lastWrite);
+	}
+}
+
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
 </Project>
