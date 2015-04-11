@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="Build" DependsOnTargets="CopyConfigFiles; CopySyntaxFiles; CopyColorGenFiles; CopyColorFiles; CopyDocFiles; CopyLanguageFiles" BeforeTargets="BeforeBuild" AfterTargets="AfterBuild" />
+  <Target Name="Clean" DependsOnTargets="CleanConfigFiles; CleanSyntaxFiles; CleanColorFiles; CleanDocFiles; CleanLanguageFiles" BeforeTargets="BeforeClean" AfterTargets="AfterClean" />
+  <Target Name="Rebuild" DependsOnTargets="BeforeRebuild; Clean; Build" AfterTargets="AfterRebuild" />
+  
+  <!-- Config File Targets -->
+  <Target Name="CopyConfigFiles" Inputs="@(ConfigFile)" Outputs="@(ConfigFile->'$(ConfOutDir)\%(Filename)%(Extension)')">
+    <MakeDir Directories="$(ConfOutDir)" Condition="!Exists('$(ConfOutDir)')" />
+    <Copy SourceFiles="@(ConfigFile)" DestinationFolder="$(ConfOutDir)" />
+    <!-- Output minified files -->
+    <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
+    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(ConfigFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezerc.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+  </Target>
+  <Target Name="CleanConfigFiles">
+    <RemoveDir Directories="$(ConfOutDir)" />
+    <RemoveDir Directories="$(IntDir)" />
+  </Target>
+
+  <!-- Syntax File Targets -->
+  <Target Name="CopySyntaxFiles" Inputs="@(SyntaxFile)" Outputs="@(SyntaxFile->'$(SyntaxOutDir)\%(Filename)')">
+    <MakeDir Directories="$(SyntaxOutDir)" Condition="!Exists('$(SyntaxOutDir)')" />
+    <Copy SourceFiles="@(SyntaxFile)" DestinationFiles="@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)')" />
+    <!-- Output minified files -->
+    <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
+    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)')) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezejsf.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+  </Target>
+  <Target Name="CleanSyntaxFiles">
+    <RemoveDir Directories="$(SyntaxOutDir)" />
+    <RemoveDir Directories="$(IntDir)" />
+  </Target>
+
+  <!-- Color File Targets -->
+  <Target Name="CopyColorGenFiles" Inputs="@(ColorGenFile);@(ColorGenerator);@(ColorOverrideFile)" Outputs="@(ColorGenFile->'$(SchemesOutDir)\%(Filename).joecolor')">
+    <Warning Condition="'$(_Python)'=='' or !Exists('$(_Python)')" Text="Unable to find Python 2.x.  Skipping color scheme generation." />
+    <MakeDir Directories="$(SchemesOutDir)" Condition="!Exists('$(SchemesOutDir)')" />
+    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" WorkingDirectory="$(SchemeGenDir)" Command="FOR %%f IN (@(ColorGenFile->'%(RootDir)%(Directory)%(Filename)')) DO (echo Generating %%~nf.joecolor &amp; IF EXIST %%f.override ($(_Python) convertvimcolor.py &quot;%%f.vim&quot; &quot;$(SchemesOutDir)\%%~nf.joecolor&quot; &quot;%%f.override&quot;) ELSE ($(_Python) convertvimcolor.py &quot;%%f.vim&quot; &quot;$(SchemesOutDir)\%%~nf.joecolor&quot;))" />
+    <!-- Output minified files -->
+    <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
+    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(ColorGenFile->'$(SchemesOutDir)\%(Filename).joecolor')) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezecolors.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+  </Target>
+  <Target Name="CopyColorFiles" Inputs="@(ColorFile)" Outputs="@(ColorFile->'$(SchemesOutDir)\%(Filename)%(Extension)')">
+    <Copy SourceFiles="@(ColorFile)" DestinationFolder="$(SchemesOutDir)" />
+    <!-- Output minified files -->
+    <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
+    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(ColorFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezecolors.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+  </Target>
+  <Target Name="CleanColorFiles">
+    <RemoveDir Directories="$(SchemesOutDir)" />
+    <RemoveDir Directories="$(IntDir)" />
+  </Target>
+
+  <!-- Doc File Targets -->
+  <Target Name="CopyDocFiles" Inputs="@(DocFile)" Outputs="@(DocFile->'$(OutDir)\doc\%(Filename)%(Extension)')">
+    <MakeDir Directories="$(OutDir)\doc" />
+    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(OutDir)\doc" />
+    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(IntDir)" />
+  </Target>
+  <Target Name="CleanDocFiles">
+    <RemoveDir Directories="$(OutDir)\doc" />
+  </Target>
+
+  <!-- Language File Targets -->
+  <Target Name="CopyLanguageFiles" Inputs="@(LanguageFile)" Outputs="@(LanguageFile->'$(OutDir)\po\%(Filename)%(Extension)')">
+    <MakeDir Directories="$(OutDir)\po" />
+    <Copy SourceFiles="@(LanguageFile)" DestinationFolder="$(OutDir)\po" />
+    <Exec Condition="'$(_Python)' != '' and Exists('$(_Python)')" Command="FOR %%f IN (@(LanguageFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezepo.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+  </Target>
+  <Target Name="CleanLanguageFiles">
+    <RemoveDir Directories="$(OutDir)\po" />
+  </Target>
+</Project>
