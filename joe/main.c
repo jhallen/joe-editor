@@ -135,7 +135,7 @@ int edloop(int flg)
 			c = ungotc;
 			ungot = 0;
 		} else
-			c = ttgetc();
+			c = ttgetch();
 
 		/* Clear temporary messages */
 		w = maint->curwin;
@@ -181,16 +181,18 @@ int edloop(int flg)
 			if (x)
 				maint->curwin->main->kbd->seq[x - 1] = maint->curwin->kbd->seq[x - 1];
 		}
-		if (!m)
+		if (!m) {
 			m = timer_play();
+			c = NO_MORE_DATA;
+		}
 		if (m)
-			ret = exemac(m);
+			ret = exemac(m, c);
 
 		/* trailing part of backtick hack... */
 		/* for case where ` is very last character of pasted block */
 		while (!leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck() && havec == '`') {
-			ttgetc();
-			ret = exemac(type_backtick);
+			ttgetch();
+			ret = exemac(type_backtick, NO_MORE_DATA);
 		}
 
 		/* trailing part of disabled autoindent */
@@ -199,7 +201,7 @@ int edloop(int flg)
 				c = ungotc;
 				ungot = 0;
 			} else
-				c = ttgetc();
+				c = ttgetch();
 			goto more_no_auto;
 		}
 
@@ -564,9 +566,9 @@ int main(int argc, char **real_argv, const char * const *envv)
 				maint->curwin = bw->parent;
 				/* Execute macro */
 				if (er == -1 && bw->o.mnew)
-					exmacro(bw->o.mnew,1);
+					exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 				if (er == 0 && bw->o.mold)
-					exmacro(bw->o.mold,1);
+					exmacro(bw->o.mold, 1, NO_MORE_DATA);
 				/* Hmm... window might not exist any more... depends on what macro does... */
 				if (lnum > 0)
 					pline(bw->cursor, lnum - 1);
@@ -594,7 +596,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 		BW *bw = wmktw(maint, bfind(""));
 
 		if (bw->o.mnew)
-			exmacro(bw->o.mnew,1);
+			exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 	}
 	maint->curwin = maint->topwin;
 

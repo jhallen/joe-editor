@@ -133,8 +133,6 @@ static void dispqwn(W *w, int flg)
 
 /* When user hits a key in a query window */
 
-struct utf8_sm qw_sm;
-
 static int utypeqw(W *w, int c)
 {
 	QW *qw = (QW *)w->object;
@@ -142,12 +140,6 @@ static int utypeqw(W *w, int c)
 	int *notify = w->notify;
 	int (*func)(W *w, int k, void *object, int *notify);
 	void *object = qw->object;
-
-	if (locale_map->type) {
-		c = utf8_decode(&qw_sm, TO_CHAR_OK(c));
-		if (c < 0)
-			return 0;
-	}
 
 	win = qw->parent->win;
 	func = qw->func;

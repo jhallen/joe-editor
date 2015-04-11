@@ -77,13 +77,15 @@ extern int current_arg_set; /* Set if repeat arg was given */
 
 /* Execute a macro: for user typing.
      Records step if we are recording.
+   K overrides the key for the macro if it is not -1.
 */
-int exemac(MACRO *m);
+int exemac(MACRO *m, int k);
 
 /* Execute a macro as a subroutine
     u set to treat as single undo step
+    k overrides the key for the macro if it is not -1.
 */
-int exmacro(MACRO *m, int u);
+int exmacro(MACRO *m, int u, int k);
 
 /* Keyboard macros user interface */
 int uplay(W *w, int c);		/* Play a keyboard macro */

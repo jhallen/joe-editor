@@ -643,7 +643,7 @@ int ttgetc(void)
 	ttflsh();
 	m = timer_play();
 	if (m) {
-	        exemac(m);
+	        exemac(m, NO_MORE_DATA);
 	        edupd(1);
 	        ttflsh();
 	}
@@ -706,6 +706,28 @@ int ttgetc(void)
 	}
 	tickoff();
 	return havec;
+}
+
+/* Get character from input: convert whatever we get to Unicode */
+
+static struct utf8_sm main_utf8_sm;
+
+int ttgetch()
+{
+	if (locale_map->type) {
+		int utf8_char;
+		do {
+			char c = ttgetc();
+			utf8_char = utf8_decode(&main_utf8_sm, c);
+		} while (utf8_char < 0);
+		return utf8_char;
+	} else {
+		char c = ttgetc();
+		int utf8_char = to_uni(locale_map, c);
+		if (utf8_char == -1)
+			utf8_char = '?'; /* Maybe we should ignore it? */
+		return utf8_char;
+	}
 }
 
 /* Write string to output */

@@ -274,6 +274,7 @@ struct highlight_state {
 
 /* Include files */
 
+#include "cmap.h"
 #include "b.h"
 #include "blocks.h"
 #include "bw.h"

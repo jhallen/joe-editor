@@ -147,7 +147,7 @@ static void cdata(void *obj, char *dat, ptrdiff_t siz)
 			if (m) {
 				/* only do this if cursor is on window */
 				if ((maint->curwin->watom->what & TYPETW) && ((BW *)maint->curwin->object)->b == b) {
-					exmacro(m, 1);
+					exmacro(m, 1, NO_MORE_DATA);
 					edupd(1);
 				}
 				rmmacro(m);

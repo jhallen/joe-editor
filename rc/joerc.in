@@ -689,6 +689,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
  Keys:
 
+ Use U+12345 for specific unicode character
  Use ^@ through ^_ and ^? for Ctrl chars
  Use SP for space
  Use a TO b to generate a range of characters
@@ -733,7 +734,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  To define a command foo which will goto the beginning of the last line.
 
 :windows		Bindings common to all windows
-type		^@ TO ÿ		Type a character
+type		U+0 TO U+10FFFF
 abort		^C		Abort window
 abort		^K Q
 abort		^K ^Q
@@ -1226,10 +1227,10 @@ defm2down	M2DOWN		Hits return key
 :inherit windows
 
 :querya			Single-key query window for quoting
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :querysr		Search & replace query window
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :shell			Input to shell windows
 :inherit main

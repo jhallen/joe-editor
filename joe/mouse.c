@@ -45,7 +45,7 @@ static void fake_key(int c)
 	if(x)
 		maint->curwin->main->kbd->seq[x-1]=maint->curwin->kbd->seq[x-1];
 	if(m)
-		exemac(m);
+		exemac(m, c);
 }
 
 /* Translate mouse coordinates */
@@ -97,13 +97,13 @@ int uxtmouse(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	Cb = ttgetc()-32;
+	Cb = ttgetch()-32;
 	if (Cb < 0)
 		return -1;
-	Cx = ttgetc();
+	Cx = ttgetch();
 	if (Cx < 32)
 		return -1;
-	Cy = ttgetc();
+	Cy = ttgetch();
 	if (Cy < 32)
 		return -1;
 
@@ -121,17 +121,17 @@ int uextmouse(W *w, int k)
 	WIND_BW(bw, w);
 	Cb = 0;
 	Cx = Cy = 0;
-	while ((c = ttgetc()) != ';') {
+	while ((c = ttgetch()) != ';') {
 		if (c < '0' || c > '9')
 			return -1;
 		Cb = 10 * Cb + c - '0';
 	}
-	while ((c = ttgetc()) != ';') {
+	while ((c = ttgetch()) != ';') {
 		if (c < '0' || c > '9')
 			return -1;
 		Cx = 10 * Cx + c - '0';
 	}
-	while ((c = ttgetc()) != 'M' && c != 'm') {
+	while ((c = ttgetch()) != 'M' && c != 'm') {
 		if (c < '0' || c > '9')
 			return -1;
 		Cy = 10 * Cy + c - '0';

@@ -33,14 +33,11 @@ static void menudisp(W *w, int flg)
 	ptrdiff_t col;
 	int x;
 	int y;
-	struct utf8_sm sm;
 	int *s = m->t->t->scrn + m->x + m->y * m->t->t->co;
 	int *a = m->t->t->attr + m->x + m->y * m->t->t->co;
 	ptrdiff_t cut = m->nitems % m->lines;
 
 	if (!cut) cut = m->lines;
-
-	utf8_init(&sm);
 
 	for (y = 0; y != m->h; ++y) {
 		col = 0;

@@ -672,7 +672,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Macros may cross lines if they end with ,
 
 :windows		Bindings common to all windows
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 abort		^K Q
 abort		^K ^Q
 abort		^K q
@@ -856,9 +856,9 @@ quote		^P		Quote Ctrl chars
 backs		^?		Backspace
 backs		^H
 bknd		^K '		Shell window
-bkwdc		^Q H ^@ TO ÿ
-bkwdc		^Q ^H ^@ TO ÿ
-bkwdc		^Q h ^@ TO ÿ
+bkwdc		^Q H U+0 TO U+10FFFF
+bkwdc		^Q ^H U+0 TO U+10FFFF
+bkwdc		^Q h U+0 TO U+10FFFF
 blkcpy		^K C		Copy marked block
 blkcpy		^K ^C
 blkcpy		^K c
@@ -939,9 +939,9 @@ qrepl		^Q a
 filt		^K /		Filter block
 fnext		^L		Find next
 format		^B		Format paragraph
-fwrdc		^Q G ^@ TO ÿ
-fwrdc		^Q ^G ^@ TO ÿ
-fwrdc		^Q g ^@ TO ÿ
+fwrdc		^Q G U+0 TO U+10FFFF
+fwrdc		^Q ^G U+0 TO U+10FFFF
+fwrdc		^Q g U+0 TO U+10FFFF
 gomark		^Q 0 TO 9
 groww		^K G		Grow window
 groww		^K ^G
@@ -1130,10 +1130,10 @@ defm2down	M2DOWN		Hits return key
 :inherit windows
 
 :querya			Single-key query window for quoting
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :querysr		Search & replace query window
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :shell			Input to shell windows
 :inherit main

@@ -4,6 +4,9 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Key sequences in the joerc file are now UTF-8 coded Unicode.
+	* Also you can specify Unicode in hexadecimal with: U+F123
+
 * Fix bug where position cursor history operations would mix
   pointers between different buffers if user had switched buffers
   in a window.

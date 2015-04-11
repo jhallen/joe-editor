@@ -330,11 +330,11 @@ static int saver(W *w, int c, void *object, int *notify)
 		}
 	}
 	if (bw->b->er == -1 && bw->o.msnew) {
-		exmacro(bw->o.msnew,1);
+		exmacro(bw->o.msnew, 1, NO_MORE_DATA);
 		bw->b->er = -3;
 	}
 	if (bw->b->er == 0 && bw->o.msold) {
-		exmacro(bw->o.msold,1);
+		exmacro(bw->o.msold, 1, NO_MORE_DATA);
 	}
 	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, req->rename ? 2 : 1)) != 0) {
 		msgnw(bw->parent, joe_gettext(msgs[-fl]));
@@ -619,10 +619,10 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 		bw->object = object;
 		vsrm(s);
 		if (er == -1 && bw->o.mnew) {
-			exmacro(bw->o.mnew,1);
+			exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 		}
 		if (er == 0 && bw->o.mold) {
-			exmacro(bw->o.mold,1);
+			exmacro(bw->o.mold, 1, NO_MORE_DATA);
 		}
 		/* Restore cursor line */
 		pline(bw->cursor, get_file_pos(bw->b->name));
@@ -671,10 +671,10 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 		bw->object = object;
 		vsrm(s);
 		if (er == -1 && bw->o.mnew) {
-			exmacro(bw->o.mnew,1);
+			exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 		}
 		if (er == 0 && bw->o.mold) {
-			exmacro(bw->o.mold,1);
+			exmacro(bw->o.mold, 1, NO_MORE_DATA);
 		}
 		/* Restore cursor line */
 		pline(bw->cursor, get_file_pos(bw->b->name));
@@ -833,10 +833,10 @@ static int doscratch(W *w, char *s, void *obj, int *notify)
 	bw->object = object;
 	vsrm(s);
 	if (er == -1 && bw->o.mnew) {
-		exmacro(bw->o.mnew,1);
+		exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 	}
 	if (er == 0 && bw->o.mold) {
-		exmacro(bw->o.mold,1);
+		exmacro(bw->o.mold, 1, NO_MORE_DATA);
 	}
 	return ret;
 }
@@ -891,10 +891,10 @@ static int doscratchpush(W *w, char *s, void *obj, int *notify)
 	bw->object = object;
 	vsrm(s);
 	if (er == -1 && bw->o.mnew) {
-		exmacro(bw->o.mnew,1);
+		exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 	}
 	if (er == 0 && bw->o.mold) {
-		exmacro(bw->o.mold,1);
+		exmacro(bw->o.mold, 1, NO_MORE_DATA);
 	}
 	return ret;
 }
@@ -957,10 +957,10 @@ static int dorepl(W *w, char *s, void *obj, int *notify)
 	bw->object = object;
 	vsrm(s);
 	if (er == -1 && bw->o.mnew) {
-		exmacro(bw->o.mnew,1);
+		exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 	}
 	if (er == 0 && bw->o.mold) {
-		exmacro(bw->o.mold,1);
+		exmacro(bw->o.mold, 1, NO_MORE_DATA);
 	}
 	/* Restore cursor line */
 	pline(bw->cursor, get_file_pos(bw->b->name));
@@ -1162,7 +1162,7 @@ static int dolose(W *w, int c, void *object, int *notify)
 					wredraw(w);
 					bw->object = object;
 					if (bw->o.mnew)
-						exmacro(bw->o.mnew,1);
+						exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 				}
 			}
 		w = w->link.next;

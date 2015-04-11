@@ -681,7 +681,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Macros may cross lines if they end with ,
 
 :windows		Bindings common to all windows
-type		^@ TO ÿ		Type a character
+type		U+0 TO U+10FFFF
 abort		^C		Abort window
 abort		^K Q
 abort		^K ^Q
@@ -1074,7 +1074,35 @@ defm2down	M2DOWN		Hits return key
 :inherit windows
 
 :querya			Single-key query window for quoting
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :querysr		Search & replace query window
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
+
+:shell			Input to shell windows
+:inherit main
+""		^C		Abort
+""		^D		Eof
+"	"	^I		Tab
+""		^H		Backspace
+""		^M		Return
+""		^?		Backspace
+
+:vtshell		Input to ANSI shell windows
+:inherit main
+"[A"		 [ A
+"[A"		.ku
+"[B"		 [ B
+"[B"		.kd
+"[C"		 [ C
+"[C"		.kr
+"[D"		 [ D
+"[D"		.kl
+""		^A		BOL for bash
+""		^C		Abort
+""		^D		Eof
+""		^E		EOL for bash
+"	"	^I		Tab
+""		^H		Backspace
+""		^M		Return
+""		^?		Backspace

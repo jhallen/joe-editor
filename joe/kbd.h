@@ -6,18 +6,13 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-/* A key binding */
-struct key {
-	int	k;			/* Flag: 0=binding, 1=submap */
-	union {
-                MACRO *bind;		/* What key is bound to */
-		KMAP	*submap;	/* Sub KMAP address (for prefix keys) */
-	} value;
-};
-
 /* A map of keycode to command/sub-map bindings */
 struct kmap {
-	KEY	keys[KEYS];	/* KEYs */
+	struct cmap cmap;	/* Character map: (optimized version of src) */
+	struct interval_list *src;	/* Interval list which is source of cmap */
+	struct bind dflt;		/* Default binding which is source of cmap */
+	int cmap_version;	/* When cmap_version != src_version, we update cmap */
+	int src_version;	/* Increment this whenever src is changed */
 };
 
 /** A keyboard handler **/

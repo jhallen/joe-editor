@@ -729,7 +729,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  к началу следующей строки.
 
 :windows		Общие клавиши для всех окон
-type		^@ TO Ъ		Напечатать символ
+type		U+0 TO U+10FFFF
 abort		^C		Аварийное прерывание
 abort		^K Q
 abort		^K ^Q
@@ -1187,10 +1187,10 @@ defm2down	M2DOWN		Hits return key
 :inherit windows
 
 :querya			Single-key query window for quoting
-type		^@ TO  
+type		U+0 TO U+10FFFF
 
 :querysr		Search & replace query window
-type		^@ TO  
+type		U+0 TO U+10FFFF
 
 :shell			Input to shell windows
 :inherit main

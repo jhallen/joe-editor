@@ -74,10 +74,12 @@
  * Latest version: http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
  */
 
+/*
 struct interval {
 	int first;
 	int last;
 };
+*/
 
 static int bisearch(int ucs, const struct interval *table, int max)
 {

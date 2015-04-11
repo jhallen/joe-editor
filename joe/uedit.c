@@ -1776,30 +1776,56 @@ static off_t find_indent(P *p)
  * to process.
  */
 
-struct utf8_sm utype_utf8_sm;
-
 static int utypebw_raw(BW *bw, int k, int no_decode)
 {
-	char c = TO_CHAR_OK(k);
-	struct charmap *map=bw->b->o.charmap;
+	/* Character map of buffer */
+	struct charmap *map = bw->b->o.charmap;
 
 	/* Send data to shell window */
 	if ((bw->b->pid && !bw->b->vt && piseof(bw->cursor)) ||
 	   ( bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)) {
-		joe_write(bw->b->out, &c, 1);
+	   	if (locale_map->type) {
+	   		char buf[8];
+	   		ptrdiff_t len = utf8_encode(buf, k);
+	   		joe_write(bw->b->out, buf, len);
+	   	} else {
+	   		if (!no_decode)
+		   		k = from_uni(locale_map, k);
+	   		if (k != -1) {
+	   			char c = TO_CHAR_OK(k);
+	   			joe_write(bw->b->out, &c, 1);
+	   		}
+		}
 		return 0;
 	}
 
-	/* Hex mode overtype is real simple */
+	/* Hex mode overtype needs to preserve file size */
 	if (bw->o.hex && bw->o.overtype) {
-		P *p;
-		binsm(bw->cursor, &c, 1);
-		pgetb(bw->cursor);
-		if (piseof(bw->cursor))
-			return 0;
-		pgetb(p = pdup(bw->cursor, "utypebw_raw"));
-		bdel(bw->cursor, p);
-		prm(p);
+		char buf[8];
+		ptrdiff_t x;
+		ptrdiff_t len;
+		if (map->type) {
+			len = utf8_encode(buf, k);
+		} else {
+			if (!no_decode)
+				k = from_uni(map, k);
+			if (k == -1)
+				return 1;
+			buf[0] = TO_CHAR_OK(k);
+			len = 1;
+		}
+		binsm(bw->cursor, buf, len);
+		for (x = 0; x != len; ++x)
+			pgetb(bw->cursor);
+		while (len--) {
+			P *p;
+			if (piseof(bw->cursor))
+				return 0;
+			p = pdup(bw->cursor, "utypebw_raw");
+			pgetb(p);
+			bdel(bw->cursor, p);
+			prm(p);
+		}
 		return 0;
 	}
 
@@ -1814,7 +1840,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 				pfill(bw->cursor,col,'\t');
 		}
 		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
-	} else if (c == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)>=piscol(bw->cursor)) {
+	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)>=piscol(bw->cursor)) {
 		P *p = pdup(bw->cursor, "utypebw_raw");
 		off_t n = find_indent(p);
 		if (n != -1 && pisindent(bw->cursor)==piscol(bw->cursor) && n > pisindent(bw->cursor)) {
@@ -1841,9 +1867,6 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 		else
 			n = piscol(bw->cursor);
 
-		utype_utf8_sm.state = 0;
-		utype_utf8_sm.ptr = 0;
-
 		n = bw->o.tab - n % bw->o.tab;
 		while (n--)
 			utypebw(bw, ' ');
@@ -1856,16 +1879,6 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 		if (bw->o.picture && bw->cursor->xcol!=piscol(bw->cursor))
 			pfill(bw->cursor,bw->cursor->xcol,' '); /* Why no tabs? */
 
-		/* UTF8 decoder */
-		if(locale_map->type && !no_decode) {
-			int utf8_char = utf8_decode(&utype_utf8_sm, c);
-
-			if(utf8_char >= 0)
-				k = utf8_char;
-			else
-				return 0;
-		}
-
 		upd = bw->parent->t->t->updtab[bw->y + bw->cursor->line - bw->top->line];
 		simple = 1;
 
@@ -1876,14 +1889,9 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 			}
 
 		if (!no_decode) {
-			if(locale_map->type && !bw->b->o.charmap->type) {
-				char buf[10];
-				utf8_encode(buf, k);
-				k = from_utf8(bw->b->o.charmap,buf);
-			} else if(!locale_map->type && bw->b->o.charmap->type) {
-				char buf[10];
-				to_utf8(locale_map,buf,k);
-				k = utf8_decode_string(buf);
+			if(!map->type) {
+				/* Convert to byte code */
+				k = from_uni(map, k);
 			}
 		}
 		
@@ -1976,10 +1984,12 @@ static int doquote(W *w, int c, void *object, int *notify)
 	char buf[40];
 	WIND_BW(bw, w);
 
+/*
 	if (c < 0 || c >= 256) {
 		nungetc(c);
 		return -1;
 	}
+*/
 	switch (quotestate) {
 	case 0:
 		if (c >= '0' && c <= '9') {
@@ -2135,7 +2145,8 @@ static int doquote9(W *w, int c, void *object, int *notify)
 		c &= 0x1F;
 	if (c == '?')
 		c = 127;
-	c |= 128;
+	if (c >= 0 && c <= 127)
+		c |= 128;
 	utypebw_raw(bw, c, 1);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
@@ -2153,7 +2164,8 @@ static int doquote8(W *w, int c, void *object, int *notify)
 	}
 	if (notify)
 		*notify = 1;
-	c |= 128;
+	if (c >= 0 && c <= 127)
+		c |= 128;
 	utypebw_raw(bw, c, 1);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
@@ -2468,13 +2480,13 @@ int upaste(W *w, int k)
 	count = 0;
 
 	/* We have to wait for the second ';' */
-	while ((c = ttgetc()) != -1)
+	while ((c = ttgetch()) != -1)
 		if (c == ';')
 			break;
 	if (c == -1)
 		goto bye;
 
-	while ((c = ttgetc()) != -1) {
+	while ((c = ttgetch()) != -1) {
 		if (c >= 'A' && c <= 'Z')
 			c = c - 'A';
 		else if (c >= 'a' && c <= 'z')
@@ -2525,7 +2537,7 @@ int upaste(W *w, int k)
 	}
 	/* Terminator is ESC \ */
 	if (c == 033) {
-		ttgetc();
+		ttgetch();
 	}
 
 	bye:
@@ -2555,7 +2567,7 @@ int ubrpaste(W *w, int k)
 	
 	bw->o.wordwrap = bw->o.autoindent = bw->o.spaces = 0;
 	
-	while (terminator[tidx] && -1 != (c = ttgetc())) {
+	while (terminator[tidx] && -1 != (c = ttgetch())) {
 		if (c == terminator[tidx]) {
 			tidx++;
 		} else {

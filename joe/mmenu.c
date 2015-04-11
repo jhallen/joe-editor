@@ -68,7 +68,7 @@ static int backsmenu(MENU *m, ptrdiff_t x, void *obj)
 		*notify = 1;
 	wabort(m->parent);
 	if (menu->backs)
-		return exmacro(menu->backs, 1);
+		return exmacro(menu->backs, 1, -1);
 	else
 		return 0;
 }
@@ -98,7 +98,7 @@ static int execmenu(MENU *m, ptrdiff_t x, void *obj, int flg)
 		*notify = 1;
 	wabort(m->parent);
 	menu_flg = flg; /* Hack to pass key to umode command */
-	return exmacro(menu->entries[x]->m, 1);
+	return exmacro(menu->entries[x]->m, 1, -1);
 }
 
 /* Display macro menu if it exists */

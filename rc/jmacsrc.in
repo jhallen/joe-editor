@@ -667,7 +667,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
 
 :windows		Bindings common to all windows
-type		^@ TO ÿ		Self insert
+type		U+0 TO U+10FFFF
 abort		^G		Abort window
 abort		^X ^C
 abort		^C
@@ -1243,13 +1243,13 @@ uparwmenu	^[ O A
 defm2down	M2DOWN		Hits return key
 
 :querysr		Search & replace query window
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :query			Single-key query window
 :inherit windows
 
 :querya			Single-key query window for quoting
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :shell			Input to shell windows
 :inherit main

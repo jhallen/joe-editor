@@ -85,7 +85,8 @@ MACRO *dupmacro(MACRO *mac)
 
 MACRO *macstk(MACRO *m, int k)
 {
-	m->k = k;
+	if (k != -1)
+		m->k = k;
 	return m;
 }
 
@@ -183,11 +184,11 @@ MACRO *mparse(MACRO *m, char *buf, ptrdiff_t *sta, int secure)
 				if (!m->steps) {
 					MACRO *macro = m;
 
-					m = mkmacro(-1, 0, 0, NULL);
+					m = mkmacro(NO_MORE_DATA, 0, 0, NULL);
 					addmacro(m, macro);
 				}
 			} else
-				m = mkmacro(-1, 0, 0, NULL);
+				m = mkmacro(NO_MORE_DATA, 0, 0, NULL);
 			addmacro(m, mkmacro(buf[x], 0, 0, secure ? findcmd("secure_type") : findcmd("type")));
 			++x;
 		}
@@ -229,12 +230,12 @@ MACRO *mparse(MACRO *m, char *buf, ptrdiff_t *sta, int secure)
 				if (!m->steps) {
 					MACRO *macro = m;
 
-					m = mkmacro(-1, 0, 0, NULL);
+					m = mkmacro(NO_MORE_DATA, 0, 0, NULL);
 					addmacro(m, macro);
 				}
-				addmacro(m, mkmacro(-1, flg, 0, cmd));
+				addmacro(m, mkmacro(NO_MORE_DATA, flg, 0, cmd));
 			} else
-				m = mkmacro(-1, flg, 0, cmd);
+				m = mkmacro(NO_MORE_DATA, flg, 0, cmd);
 		} else { /* not a valid command */
 			*sta = -1;
 			return NULL;
@@ -357,10 +358,10 @@ void chmac(void)
 		recmac->m->steps[recmac->m->n - 1]->k = 3;
 }
 
-static void record(MACRO *m)
+static void record(MACRO *m, int k)
 {
 	if (recmac)
-		addmacro(recmac->m, dupmacro(m));
+		addmacro(recmac->m, macstk(dupmacro(m), k));
 }
 
 static int ifdepth=0;		/* JM: Nesting level of if cmds */
@@ -401,7 +402,7 @@ static int argset = 0;		/* Set if 'arg' is set */
 
 /* Execute a macro which is just a simple command */
 
-static int exsimple(MACRO *m, int arg, int u)
+static int exsimple(MACRO *m, int arg, int u, int k)
 {
 	CMD *cmd = m->cmd;
 	int flg = 0; /* set if we should not try to merge minor changes into single undo record */
@@ -429,7 +430,7 @@ static int exsimple(MACRO *m, int arg, int u)
 			umclear();
 		/* Repeat... */
 		while (arg-- && !leave && !ret)
-			ret = execmd(cmd, m->k);
+			ret = execmd(cmd, k != NO_MORE_DATA ? k : m->k);
 		if (leave)
 			return ret;
 		if (flg && u)
@@ -444,7 +445,7 @@ static int exsimple(MACRO *m, int arg, int u)
 int current_arg = 1;
 int current_arg_set = 0;
 
-int exmacro(MACRO *m, int u)
+int exmacro(MACRO *m, int u, int k)
 {
 	int larg;
 	int negarg = 0;
@@ -467,7 +468,7 @@ int exmacro(MACRO *m, int u)
 	/* Just a simple command? */
 
 	if (!m->steps) {
-		return exsimple(m, larg, u);
+		return exsimple(m, larg, u, k);
 	}
 
 	/* Must be a real macro then... */
@@ -523,9 +524,9 @@ int exmacro(MACRO *m, int u)
 
 				/* This is the key step of the macro... */
 				if (d->flg&2)
-					main_ret = exmacro(d, 0);
+					main_ret = exmacro(d, 0, NO_MORE_DATA);
 				else
-					ret = exmacro(d, 0);
+					ret = exmacro(d, 0, NO_MORE_DATA);
 
 				if(d->steps) ifdepth=oid, ifflag=oifl, iffail=oifa;
 				current_arg = tmp_arg;
@@ -639,11 +640,11 @@ int exmacro(MACRO *m, int u)
 /* Execute a macro - for user typing */
 /* Records macro in macro recorder, resets if */
 
-int exemac(MACRO *m)
+int exemac(MACRO *m, int k)
 {
-	record(m);
+	record(m, k);
 	ifflag=1; ifdepth=iffail=0;
-	return exmacro(m, 1);
+	return exmacro(m, 1, k);
 }
 
 /* Keyboard macro user routines */
@@ -664,7 +665,7 @@ static int dorecord(W *w, int c, void *object, int *notify)
 			return -1;
 	r = (struct recmac *) joe_malloc(SIZEOF(struct recmac));
 
-	r->m = mkmacro(0, 0, 0, NULL);
+	r->m = mkmacro(NO_MORE_DATA, 0, 0, NULL);
 	r->next = recmac;
 	r->n = c - '0';
 	recmac = r;
@@ -747,7 +748,7 @@ int ustop(W *w, int k)
 			rmmacro(kbdmacro[r->n]);
 		kbdmacro[r->n] = r->m;
 		if (recmac)
-			record(m = mkmacro(r->n + '0', 0, 0, findcmd("play"))), rmmacro(m);
+			record(m = mkmacro(r->n + '0', 0, 0, findcmd("play")), NO_MORE_DATA), rmmacro(m);
 		joe_free(r);
 	}
 	return 0;
@@ -764,7 +765,7 @@ static int doplay(W *w, int c, void *object, int *notify)
 		if (playmode[c] || !kbdmacro[c])
 			return -1;
 		playmode[c] = 1;
-		ret = exmacro(kbdmacro[c], 0);
+		ret = exmacro(kbdmacro[c], 0, NO_MORE_DATA);
 		playmode[c] = 0;
 		return ret;
 	} else {

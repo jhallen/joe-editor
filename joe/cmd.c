@@ -345,7 +345,7 @@ int modify_logic(BW *bw,B *b)
 			}
 			b->didfirst = 1;
 			if (bw->o.mfirst)
-				exmacro(bw->o.mfirst,1);
+				exmacro(bw->o.mfirst, 1, NO_MORE_DATA);
 		}
 		if (b->rdonly) {
 			msgnw(bw->parent,joe_gettext(_("Other buffer is read only")));
@@ -360,7 +360,7 @@ int modify_logic(BW *bw,B *b)
 		if (!b->didfirst) {
 			b->didfirst = 1;
 			if (bw->o.mfirst)
-				exmacro(bw->o.mfirst,1);
+				exmacro(bw->o.mfirst, 1, NO_MORE_DATA);
 		}
 		if (b->rdonly) {
 			msgnw(bw->parent,joe_gettext(_("Read only")));
@@ -396,7 +396,7 @@ int execmd(CMD *cmd, int k)
 #endif
 
 	if (cmd->m)
-		return exmacro(cmd->m, 0);
+		return exmacro(cmd->m, 0, NO_MORE_DATA);
 
 	/* We don't execute if we have to fix the column position first
 	 * (i.e., left arrow when cursor is in middle of nowhere) */
@@ -563,7 +563,7 @@ static int docmd(W *w, char *s, void *object, int *notify)
 	if (sta < 0) {
 		msgnw(w,joe_gettext(_("No such command")));
 	} else {
-		ret = exmacro(mac, 1);
+		ret = exmacro(mac, 1, NO_MORE_DATA);
 		rmmacro(mac);
 	}
 
@@ -574,7 +574,7 @@ static int docmd(W *w, char *s, void *object, int *notify)
 		msgnw(bw->parent,joe_gettext(_("No such command")));
 	else {
 		mac = mkmacro(-1, 0, 0, cmd);
-		ret = exmacro(mac, 1);
+		ret = exmacro(mac, 1, NO_MORE_DATA);
 		rmmacro(mac);
 	}
 #endif

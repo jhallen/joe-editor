@@ -690,7 +690,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  To define a command foo which will goto the beginning of the last line.
 
 :windows		Bindings common to all windows
-type		^@ TO ÿ		Type a character
+type		U+0 TO U+10FFFF
 abort		^C		Abort window
 arg		^[ \		Repeat next command
 explode		^[ I		Show all windows or show only one window
@@ -1043,10 +1043,10 @@ defm2down	M2DOWN		Hits return key
 :inherit windows
 
 :querya			Single-key query window for quoting
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :querysr		Search & replace query window
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :shell			Input to shell windows
 :inherit main

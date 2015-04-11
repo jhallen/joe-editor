@@ -99,7 +99,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 					m = mparse(NULL,ptr,&sta,0);
 					ptr = q;
 					if (m) {
-						x = !exmacro(m,1);
+						x = !exmacro(m, 1, NO_MORE_DATA);
 						rmmacro(m);
 					} else {
 						if (!merr)
