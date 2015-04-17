@@ -1,5 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+   This file is part of Joe's Own Editor for Windows.
+   Copyright (c) 2015 John J. Jordan.
+ 
+   Joe's Own Editor for Windows is free software: you can redistribute it
+   and/or modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation, either version 2 of the
+   License, or (at your option) any later version.
+ 
+   Joe's Own Editor for Windows is distributed in the hope that it will
+   be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ 
+   You should have received a copy of the GNU General Public License
+   along with Joe's Own Editor for Windows.  If not, see
+   <http://www.gnu.org/licenses/>.
+-->
+
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- UNIX to DOS copy task -->
+  <UsingTask TaskName="CopyConvertLF" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+    <ParameterGroup>
+      <SourceFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="True" />
+      <DestinationFolder ParameterType="System.String" Required="False" />
+      <DestinationFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="False" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+
+for (int i = 0; i < SourceFiles.Length; i++)
+{
+    var srcfile = SourceFiles[i];
+    string filename = srcfile.GetMetadata("FullPath");
+    byte[] infile = File.ReadAllBytes(filename);
+    string outfilename;
+    
+    if (DestinationFolder != null)
+    {
+        outfilename = Path.Combine(DestinationFolder, Path.GetFileName(filename));
+    }
+    else
+    {
+        outfilename = DestinationFiles[i].GetMetadata("FullPath");
+    }
+    
+    using (var outf = File.Open(outfilename, FileMode.Create, FileAccess.Write))
+    {
+        int lastWrite = 0;
+        for (int t = 0; t < infile.Length; t++)
+        {
+            if (infile[t] == 10 && infile[Math.Max(0, t - 1)] != 13)
+            {
+                infile[t] = 13; // I'm all about avoiding that extra Write =p
+                outf.Write(infile, lastWrite, t - lastWrite + 1);
+                infile[t] = 10;
+                lastWrite = t;
+            }
+        }
+    
+        outf.Write(infile, lastWrite, infile.Length - lastWrite);
+    }
+}
+
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  
+  <!-- Build .rc files from .spec files -->
   <UsingTask TaskName="JWGenerateResources" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
     <ParameterGroup>
       <Specs ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="True" />
@@ -15,10 +87,9 @@
       <Code Type="Fragment" Language="cs">
 <![CDATA[
 
-List<string> files = new List<string>();
-files.AddRange(this.Specs.Select(s => s.GetMetadata("FullPath")));
+List<string> files = new List<string>(this.Specs.Select(s => s.GetMetadata("FullPath")));
 
-if (files.Count == 0) return false;
+if (files.Count == 0) return true;
 
 using (var outs = new StreamWriter(File.Open(this.OutputFile, FileMode.Create, FileAccess.Write)))
 {
@@ -70,7 +141,7 @@ using (var outs = new StreamWriter(File.Open(this.OutputFile, FileMode.Create, F
             
             if (options != null && options.Contains("compress"))
             {
-                string zname = actualFile + ".z";
+                string zname = actualFile + ".dfl";
                 if (!File.Exists(zname) || File.GetLastWriteTime(zname) < File.GetLastWriteTime(actualFile))
                 {
                     // Creation must be atomic (these run in parallel!)
