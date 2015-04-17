@@ -97,10 +97,10 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="JoeWin.tasks.targets" />
 
   <Target Name="BeforeResourceCompile" Inputs="@(ResourceSpec)" Outputs="$(IntDir)\builtins.rc">
-    <Warning Condition="'$(_Python)'=='' or !Exists('$(_Python)')" Text="Unable to find Python 2.x.  Build will fail to find builtin resources." />
-    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="$(_Python) &quot;$(MSBuildThisFileDirectory)\buildrc.py&quot; @(ResourceSpec) $(BuiltinFilesLocation) $(IntDir)\builtins.rc" />
+    <JWGenerateResources Specs="@(ResourceSpec)" FileLocation="$(BuiltinFilesLocation)" OutputFile="$(IntDir)\builtins.rc" />
   </Target>
 
   <Target Name="AfterClean">

@@ -13,8 +13,8 @@ PuTTY is copyright 1997-2010 Simon Tatham.
 JOE for Windows is copyright 2015 John J. Jordan.  It is released under the
 GPL v2 and may be redistributed under any later version.
 
-Portions are copyright Marc Alexander Lehmann for liblzf and libcoro, which
-are both utilized in JOE for Windows.
+Portions are copyright Marc Alexander Lehmann for libcoro, which is utilized
+in JOE for Windows.
 
 The source code can be found on the JOE website, currently at
 http://sourceforge.net/p/joe-editor

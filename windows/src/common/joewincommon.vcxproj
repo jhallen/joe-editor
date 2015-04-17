@@ -31,7 +31,7 @@
     <ClCompile Include="comm.c" />
     <ClCompile Include="globals.c" />
     <ClCompile Include="colors.c" />
-    <ClCompile Include="lzf_d.c" />
+    <ClCompile Include="tinfl.c" />
     <ClCompile Include="utils.c" />
     <ClCompile Include="bentries.c" />
     <ClCompile Include="wcwidth.c" />
@@ -47,8 +47,6 @@
     <ClInclude Include="jwbentries.h" />
     <ClInclude Include="$(VersionDir)\jwversion.h" />
     <ClInclude Include="jwwin.h" />
-    <ClInclude Include="lzf.h" />
-    <ClInclude Include="lzfP.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources.rc" />

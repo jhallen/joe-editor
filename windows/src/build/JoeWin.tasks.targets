@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="JWGenerateResources" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+    <ParameterGroup>
+      <Specs ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="True" />
+      <FileLocation ParameterType="System.String" Required="True" />
+      <OutputFile ParameterType="System.String" Required="True" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.Linq" />
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+
+List<string> files = new List<string>();
+files.AddRange(this.Specs.Select(s => s.GetMetadata("FullPath")));
+
+if (files.Count == 0) return false;
+
+using (var outs = new StreamWriter(File.Open(this.OutputFile, FileMode.Create, FileAccess.Write)))
+{
+    for (int i = 0; i < files.Count; i++)
+    {
+        foreach (string line in File.ReadAllLines(files[i]))
+        {
+            string s = line.Trim();
+            if (string.IsNullOrEmpty(s)) continue;
+            
+            if (s.StartsWith("#include"))
+            {
+                string incfile = s.Substring(s.IndexOf(' ')).Trim();
+                files.Add(Path.Combine(Path.GetDirectoryName(files[i]), incfile));
+                continue;
+            }
+            
+            List<string> options = null;
+            
+            if (s.Contains('['))
+            {
+                int lb = s.IndexOf('[');
+                int rb = s.IndexOf(']');
+                string opts = s.Substring(lb + 1, rb - lb - 1);
+                options = opts.Split().ToList();
+                s = s.Substring(0, lb).Trim();
+            }
+            
+            string srcfile, dstfile;
+            
+            if (s.Contains("=>"))
+            {
+                string[] parts = s.Split(new string[] { "=>" }, StringSplitOptions.None);
+                srcfile = parts[0].Trim();
+                dstfile = parts[1].Trim();
+            }
+            else
+            {
+                srcfile = dstfile = s;
+            }
+            
+            string actualFile = Path.Combine(this.FileLocation, srcfile);
+            if (!File.Exists(actualFile))
+            {
+                this.Success = false;
+                Log.LogError("Input file does not exist: {0}", actualFile);
+                return false;
+            }
+            
+            if (options != null && options.Contains("compress"))
+            {
+                string zname = actualFile + ".z";
+                if (!File.Exists(zname) || File.GetLastWriteTime(zname) < File.GetLastWriteTime(actualFile))
+                {
+                    // Creation must be atomic (these run in parallel!)
+                    string lockname = zname + ".lock";
+                    Stream lockStream = null;
+                    try
+                    {
+                        lockStream = File.Open(lockname, FileMode.CreateNew /* atomic */, FileAccess.Write);
+                        
+                        using (var zstream = File.Open(zname, FileMode.Create, FileAccess.Write))
+                        {
+                            // Write short header
+                            byte[] hdr = { 5, 1 };
+                            zstream.Write(hdr, 0, 2);
+                            
+                            using (var dstream = new DeflateStream(zstream, CompressionLevel.Optimal))
+                            {
+                                using (var istream = File.Open(actualFile, FileMode.Open, FileAccess.Read))
+                                {
+                                    istream.CopyTo(dstream, 8192);
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        /* Pass */
+                    }
+                    finally
+                    {
+                        if (lockStream != null)
+                        {
+                            lockStream.Dispose();
+                            File.Delete(lockname);
+                        }
+                    }
+                }
+                
+                actualFile = zname;
+            }
+            
+            outs.WriteLine(string.Format("F:*{0} RCDATA \"{1}\"", dstfile, actualFile.Replace(@"\", @"\\")));
+        }
+    }
+}
+
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>

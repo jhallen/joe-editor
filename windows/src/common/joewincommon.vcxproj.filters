@@ -39,7 +39,7 @@
     <ClCompile Include="builtin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lzf_d.c">
+    <ClCompile Include="tinfl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,12 +63,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jwres.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lzf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lzfP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(VersionDir)\jwversion.h">
