@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="Build" DependsOnTargets="CopyConfigFiles; CopySyntaxFiles; CopyColorGenFiles; CopyColorFiles; CopyDocFiles; CopyLanguageFiles" BeforeTargets="BeforeBuild" AfterTargets="AfterBuild" />
-  <Target Name="Clean" DependsOnTargets="CleanConfigFiles; CleanSyntaxFiles; CleanColorFiles; CleanDocFiles; CleanLanguageFiles" BeforeTargets="BeforeClean" AfterTargets="AfterClean" />
+  <Target Name="Build" DependsOnTargets="CopyConfigFiles; CopySyntaxFiles; CopyColorGenFiles; CopyColorFiles; CopyDocFiles; CopyLanguageFiles; CopyVTFiles" BeforeTargets="BeforeBuild" AfterTargets="AfterBuild" />
+  <Target Name="Clean" DependsOnTargets="CleanConfigFiles; CleanSyntaxFiles; CleanColorFiles; CleanDocFiles; CleanLanguageFiles; CleanVTFiles" BeforeTargets="BeforeClean" AfterTargets="AfterClean" />
   <Target Name="Rebuild" DependsOnTargets="BeforeRebuild; Clean; Build" AfterTargets="AfterRebuild" />
   
   <!-- Config File Targets -->
@@ -68,6 +68,15 @@
   </Target>
   <Target Name="CleanLanguageFiles">
     <RemoveDir Directories="$(OutDir)\po" />
+  </Target>
+  
+  <!-- VT Files -->
+  <Target Name="CopyVTFiles" Inputs="@(VTFile)" Outputs="@(VTFile->'$(VTOutDir)\%(Filename)%(Extension)')">
+    <MakeDir Directories="$(VTOutDir)" />
+    <CopyConvertLF SourceFiles="@(VTFile)" DestinationFolder="$(VTOutDir)" />
+  </Target>
+  <Target Name="CleanVTFiles">
+    <RemoveDir Directories="$(VTOutDir)" />
   </Target>
   
   <!-- UNIX to DOS copy task -->

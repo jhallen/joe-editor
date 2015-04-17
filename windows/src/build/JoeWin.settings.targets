@@ -35,6 +35,7 @@
 	<VimSchemeDir>$(SchemesDir)\generated\vimschemes</VimSchemeDir>
 	<JoeDocsDir>$(JoeWinRoot)\..\docs</JoeDocsDir>
 	<JoeLangDir>$(JoeRoot)\po</JoeLangDir>
+	<JoeRootConfDir>$(JoeRoot)\rc</JoeRootConfDir>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -52,6 +53,7 @@
     <SchemesOutDir>$(OutputRootDir)\schemes</SchemesOutDir>
     <SyntaxOutDir>$(OutputRootDir)\syntax</SyntaxOutDir>
     <ConfOutDir>$(OutputRootDir)\conf</ConfOutDir>
+    <VTOutDir>$(OutputRootDir)\vt</VTOutDir>
   </PropertyGroup>
   
   <PropertyGroup>

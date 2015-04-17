@@ -184,6 +184,9 @@
     <LanguageFile Include="$(JoeLangDir)\fr.po" />
     <LanguageFile Include="$(JoeLangDir)\ru.po" />
     <LanguageFile Include="$(JoeLangDir)\uk.po" />
+    <VTFile Include="$(JoeRootConfDir)\shell.sh" />
+    <VTFile Include="$(JoeRootConfDir)\shell.csh" />
+    <VTFile Include="$(JoeConfDir)\vt.bat" />
   </ItemGroup>
   <Import Project="..\build\JoeWin.targets" />
   <Import Project="configuration.targets" />

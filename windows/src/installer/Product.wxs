@@ -55,6 +55,7 @@
         <ComponentGroupRef Id="StandardColorsComponentGroup" />
 	<ComponentRef Id="PathEnvComponent" />
         <ComponentGroupRef Id="DocumentsComponentGroup" />
+	<ComponentGroupRef Id="VTComponentGroup" />
       </Feature>
 
       <Feature Id="JoeFeature" Title="JOE editor" Description="Standard JOE editor personality" Level="1" AllowAdvertise="no" InstallDefault="local">
@@ -95,7 +96,7 @@
           <Directory Id="CONFIGFOLDER" Name="conf" />
           <Directory Id="COLORFOLDER" Name="schemes" />
           <Directory Id="DOCFOLDER" Name="doc" />
-          
+          <Directory Id="VTFOLDER" Name="vt" />
         </Directory>
       </Directory>
 

@@ -267,8 +267,15 @@ static int dobknd(BW *bw, int vt)
 	a = vaadd(a, s);
 	return cstart(bw, sh, a, NULL, 0, 0, (vt ? (zstr(sh, USTR "csh") ? start_csh : start_sh) : NULL), vt);
 #else
-	s = vsncpy(NULL, 0, sc("/Q"));
-	a = vaadd(a, s);
+	if (vt) {
+		s = vsncpy(NULL, 0, sc("/C"));
+		a = vaadd(a, s);
+		s = vsfmt(NULL, 0, "%s/vt/vt.bat", JOEDATA);
+		a = vaadd(a, s);
+	} else {
+		s = vsncpy(NULL, 0, sc("/Q"));
+		a = vaadd(a, s);
+	}
 	return cstart(bw, sh, a, NULL, 0, 0, NULL, vt);
 #endif
 }

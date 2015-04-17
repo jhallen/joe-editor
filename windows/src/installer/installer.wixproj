@@ -32,6 +32,7 @@
       ;SyntaxRootDir=$(SyntaxOutDir);
       ;ConfRootDir=$(ConfOutDir);
       ;VersionDir=$(VersionDir);
+      ;VTDir=$(VTOutDir);
       ;ProductId32=$(JoeWinProduct32Guid);
       ;ProductId64=$(JoeWinProduct64Guid);
     </DefineConstants>
@@ -43,6 +44,7 @@
     <Compile Include="product.wxs" />
     <Compile Include="rcfiles.wxs" />
     <Compile Include="syntaxes.wxs" />
+    <Compile Include="vt.wxs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\configuration\configuration.vcxproj">

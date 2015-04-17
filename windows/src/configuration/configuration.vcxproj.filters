@@ -32,6 +32,9 @@
       <UniqueIdentifier>{f91b405b-d99a-43cc-a20c-64e761c54b62}</UniqueIdentifier>
       <Extensions>po</Extensions>
     </Filter>
+    <Filter Include="VT Scripts">
+      <UniqueIdentifier>{7bb806ee-ada1-4612-b73c-1918b45ff8d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <DocFile Include="$(JoeDocsDir)\license.txt">
@@ -499,5 +502,14 @@
     <LanguageFile Include="$(JoeLangDir)\uk.po">
       <Filter>Translations</Filter>
     </LanguageFile>
+    <VTFile Include="$(JoeRootConfDir)\shell.sh">
+      <Filter>VT Scripts</Filter>
+    </VTFile>
+    <VTFile Include="$(JoeRootConfDir)\shell.csh">
+      <Filter>VT Scripts</Filter>
+    </VTFile>
+    <VTFile Include="$(JoeConfDir)\vt.bat">
+      <Filter>VT Scripts</Filter>
+    </VTFile>
   </ItemGroup>
 </Project>
