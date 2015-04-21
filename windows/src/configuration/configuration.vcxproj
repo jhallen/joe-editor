@@ -30,6 +30,10 @@
   <Import Project="..\build\JoeWin.settings.targets" />
   <ItemGroup>
     <DocFile Include="$(JoeDocsDir)\license.txt" />
+    <MDDocFile Include="$(JoeRootDocsDir)\man.md" />
+    <MDDocFile Include="$(JoeRoot)\news.md" />
+    <MDDocFile Include="$(JoeRootDocsDir)\windows.md" />
+    <DocFile Include="markdown.css" />
     <ConfigFile Include="$(JoeConfDir)\ftyperc" />
     <ConfigFile Include="$(JoeConfDir)\jmacsrc" />
     <ConfigFile Include="$(JoeConfDir)\joerc" />

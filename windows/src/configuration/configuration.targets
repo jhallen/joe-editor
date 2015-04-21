@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="Build" DependsOnTargets="CopyConfigFiles; CopySyntaxFiles; CopyColorGenFiles; CopyColorFiles; CopyDocFiles; CopyLanguageFiles; CopyVTFiles" BeforeTargets="BeforeBuild" AfterTargets="AfterBuild" />
+  <Target Name="Build" DependsOnTargets="CopyConfigFiles; CopySyntaxFiles; CopyColorGenFiles; CopyColorFiles; CopyDocFiles; TranslateMarkdown; CopyLanguageFiles; CopyVTFiles" BeforeTargets="BeforeBuild" AfterTargets="AfterBuild" />
   <Target Name="Clean" DependsOnTargets="CleanConfigFiles; CleanSyntaxFiles; CleanColorFiles; CleanDocFiles; CleanLanguageFiles; CleanVTFiles" BeforeTargets="BeforeClean" AfterTargets="AfterClean" />
   <Target Name="Rebuild" DependsOnTargets="BeforeRebuild; Clean; Build" AfterTargets="AfterRebuild" />
   
@@ -51,13 +51,16 @@
   </Target>
 
   <!-- Doc File Targets -->
-  <Target Name="CopyDocFiles" Inputs="@(DocFile)" Outputs="@(DocFile->'$(OutDir)\doc\%(Filename)%(Extension)')">
-    <MakeDir Directories="$(OutDir)\doc" />
-    <CopyConvertLF SourceFiles="@(DocFile)" DestinationFolder="$(OutDir)\doc" />
+  <Target Name="CopyDocFiles" Inputs="@(DocFile)" Outputs="@(DocFile->'$(DocOutDir)\%(Filename)%(Extension)')">
+    <MakeDir Directories="$(DocOutDir)" />
+    <CopyConvertLF SourceFiles="@(DocFile)" DestinationFolder="$(DocOutDir)" />
     <CopyConvertLF SourceFiles="@(DocFile)" DestinationFolder="$(IntDir)" />
   </Target>
   <Target Name="CleanDocFiles">
-    <RemoveDir Directories="$(OutDir)\doc" />
+    <RemoveDir Directories="$(DocOutDir)" />
+  </Target>
+  <Target Name="TranslateMarkdown" Inputs="@(MDDocFile)" Outputs="@(MDDocFile->'$(DocOutDir)\%(Filename).html')">
+    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(MDDocFile)) DO $(_Python) mdtohtml.py &quot;%%f&quot; &quot;$(DocOutDir)\%%~nf.html&quot;" />
   </Target>
 
   <!-- Language File Targets -->

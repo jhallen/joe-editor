@@ -27,7 +27,8 @@
       ;BinRootDir=$(OutputRootDir);
       ;SrcRootDir=$(JoeWinRoot);
       ;JoeRootDir=$(JoeRoot);
-      ;DocRootDir=$(JoeDocsDir);
+      ;DocRootDir=$(DocOutDir);
+      ;WindowsDocDir=$(JoeDocsDir);
       ;SchemesRootDir=$(SchemesOutDir);
       ;SyntaxRootDir=$(SyntaxOutDir);
       ;ConfRootDir=$(ConfOutDir);

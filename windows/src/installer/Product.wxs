@@ -42,11 +42,12 @@
     <Property Id="ARPPRODUCTICON" Value="joewinicon.exe" />
     <Property Id="ARPURLINFOABOUT" Value="http://joe-editor.sourceforge.net/" />
     <Property Id="ARPHELPLINK" Value="https://sourceforge.net/p/joe-editor/" />
-    <WixVariable Id="WixUILicenseRtf" Value="$(var.DocRootDir)\COPYING.rtf" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.WindowsDocDir)\COPYING.rtf" />
 
     <Feature Id="CompleteFeature" Title="JOE for Windows" Description="The complete JOE for Windows" Display="expand" Level="1" ConfigurableDirectory="INSTALLFOLDER" Absent="disallow" AllowAdvertise="no" InstallDefault="local">
       <!-- This is here in order to disable "install to run from network" option.  We must have a component in the feature to disable it. -->
       <ComponentRef Id="StartMenuShortcutsDirComponent" />
+      <ComponentRef Id="DocShortcutsComponent" />
       
       <Feature Id="CoreFeature" Title="Core components" Description="The main executable and associated files" Level="1" Absent="disallow" AllowAdvertise="no" InstallDefault="local">
         <ComponentRef Id="CoreComponent" />
@@ -101,7 +102,9 @@
       </Directory>
 
       <Directory Id="ProgramMenuFolder" Name="Programs">
-        <Directory Id="StartMenuShortcuts" Name="Joe's Own Editor$(var.BitSuffix)" />
+	<Directory Id="StartMenuShortcuts" Name="Joe's Own Editor$(var.BitSuffix)">
+	  <Directory Id="DocShortcutsDir" Name="Documentation" />
+	</Directory>
       </Directory>
     </Directory>
   </Fragment>
@@ -112,6 +115,10 @@
       <RegistryKey Root="HKCU" Key="Software\JoeEditor" ForceDeleteOnUninstall="yes" ForceCreateOnInstall="yes">
         <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLFOLDER]" />
       </RegistryKey>
+    </Component>
+    <Component Id="DocShortcutsComponent" Guid="*" Directory="DocShortcutsDir" Win64="$(var.Win64)">
+      <RemoveFolder Id="DocShortcutsDir" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="docshortcuts" Type="integer" Value="1" KeyPath="yes" />
     </Component>
   </Fragment>
 

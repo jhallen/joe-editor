@@ -40,6 +40,18 @@
     <DocFile Include="$(JoeDocsDir)\license.txt">
       <Filter>Docs</Filter>
     </DocFile>
+    <MDDocFile Include="$(JoeRootDocsDir)\man.md">
+      <Filter>Docs</Filter>
+    </MDDocFile>
+    <MDDocFile Include="$(JoeRootDocsDir)\windows.md">
+      <Filter>Docs</Filter>
+    </MDDocFile>
+    <MDDocFile Include="$(JoeRoot)\news.md">
+      <Filter>Docs</Filter>
+    </MDDocFile>
+    <DocFile Include="markdown.css">
+      <Filter>Docs</Filter>
+    </DocFile>
     <ColorFile Include="$(SchemesDir)\putty-black.joecolor">
       <Filter>Native color files</Filter>
     </ColorFile>

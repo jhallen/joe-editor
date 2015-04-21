@@ -26,18 +26,37 @@
       <Component Id="LicenseTXTComponent" Guid="*" Win64="$(var.Win64)">
         <File Id="licenseTXT" Name="license.txt" DiskId="1" Source="$(var.DocRootDir)\license.txt" KeyPath="yes" />
       </Component>
-      <Component Id="ReadmeMDComponent" Guid="*" Win64="$(var.Win64)">
-        <File Id="readmeMD" Name="readme.md" DiskId="1" Source="$(var.JoeRootDir)\readme.md" KeyPath="yes" />
+      <Component Id="ManHTMLComponent" Guid="*" Win64="$(var.Win64)">
+        <File Id="manHTML" Name="man.html" DiskId="1" Source="$(var.DocRootDir)\man.html" KeyPath="yes" />
       </Component>
-      <Component Id="NewsMDComponent" Guid="*" Win64="$(var.Win64)">
-        <File Id="newsMD" Name="news.md" DiskId="1" Source="$(var.JoeRootDir)\news.md" KeyPath="yes" />
+      <Component Id="NewsHTMLComponent" Guid="*" Win64="$(var.Win64)">
+        <File Id="newsHTML" Name="news.html" DiskId="1" Source="$(var.DocRootDir)\news.html" KeyPath="yes" />
       </Component>
-      <Component Id="ManMDComponent" Guid="*" Win64="$(var.Win64)">
-	<File Id="manMD" Name="man.md" DiskId="1" Source="$(var.JoeRootDir)\docs\man.md" KeyPath="yes" />
+      <Component Id="WindowsHTMLComponent" Guid="*" Win64="$(var.Win64)">
+	<File Id="windowsHTML" Name="windows.html" DiskId="1" Source="$(var.DocRootDir)\windows.html" KeyPath="yes" />
       </Component>
-      <Component Id="WindowsMDComponent" Guid="*" Win64="$(var.Win64)">
-        <File Id="windowsMD" Name="windows.md" DiskId="1" Source="$(var.JoeRootDir)\docs\windows.md" KeyPath="yes" />
+      <Component Id="MarkdownCSSComponent" Guid="*" Win64="$(var.Win64)">
+	<File Id="markdownCSS" Name="markdown.css" DiskId="1" Source="$(var.DocRootDir)\markdown.css" KeyPath="yes" />
       </Component>
+
+      <ComponentRef Id="ManualShortcutComponent"/>
+      <ComponentRef Id="WindowsTipsShortcutComponent"/>
+      <ComponentRef Id="NewsShortcutComponent"/>
     </ComponentGroup>
+
+    <DirectoryRef Id="DocShortcutsDir">
+      <Component Id="ManualShortcutComponent" Guid="*" Win64="$(var.Win64)">
+	<Shortcut Id="ManualShortcut" Name="User manual" Description="Manual for Joe's Own Editor" Target="[#manHTML]" />
+	<RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="manshortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="WindowsTipsShortcutComponent" Guid="*" Win64="$(var.Win64)">
+	<Shortcut Id="WindowsTipsShortcut" Name="JOE for Windows Tips" Description="Tips for using JOE for Windows" Target="[#windowsHTML]" />
+	<RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="manwtipsshortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+      <Component Id="NewsShortcutComponent" Guid="*" Win64="$(var.Win64)">
+	<Shortcut Id="NewsShortcut" Name="Release notes" Description="Changelog for Joe's Own Editor" Target="[#newsHTML]" />
+	<RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="newsshortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
   </Fragment>
 </Wix>

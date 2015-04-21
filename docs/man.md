@@ -1,5 +1,8 @@
 # JOE - Joe's Own Editor
 
+>For the latest, official version of this document, find it on
+>[the joe-editor Sourceforge Wiki](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md)
+
 [TOC]
 
 ## Syntax
@@ -116,59 +119,59 @@ Some options take arguments.  Arguments are given like this:
 
 The following global options may be specified on the command line:
 
-* asis
+* asis<br>
 Characters with codes above 127 will be sent to the terminal as-is, instead
 of as inverse of the corresponding character below 128.  If this does not
 work, check your terminal server.  This option has no effect if UTF-8
 encoding is used.
 <br>
 
-* assume_256color
+* assume\_256color<br>
 Assume ANSI-like terminal emulator supports 256 colors even if termcap entry
 says it doesn't.
 <br>
 
-* assume_color
+* assume\_color<br>
 Assume ANSI-like terminal emulator supports color even if termcap entry says
 it doesn't.
 <br>
 
-* text_color __color__
+* text\_color __color__<br>
 Set color for text.
 <br>
 
-* status_color __color__
+* status\_color __color__<br>
 Set color for status bar.
 <br>
 
-* help_color __color__
+* help\_color __color__<br>
 Set color for help.
 <br>
 
-* menu_color __color__
+* menu\_color __color__<br>
 Set color for menus.
 <br>
 
-* prompt_color __color__
+* prompt\_color __color__<br>
 Set color for prompts.
 <br>
 
-* msg_color __color__
+* msg\_color __color__<br>
 Set color for messages.
 <br>
 
-* autoswap
+* autoswap<br>
 Automatically swap __^K B__ with __^K K__ if necessary to
 mark a legal block during block copy/move commands.
 <br>
 
-* backpath path
+* backpath path<br>
 Sets bath to a directory where all backup files are
 to be stored.  If this is unset (the default) backup files are stored in the
 directory containing the file.
 <br>
 
-* baud nnn
+* baud nnn<br>
 Set the baud rate for the purposes of terminal screen optimization
 (overrides value reported by stty).  JOE inserts delays for baud rates below
 19200, which bypasses tty buffering so that typeahead will interrupt the
@@ -177,409 +180,409 @@ above.  This is useful for X-terms and other console ttys which really
 aren't going over a serial line.
 <br>
 
-* beep
+* beep<br>
 Enable beeps when edit commands return errors, for example when the cursor
 goes past extremes.
 <br>
 
-* break_links
+* break\_links<br>
 When enabled, JOE first deletes the file before
 writing it in order to break hard-links and symbolic-links.
 <br>
 
-* break_hardlinks
+* break\_hardlinks<br>
 When enabled, and the file is
 not a symbolic links, JOE first deletes the file before
 writing it in order to break hard-links.
 <br>
 
-* columns nnn
+* columns nnn<br>
 Set number of columns in terminal emulator (in case
 termcap entry is wrong).  This is only useful on old system which don't have
 the "get window size" ioctl.
 <br>
 
-* csmode
+* csmode<br>
 Enable continued search mode: Successive
 __^K F__s repeat the current search instead of prompting for a new one.
 <br>
 
-* dopadding
+* dopadding<br>
 Enable JOE to send padding NULs to the terminal (for very old terminals).
 <br>
 
-* exask
+* exask<br>
 When set, __^K X__ prompts for a new name before saving the file.
 <br>
 
-* floatmouse
+* floatmouse<br>
 When set, mouse clicks can position the cursor
 beyond the ends of lines.
 <br>
 
-* guess_crlf
+* guess\_crlf<br>
 When set, JOE tries to guess the file format
 MS-DOS or UNIX.
 <br>
 
-* guess_indent
+* guess\_indent<br>
 When set, JOE tries to guess the indentation character and indentation
 step based on the contents of the file.  The algorithm is to find the
 greatest common factor of the three most common indentations found in the
 file.
 <br>
 
-* guess_non_utf8
+* guess\_non\_utf8<br>
 When set, enable guessing of non-UTF-8 files
 in UTF-8 locales.
 <br>
 
-* guess_utf8
+* guess\_utf8<br>
 When set, enable guessing of UTF-8 files in
 non-UTF-8 locales.
 <br>
 
-* help
+* help<br>
 When set, start off with the on-line help enabled.
 <br>
 
-* help_is_utf8
+* help\_is\_utf8<br>
 When set, the help text in the joerc file is
 assumed to be UTF-8.
 <br>
 
-* icase
+* icase<br>
 Search is case insensitive by default when set.
 <br>
 
-* joe_state
+* joe\_state<br>
 Enable reading and writing of ~/.joe_state file
 <br>
 
-* joexterm
+* joexterm<br>
 Set this if xterm was configured with --paste64
 option for better mouse support.
 <br>
 
-* keepup
+* keepup<br>
 The column number on the status line is updated constantly when
 this is set, otherwise it is updated only once a second.
 <br>
 
-* language __language__
+* language __language__<br>
 Sets language for aspell.
 <br>
 
-* lightoff
+* lightoff<br>
 Automatically turn off __^K B__ __^K K__ highlighting after a
 block operation.
 <br>
 
-* lines nnn
+* lines nnn<br>
 Set number of lines in terminal emulator (in case termcap entry is wrong). 
 This is only useful on old system which don't have the "get window size"
 ioctl.
 <br>
 
-* marking
+* marking<br>
 Enable marking mode: highlights between __^K B__ and cursor.
 <br>
 
-* menu_above
+* menu\_above<br>
 Put menus above prompt instead of below them.
 <br>
 
-* menu_explorer
+* menu\_explorer<br>
 Stay in menu when a directory is selected (otherwise the directory is added
 to the path and the cursor jumps back to the prompt).
 <br>
 
-* menu_jump
+* menu\_jump<br>
 Jump into the file selection menu when tab tab is hit.
 <br>
 
-* mid
+* mid<br>
 If this option is set and the cursor moves off the window, the window will
 be scrolled so that the cursor is in the center.  This option is forced on
 slow terminals which don't have scrolling commands.
 <br>
 
-* mouse
+* mouse<br>
 Enable xterm mouse support.
 <br>
 
-* nobackups
+* nobackups<br>
 Disable backup files.
 <br>
 
-* nocurdir
+* nocurdir<br>
 Disable current-directory prefix in prompts.
 <br>
 
-* noexmsg
+* noexmsg<br>
 Disable exiting message ("File not changed so no update needed")
 <br>
 
-* nolinefeeds
+* nolinefeeds<br>
 Disable sending linefeeds to
 preserve screen history in terminal emulator's scroll-back buffer (only
 relevant when notite mode is enabled).  
 <br>
 
-* nolocks
+* nolocks<br>
 Disable EMACS compatible file locks.
 <br>
 
-* nomodcheck
+* nomodcheck<br>
 Disable periodic file modification check.
 <br>
 
-* nonotice
+* nonotice<br>
 This option prevent the copyright notice from being displayed when the
 editor starts.
 <br>
 
-* nosta
+* nosta<br>
 This option eliminates the top-most status line.  It's nice for when you
 only want to see your text on the screen or if you're using a vt52.
 <br>
 
-* notagsmenu
+* notagsmenu<br>
 Disable selection menu for tags search with multiple results.
 <br>
 
-* notite
+* notite<br>
 Disable ti and te termcap sequences which are usually
 set up to save and restore the terminal screen contents when JOE starts and
 exits.
 <br>
 
-* noxon
+* noxon<br>
 Disable __^S__ and __^Q__ flow control, possibly allowing __^S__ and __^Q__ to be used as
 editor keys.
 <br>
 
-* orphan
+* orphan<br>
 Orphan extra files given on the command line instead of creating windows for
 them (the files are loaded, but you need to use switch-buffer commands to
 access them).
 <br>
 
-* pg nnn
+* pg nnn<br>
 Set number of lines to keep during Page Up and Page Down (use -1 for 1/2
 window size).
 <br>
 
-* restore
+* restore<br>
 Set to have cursor position restore to last position of previouly edited
 files.
 <br>
 
-* rtbutton
+* rtbutton<br>
 Swap left and right mouse buttons.
 <br>
 
-* search_prompting
+* search\_prompting<br>
 Show previous search string in search command (like in PICO).
 <br>
 
-* skiptop nnn
+* skiptop nnn<br>
 When set to N, the first N lines of the terminal screen are not used by JOE
 and are instead left with their original contents.  This is useful for
 programs which call JOE to leave a message for the user.
 <br>
 
-* square
+* square<br>
 Enable rectangular block mode.
 <br>
 
-* transpose
+* transpose<br>
 Transpose rows with columns in all menus.
 <br>
 
-* undo_keep nnn
+* undo\_keep nnn<br>
 Sets number of UNDO records to keep (0 means infinite).
 <br>
 
-* usetabs
+* usetabs<br>
 Set to allow rectangular block operations to use
 tabs.
 <br>
 
-* wrap
+* wrap<br>
 Enable search to wrap to beginning of file.
 <br>
 
 The following local options may be specified on the command line:
 
-* +nnn
+* +nnn<br>
 The cursor starts on the specified line.
 <br>
 
-* autoindent
+* autoindent<br>
 Enable auto-indent mode.  When you hit Return on an indented line, the
 indentation is duplicated onto the new line.
 <br>
 
-* c_comment
+* c\_comment<br>
 Enable __^G__ skipping of C-style comments /* ... */
 <br>
 
-* cpara __characters__
+* cpara __characters__<br>
 Sets list of characters which can indent paragraphs.
 <br>
 
-* cnotpara __characters__
+* cnotpara __characters__<br>
 Sets list of characters which begin lines which are definitely not part of
 paragraphs.
 <br>
 
-* cpp_comment
+* cpp\_comment<br>
 Enable __^G__ skipping of C++-style comments // ...
 <br>
 
-* crlf
+* crlf<br>
 JOE uses CR-LF as the end of line sequence instead of just LF.  This is for
 editing MS-DOS or VMS files.
 <br>
 
-* encoding __encoding__
+* encoding __encoding__<br>
 Set file encoding (like utf-8 or 8859-1).
 <br>
 
-* flowed
+* flowed<br>
 Set to force an extra space after each line of a paragraph but the last.
 <br>
 
-* force
+* force<br>
 When set, a final newline is appended to the file if
 there isn't one when the file is saved.
 <br>
 
-* french
+* french<br>
 When set, only one space is inserted after periods in paragraph reformats
 instead of two.
 <br>
 
-* hex
+* hex<br>
 Enable hex-dump mode.
 <br>
 
-* highlight
+* highlight<br>
 Enable syntax highlighting.
 <br>
 
-* highlighter_context
+* highlighter\_context<br>
 Enable use of syntax file to identify comments and strings which should be
 skipped over during __^G__ matching.
 
-* indentc nnn
+* indentc nnn<br>
 Sets the indentation character for shift left and shift right (__^K ,__ and
 __^K .__).  Use 32 for SPACE, 9 for TAB.
 <br>
 
-* indentfirst
+* indentfirst<br>
 When set, the smart home key jumps to the indentation point first, otherwise
 it jumps to column 1 first.
 <br>
 
-* istep nnn
+* istep nnn<br>
 Sets indentation step.
 <br>
 
-* linums
+* linums<br>
 Enable line number display.
 <br>
 
-* lmargin
+* lmargin<br>
 Set left margin.
 <br>
 
-* lmsg
+* lmsg<br>
 Define left-side status bar message.
 <br>
 
-* overwrite
+* overwrite<br>
 Enable overtype mode.  Typing overwrites existing characters instead of
 inserting before them.
 <br>
 
-* picture
+* picture<br>
 Enable "picture" mode- allows cursor to go past ends of lines.
 <br>
 
-* pound_comment
+* pound\_comment<br>
 __^G__ ignores # ... comments.
 <br>
 
-* purify
+* purify<br>
 Fix indentation if necessary before shifting or smart backspace.  For
 example, if indentation uses a mix of tabs and spaces, and indentc is
 space, then indentation will be converted to all spaces before the shifting
 operation.
 <br>
 
-* rdonly
+* rdonly<br>
 Set read-only mode.
 <br>
 
-* rmargin nnn
+* rmargin nnn<br>
 Set right margin.
 <br>
 
-* rmsg __string__
+* rmsg __string__<br>
 Define right-side status bar message.
 <br>
 
-* semi_comment
+* semi\_comment<br>
 __^G__ ignores ; ... comments.
 <br>
 
-* single_quoted
+* single\_quoted<br>
 __^G__ ignores '...'
 <br>
 
-* smartbacks
+* smartbacks<br>
 Enable smart backspace and tab.  When this mode is set backspace and tab
 indent or unindent based on the values of the istep and indentc options.
 <br>
 
-* smarthome
+* smarthome<br>
 Home key first moves cursor to beginning of line, then if hit again, to
 the first non-blank character.
 <br>
 
-* smsg __string__
+* smsg __string__<br>
 Define status command format when cursor is on a character.
 <br>
 
-* spaces
+* spaces<br>
 Insert spaces when tab key is hit.
 <br>
 
-* syntax __syntax__
+* syntax __syntax__<br>
 Set syntax for syntax highlighting.
 <br>
 
-* tab nnn
+* tab nnn<br>
 Set tab stop width.
 <br>
 
-* text_delimiters __word delimiter list__
+* text\_delimiters __word delimiter list__<br>
 Give list of word delimiters which __^G__ will step through.
 
 For example, "begin=end:if=elif=else=endif" means that __^G__ will jump
 between the matching if, elif, else and endif.
 
-* vhdl_comment
+* vhdl\_comment<br>
 __^G__ ignores -- ... comments
 <br>
 
-* wordwrap
+* wordwrap<br>
 JOE wraps the previous word when you type past the right margin.
 <br>
 
-* zmsg __string__
+* zmsg __string__<br>
 Define status command format when cursor is at end of file.
 <br>
 
@@ -593,7 +596,7 @@ bold+bg_green+blue
 
 * Foreground colors: white, cyan, magenta, blue, yellow, green, red, or black
 
-* Background colors: bg_white, bg_cyan, bg_magenta, bg_blue, bg_yellow, bg_green, bg_red or bg_black
+* Background colors: bg\_white, bg_cyan, bg\_magenta, bg\_blue, bg\_yellow, bg\_green, bg\_red or bg\_black
 
 With a 16 color or 256 color terminal emulator (export TERM=xterm-16color), these
 brighter than normal colors become available:
@@ -603,16 +606,16 @@ brighter than normal colors become available:
 
 * Foreground: WHITE, CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED or BLACK
 
-* Background: bg_WHITE, bg_CYAN, bg_MAGENTA, bg_BLUE, bg_YELLOW, bg_GREEN, bg_RED or bg_BLACK
+* Background: bg\_WHITE, bg\_CYAN, bg\_MAGENTA, bg\_BLUE, bg\_YELLOW, bg\_GREEN, bg\_RED or bg\_BLACK
 
 With a 256 color terminal emulator (export TERM=xterm-256color), these become available:
 
 > Note that you need an xterm which was compiled to support 256 colors and a
 > matching termcap/terminfo entry for it.
 
-* fg_RGB and bg_RGB, where R, G and B rand from 0 - 5.  So: fg_500 is bright red.
+* fg\_RGB and bg\_RGB, where R, G and B rand from 0 - 5.  So: fg\_500 is bright red.
 
-* fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
+* fg\_NN and bg\_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
 
 ### Status line definition strings
 
@@ -625,49 +628,47 @@ is at the end of the file.  The last character of smsg or zmsg is the fill chara
 
 The following escape sequences can be used in these strings:
 
-~~~~~
-  %t  12 hour time
-  %u  24 hour time
-  %T  O for overtype mode, I for insert mode
-  %W  W if wordwrap is enabled
-  %I  A if autoindent is enabled
-  %X  Rectangle mode indicator
-  %n  File name
-  %m  '(Modified)' if file has been changed
-  %*  '*' if file has been changed
-  %R  Read-only indicator
-  %r  Row (line) number
-  %c  Column number
-  %o  Byte offset into file
-  %O  Byte offset into file in hex
-  %a  Ascii value of character under cursor
-  %A  Ascii value of character under cursor in hex
-  %w  Width of character under cursor
-  %p  Percent of file cursor is at
-  %l  No. lines in file
-  %k  Entered prefix keys
-  %S  '*SHELL*' if there is a shell running in window
-  %M  Macro recording message
-  %y  Syntax
-  %e  Encoding
-  %x  Context (first non-indented line going backwards)
-  %dd day
-  %dm month
-  %dY year
-  %Ename%  value of environment variable
-  %Tname%  value of option (ON or OFF for boolean options)
-~~~~~
+
+    %t  12 hour time
+    %u  24 hour time
+    %T  O for overtype mode, I for insert mode
+    %W  W if wordwrap is enabled
+    %I  A if autoindent is enabled
+    %X  Rectangle mode indicator
+    %n  File name
+    %m  '(Modified)' if file has been changed
+    %*  '*' if file has been changed
+    %R  Read-only indicator
+    %r  Row (line) number
+    %c  Column number
+    %o  Byte offset into file
+    %O  Byte offset into file in hex
+    %a  Ascii value of character under cursor
+    %A  Ascii value of character under cursor in hex
+    %w  Width of character under cursor
+    %p  Percent of file cursor is at
+    %l  No. lines in file
+    %k  Entered prefix keys
+    %S  '*SHELL*' if there is a shell running in window
+    %M  Macro recording message
+    %y  Syntax
+    %e  Encoding
+    %x  Context (first non-indented line going backwards)
+    %dd day
+    %dm month
+    %dY year
+    %Ename%  value of environment variable
+    %Tname%  value of option (ON or OFF for boolean options)
 
 These formatting escape sequences may also be given:
  
-~~~~~
-  \i  Inverse
-  \u  Underline
-  \b  Bold
-  \d  Dim
-  \f  Blink
-  \l  Italic
-~~~~~
+    \i  Inverse
+    \u  Underline
+    \b  Bold
+    \d  Dim
+    \f  Blink
+    \l  Italic
+
 <br>
 
 
@@ -772,26 +773,26 @@ R__ to insert it.
 Wherever JOE expects you to enter a file name, whether on the command line
 or in prompts within the editor, you may also type:
 
-* !command
+    !command
 
 Read or write data to or from a shell command.  For example,
 use __joe '!ls'__ to get a copy of your directory listing to edit or from
 within the editor use __^K D !mail jhallen@world.std.com__ to send the
 file being edited to me.
 
-* &gt;&gt;filename
+    >>filename
 
 Use this to have JOE append the edited text to the end of the file 
 "filename."
 
-* filename,START,SIZE
+    filename,START,SIZE
 
 Use this to access a fixed section of a file or device.  __START__ and
 __SIZE__ may be entered in decimal (ex.: 123) octal (ex.: 0777) or
 hexadecimal (ex.: 0xFF).  For example, use __joe /dev/fd0,508,2__ to edit
 bytes 508 and 509 of the first floppy drive in Linux.
 
-* <blank>
+    <blank>
 
 Use this to get input from the standard input or to write output to the
 standard output.  For example, you can put JOE in a pipe of commands:
@@ -938,16 +939,16 @@ between the two.  Currently, one of the two must be UTF-8 for translation to
 work.
 
 The character set for the terminal and the default character set assumed for
-files is determined by the 'LC_ALL' environment variable (and if that's not
+files is determined by the 'LC\_ALL' environment variable (and if that's not
 set, LC_CTYPE and LANG are also checked).
 
-For example, if LC_ALL is set to:
+For example, if LC\_ALL is set to:
 
 	de_DE
 
 Then the character set will be ISO-8859-1.
 
-If LC_ALL is set to:
+If LC\_ALL is set to:
 
 	de_DE.UTF-8
 
@@ -1514,10 +1515,10 @@ have their usual effects. Hit __^K ]__ to stop recording the macro.  Hit
 __^K__ followed by the number you recorded the macro in to execute one 
 iteration of the key-strokes.   
 
-For example, if you want to put "**" in front of a number of lines, you can 
+For example, if you want to put "\*\*" in front of a number of lines, you can 
 type:
 
-__^K \[ 0 ^A \*\* __<down arrow\> __^K ]__
+__^K \[ 0 ^A \*\* &lt;__down arrow__&gt; ^K ]__
 
 Which starts the macro recording, moves the cursor to the beginning of the 
 line, inserts "\*\*", moves the cursor down one line, and then ends the 
@@ -1962,20 +1963,15 @@ Pop-up shell windows have a number of nice use cases:
 	Hit F1 and navigate to a directory.  Use grep or find (or both)
 	to generate a list of files):
 
-~~~~
-		parse grep -n FIXME *.c
-~~~~
+        parse grep -n FIXME *.c
+
 	Or:
 
-~~~~
-		markb; find . | xargs grep -n FIXME; markk; parse
-~~~~
+        markb; find . | xargs grep -n FIXME; markk; parse
 
 	(Note that you can't say this:
 
-~~~~
-		parse find . | xargs grep -n FIXME
-~~~~
+        parse find . | xargs grep -n FIXME
 
 	...the issue is that only the words to the left of the pipe symbol
 	are passed as arguments to the parse command).
@@ -1989,20 +1985,16 @@ Pop-up shell windows have a number of nice use cases:
 	Once JOE has a list of files (from above), use search and replace
 	with the 'e' option to visit all of them:
 
-~~~~
-		^K F
-		   Find: <text>
-		   Options: re
-		   Replace: <replacement text>
-~~~~
+        ^K F
+           Find: <text>
+           Options: re
+           Replace: <replacement text>
 
 * Build your project
 
 	Easily capture errors from a build with:
 
-~~~~
-		parserr make
-~~~~
+        parserr make
 
 	Hit __ESC =__ and __ESC -__ to step through the errors.
 
@@ -2212,8 +2204,8 @@ sometimes have to make dummy states with
 
 just to get a color specification.
 
-Delimiter match buffer is for perl and shell: a regex in perl can be s<..>(...)
-and in shell you can say: <<EOS ....... EOS.  The idea is that you capture
+Delimiter match buffer is for perl and shell: a regex in perl can be s&lt;..&gt;(...)
+and in shell you can say: &lt;&lt;EOS ....... EOS.  The idea is that you capture
 the first delimiter into the match buffer (the &lt; or first "EOS") and then
 match it to the second one with "&" in a string or character list.
 
@@ -2415,8 +2407,8 @@ Unfortunately, when -mouse is selected, cut and paste between X windows
 does not work as it normally does in a shell window (left-click and drag to
 select, middle click to paste).  Instead, you have to hold the shift key
 down to do this: shift-left-click and drag to select, and shift-middle click
-to paste.  Note that pasting text into JOE this way has problems: any `
-characters will get messed up because ` means quote the following control
+to paste.  Note that pasting text into JOE this way has problems: any \`
+characters will get messed up because \` means quote the following control
 character.  Also if auto-indent is enabled, pasted text will not be indented
 properly.
 
@@ -2427,7 +2419,7 @@ When -joexterm is set (and you have ./configured Xterm with
 left-click-drag is available for pasting into other X windows (even if the
 selected text is larger than the text window).  Text selected in other X
 windows can be pasted into JOE with middle-click.  There are no problems
-pasting text containing ` or with auto-indent.
+pasting text containing \` or with auto-indent.
 
 --enable-paste64 allows an application program to communicate Base-64
 encoded selection data to and from the Xterm.  The program has full control
@@ -2548,18 +2540,18 @@ Gives terminal type: JOE will use this instead of TERM if it's set.
 <br>
 
 * LANG
-Sets locale (like en_US.utf-8).  JOE uses
-the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+Sets locale (like en\_US.utf-8).  JOE uses
+the first of these which is set: LC\_ALL, LC\_CTYPE, LANG.
 <br>
 
-* LC_ALL
-Sets locale (like en_US.utf-8).  JOE
-uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+* LC\_ALL
+Sets locale (like en\_US.utf-8).  JOE
+uses the first of these which is set: LC\_ALL, LC\_CTYPE, LANG.
 <br>
 
-* LC_CTYPE
-Sets locale (like en_US.utf-8).  JOE
-uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.
+* LC\_CTYPE
+Sets locale (like en\_US.utf-8).  JOE
+uses the first of these which is set: LC\_ALL, LC\_CTYPE, LANG.
 <br>
 
 * LINES
@@ -2581,7 +2573,7 @@ windows.  If SHELL is not set (Cygwin) or if it's set to /bin/sh, JOE
 invokes the first of these which exists: /bin/bash, /usr/bin/bash, /bin/sh.
 <br>
 
-* SIMPLE_BACKUP_SUFFIX
+* SIMPLE\_BACKUP\_SUFFIX
 If this is set, it is
 appended to the file name instead of ~ to create the backup file name.
 <br>
@@ -3010,15 +3002,15 @@ used to define the status line for the rmsg and lmsg options) and is formatted b
 
 <p>Here is an example 'if' macro:</p>
 
-<p>if,"char==65",then,"it's an A",else,"it's not an A",endif	__^[ q__</p>
+    if,"char==65",then,"it's an A",else,"it's not an A",endif	^[ q
 
-<p>When you hit __^[ q__, if the character under the cursor is an 'A': "it's a A"
-is inserted into the buffer, otherwise "it's not an A" is inserted.</p>
+When you hit __^[ q__, if the character under the cursor is an 'A': "it's a A"
+is inserted into the buffer, otherwise "it's not an A" is inserted.
 
-<p>"if" creates a math prompt (like __ESC M__).  "then" is like "rtn"- it hits the
-return key for this prompt.</p>
+"if" creates a math prompt (like __ESC M__).  "then" is like "rtn"- it hits the
+return key for this prompt.
 
-<p>Within the math prompt, the following variables are available:</p>
+Within the math prompt, the following variables are available:
 
 <table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
@@ -3178,7 +3170,7 @@ characters)</td></tr>
 <tr valign="top"><td>paste</td><td>Insert base64 encoded text (for XTerm --enable-base64
 option).</td></tr>
 
-<tr valign="top"><td>brpaste</td><td>Insert text until __ESC [ 2 0 1 ~__ has been received. 
+<tr valign="top"><td>brpaste</td><td>Insert text until <strong>ESC [ 2 0 1 ~</strong> has been received. 
 This is for bracketed paste support.</td></tr>
 
 </tbody>
