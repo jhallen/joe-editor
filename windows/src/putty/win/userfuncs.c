@@ -188,25 +188,3 @@ void jwUIExit()
 {
     jwSendComm0(JW_FROM_UI, COMM_EXIT);
 }
-
-void jwHelp(HWND hwnd, wchar_t *helpfile)
-{
-    wchar_t path[MAX_PATH];
-
-    /* Try local file */
-    if (!utf8towcs(path, jw_joedata, MAX_PATH)) {
-	wcscat(path, L"\\doc\\");
-	wcscat(path, helpfile);
-	wcscat(path, L".html");
-	if (GetFileAttributesW(path) != INVALID_FILE_ATTRIBUTES) {
-	    ShellExecuteW(hwnd, L"open", path, 0, 0, SW_SHOWDEFAULT);
-	    return;
-	}
-    }
-
-    /* Try web site */
-    wcscpy(path, L"https://sourceforge.net/p/joe-editor/mercurial/ci/windows/tree/docs/");
-    wcscat(path, helpfile);
-    wcscat(path, L".md");
-    ShellExecuteW(hwnd, L"open", path, 0, 0, SW_SHOWDEFAULT);
-}

@@ -22,5 +22,6 @@
 
 void jwAboutBox(HWND);
 void defuse_showwindow(void);
+void jwHelp(HWND hwnd, wchar_t *helpfile);
 
 #endif
