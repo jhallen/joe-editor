@@ -33,6 +33,5 @@ void jwContextMenu(int hasblock);
 int jwAnyModified();
 void jwUIExit();
 void jwShutdownBackend(void *dataptr, int exitcode);
-void jwHelp(HWND hwnd, wchar_t *helpfile);
 
 #endif
