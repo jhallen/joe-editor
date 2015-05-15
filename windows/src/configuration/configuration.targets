@@ -76,7 +76,7 @@
   <!-- VT Files -->
   <Target Name="CopyVTFiles" Inputs="@(VTFile)" Outputs="@(VTFile->'$(VTOutDir)\%(Filename)%(Extension)')">
     <MakeDir Directories="$(VTOutDir)" />
-    <CopyConvertLF SourceFiles="@(VTFile)" DestinationFolder="$(VTOutDir)" />
+    <Copy SourceFiles="@(VTFile)" DestinationFolder="$(VTOutDir)" />
   </Target>
   <Target Name="CleanVTFiles">
     <RemoveDir Directories="$(VTOutDir)" />
