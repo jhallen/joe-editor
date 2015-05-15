@@ -221,6 +221,7 @@ CMD cmds[] = {
 	{USTR "winblkcpy", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, uwinblkcpy, NULL, 0, NULL},
 	{USTR "wincontext", TYPETW + TYPEPW + TYPEQW + TYPEMENU, uwincontext, NULL, 0, NULL},
 	{USTR "wincopy", TYPETW + TYPEPW + EBLOCK, uwincopy, NULL, 0, NULL},
+	{USTR "winrawvt", TYPETW + TYPEPW, uwinrawvt, NULL, 0, NULL },
 	{USTR "winpaste", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, uwinpaste, NULL, 0, NULL},
 #endif
 	{USTR "upslidemenu", TYPEMENU, umscrup, NULL, 1, USTR "dnslidemenu"},

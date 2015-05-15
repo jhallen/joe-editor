@@ -758,6 +758,7 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 :def shell_pop popabort
 :def shell_markb markb
 :def shell_markk markk
+:def shell_winrawvt winrawvt
 
  Split window version
  :def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,vtbknd!,eof

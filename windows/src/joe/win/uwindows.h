@@ -24,6 +24,7 @@ int uwincopy PARAMS((BW *bw));
 int uwinpaste PARAMS((BW *bw));
 int uwinblkcpy PARAMS((BW *bw));
 int uwincontext PARAMS((BW *bw));
+int uwinrawvt PARAMS((BW *bw));
 
 #endif
 

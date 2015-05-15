@@ -617,6 +617,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (v
 		m->hProcess = pinf.hProcess;
 		m->pid = pinf.dwProcessId;
 		m->droplf = 0;
+		m->raw = 0;
 
 		m->linebuf = bmk(NULL);
 
@@ -773,6 +774,11 @@ int writempx(int fd, void *data, size_t amt)
 			DWORD mode;
 			int t;
 
+			if (mpx->raw) {
+				/* Just write */
+				break;
+			}
+
 			AttachConsole(mpx->pid);
 			GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), &mode);
 			FreeConsole();
@@ -790,4 +796,18 @@ int writempx(int fd, void *data, size_t amt)
 
 void ttstsz(int fd, int w, int h)
 {
+}
+
+/* Set "raw" mode for a vt */
+
+void vtraw(int fd)
+{
+	int i;
+
+	for (i = 0; i < NPROC; i++) {
+		if (asyncs[i].func && asyncs[i].ptyfd == fd) {
+			asyncs[i].raw = 1;
+			break;
+		}
+	}
 }

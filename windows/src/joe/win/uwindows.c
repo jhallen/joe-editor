@@ -297,9 +297,21 @@ int uwinblkcpy(BW *bw)
 	}
 }
 
+/* Show the context menu */
+
 int uwincontext(BW *bw)
 {
 	int hasblock = markv(1);
 	jwSendComm1(JW_FROM_EDITOR, COMM_CONTEXTMENU, hasblock);
 	return 0;
+}
+
+/* Turn off echo in a shell window */
+void vtraw(int fd);
+
+int uwinrawvt(BW *bw)
+{
+	if (bw->b->vt) {
+		vtraw(bw->b->out);
+	}
 }

@@ -25,6 +25,7 @@ struct mpx {
 	HANDLE	hReadPipe;	/* Handle for stdout pipe */
 	B	*linebuf;	/* Buffer for current line of input */
 	int	droplf;		/* Track what to do with LFs */
+	int	raw;		/* Whether to buffer keystrokes */
 #endif
 };
 

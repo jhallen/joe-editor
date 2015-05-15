@@ -11,7 +11,8 @@ cmd /Q
 ::   Note that you'll need 'socat' in your Cygwin install in order for this
 ::   to work (it's used to get a pty without having to link against cygwin)
 
+REM echo {shell_winrawvt}
 REM set JOEWIN=1
-REM cd /d C:\Users\JJ\Documents\cw\bin
-REM for /f %%p in ('cygpath %~dp0') do set MYPATH=%%p
-REM socat EXEC:'bash --init-file %MYPATH%shell.sh -i',pty,ctty,stderr,setsid,path=/bin STDIO
+REM SET CYGBIN=J:\cygwin\bin
+REM for /f %%p in ('%CYGBIN%\cygpath %~dp0') do set MYPATH=%%p
+REM %CYGBIN%\socat EXEC:'bash --init-file %MYPATH%shell.sh -i',pty,ctty,stderr,setsid,path=/bin STDIO
