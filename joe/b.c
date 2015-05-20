@@ -1033,7 +1033,7 @@ int prgetc(P *p)
 	c = pgetc(q);
 	
 	/* Keep column valid */
-	if (r->valcol && r->byte == q->byte && r->valcol && c != '\n' && c != '\t') {
+	if (r->valcol && r->byte == q->byte && c != '\n' && c != '\t') {
 		p->valcol = 1;
 		p->col -= joe_wcwidth(1, c);
 	}
