@@ -249,7 +249,7 @@
   \f  Blink
   \l  Italic
 
--lmsg \i%k%T%W%I%X %n %m%y%R %M %x
+-lmsg \i%k%T%W%I%X %n %m%y%R %M
 -rmsg  %S Row %4r Col %3c %t  Ctrl-K H for help
 -smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
 -zmsg ** Line %r Col %c Offset %o(0x%O) ** 

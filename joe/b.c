@@ -1012,71 +1012,36 @@ int prgetb(P *p)
 /* move p to the previous character (try to keep col updated) */
 int prgetc(P *p)
 {
-	if (p->b->o.charmap->type || p->b->o.ansi) {
-
-		if (pisbol(p))
-			return prgetb(p);
-		else {
-			P *q = pdup(p, USTR "prgetc");
-			P *r;
-			p_goto_bol(q);
-			r = pdup(q, USTR "prgetc");
-			while (q->byte<p->byte) {
-				pset(r, q);
-				pgetc(q);
-			}
-			pset(p,r);
-			prm(r);
-			prm(q);
-			return brch(p);
-		}
-
-#if 0
-		int d = 0;
-		int c;
-		int n = 0;
-		int val = p->valcol;
-		for(;;) {
-			c = prgetb(p);
-			if (c == NO_MORE_DATA)
-				return NO_MORE_DATA;
-			else if ((c&0xC0)==0x80) {
-				d |= ((c&0x3F)<<n);
-				n += 6;
-			} else if ((c&0x80)==0x00) { /* One char */
-				d = c;
-				break;
-			} else if ((c&0xE0)==0xC0) { /* Two chars */
-				d |= ((c&0x1F)<<n);
-				break;
-			} else if ((c&0xF0)==0xE0) { /* Three chars */
-				d |= ((c&0x0F)<<n);
-				break;
-			} else if ((c&0xF8)==0xF0) { /* Four chars */
-				d |= ((c&0x07)<<n);
-				break;
-			} else if ((c&0xFC)==0xF8) { /* Five chars */
-				d |= ((c&0x03)<<n);
-				break;
-			} else if ((c&0xFE)==0xFC) { /* Six chars */
-				d |= ((c&0x01)<<n);
-				break;
-			} else { /* FIXME: Invalid (0xFE or 0xFF found) */
-				break;
-			}
-		}
-
-		if (val && c!='\t' && c!='\n') {
-			p->valcol = 1;
-			p->col -= joe_wcwidth(1,d);
-		}
-		
-		return d;
-#endif
-	}
-	else {
+	P *q, *r;
+	int c, left = 6;
+	
+	if (!p->b->o.charmap->type || pisbol(p))
 		return prgetb(p);
+	
+	/* Save in r */
+	r = pdup(p, USTR "prgetc");
+	
+	/* Read to start of utf-8 sequence */
+	c = prgetb(p);
+	if (c & 0x80 && c != NO_MORE_DATA) {
+		while (--left > 0 && (c & 0xC0) == 0x80 && c != NO_MORE_DATA)
+			c = prgetb(p);
 	}
+	
+	/* Get full character */
+	q = pdup(p, USTR "prgetc");
+	c = pgetc(q);
+	
+	/* Keep column valid */
+	if (r->valcol && r->byte == q->byte && r->valcol && c != '\n' && c != '\t') {
+		p->valcol = 1;
+		p->col -= joe_wcwidth(1, c);
+	}
+	
+	prm(q);
+	prm(r);
+	
+	return c;
 }
 
 /* move p n bytes backwards */

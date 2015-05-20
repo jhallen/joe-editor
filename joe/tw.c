@@ -69,10 +69,10 @@ static void resizetw(BW *bw, int wi, int he)
 unsigned char *get_context(BW *bw)
 {
 	P *p = pdup(bw->cursor, USTR "get_context");
-	unsigned char *buf = 0;
+	P *q = pdup(p, USTR "get_context");
+	unsigned char buf[6];
 	unsigned char *buf1;
-	int i, spc;
-
+	int i, spc, c;
 
 	buf1 = vsmk(128);
 	/* Find first line with 0 indentation which is not a comment line */
@@ -80,7 +80,12 @@ unsigned char *get_context(BW *bw)
 		p_goto_bol(p);
 		if (!pisindent(p) && !pisblank(p)) {
 			/* next: */
-			buf = brlinevs(buf, p);
+			/* Somewhat inefficient, but better than hitting a long line with brlinevs */
+			pset(q, p);
+			for (i = 0; i < (sizeof(buf) - 1) && NO_MORE_DATA != (c = pgetb(q)); i++) {
+				buf[i] = c;
+			}
+			buf[i] = 0;
 			/* Ignore comment and block structuring lines */
 			if (!(buf[0]=='{' ||
 			    (buf[0]=='/' && buf[1]=='*') ||
@@ -92,20 +97,23 @@ unsigned char *get_context(BW *bw)
 			    (buf[0]=='-' && buf[1]=='-') ||
 			    buf[0]==';')) {
  				/* replace tabs to spaces and remove adjoining spaces */
+				pset(q, p);
  				buf1 = vstrunc(buf1, 0);
- 				for (i=0,spc=0; buf[i]; i++) {
- 					if (buf[i]=='\t' || buf[i]==' ') {
+ 				for (i=0,spc=0; i < bw->w && !piseol(q) && !piseof(q); i++) {
+					c = pgetc(q);
+
+ 					if (c=='\t' || c==' ') {
  						if (spc) continue;
  						spc = 1;
  					}
  					else spc = 0;
- 					if (buf[i]=='\t')
+ 					if (c=='\t')
  						buf1 = vsadd(buf1, ' ');
 					else if (buf[i]=='\\') {
 						buf1 = vsadd(buf1, '\\');
 						buf1 = vsadd(buf1, '\\');
 					} else
-						buf1 = vsadd(buf1, buf[i]);
+						buf1 = vsadd(buf1, c);
  				}
 				/* Uncomment to get the last line instead of the first line (see above)
 			    	if (pprevl(p)) {
@@ -121,6 +129,7 @@ unsigned char *get_context(BW *bw)
 	} while (!buf1[0] && pprevl(p));
 
 	prm(p);
+	prm(q);
 
 	return buf1;
 }
