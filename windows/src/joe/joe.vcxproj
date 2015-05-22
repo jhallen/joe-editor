@@ -96,6 +96,7 @@
     <ClInclude Include="$(JoeSrcDir)\joedata.h" />
     <ClInclude Include="$(JoeSrcDir)\jwglue.h" />
     <ClInclude Include="$(JoeSrcDir)\uwindows.h" />
+    <ClInclude Include="$(JoeSrcDir)\subproc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(JoeExternalSrcDir)\b.c" />
@@ -151,6 +152,7 @@
     <ClCompile Include="$(JoeSrcDir)\fs.c" />
     <ClCompile Include="$(JoeSrcDir)\tty.c" />
     <ClCompile Include="$(JoeSrcDir)\uwindows.c" />
+    <ClCompile Include="$(JoeSrcDir)\subproc.c" />
   </ItemGroup>
   <Import Project="..\build\JoeWin.targets" />
 </Project>

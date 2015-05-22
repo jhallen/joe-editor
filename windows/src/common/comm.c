@@ -86,7 +86,7 @@ struct CommQueue
 	int			hwake;
 };
 
-static struct CommQueue *CreateCommQueue(int buffersize);
+static struct CommQueue *CreateCommQueue(int buffersize, int hwake);
 static void DeleteCommQueue(struct CommQueue *queue);
 static struct CommMessage *CreateCommMessage(struct CommQueue *queue, int buffer);
 static void EnqueueCommMessage(struct CommQueue *queue, struct CommMessage *m);

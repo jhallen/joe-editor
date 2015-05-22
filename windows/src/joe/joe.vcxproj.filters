@@ -186,6 +186,9 @@
     <ClInclude Include="$(JoeSrcDir)\builtin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(JoeSrcDir)\subproc.h">
+      <Filter>JoeWin Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(JoeSrcDir)\joedata.c">
@@ -345,6 +348,9 @@
       <Filter>JoeWin Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeSrcDir)\tty.c">
+      <Filter>JoeWin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeSrcDir)\subproc.c">
       <Filter>JoeWin Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -307,11 +307,12 @@ int uwincontext(BW *bw)
 }
 
 /* Turn off echo in a shell window */
-void vtraw(int fd);
 
 int uwinrawvt(BW *bw)
 {
 	if (bw->b->vt) {
 		vtraw(bw->b->out);
 	}
+
+	return 0;
 }

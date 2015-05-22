@@ -357,4 +357,5 @@ struct highlight_state {
 #include "bupdates.h"
 #include "uwindows.h"
 #include "jwutils.h"
+#include "subproc.h"
 #endif
