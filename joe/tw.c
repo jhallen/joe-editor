@@ -99,7 +99,7 @@ unsigned char *get_context(BW *bw)
  				/* replace tabs to spaces and remove adjoining spaces */
 				pset(q, p);
  				buf1 = vstrunc(buf1, 0);
- 				for (i=0,spc=0; i < 1024 && !piseol(q) && !piseof(q); i++) {
+ 				for (i=0,spc=0; i < 1024 && !piseol(q); i++) {
 					c = pgetb(q);
 
  					if (c=='\t' || c==' ') {
@@ -109,7 +109,7 @@ unsigned char *get_context(BW *bw)
  					else spc = 0;
  					if (c=='\t')
  						buf1 = vsadd(buf1, ' ');
-					else if (buf[i]=='\\') {
+					else if (c=='\\') {
 						buf1 = vsadd(buf1, '\\');
 						buf1 = vsadd(buf1, '\\');
 					} else
