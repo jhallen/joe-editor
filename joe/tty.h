@@ -25,7 +25,12 @@ struct mpx {
 	HANDLE	hReadPipe;	/* Handle for stdout pipe */
 	B	*linebuf;	/* Buffer for current line of input */
 	int	droplf;		/* Track what to do with LFs */
+
+	/* VT specific */
+	int	vt;
 	int	raw;		/* Whether to buffer keystrokes */
+	int	szqd;		/* Queue descriptor for window size messages */
+	HANDLE	hSizeQThread;	/* Thread serving window size messages */
 #endif
 };
 
@@ -199,7 +204,7 @@ void signrm PARAMS((void));
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int w, int h));
+MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int vt, int w, int h));
 
 void killmpx PARAMS((int pid, int sig));
 

@@ -25,16 +25,21 @@ int nmpx = 0;
 static void bakempx(MPX *m, unsigned char c, DWORD mode);
 static void controlc(MPX *m);
 static DWORD WINAPI mpxreadthread(LPVOID arg);
+static unsigned char *mkwinszpipe(MPX *mpx);
 
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (void*), void *dieobj, int out_only,
-	   int w, int h)
+/* Environment variable helpers */
+static unsigned char **readenv();
+static unsigned char **jwsetenv(unsigned char **env, unsigned char *key, unsigned char *value);
+static wchar_t *jwbuildenv(unsigned char **env);
+
+MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (void*), void *dieobj, int out_only, int vt, int w, int h)
 {
 	HANDLE prr, prw, pwr, pww;
 	SECURITY_ATTRIBUTES sa;
 	PROCESS_INFORMATION pinf;
 	STARTUPINFOW si;
-	unsigned char *allargs = 0;
-	wchar_t *wargs = NULL, *wcmd = NULL;
+	unsigned char *allargs = 0, **env;
+	wchar_t *wargs = NULL, *wcmd = NULL, *wenv = NULL;
 	MPX *m = NULL;
 	DWORD res;
 	int i;
@@ -86,7 +91,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (v
 		goto fail;
 	}
 
-	/* Setup pipes */
+	/* Setup stdin/stdout pipes */
 	ZeroMemory(&sa, sizeof(SECURITY_ATTRIBUTES));
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 	sa.bInheritHandle = TRUE;
@@ -104,6 +109,29 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (v
 		goto fail;
 	}
 
+	/* Setup environment */
+	env = readenv();
+	env = jwsetenv(env, USTR "JOEWIN", USTR "1");
+	env = jwsetenv(env, USTR "JOEDATA", JOEDATA);
+	env = jwsetenv(env, USTR "JOERC", JOERC);
+	env = jwsetenv(env, USTR "JOEHOME", USTR getenv("HOME"));
+
+	/* Create pipe for window size messages if vt */
+	if (vt) {
+		unsigned char *winszpipe = mkwinszpipe(m);
+		char buf[16];
+		ttstsz(m->ptyfd, w, h);
+		m->vt = 1;
+
+		env = jwsetenv(env, USTR "JOEWINSZPIPE", winszpipe);
+		env = jwsetenv(env, USTR "LINES", USTR itoa(h, buf, 10));
+		env = jwsetenv(env, USTR "COLUMNS", USTR itoa(w, buf, 10));
+	} else {
+		m->szqd = -1;
+		w = 80;
+		h = 25;
+	}
+
 	/* Create child */
 	ZeroMemory(&si, sizeof(STARTUPINFOW));
 	si.cb = sizeof(STARTUPINFOW);
@@ -113,14 +141,17 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (v
 	si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 	si.wShowWindow = FALSE;
 
-	res = CreateProcessW(wcmd, wargs, NULL, NULL, TRUE, CREATE_NEW_CONSOLE | CREATE_NEW_PROCESS_GROUP, NULL, NULL, &si, &pinf);
+	wenv = jwbuildenv(env);
+
+	res = CreateProcessW(wcmd, wargs, NULL, NULL, TRUE, CREATE_NEW_CONSOLE | CREATE_NEW_PROCESS_GROUP | CREATE_UNICODE_ENVIRONMENT, wenv, NULL, &si, &pinf);
 
 	CloseHandle(pww);
 	CloseHandle(prr);
 
 	joe_free(wcmd);
 	joe_free(wargs);
-	wcmd = wargs = NULL;
+	joe_free(wenv);
+	wenv = wcmd = wargs = NULL;
 
 	if (res) {
 		/* Finish setting up MPX */
@@ -147,12 +178,40 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (v
 	}
 
 fail:
-	if (wargs) free(wargs);
-	if (wcmd) free(wcmd);
+	if (wargs) joe_free(wargs);
+	if (wcmd) joe_free(wcmd);
+	if (m->szqd >= 0) jwSendComm0(m->szqd, COMM_EXIT);
 	--nmpx;
 	ZeroMemory(m, sizeof(MPX));
 	return NULL;
 }
+
+void mpxdied(MPX *m)
+{
+	CloseHandle(m->hReadThread);
+	CloseHandle(m->hProcess);
+
+	if (m->die) {
+		/* This should close the process's stdin fd */
+		m->die(m->dieobj);
+	}
+
+	jwCloseQueue(m->ackfd);
+	jwCloseQueue(m->dataqd);
+
+	brm(m->linebuf);
+
+	if (m->szqd >= 0) {
+		jwSendComm0(m->szqd, COMM_EXIT);
+		CloseHandle(m->hSizeQThread);
+	}
+
+	ZeroMemory(m, sizeof(MPX));
+
+	edupd(1);
+}
+
+/* Asynchronous IO is impossible on anonymous pipes in Windows, so we need a thread that can block */
 
 static DWORD WINAPI mpxreadthread(LPVOID arg)
 {
@@ -195,26 +254,6 @@ static DWORD WINAPI mpxreadthread(LPVOID arg)
 		jwSendComm0pd(dataqd, COMM_MPXDATA, m, buf, amount);
 		--credits;
 	}
-}
-
-void mpxdied(MPX *m)
-{
-	CloseHandle(m->hReadThread);
-	CloseHandle(m->hProcess);
-
-	if (m->die) {
-		/* This should close the process's stdin fd */
-		m->die(m->dieobj);
-	}
-
-	jwCloseQueue(m->ackfd);
-	jwCloseQueue(m->dataqd);
-
-	brm(m->linebuf);
-
-	ZeroMemory(m, sizeof(MPX));
-
-	edupd(1);
 }
 
 void killmpx(int pid, int sig)
@@ -264,7 +303,6 @@ void killmpx(int pid, int sig)
 	}
 }
 
-
 int writempx(int fd, void *data, size_t amt)
 {
 	int i;
@@ -298,8 +336,8 @@ int writempx(int fd, void *data, size_t amt)
 	return joe_write(fd, data, amt);
 }
 
-
 /* Pre-process data before sending it off to a subprocess */
+
 static void bakempx(MPX *m, unsigned char c, DWORD mode)
 {
 	int droplf = m->droplf;
@@ -312,7 +350,7 @@ static void bakempx(MPX *m, unsigned char c, DWORD mode)
 			bdel(m->linebuf->bof, m->linebuf->eof);
 			joe_write(m->ptyfd, "\r\n", 2);
 			m->func(m->object, USTR "\r\n", 2);
-		} else if (c == 127) {
+		} else if (c == 127 || c == 8) {
 			/* Backspace */
 			P *p;
 
@@ -321,7 +359,11 @@ static void bakempx(MPX *m, unsigned char c, DWORD mode)
 			bdel(p, m->linebuf->eof);
 			prm(p);
 
-			m->func(m->object, &c, 1);
+			if (m->vt) {
+				m->func(m->object, USTR "\10 \10", 3);
+			} else {
+				m->func(m->object, &c, 1);
+			}
 		} else if (c == 3) {
 			/* Control-C */
 			controlc(m);
@@ -353,8 +395,81 @@ static void controlc(MPX *m)
 	FreeConsole();
 }
 
-void ttstsz(int fd, int w, int h)
+/* Environment variable helpers */
+
+static unsigned char **readenv()
 {
+	wchar_t *envstrings;
+	wchar_t *p;
+	unsigned char **result;
+
+	result = vamk(32);
+
+	envstrings = GetEnvironmentStringsW();
+	for (p = envstrings; *p; ) {
+		unsigned char *v;
+		int varlen = wcslen(p);
+		int mblen;
+
+		mblen = wcstoutf8len(p);
+		v = vsensure(NULL, mblen + 1);
+		if (wcstoutf8(v, p, mblen)) {
+			FreeEnvironmentStringsW(envstrings);
+			return NULL;
+		}
+
+		result = vaadd(result, v);
+
+		p += varlen + 1;
+	}
+
+	FreeEnvironmentStringsW(envstrings);
+	return result;
+}
+
+static unsigned char **jwsetenv(unsigned char **env, unsigned char *key, unsigned char *value)
+{
+	int i;
+	int keylen = zlen(key);
+
+	for (i = 0; i < valen(env); i++) {
+		if (!strnicmp((char*)key, (char*)env[i], keylen) && env[i][keylen] == '=') {
+			env[i] = vsncpy(env[i], keylen + 1, sz(value));
+			return env;
+		}
+	}
+
+	return vaadd(env, vsfmt(NULL, 0, "%s=%s", key, value));
+}
+
+static wchar_t *jwbuildenv(unsigned char **env)
+{
+	wchar_t *result;
+	wchar_t *p;
+	int sz = 0;
+	int i;
+
+	for (i = 0; i < valen(env); i++) {
+		sz += utf8towcslen(env[i]);
+	}
+
+	result = (wchar_t *)joe_malloc(sizeof(wchar_t) * (sz + 1));
+
+	for (i = 0, p = result; i < valen(env); i++) {
+		sz = utf8towcslen(env[i]);
+
+		if (utf8towcs(p, env[i], sz)) {
+			joe_free(result);
+			return NULL;
+		}
+
+		p += sz;
+	}
+
+	// Final NIL
+	*p = 0;
+
+	return result;
 }
 
 /* Set "raw" mode for a vt */
@@ -369,4 +484,147 @@ void vtraw(int fd)
 			break;
 		}
 	}
+}
+
+/* Window size change stuff */
+
+void ttstsz(int fd, int w, int h)
+{
+	int i;
+
+	for (i = 0; i < NPROC; i++) {
+		if (asyncs[i].func && asyncs[i].ptyfd == fd) {
+			jwSendComm2(asyncs[i].szqd, COMM_VTSIZE, w, h);
+			return;
+		}
+	}
+}
+
+static DWORD WINAPI mpxsizethread(LPVOID arg);
+
+struct winszserver
+{
+	HANDLE	pipe;
+	int	qd;
+	int	wake;
+};
+
+static unsigned char *mkwinszpipe(MPX *mpx)
+{
+	unsigned char *pipename;
+	unsigned char *fullpipename;
+	struct winszserver *srv;
+	static int counter = 0;
+
+	srv = (struct winszserver *)joe_malloc(sizeof(struct winszserver));
+
+	pipename = vsfmt(NULL, 0, "joewsz-%d-%d-%d", GetCurrentProcessId(), counter++, rand());
+	fullpipename = vsfmt(NULL, 0, "\\\\.\\pipe\\%s", pipename);
+
+	srv->pipe = CreateNamedPipeA(
+		(LPCSTR)fullpipename,
+		PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED,
+		PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+		1,
+		512,
+		512,
+		0,
+		NULL);
+	
+	srv->wake = jwCreateWake();
+	srv->qd = jwCreateQueue(32, srv->wake);
+
+	mpx->hSizeQThread = CreateThread(NULL, 0, mpxsizethread, srv, 0, 0);
+
+	mpx->szqd = srv->qd;
+	return USTR pipename;
+}
+
+/* Serve window size changes on a named pipe */
+
+static DWORD WINAPI mpxsizethread(LPVOID arg)
+{
+	OVERLAPPED ovr;
+	char buf[64];
+	DWORD amnt;
+	BOOL ret;
+	int exit = 0, rows = -1, cols = -1;
+	struct winszserver *srv = (struct winszserver *)arg;
+
+	ZeroMemory(&ovr, sizeof(OVERLAPPED));
+	ovr.hEvent = jwGetWakeEvent(srv->wake);
+
+	/* Accept connection */
+	ret = ConnectNamedPipe(srv->pipe, &ovr);
+
+	if (!ret) {
+		/* Handle queue messages while there's no client connected */
+
+		while (!exit) {
+			struct CommMessage *msg;
+
+			msg = jwRecvComm(srv->qd);
+			if (msg) {
+				if (msg->msg == COMM_VTSIZE) {
+					/* Save this for when we have a client */
+					cols = msg->arg1;
+					rows = msg->arg2;
+				} else {
+					/* Canceled (or we never had a client connect) */
+					exit = 1;
+				}
+
+				jwReleaseComm(srv->qd, msg);
+				continue;
+			}
+
+			WaitForSingleObject(ovr.hEvent, INFINITE);
+
+			if (GetOverlappedResult(srv->pipe, &ovr, &amnt, FALSE)) {
+				/* Client connected */
+				break;
+			}
+		}
+
+		if (!exit && rows != -1 && cols != -1) {
+			/* We've already got a size, send it to newly-connected client */
+			sprintf(buf, "%d %d\n", cols, rows);
+			WriteFile(srv->pipe, buf, strlen(buf), &amnt, NULL);
+		}
+
+		if (exit) {
+			/* Cancel pending IO on early exit */
+			ret = CancelIoEx(srv->pipe, &ovr);
+
+			if (ret || GetLastError() != ERROR_NOT_FOUND) {
+				/* MSDN tells us we need to wait for the I/O system to acknowledge cancellation */
+				ret = GetOverlappedResult(srv->pipe, &ovr, &amnt, TRUE);
+			}
+		}
+	}
+
+	while (!exit) {
+		/* Client connected, forward incoming messages */
+		struct CommMessage *msg = jwWaitForComm(&srv->qd, 1, INFINITE, NULL);
+
+		if (msg->msg == COMM_VTSIZE) {
+			if (msg->arg1 != cols || msg->arg2 != rows) {
+				sprintf(buf, "%d %d\n", msg->arg1, msg->arg2);
+				WriteFile(srv->pipe, buf, strlen(buf), &amnt, NULL);
+
+				cols = msg->arg1;
+				rows = msg->arg2;
+			}
+		} else {
+			exit = 1;
+		}
+
+		jwReleaseComm(srv->qd, msg);
+	}
+
+	jwCloseQueue(srv->qd);
+	CloseHandle(srv->pipe);
+	joe_free(srv);
+
+	return 0;
 }

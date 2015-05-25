@@ -44,6 +44,7 @@
 #define COMM_EXEC		9
 #define COMM_ACK		10
 #define COMM_MPXDATA		11
+#define COMM_VTSIZE		12
 
 #define COMM_IO_1		0x80
 #define COMM_IO_2		0x81
@@ -88,6 +89,7 @@ struct CommMessage
 };
 
 int jwCreateWake(void);
+HANDLE jwGetWakeEvent(int hwake);
 int jwCreateQueue(int bufsz, int hwake);
 void jwCloseQueue(int qd);
 HANDLE jwInitializeComm(void);
