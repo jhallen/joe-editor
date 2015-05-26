@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>joewinpty</ProjectName>
+    <ProjectGuid>{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}</ProjectGuid>
+    <RootNamespace>joewinpty</RootNamespace>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="..\build\JoeWin.settings.targets" />
+  <ItemGroup>
+    <ClCompile Include="src\Agent.cc" />
+    <ClCompile Include="src\AgentAssert.cc" />
+    <ClCompile Include="src\ConsoleInput.cc" />
+    <ClCompile Include="src\Coord.cc" />
+    <ClCompile Include="src\EventLoop.cc" />
+    <ClCompile Include="src\NamedPipe.cc" />
+    <ClCompile Include="src\SmallRect.cc" />
+    <ClCompile Include="src\Terminal.cc" />
+    <ClCompile Include="src\Win32Console.cc" />
+    <ClCompile Include="src\winpty.cc" />
+    <ClCompile Include="src\DebugClient.cc" />
+    <ClCompile Include="winclient.cc" />
+    <ClCompile Include="main.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Agent.h" />
+    <ClInclude Include="include\AgentAssert.h" />
+    <ClInclude Include="include\ConsoleInput.h" />
+    <ClInclude Include="include\Coord.h" />
+    <ClInclude Include="include\DsrSender.h" />
+    <ClInclude Include="include\EventLoop.h" />
+    <ClInclude Include="include\NamedPipe.h" />
+    <ClInclude Include="include\SmallRect.h" />
+    <ClInclude Include="include\Terminal.h" />
+    <ClInclude Include="include\Win32Console.h" />
+    <ClInclude Include="include\winpty.h" />
+    <ClInclude Include="include\DebugClient.h" />
+  </ItemGroup>
+  <Import Project="..\build\JoeWin.targets" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MinSpace</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <!-- Copy exe to vt folder after building -->
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(OutDir)\joewinpty.exe" DestinationFolder="$(VTOutDir)" />
+  </Target>
+</Project>

@@ -50,6 +50,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jice", "exe\jice.vcxproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jice", "exe\standalone\jice.vcxproj", "{6CE9B05D-685E-4875-A3F5-497BE3FE8D13}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winpty", "winpty\winpty.vcxproj", "{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -184,6 +186,14 @@ Global
 		{6CE9B05D-685E-4875-A3F5-497BE3FE8D13}.Release|Win32.Build.0 = Release|Win32
 		{6CE9B05D-685E-4875-A3F5-497BE3FE8D13}.Release|x64.ActiveCfg = Release|x64
 		{6CE9B05D-685E-4875-A3F5-497BE3FE8D13}.Release|x64.Build.0 = Release|x64
+		{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}.Debug|Win32.Build.0 = Debug|Win32
+		{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}.Debug|x64.ActiveCfg = Debug|x64
+		{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}.Debug|x64.Build.0 = Debug|x64
+		{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}.Release|Win32.ActiveCfg = Release|Win32
+		{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}.Release|Win32.Build.0 = Release|Win32
+		{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}.Release|x64.ActiveCfg = Release|x64
+		{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

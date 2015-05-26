@@ -1,0 +1,7 @@
+[*.cc]
+end_of_line = crlf
+indent_size = 4
+
+[*.h]
+end_of_line = crlf
+indent_size = 4

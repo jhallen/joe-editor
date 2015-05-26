@@ -32,6 +32,9 @@
       <Component Id="ShellCSHComponent" Guid="*" Win64="$(var.Win64)">
 	<File Id="ShellCSH" Name="shell.csh" DiskId="1" Source="$(var.VTDir)\shell.csh" KeyPath="yes" />
       </Component>
+      <Component Id="JoeWinPtyComponent" Guid="*" Win64="$(var.Win64)">
+	<File Id="JoeWinPtyEXE" Name="joewinpty.exe" DiskId="1" Source="$(var.VTDir)\joewinpty.exe" KeyPath="yes" />
+      </Component>
     </ComponentGroup>
   </Fragment>
 </Wix>
