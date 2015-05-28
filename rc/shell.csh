@@ -1,5 +1,21 @@
 # Aliases for csh/tcsh in JOE shell window
 
+if ( $JOEWIN != "" && $OSTYPE == "cygwin" ) then
+	# Read initial terminal size from environment
+	stty rows $LINES cols $COLUMNS
+
+	# Continually update terminal size from JOE's named pipe.
+	if ( -e `cygpath $JOEDATA/vt/joewinpty.exe` ) then
+		set PTYHELPER = `cygpath $JOEDATA/vt/joewinpty.exe`
+	else if ( -e `cygpath $JOEHOME/vt/joewinpty.exe` ) then
+		set PTYHELPER = `cygpath $JOEHOME/vt/joewinpty.exe`
+	endif
+
+	if ( $PTYHELPER != "" ) then
+		$PTYHELPER winsize | sh -c 'while read w h ; do stty -F /dev/tty rows $h cols $w ; done' &
+	endif
+endif
+
 alias joehelp 'echo "clear         - erase buffer"; \\
 echo "joe           - edit file"; \\
 echo "math 1+2      - calculator"; \\
@@ -27,13 +43,17 @@ alias mark "echo -n \{shell_markb}; "\!\*"; echo -n \{shell_markk}"
 
 alias math "echo -n \{shell_math,"\\\"\!\*\\\"",shell_rtn\\!,shell_typemath}; cat >/dev/null"
 
-alias edit "echo -n \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
-
-alias joe "echo -n \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
-
 alias pop "echo -n \{shell_pop}"
 
-alias cd "cd "\!\*"; echo -n \{shell_cd,shell_dellin\\!,"\\\""; pwd | tr -d '\n'; echo -n /"\\\"",shell_rtn}"
+if ( $JOEWIN != "" && $OSTYPE == "cygwin" ) then
+	alias edit 'echo -n \{shell_edit,shell_dellin\\!,\"`cygpath -aw \!* | sed s/\\\\/\\//g`\",shell_rtn}'
+	alias joe 'echo -n \{shell_edit,shell_dellin\\!,\"`cygpath -aw \!* | sed s/\\\\/\\//g`\",shell_rtn}'
+	alias cd 'cd \!*; echo -n \{shell_cd,shell_dellin\\!,\"`cygpath -aw . | sed s/\\\\/\\//g `\",shell_rtn}'
+else
+	alias edit "echo -n \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
+	alias joe "echo -n \{shell_edit,"\\\"\!\*\\\"",shell_rtn}"
+	alias cd "cd "\!\*"; echo -n \{shell_cd,shell_dellin\\!,"\\\""; pwd | tr -d '\n'; echo -n /"\\\"",shell_rtn}"
+endif
 
 clear
 

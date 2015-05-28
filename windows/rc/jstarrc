@@ -790,6 +790,7 @@ aspellword	^Q ^N
 :def shell_markb markb
 :def shell_markk markk
 :def shell_winrawvt winrawvt
+:def shell_txt txt
 
  Split window version
  :def shell1 if,"is_shell==0",then,tw1,mfit,endif,scratch,"* Shell 1 *",rtn,vtbknd!,eof
