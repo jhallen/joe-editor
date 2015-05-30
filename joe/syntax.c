@@ -222,8 +222,10 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			/* Get command for this character */
 			if (h->delim && c == h_state.saved_s[0] && h_state.saved_s[1] == 0)
 				cmd = h->delim;
-			else
-				cmd = h->cmd[c];
+			else {
+				struct bind b = cmap_lookup(&h->cmap, c);
+				cmd = (struct high_cmd *)b.thing;
+			}
 
 			/* Lowerize strings for case-insensitive matching */
 			if (cmd->ignore) {
@@ -385,8 +387,8 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 		if(syntax->nstates==syntax->szstates)
 			syntax->states=(struct high_state **)joe_realloc(syntax->states,SIZEOF(struct high_state *)*(syntax->szstates*=2));
 		syntax->states[syntax->nstates++]=state;
-		for(y=0; y!=256; ++y)
-			state->cmd[y] = &syntax->default_cmd;
+		state->src = 0;
+		state->dflt = &syntax->default_cmd;
 		state->delim = 0;
 		htadd(syntax->ht_states, state->name, state);
 		++state_count;
@@ -503,23 +505,18 @@ void dump_syntax(BW *bw)
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		for(x=0;x!=syntax->nstates;++x) {
-			int y;
-			int f = -1;
 			struct high_state *s = syntax->states[x];
+			struct interval_list *l;
 			joe_snprintf_2(buf, SIZEOF(buf), "   state %s %x\n",s->name,s->color);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
-			for (y = 0; y != 256; ++y) {
-				if (f == -1)
-					f = y;
-				else if (s->cmd[f]->new_state != s->cmd[y]->new_state) {
-					joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",f,y-1,(s->cmd[f]->new_state ? s->cmd[f]->new_state->name : "ERROR! Unknown state!"),(int)s->cmd[f]->recolor);
-					binss(bw->cursor, buf);
-					pnextl(bw->cursor);
-					f = y;
-				}
+			for (l = s->src; l; l = l->next) {
+				struct high_cmd *h = (struct high_cmd *)l->map.thing;
+				joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",l->interval.first,l->interval.last,(h->new_state ? h->new_state->name : "ERROR! Unknown state!"),(int)h->recolor);
+				binss(bw->cursor, buf);
+				pnextl(bw->cursor);
 			}
-			joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",f,y-1,(s->cmd[f]->new_state ? s->cmd[f]->new_state->name : "ERROR! Unknown state!"),(int)s->cmd[f]->recolor);
+			joe_snprintf_2(buf, SIZEOF(buf), "     default -> %s %d\n",(s->dflt->new_state ? s->dflt->new_state->name : "ERROR! Unknown state!"),(int)s->dflt->recolor);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}
@@ -701,7 +698,6 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	char name[1024];
 	char buf[1024];
 	char bf[256];
-	int clist[256];
 	char *p;
 	ptrdiff_t c;
 	JFILE *f = 0;
@@ -732,7 +728,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	}
 
 	/* Parse file */
-	while(jfgets(buf,1023,f)) {
+	while(jfgets(buf,SIZEOF(buf),f)) {
 		++line;
 		p = buf;
 		c = parse_ws(&p,'#');
@@ -807,6 +803,11 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 		} else if(!parse_char(&p, ':')) {
 			if(!parse_ident(&p, bf, SIZEOF(bf))) {
 
+				/* Complete previous state */
+				if (state) {
+					cmap_build(&state->cmap, state->src, mkbinding(state->dflt, 0));
+				}
+
 				state = find_state(syntax,bf);
 
 				if (!first)
@@ -845,14 +846,11 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 			if (!c) {
 			} else if (c=='"' || c=='*' || c=='&') {
 				if (state) {
-					struct high_cmd *cmd;
-					int delim = 0;
+					struct high_cmd *cmd = mkcmd();
 					if(!parse_field(&p, "*")) {
-						int z;
-						for(z=0;z!=256;++z)
-							clist[z] = 1;
+						state->dflt = cmd;
 					} else if(!parse_field(&p, "&")) {
-						delim = 1;
+						state->delim = cmd;
 					} else {
 						c = parse_string(&p, bf, SIZEOF(bf));
 						if(c < 0)
@@ -861,30 +859,18 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 							int z;
 							int first, second;
 							char *t = bf;
-							for(z=0;z!=256;++z)
-								clist[z] = 0;
 							while(!parse_range(&t, &first, &second)) {
 								if(first>second)
 									second = first;
-								while(first<=second)
-									clist[first++] = 1;
+								state->src = interval_add(state->src, first, second, mkbinding(cmd, 0));
 							}
 						}
 					}
 					/* Create command */
-					cmd = mkcmd();
 					parse_ws(&p,'#');
 					if(!parse_ident(&p,bf,SIZEOF(bf))) {
-						int z;
 						cmd->new_state = find_state(syntax,bf);
 						line = parse_options(syntax,cmd,f,p,0,name,line);
-
-						/* Install command */
-						if (delim)
-							state->delim = cmd;
-						else for(z=0;z!=256;++z)
-							if(clist[z])
-								state->cmd[z]=cmd;
 					} else
 						logerror_2(joe_gettext(_("%s %d: Missing jump\n")),name,line);
 				} else
@@ -902,6 +888,11 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	}
 
 	jfclose(f);
+
+	/* Complete previous state */
+	if (state) {
+		cmap_build(&state->cmap, state->src, mkbinding(state->dflt, 0));
+	}
 
 	return first;
 }
