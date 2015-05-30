@@ -6,9 +6,9 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-/* A buffer is made up of a doubly-linked list of gap buffer.  These are the
- * buffer headers.  The buffers themselves can be swapped out.  A buffer with
- * point referring to it is guaranteed to be swapped in.
+/* A buffer is made up of a doubly-linked list of gap buffers.  Each gap buffer has a
+ * a header.  The buffers themselves can be swapped out.  A gap buffer with
+ * a pointer referring to it is guaranteed to be swapped in.
  */
 
 struct header {
@@ -27,8 +27,8 @@ struct point {
 	LINK(P)	link;		/* Doubly-linked list of pointers for a particular buffer */
 
 	B	*b;		/* Buffer */
-	ptrdiff_t	ofst;		/* Gap buffer offset */
-	char	*ptr;	/* Gap buffer address */
+	ptrdiff_t	ofst;	/* Gap buffer offset */
+	char	*ptr;		/* Gap buffer address */
 	H	*hdr;		/* Gap buffer header */
 
 	off_t	byte;		/* Buffer byte offset */
