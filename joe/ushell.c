@@ -268,10 +268,29 @@ static int dobknd(BW *bw, int vt)
 	return cstart(bw, sh, a, NULL, 0, 0, (vt ? (zstr(sh, USTR "csh") ? start_csh : start_sh) : NULL), vt);
 #else
 	if (vt) {
-		s = vsncpy(NULL, 0, sc("/C"));
-		a = vaadd(a, s);
-		s = vsfmt(NULL, 0, "%s/vt/vt.bat", JOEDATA);
-		a = vaadd(a, s);
+		unsigned char *vtbat;
+		struct stat stbuf;
+
+		vtbat = vsfmt(NULL, 0, "%s/vt/vt.bat", getenv("HOME"));
+		if (stat(vtbat, &stbuf)) {
+			/* File does not exist */
+			vtbat = vsfmt(NULL, 0, "%s/vt/vt.bat", JOEDATA);
+			if (stat(vtbat, &stbuf)) {
+				/* File does not exist either... */
+				vtbat = NULL;
+			}
+		}
+
+		if (vtbat) {
+			/* Found */
+			s = vsncpy(NULL, 0, sc("/C"));
+			a = vaadd(a, s);
+			a = vaadd(a, vtbat);
+		} else {
+			/* Not found; fallback on dumb terminal */
+			s = vsncpy(NULL, 0, sc("/Q"));
+			a = vaadd(a, s);
+		}
 	} else {
 		s = vsncpy(NULL, 0, sc("/Q"));
 		a = vaadd(a, s);

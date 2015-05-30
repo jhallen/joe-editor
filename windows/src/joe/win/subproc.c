@@ -466,7 +466,7 @@ static wchar_t *jwbuildenv(unsigned char **env)
 		p += sz;
 	}
 
-	// Final NIL
+	/* Final NIL */
 	*p = 0;
 
 	return result;

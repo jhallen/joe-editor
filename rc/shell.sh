@@ -115,7 +115,7 @@ joe_cd () {
 	fi
 	# Tell JOE our new directory
 	if [ -n "$JOEWIN" ] && [ "$OSTYPE" == "cygwin" ]; then
-		echo -n '{'shell_cd,shell_dellin!,'"'$(cygpath -aw $(pwd)|sed 's/\\/\//g')'"',shell_rtn'}'
+		echo -n '{'shell_cd,shell_dellin!,'"'$(cygpath -aw . |sed 's/\\/\//g')'"',shell_rtn'}'
 	else
 		echo -n '{'shell_cd,shell_dellin!,'"'`pwd`/'"',shell_rtn'}'
 	fi
