@@ -270,7 +270,7 @@ struct glopts {
 	{"ansi",4, NULL, (char *) &fdefault.ansi, _("Hide ANSI sequences"), _("Reveal ANSI sequences"), _("  Hide ANSI mode ") },
 	{"autoindent",	4, NULL, (char *) &fdefault.autoindent, _("Autoindent enabled"), _("Autoindent disabled"), _("I Autoindent ") },
 	{"wordwrap",	4, NULL, (char *) &fdefault.wordwrap, _("Wordwrap enabled"), _("Wordwrap disabled"), _("W Word wrap ") },
-	{"tab",	14, NULL, (char *) &fdefault.tab, _("Tab width (%d): "), 0, _("D Tab width "), 0, 1, 64 },
+	{"tab",	14, NULL, (char *) &fdefault.tab, _("Tab width (%lld): "), 0, _("D Tab width "), 0, 1, 64 },
 	{"lmargin",	7, NULL, (char *) &fdefault.lmargin, _("Left margin (%d): "), 0, _("L Left margin "), 0, 0, 63 },
 	{"rmargin",	7, NULL, (char *) &fdefault.rmargin, _("Right margin (%d): "), 0, _("R Right margin "), 0, 7, 255 },
 	{"restore",	0, &restore_file_pos, NULL, _("Restore cursor position when files loaded"), _("Don't restore cursor when files loaded"), _("  Restore cursor ") },
@@ -284,7 +284,7 @@ struct glopts {
 	{"menu_jump",	0, &menu_jump, NULL, _("Jump into menu is on"), _("Jump into menu is off"), _("  Jump into menu ") },
 	{"autoswap",	0, &autoswap, NULL, _("Autoswap ^KB and ^KK"), _("Autoswap off "), _("  Autoswap mode ") },
 	{"indentc",	5, NULL, (char *) &fdefault.indentc, _("Indent char %d (SPACE=32, TAB=9, ^C to abort): "), 0, _("  Indent char "), 0, 0, 255 },
-	{"istep",	14, NULL, (char *) &fdefault.istep, _("Indent step %d (^C to abort): "), 0, _("  Indent step "), 0, 1, 64 },
+	{"istep",	14, NULL, (char *) &fdefault.istep, _("Indent step %lld (^C to abort): "), 0, _("  Indent step "), 0, 1, 64 },
 	{"french",	4, NULL, (char *) &fdefault.french, _("One space after periods for paragraph reformat"), _("Two spaces after periods for paragraph reformat"), _("  French spacing ") },
 	{"flowed",	4, NULL, (char *) &fdefault.flowed, _("One space after paragraph line"), _("No spaces after paragraph lines"), _("  Flowed text ") },
 	{"highlight",	4, NULL, (char *) &fdefault.highlight, _("Highlighting enabled"), _("Highlighting disabled"), _("H Highlighting ") },
@@ -665,6 +665,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 	int *xx = (int *)obj;
 	int x = *xx;
 	int v;
+	off_t vv;
 	WIND_BW(bw, w);
 
 	joe_free(xx);
@@ -695,6 +696,18 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			ret = -1;
 		} else if (v >= glopts[x].low && v <= glopts[x].high)
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = v;
+		else {
+			msgnw(bw->parent, joe_gettext(_("Value out of range")));
+			ret = -1;
+		}
+		break;
+	case 14:
+		vv = (off_t)calc(bw, s, 0);
+		if (merr) {
+			msgnw(bw->parent, merr);
+			ret = -1;
+		} else if (vv >= glopts[x].low && vv <= glopts[x].high)
+			*(off_t *) ((char *) &bw->o + glopts[x].ofst) = vv;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
@@ -980,6 +993,9 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				return -1;
 		case 5:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst));
+			goto in;
+		case 14:
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
 			goto in;
 		case 7:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst) + 1);
