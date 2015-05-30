@@ -2296,7 +2296,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 	    show_mouseptr(1);
 #ifdef JOEWIN
 	    str = "Exit Confirmation";
-	    if (!jwAnyModified() || MessageBox(hwnd, "Some open files have not been saved.  Are you sure you want to quit?", str, MB_ICONWARNING | MB_YESNO | MB_DEFBUTTON2) == IDYES)
+	    if (jwCanExit() || MessageBox(hwnd, "Some open files have not been saved.  Are you sure you want to quit?", str, MB_ICONWARNING | MB_YESNO | MB_DEFBUTTON2) == IDYES)
 	    {
 		jwSaveWindowCoords(hwnd, term->rows, term->cols);
 		jwUIExit();

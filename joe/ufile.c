@@ -810,6 +810,10 @@ void wpush(BW *bw)
 	pdupown(bw->top, &e->top, USTR "wpush");
 	e->next = bw->parent->bstack;
 	bw->parent->bstack = e;
+#ifdef JOEWIN
+	notify_changed_buffer(bw->b);
+	notify_selection();
+#endif
 }
 
 int uscratch(BW *bw)
@@ -826,11 +830,11 @@ int uscratch(BW *bw)
 		b = bfind_scratch(s);
 		er = berror;
 
-	if (!bw->b->scratch)
-		wpush(bw);
+		if (!bw->b->scratch)
+			wpush(bw);
 
-	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) { /* Last reference on dirty buffer */
-		if (orphan || bw->b->scratch) {
+		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) { /* Last reference on dirty buffer */
+			if (orphan || bw->b->scratch) {
 				orphit(bw);
 			} else {
 				if (uduptw(bw)) {

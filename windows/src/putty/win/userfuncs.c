@@ -33,23 +33,16 @@ static void UpdateWindowTitle();
 
 void jwUIProcessPacket(void *data, struct CommMessage* m)
 {
-    if (m->msg == COMM_EXIT)
-    {
+    if (m->msg == COMM_EXIT) {
 	jwShutdownBackend(data, m->arg1);
-    }
-    else if (m->msg == COMM_UPDATEBUFFER)
-    {
+    } else if (m->msg == COMM_UPDATEBUFFER) {
 	struct buffer_update bu;
 
 	unmarshal_buffer_update(m, &bu);
 	apply_buffer_updates(&buffers, &bu);
-    }
-    else if (m->msg == COMM_DONEBUFFERUPDATE)
-    {
+    } else if (m->msg == COMM_DONEBUFFERUPDATE) {
 	UpdateWindowTitle();
-    }
-    else if (m->msg == COMM_CONTEXTMENU)
-    {
+    } else if (m->msg == COMM_CONTEXTMENU) {
 	jwContextMenu(m->arg1);
     }
 }
@@ -61,11 +54,9 @@ void jwSendFiles(HDROP hdrop, int x, int y)
     char path[MAX_PATH * 3];
 
     count = DragQueryFileW(hdrop, (unsigned int)(-1), wpath, MAX_PATH);
-    for (i = 0; count > 0; count--, i++)
-    {
+    for (i = 0; count > 0; count--, i++) {
 	DragQueryFileW(hdrop, i, wpath, MAX_PATH);
-	if (!wcstoutf8(path, wpath, MAX_PATH * 3))
-	{
+	if (!wcstoutf8(path, wpath, MAX_PATH * 3)) {
 	    jwSendComm3s(JW_FROM_UI, COMM_DROPFILES, x, y, count, path);
 	}
     }
@@ -89,76 +80,60 @@ static void UpdateWindowTitle()
     int activemodified = 0;
     int total = 0;
 
-    if (!buffers)
-    {
+    if (!buffers) {
 	return;
     }
 
     /* Start with a default */
     active = buffers;
 
-    for (be = buffers; be; be = be->next)
-    {
-	if (be->flags & JOE_BUFFER_INTERNAL)
-	{
+    for (be = buffers; be; be = be->next) {
+	if ((be->flags & JOE_IGNORE_BUFFERS) && !(be->flags & JOE_BUFFER_SELECTED)) {
 	    continue;
 	}
 
-	if (be->flags & JOE_BUFFER_MODIFIED)
-	{
+	if ((be->flags & JOE_IGNORE_BUFFERS) == JOE_BUFFER_MODIFIED) {
 	    modified++;
 	}
-	if (be->flags & JOE_BUFFER_SELECTED)
-	{
+
+	if (be->flags & JOE_BUFFER_SELECTED) {
 	    active = be;
-	    activemodified = !!(be->flags & JOE_BUFFER_MODIFIED);
+	    activemodified = !(be->flags & JOE_IGNORE_BUFFERS) && !!(be->flags & JOE_BUFFER_MODIFIED);
 	}
+
 	total++;
     }
 
     wcscpy(nmbuf, L"");
 
-    if (activemodified)
-    {
-	if (modified > 1)
-	{
+    if (activemodified) {
+	if (modified > 1) {
 	    wcscat(nmbuf, L"** ");
-	}
-	else
-	{
+	} else {
 	    wcscat(nmbuf, L"* ");
 	}
-    }
-    else if (modified)
-    {
+    } else if (modified) {
 	wcscat(nmbuf, L"(*) ");
     }
 
-    if (!wcslen(active->fname))
-    {
+    if (!wcslen(active->fname)) {
 	wcscat(nmbuf, L"Unnamed");
 	wcscpy(path, L"");
-    }
-    else
-    {
+    } else {
 	wchar_t *slash;
 
 	wcscpy(path, active->fname);
 	slash = max(wcsrchr(path, L'/'), wcsrchr(path, L'\\'));
-	if (slash)
-	{
+	if (slash) {
 	    *slash = 0;
 	    wcscat(nmbuf, ++slash);
-	}
-	else
-	{
+	} else {
 	    wcscat(nmbuf, path);
 	    wcscpy(path, L"");
 	}
     }
 
-    if (total > 1)
-    {
+    if (total > 1) {
 	wchar_t numbuf[12];
 
 	wcscat(nmbuf, L" (+");
@@ -166,8 +141,7 @@ static void UpdateWindowTitle()
 	wcscat(nmbuf, L")");
     }
 
-    if (wcslen(path))
-    {
+    if (wcslen(path)) {
 	wcscat(nmbuf, L" [");
 	wcscat(nmbuf, path);
 	wcscat(nmbuf, L"]");
@@ -179,9 +153,18 @@ static void UpdateWindowTitle()
     set_title(NULL, nmbuf);
 }
 
-int jwAnyModified()
+int jwCanExit()
 {
-    return any_buffers_modified(buffers);
+    struct buffer_entry *be;
+
+    /* Any active shells? */
+    for (be = buffers; be; be = be->next) {
+	if (be->flags & (JOE_BUFFER_VT | JOE_BUFFER_HASPROCESS)) {
+	    return 0;
+	}
+    }
+
+    return !any_buffers_modified(buffers);
 }
 
 void jwUIExit()

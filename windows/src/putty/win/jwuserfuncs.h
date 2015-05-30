@@ -30,7 +30,7 @@ void jwUpdateJoeColor(void);
 void jwSendJoeColor(void *color);
 void jwContextMenu(int hasblock);
 
-int jwAnyModified();
+int jwCanExit();
 void jwUIExit();
 void jwShutdownBackend(void *dataptr, int exitcode);
 

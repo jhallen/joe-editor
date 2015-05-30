@@ -673,6 +673,10 @@ B *wpop(BW *bw)
 	bw->parent->bstack = e->next;
 	free(e);
 	--b->count;
+#ifdef JOEWIN
+	notify_selection();
+	notify_changed_buffer(b);
+#endif
 	return b;
 }
 

@@ -10,7 +10,7 @@ setlocal
 :: Note: To use this, your Cygwin installation must include the "socat" package.
 set CYGBIN=J:\cygwin\bin
 REM goto :cygwin_bash
-goto :cygwin_tcsh
+REM goto :cygwin_tcsh
 
 :: If you want to use Powershell, uncomment the following line:
 REM goto :powershell
@@ -39,7 +39,7 @@ if exist %PTYHELPER% (
 	goto :eof
 )
 
-echo Couldn't find joewinptyhelper.exe.  Can't start powershell :-(
+echo Couldn't find joewinpty.exe.  Can't start powershell :-(
 goto :eof
 
 :: ----- Cygwin
@@ -76,6 +76,4 @@ echo Couldn't find joewinpty.exe in %JOEDATA% or %JOEHOME%.  Make sure your inst
 set PTYHELPER=
 goto :eof
 
-
 :eof
-

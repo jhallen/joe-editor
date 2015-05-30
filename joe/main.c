@@ -292,6 +292,10 @@ int ushowlog(BW *bw)
 		wredraw(newbw->parent);
 		newbw->object = object;
 		
+#ifdef JOEWIN
+		notify_new_buffer(copied);
+#endif
+
 		return 0;
 	}
 	

@@ -157,7 +157,7 @@ int any_buffers_modified(struct buffer_entry *be)
 {
 	for (; be; be = be->next)
 	{
-		if (be->flags & JOE_BUFFER_MODIFIED && !(be->flags & JOE_BUFFER_INTERNAL))
+		if (be->flags & JOE_BUFFER_MODIFIED && !(be->flags & JOE_IGNORE_BUFFERS))
 		{
 			return 1;
 		}

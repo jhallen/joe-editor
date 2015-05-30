@@ -249,6 +249,9 @@ static int make_update(B *buffer, struct buffer_update *bu, int include_name)
 		| (buffer->changed ? JOE_BUFFER_MODIFIED : 0)
 		| (buffer->scratch ? JOE_BUFFER_NEWFILE : 0)
 		| (buffer->internal ? JOE_BUFFER_INTERNAL : 0)
+		| (buffer->vt ? JOE_BUFFER_VT : 0)
+		| (buffer->scratch ? JOE_BUFFER_SCRATCH : 0)
+		| (buffer->pid ? JOE_BUFFER_HASPROCESS : 0)
 		| (buffer == get_selected() ? JOE_BUFFER_SELECTED : 0);
 
 	return !loc || namechanged || be->flags != loc->flags;

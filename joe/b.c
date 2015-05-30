@@ -2790,6 +2790,9 @@ B *bfind_scratch(unsigned char *s)
 	b->er = berror;
 	b->name = zdup(s);
 	b->scratch = 1;
+#ifdef JOEWIN
+	notify_renamed_buffer(b);
+#endif
 	return b;
 }
 
