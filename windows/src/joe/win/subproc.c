@@ -69,11 +69,16 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (v
 
 	/* Setup arguments */
 	for (i = 0; i < valen(args); i++) {
-		if (allargs)
-			allargs = vscatz(allargs, USTR " ");
+		if (i == 1)
+			allargs = vscatz(allargs, USTR " \"");
+		else if (i > 1)
+			allargs = vscatz(allargs, USTR "\" \"");
 
 		allargs = vscat(allargs, args[i], vslen(args[i]));
 	}
+
+	if (i > 1)
+		allargs = vscatz(allargs, USTR "\"");
 
 	i = utf8towcslen(allargs);
 	wargs = (wchar_t*)joe_malloc((i + 1) * sizeof(wchar_t));
