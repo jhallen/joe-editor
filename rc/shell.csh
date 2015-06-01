@@ -5,15 +5,22 @@ if ( $JOEWIN != "" && $OSTYPE == "cygwin" ) then
 	stty rows $LINES cols $COLUMNS
 
 	# Continually update terminal size from JOE's named pipe.
-	if ( -e `cygpath $JOEDATA/vt/joewinpty.exe` ) then
-		set PTYHELPER = `cygpath $JOEDATA/vt/joewinpty.exe`
-	else if ( -e `cygpath $JOEHOME/vt/joewinpty.exe` ) then
-		set PTYHELPER = `cygpath $JOEHOME/vt/joewinpty.exe`
+	set fn=`cygpath "$JOEDATA/vt/joewinpty.exe"`
+	if ( -e "$fn" ) then
+		set PTYHELPER="$fn"
+	else
+		set fn=`cygpath "$JOEHOME/vt/joewinpty.exe"`
+		if ( -e "$fn" ) then
+			set PTYHELPER="$fn"
+		endif
 	endif
 
-	if ( $PTYHELPER != "" ) then
-		$PTYHELPER winsize | sh -c 'while read w h ; do stty -F /dev/tty rows $h cols $w ; done' &
+	if ( "$PTYHELPER" != "" ) then
+		"$PTYHELPER" winsize | sh -c 'while read w h ; do stty -F /dev/tty rows $h cols $w ; done' &
+		unset PTYHELPER
 	endif
+	
+	unset fn
 endif
 
 alias joehelp 'echo "clear         - erase buffer"; \\

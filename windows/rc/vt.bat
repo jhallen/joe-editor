@@ -47,14 +47,15 @@ goto :eof
 :cygwin_bash
 
 echo {shell_winrawvt}
-for /f %%p in ('%CYGBIN%\cygpath %~dp0') do set MYPATH=%%p
-%CYGBIN%\socat EXEC:'bash --init-file "%MYPATH%shell.sh" -i',pty,ctty,stderr,setsid,path=/bin STDIO
+for /f "delims=|" %%p in ('%CYGBIN%\cygpath -a .') do set CURPATH=%%p
+cd /d "%~dp0"
+"%CYGBIN%\socat" "SYSTEM:bash --init-file shell.sh -i,pty,ctty,stderr,setsid,path=/bin" STDIO
 goto :eof
 
 :cygwin_tcsh
 
 echo {shell_winrawvt}
-for /f %%p in ('%CYGBIN%\cygpath %~dp0') do set MYPATH=%%p
+for /f "delims=|" %%p in ('%CYGBIN%\cygpath "%~dp0"') do set MYPATH=%%p
 REM tcsh will not change default startup script from commandline, so feed command through stdin
 echo {shell_txt,"source '%MYPATH%/shell.csh'\r",shell_rtn}
 %CYGBIN%\socat EXEC:'tcsh',pty,ctty,stderr,setsid,path=/bin STDIO

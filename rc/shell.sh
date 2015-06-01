@@ -5,14 +5,19 @@ if [ -n "$JOEWIN" ]; then
 	stty -F /dev/tty rows $LINES cols $COLUMNS
 
 	# Continually update terminal size from JOE's named pipe.
-	if [ -x $(cygpath "$JOEDATA/vt/joewinpty.exe") ]; then
-		PTYHELPER="$(cygpath $JOEDATA/vt/joewinpty.exe)"
+	if [ -x "$(cygpath "$JOEDATA/vt/joewinpty.exe")" ]; then
+		PTYHELPER=$(cygpath "$JOEDATA/vt/joewinpty.exe")
 	fi
-	if [ -x $(cygpath "$JOEHOME/vt/joewinpty.exe") ]; then
-		PTYHELPER="$(cygpath $JOEHOME/vt/joewinpty.exe)"
+	if [ -x "$(cygpath "$JOEHOME/vt/joewinpty.exe")" ]; then
+		PTYHELPER=$(cygpath "$JOEHOME/vt/joewinpty.exe")
 	fi
 	if [ -n "$PTYHELPER" ]; then
-		$PTYHELPER winsize | sh -c "while read w h ; do stty -F /dev/tty rows \$h cols \$w ; done" &
+		"$PTYHELPER" winsize | sh -c "while read w h ; do stty -F /dev/tty rows \$h cols \$w ; done" &
+		trap 'jobs -p | xargs kill' EXIT
+	fi
+	
+	if [ -n "$CURPATH" ]; then
+		cd "$CURPATH"
 	fi
 fi
 
