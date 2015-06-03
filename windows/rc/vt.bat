@@ -47,29 +47,29 @@ goto :eof
 :cygwin_bash
 
 echo {shell_winrawvt}
-for /f "delims=|" %%p in ('%CYGBIN%\cygpath -a .') do set CURPATH=%%p
+for /f "delims=|" %%p in ('call "%CYGBIN%\cygpath" -a .') do set CURPATH=%%p
 cd /d "%~dp0"
-"%CYGBIN%\socat" "SYSTEM:bash --init-file shell.sh -i,pty,ctty,stderr,setsid,path=/bin" STDIO
+"%CYGBIN%\socat" "EXEC:bash --init-file shell.sh -i,pty,ctty,stderr,setsid,path=/bin" STDIO
 goto :eof
 
 :cygwin_tcsh
 
 echo {shell_winrawvt}
-for /f "delims=|" %%p in ('%CYGBIN%\cygpath "%~dp0"') do set MYPATH=%%p
+for /f "delims=|" %%p in ('call "%CYGBIN%\cygpath" "%~dp0"') do set MYPATH=%%p
 REM tcsh will not change default startup script from commandline, so feed command through stdin
 echo {shell_txt,"source '%MYPATH%/shell.csh'\r",shell_rtn}
-%CYGBIN%\socat EXEC:'tcsh',pty,ctty,stderr,setsid,path=/bin STDIO
+"%CYGBIN%\socat" EXEC:'tcsh',pty,ctty,stderr,setsid,path=/bin STDIO
 goto :eof
 
 :findptyhelper
 
-if exist "%JOEDATA%\vt\joewinpty.exe" (
-	set PTYHELPER="%JOEDATA%\vt\joewinpty.exe"
+if exist "%JOEHOME%\vt\joewinpty.exe" (
+	set PTYHELPER="%JOEHOME%\vt\joewinpty.exe"
 	goto :eof
 )
 
-if exist "%JOEHOME%\vt\joewinpty.exe" (
-	set PTYHELPER="%JOEHOME%\vt\joewinpty.exe"
+if exist "%JOEDATA%\vt\joewinpty.exe" (
+	set PTYHELPER="%JOEDATA%\vt\joewinpty.exe"
 	goto :eof
 )
 
