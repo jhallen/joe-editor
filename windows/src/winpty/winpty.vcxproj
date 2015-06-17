@@ -75,7 +75,7 @@
   </ItemDefinitionGroup>
 
   <!-- Copy exe to vt folder after building -->
-  <Target Name="AfterBuild">
+  <Target Name="AfterBuild" DependsOnTargets="SignBinaries">
     <Copy SourceFiles="$(OutDir)\joewinpty.exe" DestinationFolder="$(VTOutDir)" />
   </Target>
 </Project>

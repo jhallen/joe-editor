@@ -106,5 +106,29 @@
   <Target Name="AfterClean">
     <Delete Files="$(IntDir)\builtins.rc" />
   </Target>
+  
+  <!-- Target to sign output binaries.  SignWith must be specified as an environment variable or
+       property, and must be the SHA1 thumbprint of a certificate in the Windows Certificate Store -->
+  <Target Name="SignBinaries" Condition="'$(SignWith)' != '' and '$(IsStandalone)' == ''">
+    <PropertyGroup>
+      <_SignedOutputExtension Condition="'$(ConfigurationType)' == 'DynamicLibrary'">.dll</_SignedOutputExtension>
+      <_SignedOutputExtension Condition="'$(ConfigurationType)' == 'Application'">.exe</_SignedOutputExtension>
+      <_SignedExecutable Condition="Exists('$(OutDir)\$(RootNamespace)$(_SignedOutputExtension)')">$(RootNamespace)$(_SignedOutputExtension)</_SignedExecutable>
+      <_SignedExecutable Condition="Exists('$(OutDir)\$(AssemblyName)$(_SignedOutputExtension)')">$(AssemblyName)$(_SignedOutputExtension)</_SignedExecutable>
+    </PropertyGroup>
+    <Exec Condition="'$(_SignedExecutable)' != '' and Exists('$(OutDir)\$(_SignedExecutable)')" Command="signtool sign /t http://timestamp.verisign.com/scripts/timestamp.dll /sha1 $(SignWith) /d $(_SignedExecutable) &quot;$(OutDir)\$(_SignedExecutable)&quot;" />
+    <Message Text="Tried to do: $(OutDir)\$(_SignedExecutable)" />
+  </Target>
+  
+  <!-- Target to sign MSI -->
+  <Target Name="SignMsi" Condition="'$(SignWith)' != ''">
+    <Exec Command="signtool sign /t http://timestamp.verisign.com/scripts/timestamp.dll /sha1 $(SignWith) /d %(SignMsi.FileName) &quot;%(SignMsi.FullPath)&quot;" />
+  </Target>
+  <Target Name="SignCabs" Condition="'$(SignWith)' != ''">
+    <Exec Command="signtool sign /t http://timestamp.verisign.com/scripts/timestamp.dll /sha1 $(SignWith) /d %(SignCabs.FileName) &quot;%(SignCabs.FullPath)&quot;" />
+  </Target>
 
+  <PropertyGroup>
+    <BuildDependsOn>$(BuildDependsOn);SignBinaries</BuildDependsOn>
+  </PropertyGroup>
 </Project>
