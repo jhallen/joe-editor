@@ -396,6 +396,21 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 	return state;
 }
 
+/* Build cmaps */
+
+static void build_cmaps(struct high_syntax *syntax)
+{
+	struct high_state *state;
+	int x;
+	for (x = 0; x != syntax->ht_states->len; ++x) {
+		HENTRY *p;
+		for (p = syntax->ht_states->tab[x]; p; p = p->next) {
+			struct high_state *st = (struct high_state *)p->val;
+			cmap_build(&st->cmap, st->src, mkbinding(st->dflt, 0));
+		}
+	}
+}
+
 /* Create empty command */
 
 static void iz_cmd(struct high_cmd *cmd)
@@ -803,11 +818,6 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 		} else if(!parse_char(&p, ':')) {
 			if(!parse_ident(&p, bf, SIZEOF(bf))) {
 
-				/* Complete previous state */
-				if (state) {
-					cmap_build(&state->cmap, state->src, mkbinding(state->dflt, 0));
-				}
-
 				state = find_state(syntax,bf);
 
 				if (!first)
@@ -889,10 +899,8 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 
 	jfclose(f);
 
-	/* Complete previous state */
-	if (state) {
-		cmap_build(&state->cmap, state->src, mkbinding(state->dflt, 0));
-	}
+	/* Compile cmaps */
+	build_cmaps(syntax);
 
 	return first;
 }
