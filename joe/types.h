@@ -202,20 +202,17 @@ typedef int pid_t;
 
 /* These do not belong here. */
 
-/* #define KEYS		256 */
-#define KEYS 267	/* 256 ascii + mdown, mup, mdrag, m2down, m2up, m2drag,
-                                        m3down, m3up, m3drag */
-#define KEY_MDOWN	256
-#define KEY_MUP		257
-#define KEY_MDRAG	258
-#define KEY_M2DOWN	259
-#define KEY_M2UP	260
-#define KEY_M2DRAG	261
-#define KEY_M3DOWN	262
-#define KEY_M3UP	263
-#define KEY_M3DRAG	264
-#define KEY_MWUP	265
-#define KEY_MWDOWN	266
+#define KEY_MDOWN	0x200000
+#define KEY_MUP		0x200001
+#define KEY_MDRAG	0x200002
+#define KEY_M2DOWN	0x200003
+#define KEY_M2UP	0x200004
+#define KEY_M2DRAG	0x200005
+#define KEY_M3DOWN	0x200006
+#define KEY_M3UP	0x200007
+#define KEY_M3DRAG	0x200008
+#define KEY_MWUP	0x200009
+#define KEY_MWDOWN	0x20000A
 
 #define stdsiz		8192
 #define FITHEIGHT	4		/* Minimum text window height */
