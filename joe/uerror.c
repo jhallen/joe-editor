@@ -444,11 +444,11 @@ static int jump_to_file_line(BW *bw,char *file,off_t line,char *msg)
 			return -1;
 		bw = (BW *) maint->curwin->object;
 	}
-	omid = mid;
-	mid = 1;
+	omid = opt_mid;
+	opt_mid = 1;
 	pline(bw->cursor, line);
 	dofollows();
-	mid = omid;
+	opt_mid = omid;
 	bw->cursor->xcol = piscol(bw->cursor);
 	msgnw(bw->parent, msg);
 	return 0;

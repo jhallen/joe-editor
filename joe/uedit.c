@@ -1406,14 +1406,14 @@ static int doline(W *w, char *s, void *object, int *notify)
 		*notify = 1;
 	vsrm(s);
 	if (num >= 1 && !merr) {
-		int tmp = mid;
+		int tmp = opt_mid;
 
 		if (num > bw->b->eof->line)
 			num = bw->b->eof->line + 1;
 		pline(bw->cursor, num - 1), bw->cursor->xcol = piscol(bw->cursor);
-		mid = 1;
+		opt_mid = 1;
 		dofollows();
-		mid = tmp;
+		opt_mid = tmp;
 		return 0;
 	} else {
 		if (merr)
@@ -1449,12 +1449,12 @@ static int docol(W *w, char *s, void *object, int *notify)
 		*notify = 1;
 	vsrm(s);
 	if (num >= 1 && !merr) {
-		int tmp = mid;
+		int tmp = opt_mid;
 
 		pcol(bw->cursor, num - 1), bw->cursor->xcol = piscol(bw->cursor);
-		mid = 1;
+		opt_mid = 1;
 		dofollows();
-		mid = tmp;
+		opt_mid = tmp;
 		return 0;
 	} else {
 		if (merr)
@@ -1490,12 +1490,12 @@ static int dobyte(W *w, char *s, void *object, int *notify)
 		*notify = 1;
 	vsrm(s);
 	if (num >= 0 && !merr) {
-		int tmp = mid;
+		int tmp = opt_mid;
 
 		pgoto(bw->cursor, num), bw->cursor->xcol = piscol(bw->cursor);
-		mid = 1;
+		opt_mid = 1;
 		dofollows();
-		mid = tmp;
+		opt_mid = tmp;
 		return 0;
 	} else {
 		if (merr)

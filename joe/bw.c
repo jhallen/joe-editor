@@ -45,7 +45,7 @@ static P *getto(P *p, P *cur, P *top, off_t line)
 
 /* Scroll window to follow cursor */
 
-int mid = 0;
+int opt_mid = 0;
 
 /* For hex */
 
@@ -60,7 +60,7 @@ void bwfllwh(W *thew)
 	/* Move backward */
 	if (w->cursor->byte < w->top->byte) {
 		off_t new_top = w->cursor->byte/16;
-		if (mid) {
+		if (opt_mid) {
 			if (new_top >= w->h / 2)
 				new_top -= w->h / 2;
 			else
@@ -76,7 +76,7 @@ void bwfllwh(W *thew)
 	/* Move forward */
 	if (w->cursor->byte >= w->top->byte+(w->h*16)) {
 		off_t new_top;
-		if (mid) {
+		if (opt_mid) {
 			new_top = w->cursor->byte/16 - w->h / 2;
 		} else {
 			new_top = w->cursor->byte/16 - (w->h - 1);
@@ -113,7 +113,7 @@ void bwfllwt(W *thew)
 	if (w->cursor->line < w->top->line) {
 		newtop = pdup(w->cursor, "bwfllwt");
 		p_goto_bol(newtop);
-		if (mid) {
+		if (opt_mid) {
 			if (newtop->line >= w->h / 2)
 				pline(newtop, newtop->line - w->h / 2);
 			else
@@ -129,7 +129,7 @@ void bwfllwt(W *thew)
 	} else if (w->cursor->line >= w->top->line + w->h) {
 		/* newtop = pdup(w->top); */
 		/* getto() creates newtop */
-		if (mid)
+		if (opt_mid)
 			newtop = getto(NULL, w->cursor, w->top, w->cursor->line - w->h / 2);
 		else
 			newtop = getto(NULL, w->cursor, w->top, w->cursor->line - (w->h - 1));

@@ -349,10 +349,10 @@ ptrdiff_t fmtlen(const char *s);
 ptrdiff_t fmtpos(const char *s, ptrdiff_t goal);
 
 extern int bg_text;
-extern int columns;
-extern int lines;
+extern int env_lines;
+extern int env_columns;
 extern int notite;
 extern int nolinefeeds;
-extern int usetabs;
+extern int opt_usetabs;
 extern int assume_color;
 extern int assume_256color;

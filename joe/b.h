@@ -146,7 +146,6 @@ extern B bufs;
 extern char stdbuf[stdsiz];	/* Convenient global buffer */
 
 extern int force;		/* Set to have final '\n' added to file */
-extern int tabwidth;		/* Default tab width */
 
 extern VFILE *vmem;		/* Virtual memory file used for buffer system */
 

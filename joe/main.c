@@ -320,9 +320,9 @@ int main(int argc, char **real_argv, const char * const *envv)
 #endif
 
 	if ((s = getenv("LINES")) != NULL)
-		lines = ztoi(s);
+		env_lines = ztoi(s);
 	if ((s = getenv("COLUMNS")) != NULL)
-		columns = ztoi(s);
+		env_columns = ztoi(s);
 	if ((s = getenv("BAUD")) != NULL)
 		Baud = ztoi(s);
 	if (getenv("DOPADDING"))
@@ -588,10 +588,10 @@ int main(int argc, char **real_argv, const char * const *envv)
 
 	if (opened) {
 		wshowall(maint);
-		omid = mid;
-		mid = 1;
+		omid = opt_mid;
+		opt_mid = 1;
 		dofollows();
-		mid = omid;
+		opt_mid = omid;
 	} else {
 		BW *bw = wmktw(maint, bfind(""));
 

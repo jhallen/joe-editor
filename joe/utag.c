@@ -80,12 +80,12 @@ static int dotagjump(BW *bw, int flag)
 		}
 	}
 	if (!srch) {
-		int omid = mid;
-		mid = 1;
+		int omid = opt_mid;
+		opt_mid = 1;
 		pline(bw->cursor, line - 1);
 		bw->cursor->xcol = piscol(bw->cursor);
 		dofollows();
-		mid = omid;
+		opt_mid = omid;
 		if (flag)
 			smode = 2;
 		return 0;
@@ -130,12 +130,12 @@ static int dotagmenu(MENU *m, ptrdiff_t x, void *obj, int k)
 	bw = (BW *)maint->curwin->object;
 	p_goto_bof(bw->cursor);
 	if (!srch) {
-		int omid = mid;
-		mid = 1;
+		int omid = opt_mid;
+		opt_mid = 1;
 		pline(bw->cursor, line - 1);
 		bw->cursor->xcol = piscol(bw->cursor);
 		dofollows();
-		mid = omid;
+		opt_mid = omid;
 		smode = 2;
 		return 0;
 	} else {

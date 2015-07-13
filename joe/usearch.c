@@ -10,7 +10,7 @@
 int wrap = 0;			/* Allow wrap */
 int smode = 0;			/* Decremented to zero by execmd */
 int csmode = 0;			/* Set for continued search mode */
-int icase = 0;			/* Set to force case insensitive search */
+int opt_icase = 0;			/* Set to force case insensitive search */
 int pico = 0;			/* Pico search prompting */
 
 B *findhist = NULL;		/* Search string history */
@@ -610,7 +610,7 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 	char buf[80];
 	const char *t;
 	WIND_BW(bw, w);
-	srch->ignore = icase;
+	srch->ignore = opt_icase;
 
 	t = s;
 	while (*t) {
@@ -663,7 +663,7 @@ static int set_pattern(W *w, char *s, void *obj, int *notify)
 	BW *pbw;
 	const char *p;
 	WIND_BW(bw, w);
-	if (icase)
+	if (opt_icase)
 		p = joe_gettext(_("case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
 	else
 		p = joe_gettext(_("(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
@@ -1026,10 +1026,10 @@ int dopfnext(BW *bw, SRCH *srch, int *notify)
 {
 	W *w;
 	int fnr;
-	int orgmid = mid;	/* Original mid status */
+	int orgmid = opt_mid;	/* Original mid status */
 	int ret = 0;
 
-	mid = 1;		/* Screen recenters mode during search */
+	opt_mid = 1;		/* Screen recenters mode during search */
 	if (csmode)
 		smode = 2;	/* We have started a search mode */
 	if (srch->replace)
@@ -1106,7 +1106,7 @@ bye:		if (!srch->flg && !srch->rest) {
 	}
 	bw->cursor->xcol = piscol(bw->cursor);
 	dofollows();
-	mid = orgmid;
+	opt_mid = orgmid;
 	if (notify)
 		*notify = 1;
 	if (srch)

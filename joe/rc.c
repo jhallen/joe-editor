@@ -130,8 +130,8 @@ int procrc(CAP *cap, char *name)
 				*o = fdefault;
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
 				buf[x] = 0;
-				o->next = options;
-				options = o;
+				o->next = options_list;
+				options_list = o;
 				o->name_regex = zdup(buf);
 			}
 			break;

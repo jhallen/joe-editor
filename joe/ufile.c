@@ -626,10 +626,10 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 		}
 		/* Restore cursor line */
 		pline(bw->cursor, get_file_pos(bw->b->name));
-		omid = mid;
-		mid = 1;
+		omid = opt_mid;
+		opt_mid = 1;
 		dofollows();
-		mid = omid;
+		opt_mid = omid;
 		
 		return ret;
 	} else if (c == NO_CODE || yncheck(no_key, c)) {
@@ -678,10 +678,10 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 		}
 		/* Restore cursor line */
 		pline(bw->cursor, get_file_pos(bw->b->name));
-		omid = mid;
-		mid = 1;
+		omid = opt_mid;
+		opt_mid = 1;
 		dofollows();
-		mid = omid;
+		opt_mid = omid;
 		return ret;
 	} else {
 		/* FIXME: need abort handler to prevent leak */
@@ -964,10 +964,10 @@ static int dorepl(W *w, char *s, void *obj, int *notify)
 	}
 	/* Restore cursor line */
 	pline(bw->cursor, get_file_pos(bw->b->name));
-	omid = mid;
-	mid = 1;
+	omid = opt_mid;
+	opt_mid = 1;
 	dofollows();
-	mid = omid;
+	opt_mid = omid;
 	return ret;
 }
 

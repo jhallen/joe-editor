@@ -53,7 +53,7 @@ struct mpx {
 void ttopen(void);
 void ttopnn(void);
 extern long upc; /* Microseconds per character */
-extern long baud; /* Baud rate */
+extern long tty_baud; /* Baud rate */
 
 #define TIMES 3
 #define DIVIDEND 10000000

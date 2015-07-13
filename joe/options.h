@@ -47,4 +47,4 @@ int ulanguage(W *w, int k);
 /* Get current value of an option (ON / OFF) */
 const char *get_status(BW *bw, char *s);
 
-extern OPTIONS *options;
+extern OPTIONS *options_list;

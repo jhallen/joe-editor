@@ -12,7 +12,7 @@
 #define HEX_RESTORE_CRLF	4
 #define OPT_BUF_SIZE 300
 
-OPTIONS *options = NULL; /* File name dependent list of options */
+OPTIONS *options_list = NULL; /* File name dependent list of options */
 
 /* Default options for prompt windows */
 
@@ -213,7 +213,7 @@ void setopt(B *b, const char *parsed_name)
 	for (x = 0; x!=26; ++x)
 		pieces[x] = NULL;
 
-	for (o = options; o; o = o->next)
+	for (o = options_list; o; o = o->next)
 		if (rmatch(o->name_regex, parsed_name)) {
 			if(o->contents_regex) {
 				P *p = pdup(b->bof, "setopt");
@@ -275,7 +275,7 @@ struct glopts {
 	{"rmargin",	7, NULL, (char *) &fdefault.rmargin, _("Right margin (%d): "), 0, _("R Right margin "), 0, 7, 255 },
 	{"restore",	0, &restore_file_pos, NULL, _("Restore cursor position when files loaded"), _("Don't restore cursor when files loaded"), _("  Restore cursor "), 0, 0, 0 },
 	{"square",	0, &square, NULL, _("Rectangle mode"), _("Text-stream mode"), _("X Rectangle mode "), 0, 0, 0 },
-	{"icase",	0, &icase, NULL, _("Search ignores case by default"), _("Case sensitive search by default"), _("  Case insensitivity "), 0, 0, 0 },
+	{"icase",	0, &opt_icase, NULL, _("Search ignores case by default"), _("Case sensitive search by default"), _("  Case insensitivity "), 0, 0, 0 },
 	{"wrap",	0, &wrap, NULL, _("Search wraps"), _("Search doesn't wrap"), _("  Search wraps "), 0, 0, 0 },
 	{"menu_explorer",	0, &menu_explorer, NULL, _("Menu explorer mode"), _("Simple completion mode"), _("  Menu explorer "), 0, 0, 0 },
 	{"menu_above",	0, &menu_above, NULL, _("Menu above prompt"), _("Menu below prompt"), _("  Menu position "), 0, 0, 0 },
@@ -289,7 +289,7 @@ struct glopts {
 	{"flowed",	4, NULL, (char *) &fdefault.flowed, _("One space after paragraph line"), _("No spaces after paragraph lines"), _("  Flowed text "), 0, 0, 0 },
 	{"highlight",	4, NULL, (char *) &fdefault.highlight, _("Highlighting enabled"), _("Highlighting disabled"), _("H Highlighting "), 0, 0, 0 },
 	{"spaces",	4, NULL, (char *) &fdefault.spaces, _("Inserting spaces when tab key is hit"), _("Inserting tabs when tab key is hit"), _("  No tabs "), 0, 0, 0 },
-	{"mid",	0, &mid, NULL, _("Cursor will be recentered on scrolls"), _("Cursor will not be recentered on scroll"), _("C Center on scroll "), 0, 0, 0 },
+	{"mid",	0, &opt_mid, NULL, _("Cursor will be recentered on scrolls"), _("Cursor will not be recentered on scroll"), _("C Center on scroll "), 0, 0, 0 },
 	{"guess_crlf",0, &guesscrlf, NULL, _("Automatically detect MS-DOS files"), _("Do not automatically detect MS-DOS files"), _("  Auto detect CR-LF "), 0, 0, 0 },
 	{"guess_indent",0, &guessindent, NULL, _("Automatically detect indentation"), _("Do not automatically detect indentation"), _("  Guess indent "), 0, 0, 0 },
 	{"guess_non_utf8",0, &guess_non_utf8, NULL, _("Automatically detect non-UTF-8 in UTF-8 locale"), _("Do not automatically detect non-UTF-8"), _("  Guess non-UTF-8 "), 0, 0, 0 },
@@ -348,14 +348,14 @@ struct glopts {
 	{"orphan",	0, &orphan, NULL, 0, 0, 0, 0, 0, 0 },
 	{"help",	0, &help, NULL, 0, 0, 0, 0, 0, 0 },
 	{"dopadding",	0, &dopadding, NULL, 0, 0, 0, 0, 0, 0 },
-	{"lines",	1, &lines, NULL, 0, 0, 0, 0, 2, 1024 },
+	{"lines",	1, &env_lines, NULL, 0, 0, 0, 0, 2, 1024 },
 	{"baud",	1, &Baud, NULL, 0, 0, 0, 0, 50, 32767 },
-	{"columns",	1, &columns, NULL, 0, 0, 0, 0, 2, 1024 },
+	{"columns",	1, &env_columns, NULL, 0, 0, 0, 0, 2, 1024 },
 	{"skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
 	{"notite",	0, &notite, NULL, 0, 0, 0, 0, 0, 0 },
 	{"nolinefeeds",	0, &nolinefeeds, NULL, 0, 0, 0, 0, 0, 0 },
 	{"mouse",	0, &xmouse, NULL, 0, 0, 0, 0, 0, 0 },
-	{"usetabs",	0, &usetabs, NULL, 0, 0, 0, 0, 0, 0 },
+	{"usetabs",	0, &opt_usetabs, NULL, 0, 0, 0, 0, 0, 0 },
 	{"assume_color", 0, &assume_color, NULL, 0, 0, 0, 0, 0, 0 },
 	{"assume_256color", 0, &assume_256color, NULL, 0, 0, 0, 0, 0, 0 },
 	{"joexterm", 0, &joexterm, NULL, 0, 0, 0, 0, 0, 0 },

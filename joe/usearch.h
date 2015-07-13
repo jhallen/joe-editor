@@ -62,7 +62,7 @@ void load_srch(FILE *f);
 
 extern int smode;
 extern int csmode;
-extern int icase;
+extern int opt_icase;
 extern int wrap;
 extern int pico;
 extern char srchstr[];

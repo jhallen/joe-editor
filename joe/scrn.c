@@ -9,11 +9,11 @@
 
 int bg_text = 0; /* Background color for text */
 int skiptop = 0;
-int lines = 0;
-int columns = 0;
+int env_lines = 0;
+int env_columns = 0;
 int notite = 0;
 int nolinefeeds = 0;
-int usetabs = 0;
+int opt_usetabs = 0;
 int assume_color = 0;
 int assume_256color = 0;
 
@@ -503,7 +503,7 @@ SCRN *nopen(CAP *cap)
 	ttopen();
 
 	t->cap = cap;
-	setcap(cap, baud, out, NULL);
+	setcap(cap, tty_baud, out, NULL);
 
 	li = getnum(t->cap,"li");
 	if (li < 1)
@@ -675,7 +675,7 @@ SCRN *nopen(CAP *cap)
 	if (!getflag(t->cap,"ns") && !t->sf)
 		t->sf ="\12";
 
-	if (!getflag(t->cap,"in") && baud < 38400) {
+	if (!getflag(t->cap,"in") && tty_baud < 38400) {
 		t->dc = jgetstr(t->cap,"dc");
 		t->DC = jgetstr(t->cap,"DC");
 		t->dm = jgetstr(t->cap,"dm");
@@ -735,7 +735,7 @@ SCRN *nopen(CAP *cap)
 		t->bt = NULL;
 	}
 
-	if (!usetabs) {
+	if (!opt_usetabs) {
 		t->ta = NULL;
 		t->bt = NULL;
 	}
@@ -791,8 +791,8 @@ SCRN *nopen(CAP *cap)
 		t->scroll = 1;
 	else {
 		t->scroll = 0;
-		if (baud < 38400)
-			mid = 1;
+		if (tty_baud < 38400)
+			opt_mid = 1;
 	}
 
 /* Determine if we can ins/del within lines */
@@ -802,7 +802,7 @@ SCRN *nopen(CAP *cap)
 		t->insdel = 0;
 
 /* Adjust for high baud rates */
-	if (baud >= 38400) {
+	if (tty_baud >= 38400) {
 		t->scroll = 0;
 		t->insdel = 0;
 	}

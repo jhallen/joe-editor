@@ -144,7 +144,7 @@ ptrdiff_t obufsiz;
 
 /* The baud rate */
 
-long baud;			/* Bits per second */
+long tty_baud;			/* Bits per second */
 long upc;			/* Microseconds per character */
 
 /* TTY Speed code to baud-rate conversion table (this is dumb- is it really
@@ -407,16 +407,16 @@ void ttopnn(void)
 #endif
 #endif
 
-	baud = 9600;
+	tty_baud = 9600;
 	upc = 0;
 	for (x = 0; x != sizeof(speeds_in)/sizeof(speed_t); ++x)
 		if (bbaud == speeds_in[x]) {
-			baud = speeds_out[x];
+			tty_baud = speeds_out[x];
 			break;
 		}
 	if (Baud)
-		baud = Baud;
-	upc = DIVIDEND / baud;
+		tty_baud = Baud;
+	upc = DIVIDEND / tty_baud;
 	if (obuf)
 		joe_free(obuf);
 	if (!(TIMES * upc))
@@ -569,7 +569,7 @@ int ttflsh(void)
 		long usec = obufp * upc;	/* No. usecs this write should take */
  
 #ifdef HAVE_SETITIMER
-		if (usec >= 50000 && baud < 9600) {
+		if (usec >= 50000 && tty_baud < 9600) {
 			struct itimerval a, b;
 
 			a.it_value.tv_sec = usec / 1000000;
@@ -593,7 +593,7 @@ int ttflsh(void)
 		joe_write(fileno(termout), obuf, obufp);
 
 #ifdef FIORDCHK
-		if (baud < 9600 && usec / 1000)
+		if (tty_baud < 9600 && usec / 1000)
 			nap(usec / 1000);
 #endif
 

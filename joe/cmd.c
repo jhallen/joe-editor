@@ -461,11 +461,11 @@ int execmd(CMD *cmd, int k)
 
 	/* Recenter cursor to middle of screen */
 	if (cmd->flag & EMID) {
-		int omid = mid;
+		int omid = opt_mid;
 
-		mid = 1;
+		opt_mid = 1;
 		dofollows();
-		mid = omid;
+		opt_mid = omid;
 	}
 
 	if (joe_beep && ret)

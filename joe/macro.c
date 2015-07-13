@@ -264,10 +264,6 @@ MACRO *mparse(MACRO *m, char *buf, ptrdiff_t *sta, int secure)
 
 /* Convert macro to text */
 
-static char *ptr;
-static int first;
-static int instr;
-
 char *unescape(char *ptr, int c)
 {
 	if (c == '"') {
@@ -290,28 +286,28 @@ char *unescape(char *ptr, int c)
 	return ptr;
 }
 
-static void domtext(MACRO *m)
+static char *domtext(MACRO *m, char *ptr, int *first, int *instr)
 {
 	ptrdiff_t x;
 
 	if (!m)
-		return;
-	if (m->steps)
+		return ptr;
+	if (m->steps) {
 		for (x = 0; x != m->n; ++x)
-			domtext(m->steps[x]);
-	else {
-		if (instr && zcmp(m->cmd->name, "type")) {
+			ptr = domtext(m->steps[x], ptr, first, instr);
+	} else {
+		if (*instr && zcmp(m->cmd->name, "type")) {
 			*ptr++ = '\"';
-			instr = 0;
+			*instr = 0;
 		}
-		if (first)
-			first = 0;
-		else if (!instr)
+		if (*first)
+			*first = 0;
+		else if (!*instr)
 			*ptr++ = ',';
 		if (!zcmp(m->cmd->name, "type")) {
-			if (!instr) {
+			if (!*instr) {
 				*ptr++ = '\"';
-				instr = 1;
+				*instr = 1;
 			}
 			ptr = unescape(ptr, m->k);
 		} else {
@@ -325,17 +321,17 @@ static void domtext(MACRO *m)
 			}
 		}
 	}
+	return ptr;
 }
 
 char *mtext(char *s, MACRO *m)
 {
-	ptr = s;
-	first = 1;
-	instr = 0;
-	domtext(m);
+	int first = 1;
+	int instr = 0;
+	char *e = domtext(m, s, &first, &instr);
 	if (instr)
-		*ptr++ = '\"';
-	*ptr = 0;
+		*e++ = '\"';
+	*e = 0;
 	return s;
 }
 
@@ -402,26 +398,26 @@ static int argset = 0;		/* Set if 'arg' is set */
 
 /* Execute a macro which is just a simple command */
 
-static int exsimple(MACRO *m, int arg, int u, int k)
+static int exsimple(MACRO *m, int myarg, int u, int k)
 {
 	CMD *cmd = m->cmd;
 	int flg = 0; /* set if we should not try to merge minor changes into single undo record */
 	int ret = 0;
 
 	/* Find command to execute if repeat argument is negative */
-	if (arg < 0) {
-		arg = -arg;
+	if (myarg < 0) {
+		myarg = -myarg;
 		if (cmd->negarg)
 			cmd = findcmd(cmd->negarg);
 		else
-			arg = 0; /* Do not execute */
+			myarg = 0; /* Do not execute */
 	}
 
 	/* Check if command doesn't like an arg... */
-	if (arg != 1 && !cmd->arg)
-		arg = 0; /* Do not execute */
+	if (myarg != 1 && !cmd->arg)
+		myarg = 0; /* Do not execute */
 
-	if (arg != 1 || !(cmd->flag & EMINOR)
+	if (myarg != 1 || !(cmd->flag & EMINOR)
 	    || maint->curwin->watom->what == TYPEQW)	/* Undo work right for s & r */
 		flg = 1;
 
@@ -429,7 +425,7 @@ static int exsimple(MACRO *m, int arg, int u, int k)
 		if (flg && u)
 			umclear();
 		/* Repeat... */
-		while (arg-- && !leave && !ret)
+		while (myarg-- && !leave && !ret)
 			ret = execmd(cmd, k != NO_MORE_DATA ? k : m->k);
 		if (leave)
 			return ret;

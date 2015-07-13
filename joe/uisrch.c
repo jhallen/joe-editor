@@ -74,7 +74,7 @@ static void iappend(BW *bw, struct isrch *isrch, char *s, ptrdiff_t len)
 	i->start = bw->cursor->byte;
 
 	if (!globalsrch)
-		srch = mksrch(NULL,NULL,icase,isrch->dir,-1,0,0,0);
+		srch = mksrch(NULL,NULL,opt_icase,isrch->dir,-1,0,0,0);
 	else {
 		srch = globalsrch;
 		globalsrch = 0;
@@ -120,10 +120,10 @@ static int itype(W *w, int c, void *obj, int *notify)
 			pgoto(bw->cursor, i->disp);
 			if (globalsrch)
 				globalsrch->wrap_flag = i->wrap_flag;
-			omid = mid;
-			mid = 1;
+			omid = opt_mid;
+			opt_mid = 1;
 			dofollows();
-			mid = omid;
+			opt_mid = omid;
 			isrch->pattern = vstrunc(isrch->pattern, sLEN(isrch->pattern) - i->what);
 			frirec(deque_f(IREC, link, i));
 		} else {
@@ -150,7 +150,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 			i->what = 0;
 
 			if (!globalsrch)
-				srch = mksrch(NULL,NULL,icase,isrch->dir,-1,0,0,0);
+				srch = mksrch(NULL,NULL,opt_icase,isrch->dir,-1,0,0,0);
 			else {
 				srch = globalsrch;
 				globalsrch = 0;
@@ -219,11 +219,11 @@ static int itype(W *w, int c, void *obj, int *notify)
 		isrch->quote = 0;
 		iappend(bw, isrch, buf, buf_len);
 	}
-	omid = mid;
-	mid = 1;
+	omid = opt_mid;
+	opt_mid = 1;
 	bw->cursor->xcol = piscol(bw->cursor);
 	dofollows();
-	mid = omid;
+	opt_mid = omid;
 
 	isrch->prompt = vstrunc(isrch->prompt, isrch->ofst);
 
