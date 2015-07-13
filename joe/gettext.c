@@ -14,7 +14,7 @@ HASH *gettext_ht;
 
 static const char *ignore_prefix(const char *set)
 {
-	const char *s = zrchr((char *)set, '|');
+	const char *s = zrchr(set, '|');
 	if (s)
 		++s;
 	else

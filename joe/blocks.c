@@ -235,10 +235,10 @@ char *mset(char *dest, char c, ptrdiff_t sz)
 /* Copy a block of integers */
 /* Copy from highest address to lowest */
 
-static int *mbkwdI(int *dest, int *src, ptrdiff_t sz)
+static int *mbkwdI(int *dest, const int *src, ptrdiff_t sz)
 {
 	int	*d = dest;
-	int	*s = src;
+	const int *s = src;
 
 	if (d == s)
 		return d;
@@ -290,10 +290,10 @@ static int *mbkwdI(int *dest, int *src, ptrdiff_t sz)
 
 /* Copy a block of 'int's.  Copy from lowest address to highest */
 
-static int *mfwrdI(int *dest, int *src, ptrdiff_t sz)
+static int *mfwrdI(int *dest, const int *src, ptrdiff_t sz)
 {
 	int	*d = dest;
-	int	*s = src;
+	const int *s = src;
 	int	*od = d;
 
 	if (s == d)
@@ -350,7 +350,7 @@ static int *mfwrdI(int *dest, int *src, ptrdiff_t sz)
 static void *mbkwd(register void *orgd, register const void *orgs, register ptrdiff_t sz)
 {
 	char *d = (char *)orgd;
-	char *s = (char *)orgs;
+	const char *s = (const char *)orgs;
 	if (s == d)
 		return d;
 	s += sz;
@@ -376,7 +376,7 @@ static void *mbkwd(register void *orgd, register const void *orgs, register ptrd
 		case 0:		/* do nothing */;
 		}
 		sz -= z;
-		mbkwdI((int *)(d - (sz & ~(SIZEOF_INT - 1))), (int *)(s - (sz & ~(SIZEOF_INT - 1))), sz >> SHFT);
+		mbkwdI((int *)(d - (sz & ~(SIZEOF_INT - 1))), (const int *)(s - (sz & ~(SIZEOF_INT - 1))), sz >> SHFT);
 		d -= sz;
 		s -= sz;
 		switch (sz & (SIZEOF_INT - 1)) {
@@ -443,7 +443,7 @@ static void *mbkwd(register void *orgd, register const void *orgs, register ptrd
 static void *mfwrd(register void *orgd, register const void *orgs, register ptrdiff_t sz)
 {
 	char *d = (char *)orgd;
-	char *s = (char *)orgs;
+	const char *s = (const char *)orgs;
 
 	if (d == s)
 		return d;
@@ -486,7 +486,7 @@ static void *mfwrd(register void *orgd, register const void *orgs, register ptrd
 			d += SIZEOF_INT;
 			sz -= SIZEOF_INT - z;
 		}
-		mfwrdI((int *)d, (int *)s, sz >> SHFT);
+		mfwrdI((int *)d, (const int *)s, sz >> SHFT);
 		s += sz - (SIZEOF_INT - 1);
 		d += sz - (SIZEOF_INT - 1);
 		switch (sz & (SIZEOF_INT - 1)) {

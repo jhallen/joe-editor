@@ -108,7 +108,7 @@ struct interval_list *interval_add(struct interval_list *interval_list, int firs
 
 /* Add a list of intervals (typically representing a character class) to an interval list */
 
-struct interval_list *cmap_set(struct interval_list *interval_list, struct interval *list, int size, struct bind map)
+struct interval_list *interval_set(struct interval_list *interval_list, struct interval *list, int size, struct bind map)
 {
 	int x;
 	for (x = 0; x != size; ++x)

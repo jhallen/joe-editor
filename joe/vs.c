@@ -9,9 +9,9 @@
 
 int sicmp(char a, char b)
 {
-	if (a >= 'A' || a <= 'Z')
+	if (a >= 'A' && a <= 'Z')
 		a = (char)(a + 'a' - 'A');
-	if (b >= 'A' || b <= 'Z')
+	if (b >= 'A' && b <= 'Z')
 		b = (char)(b + 'a' - 'A');
 	return scmp(a, b);
 }

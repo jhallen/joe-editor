@@ -81,10 +81,10 @@ struct interval {
 };
 */
 
-static int bisearch(int ucs, const struct interval *table, int max)
+static ptrdiff_t bisearch(int ucs, const struct interval *table, ptrdiff_t max)
 {
-	int min = 0;
-	int mid;
+	ptrdiff_t min = 0;
+	ptrdiff_t mid;
 
 	if (ucs < 0)
 		ucs += 256;
@@ -112,7 +112,7 @@ static int bisearch(int ucs, const struct interval *table, int max)
 		if (-1!=bisearch(c, data_wctype_##x, SIZEOF(data_wctype_##x)/SIZEOF(struct interval) - 1)) \
 			return 1; \
 		else \
-			return 0; \
+ 			return 0; \
 	}
 
 /* The following two functions define the column width of an ISO 10646
@@ -2712,7 +2712,7 @@ static int *toupper_cvt;
 
 int joe_towupper(struct charmap *foo,int c)
 {
-	int idx;
+	ptrdiff_t idx;
 
 	if (c>=0x61 && c<=0x7A)
 		return c+0x41-0x61;
@@ -3506,7 +3506,7 @@ static int *tolower_cvt;
 
 int joe_towlower(struct charmap *foo,int c)
 {
-	int idx;
+	ptrdiff_t idx;
 
 	if (c>=0x41 && c<=0x5A)
 		return c + 0x61 - 0x41;

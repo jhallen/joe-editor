@@ -1426,12 +1426,12 @@ static P *ffind(P *p, const char *s, ptrdiff_t len)
 	p->valattr = 0;
 	msetD(table, -1, 256);
 	for (x = 0; x != len - 1; ++x)
-		table[((unsigned char *)s)[x]] = x;
+		table[((const unsigned char *)s)[x]] = x;
 	ffwrd(p, len);
 	amnt -= len;
 	x = len;
 	do {
-		if ((c = frgetc(p)) != ((unsigned char *)s)[--x]) {
+		if ((c = frgetc(p)) != ((const unsigned char *)s)[--x]) {
 			if (table[(unsigned char)c] == -1) {
 				ffwrd(p, len + 1);
 				amnt -= x + 1;
@@ -1469,7 +1469,7 @@ static P *fifind(P *p, const char *s, ptrdiff_t len)
 	p->valattr = 0;
 	msetD(table, -1, 256);
 	for (x = 0; x != len - 1; ++x)
-		table[((unsigned char *)s)[x]] = x;
+		table[((const unsigned char *)s)[x]] = x;
 	ffwrd(p, len);
 	amnt -= len;
 	x = len;
@@ -1589,7 +1589,7 @@ static P *frfind(P *p, const char *s, ptrdiff_t len)
 	p->valcol = 0;
 	p->valattr = 0;
 	msetD(table, -1, 256);
-	for (x = len; --x; table[((unsigned char *)s)[x]] = len - x - 1) ;
+	for (x = len; --x; table[((const unsigned char *)s)[x]] = len - x - 1) ;
 	x = 0;
 	do {
 		if ((c = TO_CHAR_OK(fpgetc(p))) != s[x++]) {
@@ -1636,7 +1636,7 @@ static P *frifind(P *p, const char *s, ptrdiff_t len)
 	p->valcol = 0;
 	p->valattr = 0;
 	msetD(table, -1, 256);
-	for (x = len; --x; table[((unsigned char *)s)[x]] = len - x - 1) ;
+	for (x = len; --x; table[((const unsigned char *)s)[x]] = len - x - 1) ;
 	x = 0;
 	do {
 		if ((c = TO_CHAR_OK(joe_tolower(map,fpgetc(p)))) != s[x++]) {

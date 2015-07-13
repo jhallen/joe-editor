@@ -383,7 +383,7 @@ char *zcpy(char *a, char *b)
 
 char *zstr(const char *a, const char *b)
 {
-	return (char *)strstr(a,b);
+	return (char *)strstr((char *)a,b);
 }
 
 char *zncpy(char *a, const char *b, ptrdiff_t len)
@@ -434,14 +434,14 @@ char *zlcat(char *a, ptrdiff_t siz, const char *b)
 	return org;
 }
 
-char *zchr(char *s, int c)
+char *zchr(const char *s, int c)
 {
-	return strchr(s,c);
+	return strchr((char *)s,c);
 }
 
-char *zrchr(char *s, int c)
+char *zrchr(const char *s, int c)
 {
-	return strrchr(s,c);
+	return strrchr((char *)s,c);
 }
 
 off_t zhtoo(const char *s)

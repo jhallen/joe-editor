@@ -80,7 +80,7 @@ void ttclsn(void);
  *
  * (3) Clear 'have'
  */
-int ttgetc(void);
+char ttgetc(void);
 int ttgetch(void);
 int ttcheck(void);
 

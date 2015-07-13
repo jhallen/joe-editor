@@ -385,7 +385,7 @@ int execmd(CMD *cmd, int k)
 	/* Warning: bw is a BW * only if maint->curwin->watom->what &
 	    (TYPETW|TYPEPW) */
 
-#if junk
+#ifdef junk
 	/* Send data to shell window: this is broken ^K ^H (help) sends its ^H to shell */
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor) &&
 	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype /* && k>=32 && k<256 */))) {

@@ -234,7 +234,7 @@ typedef struct options OPTIONS;
 typedef struct macro MACRO;
 typedef struct cmd CMD;
 typedef struct entry HENTRY;
-typedef struct hash HASH;
+typedef struct Hash HASH;
 typedef struct kmap KMAP;
 typedef struct kbd KBD;
 typedef struct key KEY;

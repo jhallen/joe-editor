@@ -70,8 +70,8 @@ void *mcpy(void *a, const void *b, ptrdiff_t len);
 char *zncpy(char *a, const char *b, ptrdiff_t len);
 char *zlcpy(char *a, ptrdiff_t siz, const char *b);
 char *zstr(const char *a, const char *b);
-char *zchr(char *s, int c);
-char *zrchr(char *s, int c);
+char *zchr(const char *s, int c);
+char *zrchr(const char *s, int c);
 /* char *zcat(char *a, char *b); */
 char *zlcat(char *a, ptrdiff_t siz, const char *b);
 

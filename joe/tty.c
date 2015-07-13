@@ -613,7 +613,7 @@ void mpxdied(MPX *m);
 
 time_t last_time;
 
-int ttgetc(void)
+char ttgetc(void)
 {
         MACRO *m;
 	ptrdiff_t stat;

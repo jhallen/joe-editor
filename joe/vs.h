@@ -168,7 +168,7 @@ void vsrm(sELEMENT *vary);
  * sLEN return a length of zero if 'vary' is 0.
  * sLen doesn't do this checking, but can be used as an lvalue
  */
-#define sLEN(a) ((a) ? *((ptrdiff_t *)(a) - 1) : 0)
+#define sLEN(a) ((a) ? *((const ptrdiff_t *)(a) - 1) : 0)
 #define sLen(a) (*((ptrdiff_t *)(a) - 1))
 
 /* int slen(sELEMENT *ary);

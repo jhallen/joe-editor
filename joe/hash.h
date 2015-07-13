@@ -13,7 +13,7 @@ struct entry {
 	void *val;
 };
 
-struct hash {
+struct Hash {
 	ptrdiff_t len;
 	HENTRY **tab;
 	ptrdiff_t nentries;
