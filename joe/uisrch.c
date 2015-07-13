@@ -232,8 +232,8 @@ static int itype(W *w, int c, void *obj, int *notify)
 		char buf[16];
 		int x;
 		for (x=0; x!=sLEN(isrch->pattern); ++x) {
-			int c = to_uni(bw->b->o.charmap, isrch->pattern[x]);
-			utf8_encode(buf,c);
+			int tc = to_uni(bw->b->o.charmap, isrch->pattern[x]);
+			utf8_encode(buf, tc);
 			isrch->prompt = vsncpy(sv(isrch->prompt),sz(buf));
 		}
 	} else if (!locale_map->type && bw->b->o.charmap->type) {
@@ -241,10 +241,10 @@ static int itype(W *w, int c, void *obj, int *notify)
 		const char *p = isrch->pattern;
 		ptrdiff_t len = sLEN(isrch->pattern);
 		while (len) {
-			int c = utf8_decode_fwrd(&p, &len);
-			if (c>=0) {
-				c = from_uni(locale_map, c);
-				isrch->prompt = vsadd(isrch->prompt, TO_CHAR_OK(c));
+			int tc = utf8_decode_fwrd(&p, &len);
+			if (tc >= 0) {
+				tc = from_uni(locale_map, tc);
+				isrch->prompt = vsadd(isrch->prompt, TO_CHAR_OK(tc));
 			}
 		}
 	} else {

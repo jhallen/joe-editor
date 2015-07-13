@@ -18,7 +18,7 @@ struct bind mkbinding(void *thing, int what)
 
 struct interval_list *mkinterval(struct interval_list *next, int first, int last, struct bind map)
 {
-	struct interval_list *interval_list = (struct interval_list *)malloc(sizeof(struct interval_list));
+	struct interval_list *interval_list = (struct interval_list *)joe_malloc(SIZEOF(struct interval_list));
 	interval_list->next = next;
 	interval_list->interval.first = first;
 	interval_list->interval.last = last;
@@ -154,7 +154,7 @@ void cmap_build(struct cmap *cmap, struct interval_list *list, struct bind dflt_
 		++cmap->size;
 	if (cmap->size) {
 		/* Allocate and populate array */
-		cmap->range_map = (struct interval_map *)malloc(sizeof(struct interval_map) * cmap->size);
+		cmap->range_map = (struct interval_map *)joe_malloc(SIZEOF(struct interval_map) * cmap->size);
 		x = 0;
 		for (l = list; l; l = l->next) {
 			cmap->range_map[x].interval.first = l->interval.first;
@@ -185,9 +185,9 @@ struct bind cmap_lookup(struct cmap *cmap, int ch)
 	if (ch < 128)
 		return cmap->direct_map[ch];
 	if (cmap->size) {
-		int min = 0;
-		int mid;
-		int max = cmap->size - 1;
+		ptrdiff_t min = 0;
+		ptrdiff_t mid;
+		ptrdiff_t max = cmap->size - 1;
 		if (ch < cmap->range_map[min].interval.first || ch > cmap->range_map[max].interval.last)
 			goto no_match;
 		while (max >= min) {
@@ -216,7 +216,7 @@ char *find(char *s)
 	for (l = slist; l; l = l->next)
 		if (!strcmp(l->s, s))
 			return l->s;
-	l = (struct slist *)malloc(sizeof(struct slist));
+	l = (struct slist *)joe_malloc(SIZEOF(struct slist));
 	l->next = slist;
 	slist = l;
 	l->s = strdup(s);

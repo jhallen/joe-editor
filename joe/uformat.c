@@ -366,32 +366,32 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 		pnextl(q);
 		if (q->line < p->line) {
 			/* Second line */
-			P *r = pdup(q, "wrapword");
+			P *tr = pdup(q, "wrapword");
 
 			indent = nindent(bw, q, 0);
-			pcol(r, indent);
-			indents = brs(q, r->byte - q->byte); /* Risky */
-			prm(r);
+			pcol(tr, indent);
+			indents = brs(q, tr->byte - q->byte); /* Risky */
+			prm(tr);
 		} else {
 			/* First line */
-			P *r = pdup(s, "uformat");
+			P *tr = pdup(s, "uformat");
 			ptrdiff_t x, y;
 
 			indent = nindent(bw, s, 1);
-			pcol(r, indent);
-			indents = brs(s, r->byte - s->byte); /* Risky */
-			prm(r);
+			pcol(tr, indent);
+			indents = brs(s, tr->byte - s->byte); /* Risky */
+			prm(tr);
 			if (!bw->o.autoindent) {
 				/* Don't indent second line of single-line paragraphs if autoindent is off */
-				ptrdiff_t x = zlen(indents);
-				ptrdiff_t orgx = x;
-				while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
-					indents[--x] = 0;
-				if (x && orgx != x) {
-					indents[x++] = ' ';
-					indents[x] = 0;
+				ptrdiff_t tx = zlen(indents);
+				ptrdiff_t orgx = tx;
+				while (tx && (indents[tx - 1] == ' ' || indents[tx - 1] == '\t'))
+					indents[--tx] = 0;
+				if (tx && orgx != tx) {
+					indents[tx++] = ' ';
+					indents[tx] = 0;
 				}
-				indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
+				indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, tx);
 			}
 			for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
 			y = zlen(indents);
@@ -589,14 +589,14 @@ int uformat(W *w, int k)
 		prm(r);
 		if (!bw->o.autoindent) {
 			/* Don't indent second line of single-line paragraphs if autoindent is off */
-			ptrdiff_t x = zlen(indents);
-			while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
-				indents[--x] = 0;
-			if (x) {
-				indents[x++] = ' ';
-				indents[x] = 0;
+			ptrdiff_t tx = zlen(indents);
+			while (tx && (indents[tx - 1] == ' ' || indents[tx - 1] == '\t'))
+				indents[--tx] = 0;
+			if (tx) {
+				indents[tx++] = ' ';
+				indents[tx] = 0;
 			}
-			indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
+			indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, tx);
 		}
 		for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
 		y = zlen(indents);

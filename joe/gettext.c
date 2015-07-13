@@ -97,15 +97,15 @@ static int load_po(FILE *f)
 				/* Add to hash table */
 				htadd(gettext_ht, zdup(msgid), zdup(bf));
 			} else if (!msgid[0] && msgstr[0]) {
-				char *p = strstr(msgstr, "charset=");
-				if (p) {
+				char *tp = strstr(msgstr, "charset=");
+				if (tp) {
 					/* Copy character set name up to next delimiter */
 					int x;
-					p += SIZEOF("charset=") - 1;
-					while (*p == ' ' || *p == '\t') ++p;
-					for (x = 0; p[x] && p[x] !='\n' && p[x] != '\r' && p[x] != ' ' &&
-					            p[x] != '\t' && p[x] != ';' && p[x] != ','; ++x)
-					            msgid[x] = p[x];
+					tp += SIZEOF("charset=") - 1;
+					while (*tp == ' ' || *tp == '\t') ++tp;
+					for (x = 0; tp[x] && tp[x] !='\n' && tp[x] != '\r' && tp[x] != ' ' &&
+					            tp[x] != '\t' && tp[x] != ';' && tp[x] != ','; ++x)
+					            msgid[x] = tp[x];
 					msgid[x] = 0;
 					po_map = find_charmap(msgid);
 					if (!po_map)

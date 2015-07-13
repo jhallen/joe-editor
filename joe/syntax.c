@@ -864,12 +864,12 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 						if(c < 0)
 							logerror_2(joe_gettext(_("%s %d: Bad string\n")),name,line);
 						else {
-							int first, second;
+							int tfirst, tsecond;
 							char *t = bf;
-							while(!parse_range(&t, &first, &second)) {
-								if(first>second)
-									second = first;
-								state->src = interval_add(state->src, first, second, mkbinding(cmd, 0));
+							while(!parse_range(&t, &tfirst, &tsecond)) {
+								if(tfirst>tsecond)
+									tsecond = tfirst;
+								state->src = interval_add(state->src, tfirst, tsecond, mkbinding(cmd, 0));
 							}
 						}
 					}

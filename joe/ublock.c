@@ -1278,11 +1278,11 @@ char *blkget()
 			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
 				int ch = pgetc(q);
 				if (q->b->o.charmap->type) {
-					char buf[8];
-					ptrdiff_t len = utf8_encode(buf, ch);
+					char bf[8];
+					ptrdiff_t len = utf8_encode(bf, ch);
 					ptrdiff_t x;
 					for (x = 0; x != len; ++x)
-						*s++ = TO_CHAR_OK(buf[x]);
+						*s++ = TO_CHAR_OK(bf[x]);
 				} else
 					*s++ = TO_CHAR_OK(ch);
 			}

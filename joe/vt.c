@@ -179,9 +179,9 @@ static void vt_type(VT *bw, int c)
 		pgetc(bw->vtcur);
 	} else {
 		P *q;
-		off_t col = piscol(bw->vtcur);
+		off_t tcol = piscol(bw->vtcur);
 		q = pdup(bw->vtcur, "vt_type");
-		pcol(q, col + 1);
+		pcol(q, tcol + 1);
 		org_attr = pcurattr(q);
 		bdel(bw->vtcur, q);
 		prm(q);

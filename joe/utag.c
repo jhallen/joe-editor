@@ -329,27 +329,27 @@ static int dotag(W *w, char *s, void *obj, int *notify)
 	varm(tag_array);
 	tag_array = vamk(10);
 	for (ta = tags.link.next; ta != &tags; ta=ta->link.next) {
-		char buf[1024];
+		char tbuf[1024];
 		if (ta->srch) {
 			char *a;
-			joe_snprintf_2(buf, SIZEOF(buf), "%s%s",ta->file,ta->srch /* ,(ta->cmnt ? ta->cmnt : "") */);
-			a = zstr(buf, "\\^");
+			joe_snprintf_2(tbuf, SIZEOF(tbuf), "%s%s",ta->file,ta->srch /* ,(ta->cmnt ? ta->cmnt : "") */);
+			a = zstr(tbuf, "\\^");
 			if (a) {
 				a[0] = ':';
 				a[1] = '"';
 			}
-			a = zstr(buf, "\\$");
+			a = zstr(tbuf, "\\$");
 			if (a) {
 				a[0] = '"';
 				a[1] = ' ';
 			}
 		} else
 #ifdef HAVE_LONG_LONG
-			joe_snprintf_2(buf, SIZEOF(buf), "%s:%lld",ta->file,(long long)ta->line /* ,(ta->cmnt ? ta->cmnt : "") */);
+			joe_snprintf_2(tbuf, SIZEOF(tbuf), "%s:%lld",ta->file,(long long)ta->line /* ,(ta->cmnt ? ta->cmnt : "") */);
 #else
-			joe_snprintf_2(buf, SIZEOF(buf), "%s:%ld",ta->file,(long)ta->line /* ,(ta->cmnt ? ta->cmnt : "") */);
+			joe_snprintf_2(tbuf, SIZEOF(tbuf), "%s:%ld",ta->file,(long)ta->line /* ,(ta->cmnt ? ta->cmnt : "") */);
 #endif
-		tag_array = vaadd(tag_array, vsncpy(NULL, 0, sz(buf)));
+		tag_array = vaadd(tag_array, vsncpy(NULL, 0, sz(tbuf)));
 	}
 	last_cursor = 0;
 	/* Jump if only one result */

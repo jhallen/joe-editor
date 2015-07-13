@@ -364,7 +364,7 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 
 					P *r = NULL;
 
-					int d = 0;
+					d = 0;
 
 					o = pdup(p, "pmatch");
 

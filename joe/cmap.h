@@ -40,7 +40,7 @@ struct interval_map {
 
 struct cmap {
 	struct bind direct_map[128];	/* Direct mapping for ASCII range */
-	int size;			/* No. items in range_map */
+	ptrdiff_t size;			/* No. items in range_map */
 	struct interval_map *range_map;	/* Sorted range map */
 	struct bind dflt_map;		/* Matches when none of the above do */
 };

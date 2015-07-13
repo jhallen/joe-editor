@@ -2633,7 +2633,7 @@ opnerr:
 	/* Search backwards through file: if first indented line
 	   is indented with a tab, assume indentc is tab */
 	if (guessindent) {
-		int x, y;
+		int ix, y;
 		off_t guessed_step = 0;
 		int hist[20];
 		off_t i;
@@ -2652,15 +2652,15 @@ opnerr:
 			
 			p_goto_bol(p);
 			if ((i = pisindentg(p))) {
-				for (x = 0; x != nhist; ++x)
-					if (hist_val[x] == i)
+				for (ix = 0; ix != nhist; ++ix)
+					if (hist_val[ix] == i)
 						break;
-				if (x == nhist && nhist != 20) {
+				if (ix == nhist && nhist != 20) {
 					hist[nhist] = 1;
 					hist_val[nhist] = i;
 					++nhist;
-				} else if (x != nhist) {
-					++hist[x];
+				} else if (ix != nhist) {
+					++hist[ix];
 				}
 				
 				/* Count characters used for indent */

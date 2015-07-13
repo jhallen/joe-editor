@@ -1145,24 +1145,24 @@ static int dolose(W *w, int c, void *object, int *notify)
 		do {
 			if ((w->watom->what&TYPETW) && ((BW *)w->object)->b==b) {
 				if ((new_b = borphan()) != NULL) {
-					BW *bw = (BW *)w->object;
-					void *object = bw->object;
+					BW *tbw = (BW *)w->object;
+					void *obj = tbw->object;
 					/* FIXME: Shouldn't we wabort() and wcreate here to kill
 					   any prompt windows? */
 
-					bwrm(bw);
-					w->object = (void *) (bw = bwmk(w, new_b, 0));
+					bwrm(tbw);
+					w->object = (void *) (tbw = bwmk(w, new_b, 0));
 					wredraw(w);
-					bw->object = object;
+					tbw->object = obj;
 				} else {
-					BW *bw = (BW *)w->object;
-					object = bw->object;
-					bwrm(bw);
-					w->object = (void *) (bw = bwmk(w, bfind(""), 0));
+					BW *tbw = (BW *)w->object;
+					void *obj = tbw->object;
+					bwrm(tbw);
+					w->object = (void *) (tbw = bwmk(w, bfind(""), 0));
 					wredraw(w);
-					bw->object = object;
-					if (bw->o.mnew)
-						exmacro(bw->o.mnew, 1, NO_MORE_DATA);
+					tbw->object = obj;
+					if (tbw->o.mnew)
+						exmacro(tbw->o.mnew, 1, NO_MORE_DATA);
 				}
 			}
 		w = w->link.next;

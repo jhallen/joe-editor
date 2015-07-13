@@ -520,11 +520,11 @@ void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptr
 
 #ifdef TERMINFO
 	if (cap->abuf) {
-		char *a;
+		char *ia;
 
 		outcap = cap;
-		a = tgoto(s, (int)a1, (int)a0);
-		tputs(a, (int)l, outout);
+		ia = tgoto(s, (int)a1, (int)a0);
+		tputs(ia, (int)l, outout);
 		return;
 	}
 #endif

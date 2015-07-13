@@ -683,7 +683,7 @@ char ttgetc(void)
 		} else {
 			if (acceptch != NO_MORE_DATA) {
 				tickoff();
-				return acceptch;
+				return TO_CHAR_OK(acceptch);
 			}
 			else {
 				tickoff();
@@ -1256,12 +1256,12 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 						sleep(1);
 
 				} else {
-					char buf[1024];
+					char ibuf[1024];
 					ptrdiff_t len;
 					for (;;) {
-						len = read(0, buf, SIZEOF(buf));
+						len = read(0, ibuf, SIZEOF(ibuf));
 						if (len > 0) {
-							if (-1 == write(1, buf, (size_t)len))
+							if (-1 == write(1, ibuf, (size_t)len))
 								break;
 						} else
 							break;

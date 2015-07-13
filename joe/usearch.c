@@ -93,8 +93,8 @@ static void fcmplt_ins(BW *bw, char *line)
 	int c;
 
 	if (!piseol(bw->cursor)) {
-		int c = brch(bw->cursor);
-		if (joe_isalnum_(bw->b->o.charmap,c))
+		c = brch(bw->cursor);
+		if (joe_isalnum_(bw->b->o.charmap, c))
 			return;
 	}
 
@@ -155,8 +155,8 @@ int ufinish(W *w, int k)
 	/* Make sure we're not in a word */
 
 	if (!piseol(bw->cursor)) {
-		int c = brch(bw->cursor);
-		if (joe_isalnum_(bw->b->o.charmap,c))
+		c = brch(bw->cursor);
+		if (joe_isalnum_(bw->b->o.charmap, c))
 			return -1;
 	}
 
@@ -884,10 +884,10 @@ static int dopfrepl(W *w, int c, void *obj, int *notify)
 		srch->rest = 1;
 		return dopfnext(bw, srch, notify);
 	} else if (/* c == 8 || c == 127 || */ yncheck(backup_key, c)) {
-		W *w = bw->parent;
+ 		W *tw = bw->parent;
 		goback(srch, bw);
-		goback(srch, (BW *)w->object);
-		return dopfnext((BW *)w->object, srch, notify);
+		goback(srch, (BW *)tw->object);
+		return dopfnext((BW *)tw->object, srch, notify);
 	} else if (c != -1) {
 		if (notify)
 			*notify = 1;

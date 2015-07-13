@@ -166,10 +166,10 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
 					if ( bw->o.autoindent) {
-						char *s = get_context(bw);
+						char *ts = get_context(bw);
 						/* We need to translate between file's character set to
 						   locale */
-						my_iconv(stdbuf, SIZEOF(stdbuf), locale_map,s,bw->o.charmap);
+						my_iconv(stdbuf, SIZEOF(stdbuf), locale_map,ts,bw->o.charmap);
 						stalin = vsncpy(sv(stalin), sz(stdbuf));
 					}
 				}
@@ -185,9 +185,9 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 				break;
 			case 't':
 				{
-					time_t n = time(NULL);
+					time_t curtime = time(NULL);
 					int l;
-					char *d = ctime(&n);
+					char *d = ctime(&curtime);
 
 					l = (d[11] - '0') * 10 + d[12] - '0';
 					if (l > 12)
@@ -248,8 +248,8 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 
 			case 'u':
 				{
-					time_t n = time(NULL);
-					char *d = ctime(&n);
+					time_t curtime = time(NULL);
+					char *d = ctime(&curtime);
 
 					stalin = vsncpy(sv(stalin), d + 11, 5);
 				}
@@ -734,7 +734,7 @@ int upopabort(W *w, int k)
 	if (bw->parent->bstack) {
 		int rtn;
 		B *b = wpop(bw);
-		W *w = bw->parent;
+		w = bw->parent;
 		rtn = get_buffer_in_window(bw, b);
 		bw = (BW *)w->object;
 		bw->cursor->xcol = piscol(bw->cursor);
@@ -756,7 +756,7 @@ int uabort(W *w, int k)
 	if (bw->parent->bstack) {
 		int rtn;
 		B *b = wpop(bw);
-		W *w = bw->parent;
+		w = bw->parent;
 		rtn = get_buffer_in_window(bw, b);
 		bw = (BW *)w->object;
 		bw->cursor->xcol = piscol(bw->cursor);

@@ -45,7 +45,7 @@ B *beafter(B *b)
 		e = e->link.next;
 	berror = 0;
 	if (e != &errors) {
-		B *b = bfind(e->file);
+		b = bfind(e->file);
 		/* bfind bumps refcount, so we have to unbump it */
 		if (b->count == 1)
 			b->orphan = 1; /* Oops */
@@ -256,13 +256,13 @@ void parseone_grep(struct charmap *map,const char *s,char **rtn_name,off_t *rtn_
 }
 
 static int parseit(struct charmap *map,const char *s, off_t row,
-  void (*parseone)(struct charmap *map, const char *s, char **rtn_name, off_t *rtn_line), char *current_dir)
+  void (*parseline)(struct charmap *map, const char *s, char **rtn_name, off_t *rtn_line), char *current_dir)
 {
 	char *name = NULL;
 	off_t line = -1;
 	ERROR *err;
 
-	parseone(map,s,&name,&line);
+	parseline(map,s,&name,&line);
 
 	if (name) {
 		if (line != -1) {
@@ -530,11 +530,11 @@ int ujump(W *w, int k)
 		vsrm(name);
 		name = canonical(fullname);
 		if (name && line != -1) {
-			ERROR *p = srcherr(bw, name, line);
+			ERROR *er = srcherr(bw, name, line);
 			uprevw(bw->parent, 0);
 			/* Check that we made it to a tw */
-			if (p)
-				rtn = jump_to_file_line((BW *)maint->curwin->object,name,p->line,NULL /* p->msg */);
+			if (er)
+				rtn = jump_to_file_line((BW *)maint->curwin->object,name,er->line,NULL /* p->msg */);
 			else
 				rtn = jump_to_file_line((BW *)maint->curwin->object,name,line,NULL);
 			vsrm(name);
