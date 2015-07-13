@@ -145,19 +145,27 @@ Common ./configure options
 Maximize warnings
 =-=-=-=-=-=-=-=-=
 
-Developers may want to try to maximize compiler warnings from gcc by
-modifying the CFLAGS line in the joe/Makefile:
+Developers may want to try to maximize compiler warnings from gcc:
 
-CFLAGS = -g -Wall -Wextra -Wconversion -Wunused -Wwrite-strings \
- -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wcast-qual \
- -Wundef -Wlogical-op -Wmissing-declarations -Wformat \
- -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security \
- -Wswitch-enum -Wshadow
+=======
+  One way is to provide the CFLAGS enviroment variable to configure:
+
+  CFLAGS='-g -Wall -Wextra -Wconversion -Wunused -Wwrite-strings -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wundef -Wlogical-op -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security -Wswitch-enum -Wshadow' ./configure ...
+
+  Another is to edit CFLAGS in the joe/Makefile:
+
+  CFLAGS = -g -Wall -Wextra -Wconversion -Wunused -Wwrite-strings \
+   -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wcast-qual \
+   -Wundef -Wlogical-op -Wmissing-declarations -Wformat \
+   -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security \
+   -Wswitch-enum -Wshadow
 
 Also, it's a good idea to verify that JOE can be compiled with C++.  The C++
 front-end sometimes finds different problems than the C front-end.
 
 CC = g++
+
+=======
 
 =-=-=-=-=-=-=-=-=-=-=-=
 Verify the installation

@@ -42,10 +42,10 @@ struct interval_list *interval_add(struct interval_list *interval_list, int firs
 	struct interval_list *e, **p;
 	for (p = &interval_list; *p;) {
 		e = *p;
-		if (first > e->interval.last + 1 || first > e->interval.last && (map.thing != e->map.thing)) {
+		if (first > e->interval.last + 1 || (first > e->interval.last && (map.thing != e->map.thing))) {
 			/* e is below new range, skip it */
 			p = &e->next;
-		} else if (e->interval.first > last + 1 || e->interval.first > last && (map.thing != e->map.thing)) {
+		} else if (e->interval.first > last + 1 || (e->interval.first > last && (map.thing != e->map.thing))) {
 			/* e is fully above new range, so insert new one here */
 			break;
 		} else if (e->map.thing == map.thing) {

@@ -378,7 +378,6 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 
 	/* It doesn't exist, so create it */
 	if(!state) {
-		int y;
 		state=(struct high_state *)joe_malloc(SIZEOF(struct high_state));
 		state->name=zdup(name);
 		state->no=syntax->nstates;
@@ -400,7 +399,6 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 
 static void build_cmaps(struct high_syntax *syntax)
 {
-	struct high_state *state;
 	int x;
 	for (x = 0; x != syntax->ht_states->len; ++x) {
 		HENTRY *p;
@@ -866,7 +864,6 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 						if(c < 0)
 							logerror_2(joe_gettext(_("%s %d: Bad string\n")),name,line);
 						else {
-							int z;
 							int first, second;
 							char *t = bf;
 							while(!parse_range(&t, &first, &second)) {
