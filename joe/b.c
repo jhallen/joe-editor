@@ -2243,6 +2243,8 @@ P *binsbyte(P *p, char c)
 /* UTF-8 encode a character and insert it */
 P *binsc(P *p, int c)
 {
+	if (c >= -128 && c < 0)
+		c += 256;
 	if ((c & ANSI_BIT) && p->b->o.ansi) {
 		char *s = ansi_string(c);
 		return binsm(p, s, zlen(s));

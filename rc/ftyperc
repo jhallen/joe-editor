@@ -522,15 +522,23 @@
 *.htm
 -wordwrap
 -autoindent
+-smarthome
+-smartbacks
 -syntax html
 
 *.html
 -wordwrap
 -autoindent
+-smarthome
+-smartbacks
 -syntax html
 
  CSS
 *.css
+-wordwrap
+-autoindent
+-smarthome
+-smartbacks
 -syntax css
 
  Java
