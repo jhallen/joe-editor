@@ -108,7 +108,7 @@ struct buffer {
 	LINK(B)	link;		/* Doubly-linked list of all buffers */
 	P	*bof;		/* Beginning of file pointer */
 	P	*eof;		/* End of file pointer */
-	const char *name;	/* File name */
+	char *name;	/* File name */
 	int locked;		/* Set if we created a lock for this file */
 	int ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
 	int didfirst;		/* Set after user attempted first change */

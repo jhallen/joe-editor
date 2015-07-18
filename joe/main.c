@@ -489,7 +489,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 	}
 
 	/* initialize mouse support */
-	if (xmouse && (s=getenv("TERM")) && strstr(s,"xterm"))
+	if (xmouse && (s=getenv("TERM")) && zstr(s,"xterm"))
 		usexmouse=1;
 
 	if (!(n = nopen(cap)))

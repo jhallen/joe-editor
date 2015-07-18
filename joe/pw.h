@@ -12,7 +12,7 @@ struct pw {
 	int	(*pfunc) (W *w, char *s, void *object, int *notify);	/* Func which gets called when RTN is hit */
 	int	(*abrt) (W *w, void *object);	/* Func which gets called when window is aborted */
 	int	(*tab) (BW *bw, int k);	/* Func which gets called when TAB is hit */
-	const char *prompt;		/* Prompt string */
+	char *prompt;		/* Prompt string */
 	ptrdiff_t	promptlen;	/* Width of prompt string */
 	ptrdiff_t	promptofst;	/* Prompt scroll offset */
 	B	*hist;		/* History buffer */

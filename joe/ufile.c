@@ -350,7 +350,7 @@ static int saver(W *w, int c, void *object, int *notify)
 	} else {
 		if (req->rename && req->name[0] != '!' && req->name[0] != '>') {
 			bw_unlock(bw);
-			joe_free((void *)bw->b->name);
+			joe_free(bw->b->name);
 			bw->b->name = 0;
 		}
 		if (!bw->b->name && req->name[0]!='!' && req->name[0]!='>')

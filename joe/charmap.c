@@ -1204,8 +1204,8 @@ static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 		b->to_uni[x]= -1;
 
 	/* This is a _really_bad_ parser.  The file has to be perfect. */
-	while (fgets(buf,1023,f)) {
-		char *p = buf;
+	while (fgets(buf,sizeof(buf),f)) {
+		const char *p = buf;
 		parse_ws(&p, comment_char);
 		parse_tows(&p, bf1);
 		if (!zcmp(bf1,"<comment_char>")) {

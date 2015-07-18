@@ -505,7 +505,7 @@ void load_yank(FILE *f)
 	char buf[SMALL*4+80];
 	char bf[SMALL+1];
 	while(fgets(buf,SIZEOF(buf)-1,f) && zcmp(buf,"done\n")) {
-		char *p = buf;
+		const char *p = buf;
 		ptrdiff_t len;
 		parse_ws(&p,'#');
 		len = parse_string(&p,bf,SIZEOF(bf));

@@ -69,7 +69,7 @@ struct high_frame {
 
 struct high_syntax {
 	struct high_syntax *next;	/* Linked list of loaded syntaxes */
-	const char *name;		/* Name of this syntax */
+	char *name;		/* Name of this syntax */
 	char *subr;		/* Name of the subroutine (or NULL for whole file) */
 	struct high_param *params;	/* Parameters defined */
 	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
@@ -93,9 +93,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state);
 #define clear_state(s) (((s)->saved_s[0] = 0), ((s)->state = 0), ((s)->stack = 0))
 #define invalidate_state(s) ((s)->state = -1)
 #define move_state(to,from) (*(to)= *(from))
-#define eq_state(x,y) ((x)->state == (y)->state && (x)->stack == (y)->stack && !zcmp((x)->saved_s, (y)->saved_s))
+#define eq_state(x,y) ((x)->state == (y)->state && (x)->stack == (y)->stack && !strcmp((x)->saved_s, (y)->saved_s))
 
 extern struct high_color *global_colors;
-void parse_color_def(struct high_color **color_list,char *p,char *name,int line);
+void parse_color_def(struct high_color **color_list,const char *p,char *name,int line);
 
 void dump_syntax(BW *bw);

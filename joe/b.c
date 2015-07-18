@@ -311,7 +311,7 @@ void brm(B *b)
 			prm(b->bof);
 		}
 		if (b->name)
-			joe_free((void *)b->name);
+			joe_free(b->name);
 		if (b->db)
 			rm_all_lattr_db(b->db);
 		vsrm(b->current_dir);
@@ -360,7 +360,7 @@ void breplace(B *b, B *n)
 
 	/* Delete file name */
 	if (b->name)
-		joe_free((void *)b->name);
+		joe_free(b->name);
 
 	reset_all_lattr_db(b->db);
 	

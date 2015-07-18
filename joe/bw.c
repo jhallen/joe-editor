@@ -1301,7 +1301,7 @@ void load_file_pos(FILE *f)
 {
 	char buf[1024];
 	while (fgets(buf,SIZEOF(buf)-1,f) && zcmp(buf,"done\n")) {
-		char *p = buf;
+		const char *p = buf;
 		off_t pos;
 		char name[1024];
 		parse_ws(&p,'#');

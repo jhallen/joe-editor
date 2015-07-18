@@ -123,7 +123,7 @@ static off_t findidx(FILE *file, const char *name)
 	char buf[80];
 	off_t addr = 0;
 
-	while (fgets(buf, 80, file)) {
+	while (fgets(buf, sizeof(buf), file)) {
 		int x = 0, flg = 0, c, y, z;
 
 		do {
@@ -145,7 +145,7 @@ static off_t findidx(FILE *file, const char *name)
 
 /* Load termcap entry */
 
-CAP *my_getcap(const char *name, long baud, void (*out) (void *, char), void *outptr)
+CAP *my_getcap(char *name, long baud, void (*out) (void *, char), void *outptr)
 {
 	CAP *cap;
 	FILE *f, *f1;
@@ -349,7 +349,7 @@ CAP *my_getcap(const char *name, long baud, void (*out) (void *, char), void *ou
 	}
 
 	varm(npbuf);
-	vsrm((char *)name);
+	vsrm(name);
 
 	cap->pad = jgetstr(cap, "pc");
 	if (dopadding)
@@ -398,7 +398,7 @@ int getflag(CAP *cap, const char *name)
 {
 #ifdef TERMINFO
 	if (cap->abuf)
-		return tgetflag((char *)name);
+		return tgetflag(name);
 #endif
 	return findcap(cap, name) != NULL;
 }
@@ -411,7 +411,7 @@ const char *jgetstr(CAP *cap, const char *name)
 	if (cap->abuf) {
 		char *new_ptr = cap->abufp;
 		char *rtn;
-		rtn = tgetstr((char *)name, &new_ptr);
+		rtn = tgetstr(name, &new_ptr);
 		cap->abufp = new_ptr;
 		return rtn;
 	}
@@ -429,7 +429,7 @@ int getnum(CAP *cap, const char *name)
 
 #ifdef TERMINFO
 	if (cap->abuf)
-		return tgetnum((char *)name);
+		return tgetnum(name);
 #endif
 	s = findcap(cap, name);
 	if (s && s->value)

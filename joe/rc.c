@@ -93,8 +93,7 @@ int procrc(CAP *cap, char *name)
 	int line = 0;		/* Line number */
 	int err = 0;		/* Set to 1 if there was a syntax error */
 
-	strncpy(buf, name, SIZEOF(buf) - 1);
-	buf[SIZEOF(buf)-1] = '\0';
+	zlcpy(buf, SIZEOF(buf), name);
 #ifdef __MSDOS__
 	fd = jfopen(buf, "rt");
 #else

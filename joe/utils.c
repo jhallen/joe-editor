@@ -134,7 +134,7 @@ ptrdiff_t joe_write(int fd, const void *buf, ptrdiff_t size)
 	return rt;
 }
 
-int joe_ioctl(int fd, int req, void *ptr)
+int joe_ioctl(int fd, unsigned long req, void *ptr)
 {
 	int rt;
 	do {
@@ -302,17 +302,7 @@ void joe_free(void *ptr)
 
 #endif
 
-ptrdiff_t zlen(const char *s)
-{
-	return (ptrdiff_t)strlen(s);
-}
-
-int zcmp(const char *a, const char *b)
-{
-	return strcmp(a, b);
-}
-
-/* Only if you know for sure that the text is ASCII */
+/* Cast insensitive comparison: Only if you know for sure that the text is ASCII */
 
 int zicmp(const char *a, const char *b)
 {
@@ -341,7 +331,7 @@ int zicmp(const char *a, const char *b)
 
 /* Tags file string matcher */
 /* a can be something like: "class::subclass::member"
- * b can be:
+ * b can be any of these and will still match:
  *    member
  *    ::member
  *    subclass::member
@@ -354,10 +344,10 @@ int zmcmp(const char *a, const char *b)
 	ptrdiff_t x = zlen(a);
 	do {
 		if (a[x] == ':' && a[x + 1] == ':')
-			if ((b[0] == ':' && !zcmp(a + x, b)) || !zcmp(a + x + 2, b))
+			if ((b[0] == ':' && !strcmp(a + x, b)) || !strcmp(a + x + 2, b))
 				return 0;
 	} while (x--);
-	return zcmp(a, b);
+	return strcmp(a, b);
 }
 
 int zncmp(const char *a, const char *b, ptrdiff_t len)
@@ -365,6 +355,8 @@ int zncmp(const char *a, const char *b, ptrdiff_t len)
 	return strncmp(a, b, (size_t)len);
 }
 
+
+#if 0
 char *zdup(const char *bf)
 {
 	ptrdiff_t size = zlen(bf);
@@ -372,6 +364,7 @@ char *zdup(const char *bf)
 	memcpy(p, bf, (size_t)(size + 1));
 	return p;
 }
+#endif
 
 #if 0
 char *zcpy(char *a, char *b)
@@ -381,16 +374,13 @@ char *zcpy(char *a, char *b)
 }
 #endif
 
-char *zstr(const char *a, const char *b)
-{
-	return (char *)strstr((char *)a,b);
-}
-
 char *zncpy(char *a, const char *b, ptrdiff_t len)
 {
 	strncpy(a,b,(size_t)len);
 	return a;
 }
+
+/* Copy b into buffer a of length len.  A will always end up NUL terminated. */
 
 char *zlcpy(char *a, ptrdiff_t len, const char *b)
 {
@@ -434,15 +424,7 @@ char *zlcat(char *a, ptrdiff_t siz, const char *b)
 	return org;
 }
 
-char *zchr(const char *s, int c)
-{
-	return strchr((char *)s,c);
-}
-
-char *zrchr(const char *s, int c)
-{
-	return strrchr((char *)s,c);
-}
+/* Convert ASCII number to off_t */
 
 off_t zhtoo(const char *s)
 {
@@ -584,24 +566,28 @@ int joe_set_signal(int signum, sighandler_t handler)
 
 /* Helpful little parsing utilities */
 
-/* Skip whitespace and return first non-whitespace character */
+/* Skip whitespace and return first non-whitespace character or zero for end of line */
 
-int parse_ws(char **pp,int cmt)
+int parse_ws(const char **pp,int cmt)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	while (*p==' ' || *p=='\t')
 		++p;
- 	if (*p=='\r' || *p=='\n' || *p==cmt)
-		*p = 0;
+	if (*p == cmt || *p == '\n' || *p == '\r') {
+		while (*p)
+			++p;
+	}
+/* 	if (*p=='\r' || *p=='\n' || *p==cmt)
+		*p = 0; */
 	*pp = p;
 	return *p;
 }
 
 /* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len-1 chars. */
 
-int parse_ident(char * *pp, char *buf, ptrdiff_t len)
+int parse_ident(const char * *pp, char *buf, ptrdiff_t len)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	if (joe_isalpha_(locale_map,*p)) {
 		while(len > 1 && joe_isalnum_(locale_map,*p))
 			*buf++= *p++, --len;
@@ -616,9 +602,9 @@ int parse_ident(char * *pp, char *buf, ptrdiff_t len)
 
 /* Parse to next whitespace */
 
-int parse_tows(char * *pp, char *buf)
+int parse_tows(const char * *pp, char *buf)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	while (*p && *p!=' ' && *p!='\t' && *p!='\n' && *p!='\r' && *p!='#')
 		*buf++ = *p++;
 
@@ -629,9 +615,9 @@ int parse_tows(char * *pp, char *buf)
 
 /* Parse over a specific keyword */
 
-int parse_kw(char * *pp, const char *kw)
+int parse_kw(const char * *pp, const char *kw)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	while(*kw && *kw==*p)
 		++kw, ++p;
 	if(!*kw && !joe_isalnum_(locale_map,*p)) {
@@ -643,9 +629,9 @@ int parse_kw(char * *pp, const char *kw)
 
 /* Parse a field (same as parse_kw, but string must be terminated with whitespace) */
 
-int parse_field(char **pp, const char *kw)
+int parse_field(const char **pp, const char *kw)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	while(*kw && *kw==*p)
 		++kw, ++p;
 	if(!*kw && (!*p || *p==' ' || *p=='\t' || *p=='#' || *p=='\n' || *p=='\r')) {
@@ -657,9 +643,9 @@ int parse_field(char **pp, const char *kw)
 
 /* Parse a specific character */
 
-int parse_char(char **pp, char c)
+int parse_char(const char **pp, char c)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	if (*p == c) {
 		*pp = p+1;
 		return 0;
@@ -669,9 +655,9 @@ int parse_char(char **pp, char c)
 
 /* Parse an integer.  Returns 0 for success. */
 
-int parse_int(char **pp, int *buf)
+int parse_int(const char **pp, int *buf)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	if ((*p>='0' && *p<='9') || *p=='-') {
 		*buf = ztoi(p);
 		if(*p=='-')
@@ -684,9 +670,9 @@ int parse_int(char **pp, int *buf)
 		return -1;
 }
 
-int parse_diff(char **pp, ptrdiff_t *buf)
+int parse_diff(const char **pp, ptrdiff_t *buf)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	if ((*p>='0' && *p<='9') || *p=='-') {
 		*buf = ztodiff(p);
 		if(*p=='-')
@@ -701,9 +687,9 @@ int parse_diff(char **pp, ptrdiff_t *buf)
 
 /* Parse a long */
 
-int parse_off_t(char * *pp, off_t *buf)
+int parse_off_t(const char * *pp, off_t *buf)
 {
-	char *p = *pp;
+	const char *p = *pp;
 	off_t val = 0;
 	int flg = 0;
 	if ((*p>='0' && *p<='9') || *p=='-') {
@@ -739,15 +725,15 @@ int parse_off_t(char * *pp, off_t *buf)
  * -1 if there is no string or if the input ended before the terminating ".
  */
 
-ptrdiff_t parse_string(char **pp, char *buf, ptrdiff_t len)
+ptrdiff_t parse_string(const char **pp, char *buf, ptrdiff_t len)
 {
 	char *start = buf;
-	char *p= *pp;
+	const char *p= *pp;
 	if(*p=='\"') {
 		++p;
 		while(len > 1 && *p && *p!='\"') {
 			ptrdiff_t x = 50;
-			int c = escape(0, (const char **)&p, &x);
+			int c = escape(0, &p, &x);
 			*buf++ = TO_CHAR_OK(c);
 			--len;
 		}
@@ -810,9 +796,9 @@ void emit_string(FILE *f,const char *s,ptrdiff_t len)
 
 /* Parse a character range: a-z */
 
-int parse_range(char * *pp, int *first, int *second)
+int parse_range(const char * *pp, int *first, int *second)
 {
-	char *p= *pp;
+	const char *p= *pp;
 	int a, b;
 	if(!*p)
 		return -1;

@@ -771,7 +771,7 @@ static int syntaxcmplt(BW *bw, int k)
 		/* Load first from global (NOTE: Order here does not matter.) */
 		if (!chpwd((JOEDATA "syntax")) && (t = rexpnd("*.jsf"))) {
 			for (x = 0; x != aLEN(t); ++x) {
-				char *r = vsncpy(NULL,0,t[x],strrchr((t[x]),'.')-t[x]);
+				char *r = vsncpy(NULL,0,t[x],zrchr((t[x]),'.')-t[x]);
 				syntmp = vaadd(syntmp,r);
 			}
 			
@@ -786,7 +786,7 @@ static int syntaxcmplt(BW *bw, int k)
 			
 			if (!chpwd(buf) && (t = rexpnd("*.jsf"))) {
 				for (x = 0; x != aLEN(t); ++x)
-					*strrchr(t[x],'.') = 0;
+					*zrchr(t[x],'.') = 0;
 				for (x = 0; x != aLEN(t); ++x) {
 					for (y = 0; y != aLEN(syntmp); ++y)
 						if (!zcmp(t[x],syntmp[y]))
@@ -803,7 +803,7 @@ static int syntaxcmplt(BW *bw, int k)
 		/* Load from builtins. */
 		t = jgetbuiltins(".jsf");
 		for (x = 0; x != aLEN(t); ++x) {
-			*strrchr(t[x], '.') = 0;
+			*zrchr(t[x], '.') = 0;
 			for (y = 0; y != aLEN(syntmp); ++y)
 				if (!zcmp(t[x], syntmp[y]))
 					break;

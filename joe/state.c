@@ -59,8 +59,8 @@ static void load_hist(FILE *f,B **bp)
 
 	q = pdup(b->eof, "load_hist");
 
-	while(fgets(buf,1023,f) && zcmp(buf,"done\n")) {
-		char *p = buf;
+	while(fgets(buf,sizeof(buf),f) && zcmp(buf,"done\n")) {
+		const char *p = buf;
 		ptrdiff_t len;
 		parse_ws(&p,'#');
 		len = parse_string(&p,bf,SIZEOF(bf));
@@ -131,10 +131,10 @@ void load_state()
 		return;
 
 	/* Only read state information if the version is correct */
-	if (fgets(buf,1024,f) && !zcmp(buf,STATE_ID)) {
+	if (fgets(buf,sizeof(buf),f) && !zcmp(buf,STATE_ID)) {
 
 		/* Read state information */
-		while(fgets(buf,1023,f)) {
+		while(fgets(buf,sizeof(buf),f)) {
 			if(!zcmp(buf,"search\n"))
 				load_srch(f);
 			else if(!zcmp(buf,"macros\n"))
@@ -160,7 +160,7 @@ void load_state()
 			else if (!zcmp(buf,"file_pos\n"))
 				load_file_pos(f);
 			else { /* Unknown... skip until next done */
-				while(fgets(buf,1023,f) && zcmp(buf,"done\n"));
+				while(fgets(buf,sizeof(buf),f) && zcmp(buf,"done\n"));
 			}
 		}
 	}

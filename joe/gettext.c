@@ -49,7 +49,7 @@ static int load_po(FILE *f)
 	msgid[0] = 0;
 	msgstr[0] = 0;
 	while (preload_flag || fgets(buf,SIZEOF(buf)-1,f)) {
-		char *p;
+		const char *p;
 		preload_flag = 0;
 		p = buf;
 		parse_ws(&p, '#');
@@ -97,7 +97,7 @@ static int load_po(FILE *f)
 				/* Add to hash table */
 				htadd(gettext_ht, zdup(msgid), zdup(bf));
 			} else if (!msgid[0] && msgstr[0]) {
-				char *tp = strstr(msgstr, "charset=");
+				char *tp = zstr(msgstr, "charset=");
 				if (tp) {
 					/* Copy character set name up to next delimiter */
 					int x;

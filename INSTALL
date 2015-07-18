@@ -150,20 +150,26 @@ Developers may want to try to maximize compiler warnings from gcc:
 =======
   One way is to provide the CFLAGS enviroment variable to configure:
 
-  CFLAGS='-g -Wall -Wextra -Wconversion -Wunused -Wwrite-strings -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wundef -Wlogical-op -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security -Wswitch-enum -Wshadow' ./configure ...
+  CFLAGS='-g -Wall -Wconversion -Wunused -Wwrite-strings -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wundef -Wlogical-op -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security -Wswitch-enum -Wshadow' ./configure ...
 
   Another is to edit CFLAGS in the joe/Makefile:
 
-  CFLAGS = -g -Wall -Wextra -Wconversion -Wunused -Wwrite-strings \
+  CFLAGS = -g -Wall -Wconversion -Wunused -Wwrite-strings \
    -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wcast-qual \
    -Wundef -Wlogical-op -Wmissing-declarations -Wformat \
-   -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security \
+   -Wmissing-format-attribute -Wformat-nonliteral \
    -Wswitch-enum -Wshadow
 
-Also, it's a good idea to verify that JOE can be compiled with C++.  The C++
+(Try adding -Wextra and -Wformat-security for even more warnings)
+
+It's a good idea to verify that JOE can be compiled with C++.  The C++
 front-end sometimes finds different problems than the C front-end.
 
 CC = g++
+
+It's a good idea to see what warnings occur when -m32 is added.  This
+can reveal some conversion warnings.
+
 
 =======
 

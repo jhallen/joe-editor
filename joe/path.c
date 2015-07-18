@@ -21,11 +21,11 @@
 
 #ifdef HAVE_DIRENT_H
 #  include <dirent.h>
-#  define NAMLEN(dirent) strlen((dirent)->d_name)
+#  define NAMLEN(dirent) zlen((dirent)->d_name)
 #else
 #  ifdef HAVE_SYS_DIRENT_H
 #    include <sys/dirent.h>
-#    define NAMLEN(dirent) strlen((dirent)->d_name)
+#    define NAMLEN(dirent) zlen((dirent)->d_name)
 #  else
 #    define direct dirent
 #    define NAMLEN(dirent) (dirent)->d_namlen
@@ -343,7 +343,7 @@ char **rexpnd(const char *word)
 	dir = opendir(".");
 	if (dir) {
 		while ((de = readdir(dir)) != NULL)
-			if (strcmp(".", de->d_name))
+			if (zcmp(".", de->d_name))
 				if (rmatch(word, de->d_name))
 					lst = vaadd(lst, vsncpy(NULL, 0, sz(de->d_name)));
 		closedir(dir);

@@ -21,7 +21,7 @@ int attr_size = 0;
 int stack_count = 0;
 static int state_count = 0; /* Max transitions possible without cycling */
 
-struct high_syntax ansi_syntax[1] = { { NULL, "ansi" } };
+struct high_syntax *ansi_syntax;
 
 /* ANSI highlighter */
 
@@ -456,7 +456,7 @@ static struct high_color *find_color(struct high_color *colors,char *name,char *
 	return color;
 }
 
-void parse_color_def(struct high_color **color_list,char *p,char *name,int line)
+void parse_color_def(struct high_color **color_list,const char *p,char *name,int line)
 {
 	char bf[256];
 	if(!parse_tows(&p, bf)) {
@@ -536,9 +536,9 @@ void dump_syntax(BW *bw)
 	}
 }
 
-static struct high_param *parse_params(struct high_param *current_params,char **ptr,char *name,int line)
+static struct high_param *parse_params(struct high_param *current_params,const char **ptr,char *name,int line)
 {
-	char *p = *ptr;
+	const char *p = *ptr;
 	char bf[256];
 	struct high_param *params;
 	struct high_param **param_ptr;
@@ -604,7 +604,7 @@ struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_par
 
 /* Parse options */
 
-static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,char *p,int parsing_strings,char *name,int line)
+static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,const char *p,int parsing_strings,char *name,int line)
 {
 	char buf[1024];
 	char bf[256];
@@ -654,7 +654,7 @@ static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *
 		} else if(!parsing_strings && (!zcmp(bf,"strings") || !zcmp(bf,"istrings"))) {
 			if (bf[0]=='i')
 				cmd->ignore = 1;
-			while(jfgets(buf,1023,f)) {
+			while(jfgets(buf,sizeof(buf),f)) {
 				++line;
 				p = buf;
 				parse_ws(&p,'#');
@@ -711,7 +711,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	char name[1024];
 	char buf[1024];
 	char bf[256];
-	char *p;
+	const char *p;
 	ptrdiff_t c;
 	JFILE *f = 0;
 	struct ifstack *stack=0;
@@ -865,7 +865,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 							logerror_2(joe_gettext(_("%s %d: Bad string\n")),name,line);
 						else {
 							int tfirst, tsecond;
-							char *t = bf;
+							const char *t = bf;
 							while(!parse_range(&t, &tfirst, &tsecond)) {
 								if(tfirst>tsecond)
 									tsecond = tfirst;
@@ -959,7 +959,7 @@ struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_par
 			syn->next = syntax->next;
 		}
 		htrm(syntax->ht_states);
-		joe_free((void *)syntax->name);
+		joe_free(syntax->name);
 		joe_free(syntax->states);
 		joe_free(syntax);
 		return 0;
@@ -968,6 +968,11 @@ struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_par
 
 struct high_syntax *load_syntax(const char *name)
 {
+	if (!ansi_syntax) {
+		ansi_syntax = (struct high_syntax *)joe_calloc(1, SIZEOF(struct high_syntax));
+		ansi_syntax->name = zdup("ansi");
+	}
+
 	if (!name)
 		return 0;
 

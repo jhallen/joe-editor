@@ -168,8 +168,8 @@ static int rtnpw(W *w)
 	pfunc = pw->pfunc;
 	object = pw->object;
 	bwrm(bw);
-	joe_free((void *)pw->prompt);
-	joe_free((void *)pw);
+	joe_free(pw->prompt);
+	joe_free(pw);
 	w->object = NULL;
 	notify = w->notify;
 	w->notify = 0;
@@ -223,7 +223,7 @@ static int abortpw(W *w)
 	W *win = bw->parent->win;
 
 	bwrm(bw);
-	joe_free((void *)pw->prompt);
+	joe_free(pw->prompt);
 	joe_free(pw);
 	if (abrt) {
 		return abrt(win, object);

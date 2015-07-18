@@ -1246,7 +1246,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 					         ttstsz(1, w, h);
 
 					/* Execute the shell */
-					execve(cmd, (char **)args, (char **)env);
+					execve(cmd, args, (char * const *)env);
 
 					/* If shell didn't execute */
 					joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Couldn't execute shell '%s'\n")),cmd);

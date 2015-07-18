@@ -214,12 +214,12 @@ char *find(char *s)
 {
 	struct slist *l;
 	for (l = slist; l; l = l->next)
-		if (!strcmp(l->s, s))
+		if (!zcmp(l->s, s))
 			return l->s;
 	l = (struct slist *)joe_malloc(SIZEOF(struct slist));
 	l->next = slist;
 	slist = l;
-	l->s = strdup(s);
+	l->s = zdup(s);
 	return l->s;
 }
 

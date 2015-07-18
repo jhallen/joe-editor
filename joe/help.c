@@ -124,7 +124,7 @@ void help_display(Screen *t)
 			ptrdiff_t spanextra;
 			ptrdiff_t len;
 
-			eol = (const char *)zchr((const char *)str, '\n');
+			eol = zchr(str, '\n'); 
 
 			/* First pass: count no. springs \| and determine minimum width */
 			while(*str && *str!='\n') {

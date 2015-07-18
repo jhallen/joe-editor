@@ -40,7 +40,7 @@ static void gen(char *s, FILE *fd)
 					for (y = z; s[y] && s[y] != '|' && s[y] != ':'; ++y) ;
 					c = s[y];
 					s[y] = 0;
-					if (strlen((s + z)) > 2 && !strchr((s + z), ' ') && !strchr((s + z), '\t')) {
+					if (strlen((s + z)) > 2 && !zchr((s + z), ' ') && !zchr((s + z), '\t')) {
 						if(flg)
 							putchar(' ');
 						fputs((s + z), stdout);

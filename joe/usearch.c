@@ -1168,8 +1168,8 @@ void load_srch(FILE *f)
 	int ignore = 0;
 	int replace = 0;
 	int block_restrict = 0;
-	while(fgets(buf,1023,f) && zcmp(buf,"done\n")) {
-		char *p=buf;
+	while(fgets(buf,sizeof(buf),f) && zcmp(buf,"done\n")) {
+		const char *p=buf;
 		parse_ws(&p,'#');
 		if(!parse_kw(&p,"pattern")) {
 			ptrdiff_t len;

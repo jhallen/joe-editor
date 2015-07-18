@@ -810,8 +810,8 @@ void load_macros(FILE *f)
 {
 	char buf[1024];
 	char bf[1024];
-	while(fgets(buf,1023,f) && zcmp(buf,"done\n")) {
-		char *p = buf;
+	while(fgets(buf,sizeof(buf),f) && zcmp(buf,"done\n")) {
+		const char *p = buf;
 		int n;
 		ptrdiff_t len;
 		ptrdiff_t sta;

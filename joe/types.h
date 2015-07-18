@@ -1,6 +1,10 @@
 /* JOE global header file */
 
 #define _FILE_OFFSET_BITS 64
+/* #define _POSIX_C_SOURCE 200809L
+#define _XOPEN_SOURCE 700
+#define _GNU_SOURCE 1 */
+
 #define TO_DIFF_OK(a) ((ptrdiff_t)(a)) /* Means it's OK that we are converting off_t to ptrdiff_t in this case */
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
 #define SIZEOF(a) ((ptrdiff_t)sizeof(a)) /* Signed version of sizeof() */
