@@ -4,6 +4,12 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Code clean up
+	* Switch to ptrdiff_t for memory offsets and off_t for file offsets (prior to this, int and long were used).  Now you can edit files larger than 4 GB on 32-bit systems.
+	* Give up trying force all strings to "unsigned char *" so that the code is less weird.
+	* Clean up code so that we get a clean compile even with many more warnings enabled.  Going forward this helps find real bugs by highlighting new warnings.
+	* JOE can now be compiled by C++ compilers as well as C compilers.  This is useful because C++ compilers sometimes warn about issues that C compilers miss.
+
 * Key sequences in the joerc file are now UTF-8 coded Unicode.
 	* Also you can specify Unicode in hexadecimal with: U+F123
 
@@ -13,12 +19,11 @@
 
 * Backspace now jumps back to parent menu in ^T submenus.
 
-* Allow macros after :def to cross lines
+* Allow macros after :def to cross lines in the joerc file
 
 * Make ^K ^SPACE same as ^K SPACE
 
-* Fix lockup which would happen if you try querysave when the only buffer
-  left is the startup log.
+* Fix lockup which would happen if you try querysave when the only buffer left is the startup log.
 
 * Minor jmacs fixes:
 	* ^X b / ^X ^B were reversed
