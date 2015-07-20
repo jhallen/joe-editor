@@ -102,6 +102,11 @@ char *zlcpy(char *a, ptrdiff_t siz, const char *b);
 /* Like strncat, but result is always zero-terminated */ 
 char *zlcat(char *a, ptrdiff_t siz, const char *b);
 
+/* Functions which support zero-terminated strings of ints */
+
+int Zcmp(const char *a, const char *b);
+int *Zlcpy(int *a, ptrdiff_t siz, const char *b);
+ 
 /*
  * Functions which return minimum/maximum of two numbers  
  */

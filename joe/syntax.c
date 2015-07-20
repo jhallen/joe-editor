@@ -36,8 +36,8 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	int *attr_end = attr_buf + attr_size;
 	int c;
 
-	char state = h_state.saved_s[0];
-	char accu = h_state.saved_s[1];
+	int state = h_state.saved_s[0];
+	int accu = h_state.saved_s[1];
 	int current_attr = (int)h_state.state;
 	// int new_attr = *(int *)(h_state.saved_s + 8);
 
@@ -50,8 +50,6 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	while ((c = pgetc(line)) != NO_MORE_DATA) {
 		if (c < 0)
 			c += 256;
-		if (c < 0 || c > 255)
-			c = 0x1F;
 		if (attr == attr_end) {
 			if (!attr_buf) {
 				attr_size = 1024;
@@ -141,9 +139,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	struct high_frame *stack;
 	struct high_state *h;
 			/* Current state */
-	char buf[24];		/* Name buffer (trunc after 23 characters) */
-	char lbuf[24];		/* Lower case version of name buffer */
-	char lsaved_s[24];	/* Lower case version of delimiter match buffer */
+	int buf[SAVED_SIZE];		/* Name buffer (trunc after 23 characters) */
+	int lbuf[3*SAVED_SIZE];		/* Lower case version of name buffer */
+	int lsaved_s[3*SAVED_SIZE];	/* Lower case version of delimiter match buffer */
 	int buf_idx;	/* Index into buffer */
 	int c;		/* Current character */
 	int *attr;
@@ -187,10 +185,6 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		if (c < 0)
 			c += 256;
 
-		/* Hack so we can have UTF-8 characters without crashing */
-		if (c < 0 || c > 255)
-			c = 0x1F;
-
 		/* Create or expand attribute array if necessary */
 		if(attr==attr_end) {
 			if(!attr_buf) {
@@ -229,17 +223,15 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Lowerize strings for case-insensitive matching */
 			if (cmd->ignore) {
-				zlcpy(lbuf, SIZEOF(lbuf), buf);
-				lowerize(lbuf);
+				lowerize(lbuf, SIZEOF(lbuf), buf);
 				if (cmd->delim) {
-					zlcpy(lsaved_s, SIZEOF(lsaved_s), h_state.saved_s);
-					lowerize(lsaved_s);
+					lowerize(lsaved_s, SIZEOF(lsaved_s), h_state.saved_s);
 				}
 			}
 
 			/* Check for delimiter or keyword matches */
 			recolor_delimiter_or_keyword = 0;
-			if (cmd->delim && (cmd->ignore ? !zcmp(lsaved_s,lbuf) : !zcmp(h_state.saved_s,buf))) {
+			if (cmd->delim && (cmd->ignore ? !Zcmp(lsaved_s,lbuf) : !Zcmp(h_state.saved_s,buf))) {
 				cmd = cmd->delim;
 				recolor_delimiter_or_keyword = 1;
 			} else if (cmd->keywords && (cmd->ignore ? (kw_cmd=(struct high_cmd *)htfind(cmd->keywords,lbuf)) : (kw_cmd=(struct high_cmd *)htfind(cmd->keywords,buf)))) {
@@ -300,7 +292,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Save string? */
 			if (cmd->save_s)
-				zlcpy(h_state.saved_s, SIZEOF(h_state.saved_s), buf);
+				Zlcpy(h_state.saved_s, SIZEOF(h_state.saved_s) / SIZEOF(h_state.saved_s[0]), buf);
 
 			/* Save character? */
 			if (cmd->save_c) {
@@ -316,7 +308,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				else if (c=='`')
 					h_state.saved_s[0] = '\'';
 				else
-					h_state.saved_s[0] = TO_CHAR_OK(c);
+					h_state.saved_s[0] = c;
 			}
 
 			/* Start buffering? */
@@ -348,7 +340,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 		/* Save character in buffer */
 		if (buf_idx<23 && buf_en)
-			buf[buf_idx++] = TO_CHAR_OK(c);
+			buf[buf_idx++] = c;
 		if (!buf_en)
 			++ofst;
 		buf[buf_idx] = 0;

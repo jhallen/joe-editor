@@ -264,13 +264,16 @@ typedef struct highlight_state HIGHLIGHT_STATE;
 typedef struct mpx MPX;
 typedef struct jfile JFILE;
 typedef struct vt_context VT;
+typedef struct Phash PHASH;
 
 /* Structure which are passed by value */
+
+#define SAVED_SIZE 24
 
 struct highlight_state {
 	struct high_frame *stack; /* Pointer to the current frame in the call stack */
 	ptrdiff_t state; /* Current state in the current subroutine */
-	char saved_s[24]; /* Buffer for saved delimiters */
+	int saved_s[SAVED_SIZE]; /* Buffer for saved delimiters */
 };
 
 /* Include files */
@@ -327,3 +330,5 @@ struct highlight_state {
 #include "state.h"
 #include "options.h"
 #include "selinux.h"
+#include "phash.h"
+#include "unicode.h"

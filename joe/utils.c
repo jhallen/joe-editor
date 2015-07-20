@@ -529,6 +529,40 @@ ptrdiff_t zhtodiff(const char *s)
 	return (ptrdiff_t)val;
 }
 
+/* Compare zero-terminated strings of ints */
+
+int Zcmp(const int *a, const int *b)
+{
+	while (*a && *b && *a == *b) {
+		++a;
+		++b;
+	}
+	if (*a > *b)
+		return 1;
+	else if (*a < *b)
+		return -1;
+	else
+		return 0;
+}
+
+/* Copy b into buffer a of length len.  A will always end up NUL terminated. */
+
+int *Zlcpy(int *a, ptrdiff_t len, const int *b)
+{
+	int *org = a;
+	if (!len) {
+		fprintf(stderr, "Zlcpy called with len == 0\n");
+		exit(1);
+	}
+	--len;
+	while (len && *b) {
+		*a++ = *b++;
+		--len;
+	}
+	*a = 0;
+	return org;
+}
+
 #ifndef SIG_ERR
 #define SIG_ERR ((sighandler_t) -1)
 #endif

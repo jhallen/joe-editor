@@ -68,7 +68,6 @@ int joe_isspace_eof(struct charmap *map,int c);
 #define joe_toupper(map,c) ((map)->to_upper((map),(c)))
 #define joe_to_uni(map,c) ((map)->to_uni((map),(c)))
 #define joe_from_uni(map,c) ((map)->from_uni((map),(c)))
-char *lowerize(char *s);
 
 /* Find (load if necessary) a character set */
 struct charmap *find_charmap(const char *name);

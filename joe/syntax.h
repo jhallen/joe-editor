@@ -48,7 +48,7 @@ struct high_cmd {
 	unsigned recolor_mark : 1;	/* Set to recolor marked area with new state */
 	unsigned rtn : 1;		/* Set to return */
 	unsigned reset : 1;		/* Set to reset the call stack */
-	ptrdiff_t recolor;			/* No. chars to recolor if <0. */
+	ptrdiff_t recolor;		/* No. chars to recolor if <0. */
 	struct high_state *new_state;	/* The new state */
 	HASH *keywords;			/* Hash table of keywords */
 	struct high_cmd *delim;		/* Matching delimiter */
@@ -69,13 +69,13 @@ struct high_frame {
 
 struct high_syntax {
 	struct high_syntax *next;	/* Linked list of loaded syntaxes */
-	char *name;		/* Name of this syntax */
-	char *subr;		/* Name of the subroutine (or NULL for whole file) */
+	char *name;			/* Name of this syntax */
+	char *subr;			/* Name of the subroutine (or NULL for whole file) */
 	struct high_param *params;	/* Parameters defined */
 	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
 	HASH *ht_states;		/* Hash table of states */
-	ptrdiff_t nstates;			/* No. states */
-	ptrdiff_t szstates;			/* Malloc size of states array */
+	ptrdiff_t nstates;		/* No. states */
+	ptrdiff_t szstates;		/* Malloc size of states array */
 	struct high_color *color;	/* Linked list of color definitions */
 	struct high_cmd default_cmd;	/* Default transition for new states */
 	struct high_frame *stack_base;  /* Root of run-time call tree */

@@ -1472,6 +1472,16 @@ int joe_tolower(struct charmap *map,int c)
 	else
 		return d;
 }
+
+/* Broken: does not handle UTF-8 */
+
+char *lowerize(char *s)
+{
+	char *t;
+	for (t=s;*t;t++)
+		*t = joe_tolower(locale_map,*t);
+	return s;
+}
 #endif
 
 /* This is not correct... (EBCDIC for example) */
@@ -1484,14 +1494,4 @@ int joe_isblank(struct charmap *map,int c)
 int joe_isspace_eof(struct charmap *map,int c)
 {
 	return (c==0) || joe_isspace(map,c);
-}
-
-/* Broken: does not handle UTF-8 */
-
-char *lowerize(char *s)
-{
-	char *t;
-	for (t=s;*t;t++)
-		*t = joe_tolower(locale_map,*t);
-	return s;
 }
