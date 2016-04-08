@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2006-06-15 14:12-0400\n"
-"PO-Revision-Date: 2016-04-08 22:55-0000\n"
+"PO-Revision-Date: 2016-04-09 00:38-0000\n"
 "Last-Translator: Miklos Horvath <hmiki@blackpantheros.eu>\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
@@ -127,7 +127,7 @@ msgstr "Csak olvasható"
 
 #: cmd.c:542 cmd.c:552
 msgid "No such command"
-msgstr ""
+msgstr "Nincs ilyen parancs"
 
 #: cmd.c:569
 msgid "Command: "
@@ -142,11 +142,11 @@ msgstr ""
 
 #: kbd.c:352
 msgid "No such keymap"
-msgstr ""
+msgstr "Nincs ilyen billentyűkiosztás"
 
 #: kbd.c:381
 msgid "Change keymap: "
-msgstr ""
+msgstr "Billentyűkiosztás módosítása:"
 
 #: macro.c:662
 msgid "Macro to record (0-9 or ^C to abort): "
@@ -243,7 +243,7 @@ msgstr ""
 
 #: rc.c:295
 msgid "Insert mode"
-msgstr ""
+msgstr "Beszúró mód"
 
 #: rc.c:295
 msgid "T Overtype "
@@ -251,27 +251,27 @@ msgstr ""
 
 #: rc.c:296
 msgid "Hex edit mode"
-msgstr ""
+msgstr "Hexaeditor mód"
 
 #: rc.c:296
 msgid "Text edit mode"
-msgstr ""
+msgstr "Szövegszerkesztő mód"
 
 #: rc.c:296
 msgid "  Hex edit mode "
-msgstr ""
+msgstr "  Hexaeditor mód"
 
 #: rc.c:297
 msgid "Autoindent enabled"
-msgstr ""
+msgstr "Automatikus indentálás bekapcsolva"
 
 #: rc.c:297
 msgid "Autoindent disabled"
-msgstr ""
+msgstr "Automatikus indentálás kikapcsolva"
 
 #: rc.c:297
 msgid "I Autoindent "
-msgstr ""
+msgstr "I Automatikus indentálás "
 
 #: rc.c:298
 msgid "Wordwrap enabled"
@@ -620,27 +620,27 @@ msgstr ""
 
 #: rc.c:328
 msgid "Backup files will not be made"
-msgstr ""
+msgstr "Nem lesznek mentések készítve"
 
 #: rc.c:328
 msgid "Backup files will be made"
-msgstr ""
+msgstr "Mentések lesznek készítve"
 
 #: rc.c:328
 msgid "  Disable backups "
-msgstr ""
+msgstr "  Mentések kikapcsolása"
 
 #: rc.c:329
 msgid "Files will not be locked"
-msgstr ""
+msgstr "Fájlok nem lesznek zárolva"
 
 #: rc.c:329
 msgid "Files will be locked"
-msgstr ""
+msgstr "A fájlok zárolva lesznek"
 
 #: rc.c:329
 msgid "  Disable locks "
-msgstr ""
+msgstr "  Zárak kikapcsolása"
 
 #: rc.c:330
 msgid "No file modification time check"
@@ -664,7 +664,7 @@ msgstr ""
 
 #: rc.c:331
 msgid "  Disable current dir "
-msgstr ""
+msgstr "Jelenlegi könyvtár kikapcsolása"
 
 #: rc.c:332
 msgid "Hardlinks will be broken"
@@ -712,7 +712,7 @@ msgstr ""
 
 #: rc.c:335
 msgid "B Beeps "
-msgstr ""
+msgstr "B Sípolás"
 
 #: rc.c:336
 msgid "Top-most status line disabled"
@@ -761,11 +761,11 @@ msgstr ""
 
 #: rc.c:340
 msgid "Full editing"
-msgstr ""
+msgstr "Teljes szerkesztés"
 
 #: rc.c:340
 msgid "O Read only "
-msgstr ""
+msgstr "O Csak olvasás"
 
 #: rc.c:341
 msgid "Smart home key enabled"
@@ -817,15 +817,15 @@ msgstr ""
 
 #: rc.c:345
 msgid "Picture drawing mode enabled"
-msgstr ""
+msgstr "Képrajzoló mód bekapcsolva"
 
 #: rc.c:345
 msgid "Picture drawing mode disabled"
-msgstr ""
+msgstr "Képrajzoló mód kikapcsolva"
 
 #: rc.c:345
 msgid "P Picture mode "
-msgstr ""
+msgstr "P Kép mód"
 
 #: rc.c:346
 #, c-format
@@ -842,7 +842,7 @@ msgstr ""
 
 #: rc.c:347
 msgid "Y Syntax"
-msgstr ""
+msgstr "Y Szintaxis"
 
 #: rc.c:348
 msgid "Select file character set (^C to abort): "
@@ -850,7 +850,7 @@ msgstr ""
 
 #: rc.c:348
 msgid "E Encoding "
-msgstr ""
+msgstr "E Kódolás"
 
 #: rc.c:349
 msgid "Single quoting enabled"
@@ -866,11 +866,11 @@ msgstr ""
 
 #: rc.c:350
 msgid "/* comments enabled"
-msgstr ""
+msgstr "/* megjegyzések bekapcsolva"
 
 #: rc.c:350
 msgid "/* comments disabled"
-msgstr ""
+msgstr "/* megjegyzések kikapcsolva"
 
 #: rc.c:350
 msgid "  ^G ignores /*...*/ "
@@ -878,11 +878,11 @@ msgstr ""
 
 #: rc.c:351
 msgid "// comments enabled"
-msgstr ""
+msgstr "// megjegyzések bekapcsolva"
 
 #: rc.c:351
 msgid "// comments disabled"
-msgstr ""
+msgstr "// megjegyzések kikapcsolva"
 
 #: rc.c:351
 msgid "  ^G ignores //... "
@@ -890,11 +890,11 @@ msgstr ""
 
 #: rc.c:352
 msgid "# comments enabled"
-msgstr ""
+msgstr "# megjegyzések bekapcsolva"
 
 #: rc.c:352
 msgid "# comments disabled"
-msgstr ""
+msgstr "# megjegyzések kikapcsolva"
 
 #: rc.c:352
 msgid "  ^G ignores #... "
@@ -902,11 +902,11 @@ msgstr ""
 
 #: rc.c:353
 msgid "-- comments enabled"
-msgstr ""
+msgstr "-- megjegyzések bekapcsolva"
 
 #: rc.c:353
 msgid "-- comments disabled"
-msgstr ""
+msgstr "-- megjegyzések kikapcsolva"
 
 #: rc.c:353
 msgid "  ^G ignores --... "
@@ -914,11 +914,11 @@ msgstr ""
 
 #: rc.c:354
 msgid "; comments enabled"
-msgstr ""
+msgstr "; megjegyzések bekapcsolva"
 
 #: rc.c:354
 msgid "; comments disabled"
-msgstr ""
+msgstr "; megjegyzések bekapcsolva"
 
 #: rc.c:354
 msgid "  ^G ignores ;... "
@@ -936,11 +936,11 @@ msgstr ""
 #: rc.c:356
 #, c-format
 msgid "Language (%s): "
-msgstr ""
+msgstr "Nyelv (%s):"
 
 #: rc.c:356
 msgid "V Language "
-msgstr ""
+msgstr "V Nyelv"
 
 #: rc.c:357
 #, c-format
@@ -1255,11 +1255,11 @@ msgstr ""
 
 #: tw.c:213
 msgid "Unnamed"
-msgstr ""
+msgstr "Névtelen"
 
 #: tw.c:219
 msgid "(Modified)"
-msgstr ""
+msgstr "(Módosított)"
 
 #: tw.c:223
 msgid "(Read only)"
@@ -1289,7 +1289,7 @@ msgstr ""
 #: ublock.c:417 ublock.c:503 ublock.c:559 ublock.c:887 ublock.c:921
 #: ublock.c:1083 ufile.c:435 umath.c:177 undo.c:455
 msgid "No block"
-msgstr ""
+msgstr "Nincs blokk"
 
 #: ublock.c:756 ublock.c:839
 msgid "Selected lines not properly indented"
@@ -1400,34 +1400,34 @@ msgstr ""
 
 #: ufile.c:39
 msgid "(Unnamed)"
-msgstr ""
+msgstr "(Névtelen)"
 
 #: ufile.c:44 ufile.c:51
 #, c-format
 msgid "File %s saved"
-msgstr ""
+msgstr "Fájl %s mentve"
 
 #: ufile.c:46 ufile.c:49
 #, c-format
 msgid "File %s not saved"
-msgstr ""
+msgstr "Fájl %s nincs mentve"
 
 #: ufile.c:53
 #, c-format
 msgid "File %s not changed so no update needed"
-msgstr ""
+msgstr "Fájl %s nem változott, frissítés szükségtelen"
 
 #: ufile.c:67
 msgid "Some files have not been saved."
-msgstr ""
+msgstr "Néhány fájl nem lett mentve"
 
 #: ufile.c:69
 msgid "All modified files have been saved."
-msgstr ""
+msgstr "Minden módosított fájl mentve lett"
 
 #: ufile.c:71
 msgid "No modified files, so no updates needed."
-msgstr ""
+msgstr "Nincsenek módosított fájlok, frissítések nem szükségesek"
 
 #: ufile.c:107
 msgid "System (^C to abort): "
@@ -1501,7 +1501,7 @@ msgstr ""
 #: ufile.c:1137
 #, c-format
 msgid "File %s has been modified.  Save it (y,n,^C)? "
-msgstr ""
+msgstr "Fájl %s módosítva.  Mented (y,n,^C)? "
 
 #: uisrch.c:267
 msgid "I-find: "
