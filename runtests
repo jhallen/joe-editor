@@ -1,6 +1,0 @@
-#!/bin/sh
-
-command -v python3 >/dev/null 2>&1 || { echo >&2 "Tests require python3, which was not detected.  Aborting."; exit 1; }
-
-cd `dirname $0`/tests
-python3 -m unittest $* alltests.py
